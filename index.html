@@ -1,3 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Employee Data</title>
+    <style>
+        table {
+            width: 210mm; /* A4 width */
+            max-width: 210mm;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid black;
+            padding: 8px;
+            text-align: left;
+        }
+    </style>
+</head>
 <body>
     <h1>Employee Data Search</h1>
     <input type="text" id="employeeNumber" placeholder="Enter Employee Number">
@@ -25,7 +42,8 @@
                     headerRow.innerHTML = '';
                     body.innerHTML = '';
 
-                    const headers = rows[0].split(',');
+                    // Define headers for columns 1 and 3
+                    const headers = ["Employee Number", "Name", "Job Title", "Location"];
                     headers.forEach(headerText => {
                         const header = document.createElement('th');
                         header.textContent = headerText;
@@ -36,11 +54,24 @@
                         const cells = rows[i].split(',');
                         if (cells[0] === employeeNumber) { // Assuming employee number is in the first column
                             const row = document.createElement('tr');
-                            cells.forEach(cellText => {
+
+                            // Create cells for columns 2 and 4
+                            const dataCells = [cells[1], cells[3]]; // Name and Job Title
+                            dataCells.forEach(cellText => {
                                 const cell = document.createElement('td');
                                 cell.textContent = cellText;
                                 row.appendChild(cell);
                             });
+
+                            // Create cells for employee number and location
+                            const empNumCell = document.createElement('td');
+                            empNumCell.textContent = cells[0];
+                            row.appendChild(empNumCell);
+
+                            const locationCell = document.createElement('td');
+                            locationCell.textContent = cells[4];
+                            row.appendChild(locationCell);
+
                             body.appendChild(row);
                             return; // Stop after finding the matching employee
                         }
