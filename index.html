@@ -13,8 +13,8 @@
                 headerRow.innerHTML = '';
                 body.innerHTML = '';
 
-                // Define headers for columns 1 and 3
-                const headers = ["Employee Number", "Name", "Job Title", "Location", "Age", "DOB", "Joining Date", "Mobile Number"];
+                // Define headers for all columns
+                const headers = ["Employee Number", "Name", "Job Title", "Location", "Age", "DOB", "Joining Date", "Mobile Number", "Other", "Other Tnap", "PP Number", "Id Exp Gregorian", "Id Exp Hijri", "Id Number", "Id Profession", "Issue Place", "Issue Date", "Job Ended", "Job Title", "Joining Date", "Location", "Medical", "Mobile Number", "Nationality", "Other", "Other Tnap", "PP Number"];
                 headers.forEach(headerText => {
                     const header = document.createElement('th');
                     header.textContent = headerText;
@@ -26,9 +26,8 @@
                     if (cells[0] === employeeNumber) { // Assuming employee number is in the first column
                         const row = document.createElement('tr');
 
-                        // Create cells for data
-                        const dataCells = [cells[0], cells[1], cells[3], cells[4], cells[5], cells[6], cells[7], cells[8]];
-                        dataCells.forEach(cellText => {
+                        // Create cells for all data
+                        cells.forEach(cellText => {
                             const cell = document.createElement('td');
                             cell.textContent = cellText;
                             row.appendChild(cell);
