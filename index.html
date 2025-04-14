@@ -1,53 +1,87 @@
-<script>
-    function searchEmployee() {
-        const employeeNumber = document.getElementById('employeeNumber').value;
-        fetch('data.csv')
-            .then(response => response.text())
-            .then(csv => {
-                const rows = csv.split('\n');
-                const table = document.getElementById('data-table');
-                const body = table.querySelector('tbody');
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Employee Data</title>
+    <style>
+        table {
+            width: 210mm; /* A4 width */
+            max-width: 210mm;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid black;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            width: 25%; /* Divide table width evenly among 4 columns */
+        }
+    </style>
+</head>
+<body>
+    <h1>Employee Data Search</h1>
+    <input 
+        type="text" 
+        id="employeeNumber" 
+        placeholder="Enter Employee Number" 
+        style="width: 300px; font-size: 20px; padding: 10px; border: 2px solid #4CAF50; border-radius: 5px;"
+    >
+    <button onclick="searchEmployee()" style="font-size: 20px; padding: 10px;">Search</button>
 
-                // Clear previous results
-                body.innerHTML = '';
+    <table id="data-table">
+        <tbody></tbody>
+    </table>
 
-                for (let i = 1; i < rows.length; i++) {
-                    const cells = rows[i].split(',');
-                    if (cells[0] === employeeNumber) { // Assuming employee number is in the first column
+    <script>
+        function searchEmployee() {
+            const employeeNumber = document.getElementById('employeeNumber').value;
+            fetch('data.csv')
+                .then(response => response.text())
+                .then(csv => {
+                    const rows = csv.split('\n');
+                    const table = document.getElementById('data-table');
+                    const body = table.querySelector('tbody');
 
-                        // REPLACE THIS WITH THE CORRECT ORDER FROM YOUR CSV
-                        const headers = {
-                            "Employee Number": 0,
-                            "Name": 1,
-                            "Job Title": 3,
-                            "Location": 4,
-                            "Age": 5,
-                            "DOB": 6,
-                            "Joining Date": 7,
-                            "Mobile Number": 8,
-                            "Other": 9,
-                            "Other Tnap": 10
-                            // Add all headers and their indices here (matching your CSV)
-                        };
+                    // Clear previous results
+                    body.innerHTML = '';
 
-                        for (const header in headers) {
-                            if (headers.hasOwnProperty(header)) {
-                                const rowIndex = document.createElement('tr');
-                                const headerCell = document.createElement('th');
-                                headerCell.textContent = header;
-                                rowIndex.appendChild(headerCell);
+                    for (let i = 1; i < rows.length; i++) {
+                        const cells = rows[i].split(',');
+                        if (cells[0] === employeeNumber) { // Assuming employee number is in the first column
 
-                                const valueCell = document.createElement('td');
-                                valueCell.textContent = cells[headers[header]] || "N/A";
-                                rowIndex.appendChild(valueCell);
+                            // REPLACE THIS WITH THE CORRECT ORDER FROM YOUR CSV
+                            const headers = {
+                                "Employee Number": 0,
+                                "Name": 1,
+                                "Job Title": 3,
+                                "Location": 4,
+                                "Age": 5,
+                                "DOB": 6,
+                                "Joining Date": 7,
+                                "Mobile Number": 8,
+                                "Other": 9,
+                                "Other Tnap": 10
+                                // Add all headers and their indices here (matching your CSV)
+                            };
 
-                                body.appendChild(rowIndex);
+                            for (const header in headers) {
+                                if (headers.hasOwnProperty(header)) {
+                                    const rowIndex = document.createElement('tr');
+                                    const headerCell = document.createElement('th');
+                                    headerCell.textContent = header;
+                                    rowIndex.appendChild(headerCell);
+
+                                    const valueCell = document.createElement('td');
+                                    valueCell.textContent = cells[headers[header]] || "N/A";
+                                    rowIndex.appendChild(valueCell);
+
+                                    body.appendChild(rowIndex);
+                                }
                             }
+                            return; // Stop after finding the matching employee
                         }
-                        return; // Stop after finding the matching employee
                     }
-                }
-            });
+                });
         }
 
         // Trigger search on Enter key press
@@ -57,3 +91,5 @@
             }
         });
     </script>
+</body>
+</html>
