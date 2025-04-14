@@ -26,22 +26,13 @@
                     if (cells[0] === employeeNumber) { // Assuming employee number is in the first column
                         const row = document.createElement('tr');
 
-                        // Create cells for columns 2 and 4
-                        const dataCells = [cells[1], cells[3]]; // Name and Job Title
+                        // Create cells for columns 1, 2, 3, and 4
+                        const dataCells = [cells[0], cells[1], cells[3], cells[4]]; // Employee Number, Name, Job Title, Location
                         dataCells.forEach(cellText => {
                             const cell = document.createElement('td');
                             cell.textContent = cellText;
                             row.appendChild(cell);
                         });
-
-                        // Create cells for employee number and location
-                        const empNumCell = document.createElement('td');
-                        empNumCell.textContent = cells[0];
-                        row.appendChild(empNumCell);
-
-                        const locationCell = document.createElement('td');
-                        locationCell.textContent = cells[4];
-                        row.appendChild(locationCell);
 
                         body.appendChild(row);
                         return; // Stop after finding the matching employee
