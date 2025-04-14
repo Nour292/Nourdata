@@ -1,68 +1,59 @@
-<body>
-    <h1>Employee Data Search</h1>
-    <input 
-        type="text" 
-        id="employeeNumber" 
-        placeholder="Enter Employee Number" 
-        style="width: 300px; font-size: 20px; padding: 10px; border: 2px solid #4CAF50; border-radius: 5px;"
-    >
-    <button onclick="searchEmployee()" style="font-size: 20px; padding: 10px;">Search</button>
+<script>
+    function searchEmployee() {
+        const employeeNumber = document.getElementById('employeeNumber').value;
+        fetch('data.csv')
+            .then(response => response.text())
+            .then(csv => {
+                const rows = csv.split('\n');
+                const table = document.getElementById('data-table');
+                const headerRow = table.querySelector('thead tr');
+                const body = table.querySelector('tbody');
 
-    <table id="data-table">
-        <thead>
-            <tr></tr>
-        </thead>
-        <tbody></tbody>
-    </table>
+                // Clear previous results
+                headerRow.innerHTML = '';
+                body.innerHTML = '';
 
-    <script>
-        function searchEmployee() {
-            const employeeNumber = document.getElementById('employeeNumber').value;
-            fetch('data.csv')
-                .then(response => response.text())
-                .then(csv => {
-                    const rows = csv.split('\n');
-                    const table = document.getElementById('data-table');
-                    const headerRow = table.querySelector('thead tr');
-                    const body = table.querySelector('tbody');
-
-                    // Clear previous results
-                    headerRow.innerHTML = '';
-                    body.innerHTML = '';
-
-                    // Define headers for all columns
-                    const headers = ["Employee Number", "Name", "Job Title", "Location", "Age", "DOB", "Joining Date", "Mobile Number", "Other", "Other Tnap", "PP Number", "Id Exp Gregorian", "Id Exp Hijri", "Id Number", "Id Profession", "Issue Place", "Issue Date", "Job Ended", "Job Title", "Joining Date", "Location", "Medical", "Mobile Number", "Nationality", "Other", "Other Tnap", "PP Number"];
-                    headers.forEach(headerText => {
-                        const header = document.createElement('th');
-                        header.textContent = headerText;
-                        headerRow.appendChild(header);
-                    });
-
-                    for (let i = 1; i < rows.length; i++) {
-                        const cells = rows[i].split(',');
-                        if (cells[0] === employeeNumber) { // Assuming employee number is in the first column
-                            const row = document.createElement('tr');
-
-                            // Create cells for all data
-                            cells.forEach(cellText => {
-                                const cell = document.createElement('td');
-                                cell.textContent = cellText;
-                                row.appendChild(cell);
-                            });
-
-                            body.appendChild(row);
-                            return; // Stop after finding the matching employee
-                        }
-                    }
+                // Define headers for columns 1 and 3
+                const headers = ["Employee Number", "Name", "Job Title", "Location"];
+                headers.forEach(headerText => {
+                    const header = document.createElement('th');
+                    header.textContent = headerText;
+                    headerRow.appendChild(header);
                 });
-        }
 
-        // Trigger search on Enter key press
-        document.getElementById('employeeNumber').addEventListener('keyup', function(event) {
-            if (event.key === 'Enter') {
-                searchEmployee();
-            }
-        });
-    </script>
-</body>
-</html>
+                for (let i = 1; i < rows.length; i++) {
+                    const cells = rows[i].split(',');
+                    if (cells[0] === employeeNumber) { // Assuming employee number is in the first column
+                        const row = document.createElement('tr');
+
+                        // Create cells for columns 2 and 4
+                        const dataCells = [cells[1], cells[3]]; // Name and Job Title
+                        dataCells.forEach(cellText => {
+                            const cell = document.createElement('td');
+                            cell.textContent = cellText;
+                            row.appendChild(cell);
+                        });
+
+                        // Create cells for employee number and location
+                        const empNumCell = document.createElement('td');
+                        empNumCell.textContent = cells[0];
+                        row.appendChild(empNumCell);
+
+                        const locationCell = document.createElement('td');
+                        locationCell.textContent = cells[4];
+                        row.appendChild(locationCell);
+
+                        body.appendChild(row);
+                        return; // Stop after finding the matching employee
+                    }
+                }
+            });
+    }
+
+    // Trigger search on Enter key press
+    document.getElementById('employeeNumber').addEventListener('keyup', function(event) {
+        if (event.key === 'Enter') {
+            searchEmployee();
+        }
+    });
+</script>
