@@ -15,7 +15,7 @@
                     const cells = rows[i].split(',');
                     if (cells[0] === employeeNumber) { // Assuming employee number is in the first column
 
-                        // Define headers and their corresponding indices in the CSV
+                        // REPLACE THIS WITH THE CORRECT ORDER FROM YOUR CSV
                         const headers = {
                             "Employee Number": 0,
                             "Name": 1,
@@ -27,7 +27,7 @@
                             "Mobile Number": 8,
                             "Other": 9,
                             "Other Tnap": 10
-                            // Add more headers and their indices here
+                            // Add all headers and their indices here (matching your CSV)
                         };
 
                         for (const header in headers) {
@@ -48,12 +48,12 @@
                     }
                 }
             });
-    }
-
-    // Trigger search on Enter key press
-    document.getElementById('employeeNumber').addEventListener('keyup', function(event) {
-        if (event.key === 'Enter') {
-            searchEmployee();
         }
-    });
-</script>
+
+        // Trigger search on Enter key press
+        document.getElementById('employeeNumber').addEventListener('keyup', function(event) {
+            if (event.key === 'Enter') {
+                searchEmployee();
+            }
+        });
+    </script>
