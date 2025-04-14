@@ -1,36 +1,6 @@
-<script>
-    fetch('data.csv')
-        .then(response => response.text())
-        .then(csv => {
-            const rows = csv.split('\n');
-            const table = document.getElementById('data-table');
-            const headerRow = table.querySelector('thead tr');
-            const body = table.querySelector('tbody');
-
-            // Clear previous results
-            headerRow.innerHTML = '';
-            body.innerHTML = '';
-
-            // Define headers for all columns
-            const headers = ["Employee Number", "Name", "Job Title", "Location", "Age", "DOB", "Joining Date", "Mobile Number", "Other", "Other Tnap", "PP Number", "Id Exp Gregorian", "Id Exp Hijri", "Id Number", "Id Profession", "Issue Place", "Issue Date", "Job Ended", "Job Title", "Joining Date", "Location", "Medical", "Mobile Number", "Nationality", "Other", "Other Tnap", "PP Number"];
-            headers.forEach(headerText => {
-                const header = document.createElement('th');
-                header.textContent = headerText;
-                headerRow.appendChild(header);
-            });
-
-            for (let i = 1; i < rows.length; i++) {
-                const cells = rows[i].split(',');
-                const row = document.createElement('tr');
-
-                // Create cells for all data
-                cells.forEach(cellText => {
-                    const cell = document.createElement('td');
-                    cell.textContent = cellText;
-                    row.appendChild(cell);
-                });
-
-                body.appendChild(row);
-            }
-        });
-</script>
+<table id="data-table">
+    <thead>
+        <tr></tr>
+    </thead>
+    <tbody></tbody>
+</table>
