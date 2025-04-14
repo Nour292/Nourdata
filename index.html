@@ -1,61 +1,95 @@
-<script>
-    function searchEmployee() {
-        const employeeNumber = document.getElementById('employeeNumber').value;
-        fetch('data.csv')
-            .then(response => response.text())
-            .then(csv => {
-                const rows = csv.split('\n');
-                const table = document.getElementById('data-table');
-                const body = table.querySelector('tbody');
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Employee Data</title>
+    <style>
+        table {
+            width: 210mm; /* A4 width */
+            max-width: 210mm;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid black;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            width: 25%; /* Divide table width evenly among 4 columns */
+        }
+    </style>
+</head>
+<body>
+    <h1>Employee Data Search</h1>
+    <input 
+        type="text" 
+        id="employeeNumber" 
+        placeholder="Enter Employee Number" 
+        style="width: 300px; font-size: 20px; padding: 10px; border: 2px solid #4CAF50; border-radius: 5px;"
+    >
+    <button onclick="searchEmployee()" style="font-size: 20px; padding: 10px;">Search</button>
 
-                // Clear previous results
-                body.innerHTML = '';
+    <table id="data-table">
+        <tbody></tbody>
+    </table>
 
-                for (let i = 1; i < rows.length; i++) {
-                    const cells = rows[i].split(',');
-                    if (cells[0] === employeeNumber) { // Assuming employee number is in the first column
+    <script>
+        function searchEmployee() {
+            const employeeNumber = document.getElementById('employeeNumber').value;
+            fetch('data.csv')
+                .then(response => response.text())
+                .then(csv => {
+                    const rows = csv.split('\n');
+                    const table = document.getElementById('data-table');
+                    const body = table.querySelector('tbody');
 
-                        // Define headers and corresponding data indices
-                        const headers = ["Employee Number", "Name", "Job Title", "Location", "Age", "DOB", "Joining Date", "Mobile Number", "Other", "Other Tnap"];
-                        const dataIndices = [0, 1, 3, 4, 5, 6, 7, 8, 9, 10]; // Map headers to CSV columns
+                    // Clear previous results
+                    body.innerHTML = '';
 
-                        for (let j = 0; j < headers.length; j += 2) {
-                            const row = document.createElement('tr');
+                    for (let i = 1; i < rows.length; i++) {
+                        const cells = rows[i].split(',');
+                        if (cells[0] === employeeNumber) { // Assuming employee number is in the first column
 
-                            // Header 1 and Value 1
-                            const headerCell1 = document.createElement('th');
-                            headerCell1.textContent = headers[j];
-                            row.appendChild(headerCell1);
+                            // Define headers and corresponding data indices
+                            const headers = ["Employee Number", "Name", "Job Title", "Location", "Age", "DOB", "Joining Date", "Mobile Number", "Other", "Other Tnap"];
+                            const dataIndices = [0, 1, 3, 4, 5, 6, 7, 8, 9, 10]; // Map headers to CSV columns
 
-                            const valueCell1 = document.createElement('td');
-                            valueCell1.textContent = cells[dataIndices[j]] || "N/A";
-                            row.appendChild(valueCell1);
+                            for (let j = 0; j < headers.length; j += 2) {
+                                const row = document.createElement('tr');
 
-                            // Header 2 and Value 2 (if available)
-                            if (j + 1 < headers.length) {
-                                const headerCell2 = document.createElement('th');
-                                headerCell2.textContent = headers[j + 1];
-                                row.appendChild(headerCell2);
+                                // Header 1 and Value 1
+                                const headerCell1 = document.createElement('th');
+                                headerCell1.textContent = headers[j];
+                                row.appendChild(headerCell1);
 
-                                const valueCell2 = document.createElement('td');
-                                valueCell2.textContent = cells[dataIndices[j + 1]] || "N/A";
-                                row.appendChild(valueCell2);
+                                const valueCell1 = document.createElement('td');
+                                valueCell1.textContent = cells[dataIndices[j]] || "N/A";
+                                row.appendChild(valueCell1);
+
+                                // Header 2 and Value 2 (if available)
+                                if (j + 1 < headers.length) {
+                                    const headerCell2 = document.createElement('th');
+                                    headerCell2.textContent = headers[j + 1];
+                                    row.appendChild(headerCell2);
+
+                                    const valueCell2 = document.createElement('td');
+                                    valueCell2.textContent = cells[dataIndices[j + 1]] || "N/A";
+                                    row.appendChild(valueCell2);
+                                }
+
+                                body.appendChild(row);
                             }
-
-                            body.appendChild(row);
+                            return; // Stop after finding the matching employee
                         }
-                        return; // Stop after finding the matching employee
                     }
-                }
-            });
-    }
+                });
+        }
 
-    // Trigger search on Enter key press
-    document.addEventListener('DOMContentLoaded', function() {
+        // Trigger search on Enter key press
         document.getElementById('employeeNumber').addEventListener('keyup', function(event) {
             if (event.key === 'Enter') {
                 searchEmployee();
             }
         });
-    });
-</script>
+    </script>
+</body>
+</html>
