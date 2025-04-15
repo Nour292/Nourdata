@@ -140,15 +140,15 @@
 
                                 body.appendChild(row);
                             }
+                            // Add Last Updated Date (Correct Placement)
+                            const lastUpdatedDiv = document.getElementById('last-updated');
+                            const currentDate = new Date();
+                            const formattedDate = currentDate.toLocaleDateString(); // Format the date as needed
+                            lastUpdatedDiv.textContent = "Last Updated: " + formattedDate;
+
                             return; // Stop after finding the matching employee
                         }
                     }
-
-                     // Add Last Updated Date
-                     const lastUpdatedDiv = document.getElementById('last-updated');
-                     const currentDate = new Date();
-                     const formattedDate = currentDate.toLocaleDateString(); // Format the date as needed
-                     lastUpdatedDiv.textContent = "Last Updated: " + formattedDate;
 
                 });
             document.getElementById('employeeNumber').value = '';
