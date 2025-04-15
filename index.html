@@ -19,30 +19,21 @@
         #footer-info {
             margin-top: 10px;
             font-size: 14px;
-            text-align: left; /* Align text left */
+            text-align: left;
         }
     </style>
 </head>
 <body>
-    <div style="position: absolute; top: 10px; right: 10px;">
-        <img src="logo.png" alt="Nour Energy Logo" style="max-height: 100px;">
-    </div>
-    <h1>Nour Energy Data Search</h1>
-    <input 
-        type="text" 
-        id="employeeNumber" 
-        placeholder="Enter Employee Number" 
-        style="width: 300px; font-size: 20px; padding: 10px; border: 2px solid #4CAF50; border-radius: 5px;"
-    >
-    <button onclick="searchEmployee()" style="font-size: 20px; padding: 10px;">Search</button>
-
-    <table id="data-table">
-        <tbody></tbody>
-    </table>
-
-    <div id="footer-info"></div>
-
     <script>
+        function checkPassword() {
+            const password = prompt("Enter password:");
+            if (password !== "nour-pr") {
+                alert("Incorrect password. Access denied.");
+                window.location.replace("about:blank");
+            }
+        }
+        checkPassword();
+
         function searchEmployee() {
             const employeeNumber = document.getElementById('employeeNumber').value;
             fetch('data.csv')
@@ -52,12 +43,11 @@
                     const table = document.getElementById('data-table');
                     const body = table.querySelector('tbody');
 
-                    // Clear previous results
                     body.innerHTML = '';
 
                     for (let i = 1; i < rows.length; i++) {
                         const cells = rows[i].split(',');
-                        if (cells[0] === employeeNumber) { 
+                        if (cells[0] === employeeNumber) {
 
                             const orderedHeaders = [
                                 "Employee Number", "Names", "Mobile Number", "Nationality",
@@ -70,7 +60,7 @@
                                 "Tickets", "Qiwa Ending", "Status", "Id No",
                                 "Duty Hours", "Id Profession", "PP number", "Id Exp - Hijri",
                                 "Issue Place", "Id Exp - Gregorian", "Issue date", "ID - Remaining Days",
-                                "Expiry date", "Job Ended", "PP-Remaining Days", 
+                                "Expiry date", "Job Ended", "PP-Remaining Days",
                                 "IBAN", "EMAIL"
                             ];
 
@@ -149,12 +139,10 @@
                             const formattedDate = currentDate.toLocaleDateString();
                             footerDiv.innerHTML = "Last Updated: " + formattedDate + "<br>Created by: Qasim";
 
-                            //Calculate the width of the 3 and 4th columns and set the footer div width.
                             const tableCells = document.querySelectorAll('#data-table tr:first-child th');
-                            if(tableCells.length >=4){
-                                footerDiv.style.width = (tableCells[2].offsetWidth + tableCells[3].offsetWidth) + 'px';
+                            if(tableCells.length >= 4){
+                                footerDiv.style.width = tableCells[3].offsetWidth + 'px';
                             }
-
                             return;
                         }
                     }
@@ -168,5 +156,23 @@
             }
         });
     </script>
+
+    <div style="position: absolute; top: 10px; right: 10px;">
+        <img src="logo.png" alt="Nour Energy Logo" style="max-height: 100px;">
+    </div>
+    <h1>Nour Energy Data Search</h1>
+    <input 
+        type="text" 
+        id="employeeNumber" 
+        placeholder="Enter Employee Number" 
+        style="width: 300px; font-size: 20px; padding: 10px; border: 2px solid #4CAF50; border-radius: 5px;"
+    >
+    <button onclick="searchEmployee()" style="font-size: 20px; padding: 10px;">Search</button>
+
+    <table id="data-table">
+        <tbody></tbody>
+    </table>
+
+    <div id="footer-info"></div>
 </body>
 </html>
