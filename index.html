@@ -52,7 +52,6 @@
                     const table = document.getElementById('data-table');
                     const body = table.querySelector('tbody');
 
-                    // Clear previous results
                     body.innerHTML = '';
 
                     for (let i = 1; i < rows.length; i++) {
@@ -149,12 +148,10 @@
                             const formattedDate = currentDate.toLocaleDateString();
                             footerDiv.innerHTML = "Last Updated: " + formattedDate + "<br>Created by: Qasim";
 
-                            //Calculate the width of the 4th column and set the footer div width.
                             const tableCells = document.querySelectorAll('#data-table tr:first-child th');
                             if(tableCells.length >= 4){
                                 footerDiv.style.width = tableCells[3].offsetWidth + 'px';
                             }
-
                             return;
                         }
                     }
