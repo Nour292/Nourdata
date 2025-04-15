@@ -35,7 +35,7 @@
         <tbody></tbody>
     </table>
 
-    <div id="last-updated" style="text-align: right; margin-top: 10px; font-size: 14px;"></div>
+    <div id="footer-info" style="text-align: right; margin-top: 10px; font-size: 14px;"></div>
 
     <script>
         function searchEmployee() {
@@ -140,11 +140,12 @@
 
                                 body.appendChild(row);
                             }
-                            // Add Last Updated Date (Correct Placement)
-                            const lastUpdatedDiv = document.getElementById('last-updated');
+
+                            // Add Last Updated and Created By text:
+                            const footerDiv = document.getElementById('footer-info');
                             const currentDate = new Date();
-                            const formattedDate = currentDate.toLocaleDateString(); // Format the date as needed
-                            lastUpdatedDiv.textContent = "Last Updated: " + formattedDate;
+                            const formattedDate = currentDate.toLocaleDateString();
+                            footerDiv.innerHTML = "Last Updated: " + formattedDate + "<br>Created by: Qasim";
 
                             return; // Stop after finding the matching employee
                         }
