@@ -5,9 +5,11 @@
     <style>
         /* Your CSS */
         table {
-            width: 100%; /* Make table width responsive */
+            width: 80%; /* Decrease table width by 20% */
             border-collapse: collapse;
-            margin-top: 20px; /* Add space above the table */
+            margin-top: 20px;
+            margin-left: auto;  /* Center the table */
+            margin-right: auto;
         }
         th, td {
             border: 1px solid black;
@@ -52,18 +54,26 @@
             border: none;
             border-radius: 5px;
             cursor: pointer;
+            white-space: nowrap; /* Prevent button text wrapping */
         }
         #search-container {
             display: flex;
-            margin-bottom: 10px; /* Add space below search elements */
+            flex-direction: column; /* Stack elements vertically by default */
+            align-items: flex-start; /* Align items to the start (left in LTR) */
+            margin-bottom: 10px;
+            margin-left: auto;  /* keep the search box aligned with table */
+            margin-right: auto;
+            width: 80%; /* match the table width */
         }
         #employeeNumber {
-            flex: 1; /* Allow input to take up available space */
-            margin-right: 10px; /* Add space between input and button */
+            flex: 1;
+            margin-right: 0; /* Remove right margin in the column layout */
+            margin-bottom: 10px; /* Add margin below input in column layout */
             font-size: 20px;
             padding: 10px;
             border: 2px solid #4CAF50;
             border-radius: 5px;
+            width: 100%; /* Input takes full width of container */
         }
         #searchButton {
             font-size: 20px;
@@ -73,7 +83,12 @@
             border: none;
             border-radius: 5px;
             cursor: pointer;
-            white-space: nowrap; /* Prevent button text wrapping */
+            white-space: nowrap;
+            width: 100%; /* Button takes full width of container */
+        }
+        h1 {
+            margin-bottom: 0; /* Remove default bottom margin of h1 */
+            text-align: left; /* Ensure title is left-aligned */
         }
     </style>
 </head>
@@ -86,6 +101,7 @@
         </div>
     </div>
 
+    <h1 style="margin-bottom: 10px;">Nour Energy Data Search</h1>
     <div id="search-container">
         <input
             type="text"
