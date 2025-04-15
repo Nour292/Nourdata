@@ -35,6 +35,8 @@
         <tbody></tbody>
     </table>
 
+    <div id="last-updated" style="text-align: right; margin-top: 10px; font-size: 14px;"></div>
+
     <script>
         function searchEmployee() {
             const employeeNumber = document.getElementById('employeeNumber').value;
@@ -141,6 +143,13 @@
                             return; // Stop after finding the matching employee
                         }
                     }
+
+                     // Add Last Updated Date
+                     const lastUpdatedDiv = document.getElementById('last-updated');
+                     const currentDate = new Date();
+                     const formattedDate = currentDate.toLocaleDateString(); // Format the date as needed
+                     lastUpdatedDiv.textContent = "Last Updated: " + formattedDate;
+
                 });
             document.getElementById('employeeNumber').value = '';
         }
