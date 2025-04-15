@@ -19,7 +19,7 @@
         #footer-info {
             margin-top: 10px;
             font-size: 14px;
-            text-align: left; /* Align text left */
+            text-align: left;
         }
     </style>
 </head>
@@ -57,7 +57,7 @@
 
                     for (let i = 1; i < rows.length; i++) {
                         const cells = rows[i].split(',');
-                        if (cells[0] === employeeNumber) { 
+                        if (cells[0] === employeeNumber) {
 
                             const orderedHeaders = [
                                 "Employee Number", "Names", "Mobile Number", "Nationality",
@@ -70,7 +70,7 @@
                                 "Tickets", "Qiwa Ending", "Status", "Id No",
                                 "Duty Hours", "Id Profession", "PP number", "Id Exp - Hijri",
                                 "Issue Place", "Id Exp - Gregorian", "Issue date", "ID - Remaining Days",
-                                "Expiry date", "Job Ended", "PP-Remaining Days", 
+                                "Expiry date", "Job Ended", "PP-Remaining Days",
                                 "IBAN", "EMAIL"
                             ];
 
@@ -149,10 +149,10 @@
                             const formattedDate = currentDate.toLocaleDateString();
                             footerDiv.innerHTML = "Last Updated: " + formattedDate + "<br>Created by: Qasim";
 
-                            //Calculate the width of the 3 and 4th columns and set the footer div width.
+                            //Calculate the width of the 4th column and set the footer div width.
                             const tableCells = document.querySelectorAll('#data-table tr:first-child th');
-                            if(tableCells.length >=4){
-                                footerDiv.style.width = (tableCells[2].offsetWidth + tableCells[3].offsetWidth) + 'px';
+                            if(tableCells.length >= 4){
+                                footerDiv.style.width = tableCells[3].offsetWidth + 'px';
                             }
 
                             return;
