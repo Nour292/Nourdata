@@ -1,17 +1,179 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Test Enter Key</title>
+    <title>Nour Energy Data</title>
+    <style>
+        table {
+            width: 210mm;
+            max-width: 210mm;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid black;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            width: 25%;
+        }
+        #footer-info {
+            margin-top: 10px;
+            font-size: 14px;
+            text-align: left;
+        }
+    </style>
 </head>
 <body>
-    <input type="text" id="testInput" placeholder="Enter something">
-
     <script>
-        document.getElementById('testInput').addEventListener('keyup', function(event) {
+        function checkPassword() {
+            const password = prompt("Enter password:");
+            if (password !== "nour-pr") {
+                alert("Incorrect password. Access denied.");
+                window.location.replace("about:blank");
+                return;
+            }
+        }
+        checkPassword();
+
+        function searchEmployee() {
+            const employeeNumber = document.getElementById('employeeNumber').value;
+            fetch('data.csv')
+                .then(response => response.text())
+                .then(csv => {
+                    const rows = csv.split('\n');
+                    const table = document.getElementById('data-table');
+                    const body = table.querySelector('tbody');
+
+                    body.innerHTML = '';
+
+                    for (let i = 1; i < rows.length; i++) {
+                        const cells = rows[i].split(',');
+                        if (cells[0] === employeeNumber) {
+
+                            const orderedHeaders = [
+                                "Employee Number", "Names", "Mobile Number", "Nationality",
+                                "Job Title", "Location", "Actual Location", "Joining Date",
+                                "Total Service Y,M,D", "DOB", "Age Y,M,D",
+                                "Trasp Status", "Basic", "Contract", "Food",
+                                "Tickets", "Other", "Housing", "Tr-10 %",
+                                "Trasp Status", "Other Trasp", "Medical", "Housing 25%",
+                                "Contract", "Total", "Annual Leave", "Qiwa Starting",
+                                "Tickets", "Qiwa Ending", "Status", "Id No",
+                                "Duty Hours", "Id Profession", "PP number", "Id Exp - Hijri",
+                                "Issue Place", "Id Exp - Gregorian", "Issue date", "ID - Remaining Days",
+                                "Expiry date", "Job Ended", "PP-Remaining Days",
+                                "IBAN", "EMAIL"
+                            ];
+
+                            const headerMapping = {
+                                "Employee Number": 0,
+                                "Names": 1,
+                                "Mobile Number": 2,
+                                "Nationality": 3,
+                                "Job Title": 4,
+                                "Location": 5,
+                                "Actual Location": 6,
+                                "Joining Date": 7,
+                                "Service Days": 8,
+                                "Service Y,M,D": 9,
+                                "DOB": 10,
+                                "Age Y,M,D": 12,
+                                "Trasp Status": 21,
+                                "Basic": 14,
+                                "Contract": 23,
+                                "Food": 15,
+                                "Tickets": 25,
+                                "Other": 16,
+                                "Housing": 20,
+                                "Tr-10 %": 17,
+                                "Other Trasp": 18,
+                                "Medical": 22,
+                                "Housing 25%": 19,
+                                "Total": 13,
+                                "Annual Leave": 24,
+                                "Qiwa Starting": 26,
+                                "Qiwa Ending": 27,
+                                "Status": 28,
+                                "Id No": 30,
+                                "Duty Hours": 29,
+                                "Id Profession": 31,
+                                "PP number": 35,
+                                "Id Exp - Hijri": 32,
+                                "Issue Place": 36,
+                                "Id Exp - Gregorian": 33,
+                                "Issue date": 37,
+                                "ID - Remaining Days": 34,
+                                "Expiry date": 38,
+                                "Job Ended": 40,
+                                "PP-Remaining Days": 39,
+                                "Total Service Y,M,D": 42,
+                                "IBAN": 43,
+                                "EMAIL": 44
+                            };
+
+                            for (let j = 0; j < orderedHeaders.length; j += 2) {
+                                const row = document.createElement('tr');
+
+                                const headerCell1 = document.createElement('th');
+                                headerCell1.textContent = orderedHeaders[j];
+                                row.appendChild(headerCell1);
+
+                                const valueCell1 = document.createElement('td');
+                                valueCell1.textContent = cells[headerMapping[orderedHeaders[j]]] || "N/A";
+                                row.appendChild(valueCell1);
+
+                                if (j + 1 < orderedHeaders.length) {
+                                    const headerCell2 = document.createElement('th');
+                                    headerCell2.textContent = orderedHeaders[j + 1];
+                                    row.appendChild(headerCell2);
+
+                                    const valueCell2 = document.createElement('td');
+                                    valueCell2.textContent = cells[headerMapping[orderedHeaders[j + 1]]] || "N/A";
+                                    row.appendChild(valueCell2);
+                                }
+
+                                body.appendChild(row);
+                            }
+
+                            const footerDiv = document.getElementById('footer-info');
+                            const currentDate = new Date();
+                            const formattedDate = currentDate.toLocaleDateString();
+                            footerDiv.innerHTML = "Last Updated: " + formattedDate + "<br>Created by: Qasim";
+
+                            const tableCells = document.querySelectorAll('#data-table tr:first-child th');
+                            if(tableCells.length >= 4){
+                                footerDiv.style.width = tableCells[3].offsetWidth + 'px';
+                            }
+                            return;
+                        }
+                    }
+                });
+            document.getElementById('employeeNumber').value = '';
+        }
+
+        document.getElementById('employeeNumber').addEventListener('keyup', function(event) {
             if (event.key === 'Enter') {
-                alert('Enter key pressed!'); // Simple test alert
+                searchEmployee();
             }
         });
     </script>
+
+    <div style="position: absolute; top: 10px; right: 10px;">
+        <img src="logo.png" alt="Nour Energy Logo" style="max-height: 100px;">
+    </div>
+    <h1>Nour Energy Data Search</h1>
+    <input 
+        type="text" 
+        id="employeeNumber" 
+        placeholder="Enter Employee Number" 
+        style="width: 300px; font-size: 20px; padding: 10px; border: 2px solid #4CAF50; border-radius: 5px;"
+    >
+    <button onclick="searchEmployee()" style="font-size: 20px; padding: 10px;">Search</button>
+
+    <table id="data-table">
+        <tbody></tbody>
+    </table>
+
+    <div id="footer-info"></div>
 </body>
 </html>
