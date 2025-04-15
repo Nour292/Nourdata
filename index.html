@@ -10,7 +10,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent overlay */
+            background-color: rgba(0, 0, 0, 0.5);
             display: flex;
             justify-content: center;
             align-items: center;
@@ -42,6 +42,8 @@
                 return false;
             }
             passwordOverlay.style.display = 'none'; // Hide overlay
+            document.getElementById('employeeNumber').focus(); // Focus the search input
+            addSearchListeners(); // Add the search listeners
             return true;
         }
 
@@ -59,18 +61,25 @@
 
         // Initial check on page load
         passwordOverlay.style.display = 'flex'; // Show overlay
-    </script>
 
-    <script>
-        function searchEmployee() {
-            // ... your searchEmployee() function ...
+        function addSearchListeners() {
+            document.getElementById('employeeNumber').addEventListener('keyup', function(event) {
+                if (event.key === 'Enter') {
+                    searchEmployee();
+                }
+            });
         }
 
-        document.getElementById('employeeNumber').addEventListener('keyup', function(event) {
-            if (event.key === 'Enter') {
-                searchEmployee();
-            }
-        });
+        function searchEmployee() {
+            const employeeNumber = document.getElementById('employeeNumber').value;
+            fetch('data.csv')
+                .then(response => response.text())
+                .then(csv => {
+                    // ... your data processing code ...
+                });
+            document.getElementById('employeeNumber').value = '';
+        }
+
     </script>
     <div style="position: absolute; top: 10px; right: 10px;">
         <img src="logo.png" alt="Nour Energy Logo" style="max-height: 100px;">
