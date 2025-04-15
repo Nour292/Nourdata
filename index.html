@@ -30,6 +30,7 @@
             if (password !== "nour-pr") {
                 alert("Incorrect password. Access denied.");
                 window.location.replace("about:blank");
+                return; // Add this line!
             }
         }
         checkPassword();
