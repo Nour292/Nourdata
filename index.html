@@ -4,7 +4,7 @@
     <title>Nour Energy Data</title>
     <style>
         table {
-            width: 210mm; /* A4 width */
+            width: 210mm;
             max-width: 210mm;
             border-collapse: collapse;
         }
@@ -14,7 +14,12 @@
             text-align: left;
         }
         th {
-            width: 25%; /* Divide table width evenly among 4 columns */
+            width: 25%;
+        }
+        #footer-info {
+            margin-top: 10px;
+            font-size: 14px;
+            text-align: left; /* Align text left */
         }
     </style>
 </head>
@@ -35,7 +40,7 @@
         <tbody></tbody>
     </table>
 
-    <div id="footer-info" style="text-align: right; margin-top: 10px; font-size: 14px;"></div>
+    <div id="footer-info"></div>
 
     <script>
         function searchEmployee() {
@@ -52,7 +57,7 @@
 
                     for (let i = 1; i < rows.length; i++) {
                         const cells = rows[i].split(',');
-                        if (cells[0] === employeeNumber) { // Assuming employee number is in the first column
+                        if (cells[0] === employeeNumber) { 
 
                             const orderedHeaders = [
                                 "Employee Number", "Names", "Mobile Number", "Nationality",
@@ -82,7 +87,7 @@
                                 "Service Y,M,D": 9,
                                 "DOB": 10,
                                 "Age Y,M,D": 12,
-                                "Trasp Status": 21, // Corrected index
+                                "Trasp Status": 21,
                                 "Basic": 14,
                                 "Contract": 23,
                                 "Food": 15,
@@ -118,7 +123,6 @@
                             for (let j = 0; j < orderedHeaders.length; j += 2) {
                                 const row = document.createElement('tr');
 
-                                // Header 1 and Value 1
                                 const headerCell1 = document.createElement('th');
                                 headerCell1.textContent = orderedHeaders[j];
                                 row.appendChild(headerCell1);
@@ -127,7 +131,6 @@
                                 valueCell1.textContent = cells[headerMapping[orderedHeaders[j]]] || "N/A";
                                 row.appendChild(valueCell1);
 
-                                // Header 2 and Value 2 (if available)
                                 if (j + 1 < orderedHeaders.length) {
                                     const headerCell2 = document.createElement('th');
                                     headerCell2.textContent = orderedHeaders[j + 1];
@@ -141,21 +144,24 @@
                                 body.appendChild(row);
                             }
 
-                            // Add Last Updated and Created By text:
                             const footerDiv = document.getElementById('footer-info');
                             const currentDate = new Date();
                             const formattedDate = currentDate.toLocaleDateString();
                             footerDiv.innerHTML = "Last Updated: " + formattedDate + "<br>Created by: Qasim";
 
-                            return; // Stop after finding the matching employee
+                            //Calculate the width of the 3 and 4th columns and set the footer div width.
+                            const tableCells = document.querySelectorAll('#data-table tr:first-child th');
+                            if(tableCells.length >=4){
+                                footerDiv.style.width = (tableCells[2].offsetWidth + tableCells[3].offsetWidth) + 'px';
+                            }
+
+                            return;
                         }
                     }
-
                 });
             document.getElementById('employeeNumber').value = '';
         }
 
-        // Trigger search on Enter key press
         document.getElementById('employeeNumber').addEventListener('keyup', function(event) {
             if (event.key === 'Enter') {
                 searchEmployee();
