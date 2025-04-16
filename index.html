@@ -256,12 +256,13 @@
                                     row.appendChild(headerCell2);
 
                                     const valueCell2 = document.createElement('td');
-                                     const cellValue = cells[headerMapping[orderedHeaders[j + 1]]] || "N/A";
-                                    if(orderedHeaders[j+1] === "Job Ended" && cellValue && cellValue!=="N/A" ){
-                                         valueCell2.innerHTML = `<span style="color:red; font-weight:bold;">${cellValue}</span>`;
-                                    }
-                                    else{
-                                         valueCell2.textContent = cellValue;
+                                    const cellValue = cells[headerMapping[orderedHeaders[j + 1]]] || "N/A";
+                                    const isJobEnded = orderedHeaders[j + 1] === "Job Ended";
+
+                                    if (isJobEnded && cellValue !== "N/A" && cellValue) {
+                                        valueCell2.innerHTML = `<span style="color:red; font-weight:bold;">${cellValue}</span>`;
+                                    } else {
+                                        valueCell2.textContent = cellValue;
                                     }
                                     row.appendChild(valueCell2);
                                 }
