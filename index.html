@@ -110,10 +110,12 @@
             cursor: pointer;
             white-space: nowrap;
             margin-top: 20px;
-            text-align: right; /* Align button to the right */
-            margin-left: auto; /* Push button to the right edge */
+            text-align: center; /* Center the button */
+            margin-left: auto;
             margin-right: auto;
             width: 40%;
+            font-family: Calibri, sans-serif;
+            display: block; /* Ensure block display for centering */
         }
     </style>
 </head>
@@ -135,7 +137,7 @@
         >
         <button id="searchButton" onclick="searchEmployee()">Search</button>
     </div>
-    <div id="printButton" onclick="window.print()">Print</div>
+    <div id="printButton" onclick="window.print()">Print Me</div>
 
     <table id="data-table">
         <tbody></tbody>
