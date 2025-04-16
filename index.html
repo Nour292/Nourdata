@@ -110,35 +110,12 @@
             cursor: pointer;
             white-space: nowrap;
             margin-top: 20px;
-            text-align: center;
+            text-align: center; /* Center the button */
             margin-left: auto;
             margin-right: auto;
             width: 40%;
             font-family: Calibri, sans-serif;
-            display: block;
-        }
-        #savePdfButton {
-            font-size: 20px;
-            padding: 10px;
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            white-space: nowrap;
-            margin-top: 20px;
-            text-align: center;
-            margin-right: 10px;
-            width: 40%;
-            font-family: Calibri, sans-serif;
-            display: block;
-        }
-        #button-container {
-            display: flex;
-            justify-content: center;
-            width: 80%;
-            margin-left: auto;
-            margin-right: auto;
+            display: block; /* Ensure block display for centering */
         }
     </style>
 </head>
@@ -160,10 +137,7 @@
         >
         <button id="searchButton" onclick="searchEmployee()">Search</button>
     </div>
-    <div id="button-container">
-        <button id="savePdfButton" onclick="saveAsPdf()">Save as PDF</button>
-        <button id="printButton" onclick="window.print()">Print Me</button>
-    </div>
+    <div id="printButton" onclick="window.print()">Print Me</div>
 
     <table id="data-table">
         <tbody></tbody>
@@ -332,10 +306,6 @@
                     alert("Failed to fetch or process data. Please check the data.csv file and try again.");
                 });
             document.getElementById('employeeNumber').value = '';
-        }
-
-        function saveAsPdf() {
-            window.print();
         }
     </script>
 </body>
