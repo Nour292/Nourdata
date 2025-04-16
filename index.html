@@ -97,6 +97,20 @@
             width: 80%;
             margin-top: 30px; /* Increased margin-top to add space */
         }
+        #printButton {
+            font-size: 20px;
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            white-space: nowrap;
+            margin-left: auto; /* Push button to the right */
+            margin-right: auto;
+            width: 80%;
+            text-align: right;
+        }
     </style>
 </head>
 <body>
@@ -117,6 +131,7 @@
         >
         <button id="searchButton" onclick="searchEmployee()">Search</button>
     </div>
+    <div id="printButton" onclick="window.print()">Print</div>
 
     <table id="data-table">
         <tbody></tbody>
