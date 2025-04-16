@@ -259,9 +259,8 @@
                                     const valueCell2 = document.createElement('td');
                                     let cellValue = cells[headerMapping[orderedHeaders[j + 1]]] || "N/A";
                                     const isJobEnded = orderedHeaders[j + 1] === "Job Ended";
-                                     // Debugging: Check the values
-                                    console.log("isJobEnded:", isJobEnded, "cellValue:", cellValue, "cells[headerMapping[orderedHeaders[j + 1]]]:", cells[headerMapping[orderedHeaders[j + 1]]]);
-                                    if (isJobEnded && cellValue !== "N/A" && cells[headerMapping[orderedHeaders[j + 1]]] !== undefined && cells[headerMapping[orderedHeaders[j + 1]]] !== null && cells[headerMapping[orderedHeaders[j + 1]]] !== "") {
+                                    // Apply style if cellValue is "N/A"
+                                    if (isJobEnded && cellValue === "N/A") {
                                         valueCell2.innerHTML = `<span style="color:red; font-weight:bold;">${cellValue}</span>`;
                                     } else {
                                         valueCell2.textContent = cellValue;
