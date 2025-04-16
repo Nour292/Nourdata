@@ -11,7 +11,8 @@
             margin-left: auto;
             margin-right: auto;
         }
-        th, td {
+        th,
+        td {
             border: 1px solid black;
             padding: 8px;
             text-align: left;
@@ -125,7 +126,7 @@
     </div>
 
     <script>
-       const passwordOverlay = document.getElementById('password-overlay');
+        const passwordOverlay = document.getElementById('password-overlay');
         const passwordInput = document.getElementById('passwordInput');
         const passwordButton = document.getElementById('passwordButton');
 
@@ -256,10 +257,11 @@
                                     row.appendChild(headerCell2);
 
                                     const valueCell2 = document.createElement('td');
-                                    const cellValue = cells[headerMapping[orderedHeaders[j + 1]]] || "N/A";
+                                    let cellValue = cells[headerMapping[orderedHeaders[j + 1]]] || "N/A";
                                     const isJobEnded = orderedHeaders[j + 1] === "Job Ended";
-
-                                    if (isJobEnded && cellValue !== "N/A" && cellValue) {
+                                     // Debugging: Check the values
+                                    console.log("isJobEnded:", isJobEnded, "cellValue:", cellValue, "cells[headerMapping[orderedHeaders[j + 1]]]:", cells[headerMapping[orderedHeaders[j + 1]]]);
+                                    if (isJobEnded && cellValue !== "N/A" && cells[headerMapping[orderedHeaders[j + 1]]] !== undefined && cells[headerMapping[orderedHeaders[j + 1]]] !== null && cells[headerMapping[orderedHeaders[j + 1]]] !== "") {
                                         valueCell2.innerHTML = `<span style="color:red; font-weight:bold;">${cellValue}</span>`;
                                     } else {
                                         valueCell2.textContent = cellValue;
