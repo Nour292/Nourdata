@@ -92,13 +92,11 @@
         }
         h1 {
             margin-bottom: 10px;
-            text-align: left;
+            text-align: center;
             margin-left: auto;
             margin-right: auto;
             width: 80%;
             margin-top: 30px;
-            font-family: Calibri, sans-serif;
-            color: blue;
         }
         #printButton {
             font-size: 20px;
@@ -110,12 +108,20 @@
             cursor: pointer;
             white-space: nowrap;
             margin-top: 20px;
-            text-align: center; /* Center the button */
+            text-align: right;
             margin-left: auto;
             margin-right: auto;
-            width: 40%;
-            font-family: Calibri, sans-serif;
-            display: block; /* Ensure block display for centering */
+            width: 80%;
+        }
+
+        #logo {
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+            width: 80%; /* Match table width */
+            max-width: 300px; /* Maximum width */
+            height: auto; /* Maintain aspect ratio */
+            margin-bottom: 10px; /* Add some space below the logo */
         }
     </style>
 </head>
@@ -128,6 +134,7 @@
         </div>
     </div>
 
+    <img id="logo" src="D:/PYTHON/nour_energy_logo.png" alt="Nour Energy Logo">
     <h1 >Nour Energy Data</h1>
     <div id="search-container">
         <input
@@ -137,7 +144,7 @@
         >
         <button id="searchButton" onclick="searchEmployee()">Search</button>
     </div>
-    <div id="printButton" onclick="window.print()">Print Me</div>
+    <div id="printButton" onclick="window.print()">Print</div>
 
     <table id="data-table">
         <tbody></tbody>
