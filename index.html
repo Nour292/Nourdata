@@ -96,7 +96,9 @@
             margin-left: auto;
             margin-right: auto;
             width: 80%;
-            margin-top: 30px; /* Increased margin-top to add space */
+            margin-top: 30px;
+            font-family: Calibri, sans-serif;
+            color: blue;
         }
         #printButton {
             font-size: 20px;
@@ -108,20 +110,12 @@
             cursor: pointer;
             white-space: nowrap;
             margin-top: 20px;
-            text-align: right; /* Align button to the right */
-            margin-left: auto; /* Push button to the right edge */
-            margin-right: auto;
-            width: 80%;
-        }
-
-        #logo {
-            display: block;
+            text-align: center; /* Center the button */
             margin-left: auto;
             margin-right: auto;
-            width: 80%;
-            max-width: 300px;
-            height: auto;
-            margin-bottom: 10px;
+            width: 40%;
+            font-family: Calibri, sans-serif;
+            display: block; /* Ensure block display for centering */
         }
     </style>
 </head>
@@ -134,7 +128,6 @@
         </div>
     </div>
 
-    <img id="logo" src="https://nour292.github.io/Nourdata/nour_energy_logo.png" alt="Nour Energy Logo">
     <h1 >Nour Energy Data</h1>
     <div id="search-container">
         <input
@@ -144,7 +137,7 @@
         >
         <button id="searchButton" onclick="searchEmployee()">Search</button>
     </div>
-    <div id="printButton" onclick="window.print()">Print</div>
+    <div id="printButton" onclick="window.print()">Print Me</div>
 
     <table id="data-table">
         <tbody></tbody>
