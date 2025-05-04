@@ -1,1 +1,570 @@
-"<!DOCTYPE html><html><head><title>Nourdata</title></head><body><h1>Welcome to Nourdata</h1></body></html>" 
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Nour Energy Data</title>
+    <link rel="icon" href="nour_energy_logo.png" type="image/png">
+    <style>
+        /* General styles */
+        body {
+            font-family: Calibri, sans-serif;
+        }
+        table {
+            width: 80%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        th,
+        td {
+            border: 1px solid black;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            width: 25%; /* Adjust column width */
+        }
+        #footer-info {
+            margin-top: 30px;
+            font-size: 14px;
+            text-align: left;
+            margin-left: auto;
+            margin-right: auto;
+            width: 80%;
+        }
+        #title-logo-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 80%;
+            margin-left: auto;
+            margin-right: auto;
+            margin-bottom: 20px;
+        }
+        #left-container {
+            width: 75%; /* Increased width to cover 3 columns of the table */
+        }
+        #title {
+            font-size: 24px;
+            color: blue;
+            margin-bottom: 20px;
+        }
+        #search-container {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        #employeeNumber {
+            width: 102%; /* Extended to the left by 2% */
+            margin-bottom: 10px;
+            font-family: "Arial Black", sans-serif; /* Arial Black font */
+            font-size: 22px; /* Text size 22 */
+            padding: 10px;
+            border-radius: 5px;
+        }
+        #searchButton {
+            width: 105%; /* Increased width by 5% */
+            margin-bottom: 10px;
+            font-size: 22px; /* Calibri size 22 */
+            font-weight: bold; /* Bold text */
+            padding: 10px;
+            border-radius: 5px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        #searchButton:hover {
+            background-color: #45a049; /* Change to a slightly darker green on hover */
+        }
+        #button-container {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px; /* Add space between buttons */
+            width: 105%; /* Maintain alignment with other buttons */
+        }
+        #printButton {
+            width: 52.5%; /* Decreased by 50% from actual width (105%) */
+            margin-bottom: 10px;
+            font-size: 22px; /* Calibri size 22 */
+            font-weight: bold; /* Bold text */
+            padding: 10px;
+            border-radius: 5px;
+            background-color: yellow; /* Yellow color */
+            color: black;
+            border: none;
+            cursor: pointer;
+        }
+        #printButton:hover {
+            background-color: #f5e642; /* Slightly darker yellow on hover */
+        }
+        #newButton {
+            width: 52.5%; /* Same width as printButton */
+            margin-bottom: 10px;
+            font-size: 22px; /* Calibri size 22 */
+            font-weight: bold; /* Bold text */
+            padding: 10px;
+            border-radius: 5px;
+            background-color: black; /* Dark black color */
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        #newButton:hover {
+            background-color: #333333; /* Slightly lighter black on hover */
+        }
+        #logo-container {
+            width: 25%; /* Adjusted width for the remaining 1 column */
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+        }
+        #logo {
+            width: 63.75%; /* Decreased size by 15% from the current width of 75% */
+            height: auto;
+        }
+        .highlight {
+            background-color: red;
+            font-weight: bold;
+            color: black;
+        }
+        #password-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        #password-prompt {
+            background-color: white;
+            padding: 20px;
+            border-radius: 5px;
+            text-align: center;
+        }
+        #password-prompt input {
+            padding: 10px;
+            margin: 10px;
+            font-size: 16px;
+        }
+        #password-prompt button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+      /* Print-specific styles */
+     @media print {
+    #search-container, #printButton {
+        display: none; /* Hide the search box, search button, and print button during printing */
+    }
+
+    .center-title {
+        display: none; /* Hide the text "Nour Energy Data" in the middle of the page during printing */
+    }
+}
+    </style>
+</head>
+<body>
+    <div class="print-title" style="display: none;">Nour Energy Data</div>
+    <div id="password-overlay">
+        <div id="password-prompt">
+            <label for="passwordInput">Enter Password:</label><br>
+            <input type="password" id="passwordInput" placeholder="Password"><br>
+            <button id="passwordButton">Submit</button>
+        </div>
+    </div>
+
+    <div id="title-logo-container">
+        <div id="left-container">
+            <h1 id="title">Nour Energy Data</h1>
+            <div id="search-container">
+                <input
+                    type="text"
+                    id="employeeNumber"
+                    placeholder="Enter Employee Number or ID No"
+                >
+                <button id="searchButton" onclick="searchEmployee()">Search</button>
+                <div id="button-container">
+                    <button id="newButton" onclick="showHistoricalData()">Historical Data</button>
+                    <button id="printButton" onclick="window.print()">Print me</button>
+                </div>
+            </div>
+        </div>
+        <div id="logo-container">
+            <img id="logo" src="nour_energy_logo.png" alt="Nour Energy Logo">
+        </div>
+    </div>
+
+    <table id="data-table">
+        <tbody></tbody>
+    </table>
+
+    <div id="footer-info">
+    </div>
+
+    <script>
+        const passwordOverlay = document.getElementById('password-overlay');
+        const passwordInput = document.getElementById('passwordInput');
+        const passwordButton = document.getElementById('passwordButton');
+
+        function checkPassword(password) {
+            if (password !== "nour-pr") {
+                alert("Incorrect password. Access denied.");
+                return false;
+            }
+            passwordOverlay.style.display = 'none';
+            document.getElementById('employeeNumber').focus();
+            addSearchListeners();
+            return true;
+        }
+
+        passwordButton.addEventListener('click', function () {
+            const password = passwordInput.value;
+            checkPassword(password);
+        });
+
+        passwordInput.addEventListener('keyup', function (event) {
+            if (event.key === 'Enter') {
+                checkPassword(passwordInput.value);
+            }
+        });
+
+        passwordOverlay.style.display = 'flex';
+               
+        function addSearchListeners() {
+    document.getElementById('employeeNumber').addEventListener('keyup', function (event) {
+        if (event.key === 'Enter') {
+            searchEmployee();
+        }
+    });
+}
+
+function searchEmployee() {
+    const employeeNumber = document.getElementById('employeeNumber').value.trim();
+    if (employeeNumber === "") {
+        alert("Please enter a valid Employee Number or ID No.");
+        return;
+    }
+
+    // Clear all previous data
+    clearAllData();
+
+    fetch('data.csv')
+        .then(response => response.text())
+        .then(csv => {
+            const rows = csv.split('\n');
+            const table = document.getElementById('data-table');
+            const body = table.querySelector('tbody');
+
+            let found = false;
+
+            for (let i = 1; i < rows.length; i++) {
+                const cells = rows[i].split(',');
+                if (cells[0] === employeeNumber || cells[30] === employeeNumber) {
+                    found = true;
+                    const orderedHeaders = [
+                        "Employee Number", "Names", "Mobile Number", "Nationality",
+                        "Job Title", "Location", "Actual Location", "Joining Date",
+                        "DOB", "Total Service Y,M,D", "Age Y,M,D",
+                        "Trasp Status", "Basic", "Contract", "Food",
+                        "Tickets", "Other", "Housing", "Tr-10 %",
+                        "Trasp Status", "Other Trasp", "Medical", "Housing 25%",
+                        "Contract", "Total", "Annual Leave", "Qiwa Starting",
+                        "Tickets", "Qiwa Ending", "Status", "Id No",
+                        "Duty Hours", "Id Profession", "PP number", "Id Exp - Hijri",
+                        "Issue Place", "Id Exp - Gregorian", "Issue date", "ID - Remaining Days",
+                        "Expiry date", "Job Ended", "PP-Remaining Days",
+                        "IBAN", "EMAIL"
+                    ];
+
+                    const headerMapping = {
+                        "Employee Number": 0,
+                        "Names": 1,
+                        "Mobile Number": 2,
+                        "Nationality": 3,
+                        "Job Title": 4,
+                        "Location": 5,
+                        "Actual Location": 6,
+                        "Joining Date": 7,
+                        "Service Days": 8,
+                        "Service Y,M,D": 9,
+                        "DOB": 10,
+                        "Age Y,M,D": 12,
+                        "Trasp Status": 21,
+                        "Basic": 14,
+                        "Contract": 23,
+                        "Food": 15,
+                        "Tickets": 25,
+                        "Other": 16,
+                        "Housing": 20,
+                        "Tr-10 %": 17,
+                        "Other Trasp": 18,
+                        "Medical": 22,
+                        "Housing 25%": 19,
+                        "Total": 13,
+                        "Annual Leave": 24,
+                        "Qiwa Starting": 26,
+                        "Qiwa Ending": 27,
+                        "Status": 28,
+                        "Id No": 30,
+                        "Duty Hours": 29,
+                        "Id Profession": 31,
+                        "PP number": 35,
+                        "Id Exp - Hijri": 32,
+                        "Issue Place": 36,
+                        "Id Exp - Gregorian": 33,
+                        "Issue date": 37,
+                        "ID - Remaining Days": 34,
+                        "Expiry date": 38,
+                        "Job Ended": 40,
+                        "PP-Remaining Days": 39,
+                        "Total Service Y,M,D": 42,
+                        "IBAN": 43,
+                        "EMAIL": 44
+                    };
+
+                    for (let j = 0; j < orderedHeaders.length; j += 2) {
+                        const row = document.createElement('tr');
+
+                        const headerCell1 = document.createElement('th');
+                        headerCell1.textContent = orderedHeaders[j];
+                        row.appendChild(headerCell1);
+
+                        const valueCell1 = document.createElement('td');
+                        const value1 = cells[headerMapping[orderedHeaders[j]]] || ""; // Keep empty if value is "N/A"
+                        valueCell1.textContent = value1;
+
+                        // Highlight "Job Ended" if it's not empty
+                        if (orderedHeaders[j] === "Job Ended" && value1 !== "") {
+                            valueCell1.classList.add('highlight');
+                        }
+
+                        row.appendChild(valueCell1);
+
+                        if (j + 1 < orderedHeaders.length) {
+                            const headerCell2 = document.createElement('th');
+                            headerCell2.textContent = orderedHeaders[j + 1];
+                            row.appendChild(headerCell2);
+
+                            const valueCell2 = document.createElement('td');
+                            const value2 = cells[headerMapping[orderedHeaders[j + 1]]] || ""; // Keep empty if value is "N/A"
+                            valueCell2.textContent = value2;
+
+                            // Highlight "Job Ended" if it's not empty
+                            if (orderedHeaders[j + 1] === "Job Ended" && value2 !== "") {
+                                valueCell2.classList.add('highlight');
+                            }
+
+                            row.appendChild(valueCell2);
+                        }
+
+                        body.appendChild(row);
+                    }
+
+                    displayFooter();
+                    return;
+                }
+            }
+            if (!found) {
+                alert("Employee Number or ID No not found.");
+            }
+        })
+        .catch(error => {
+            console.error("Error fetching or processing data:", error);
+            alert("Failed to fetch or process data. Please check the data.csv file and try again.");
+        });
+    document.getElementById('employeeNumber').value = '';
+}
+
+        function showHistoricalData() {
+    const employeeNumber = document.getElementById('employeeNumber').value.trim();
+    if (employeeNumber === "") {
+        alert("Please enter a valid Employee Number or ID No.");
+        return;
+    }
+
+    // Clear all previous data
+    clearAllData();
+
+    fetch('data.csv')
+        .then(response => response.text())
+        .then(csv => {
+            const rows = csv.split('\n');
+            let found = false;
+            const table = document.getElementById('data-table');
+            const body = table.querySelector('tbody');
+
+            for (let i = 1; i < rows.length; i++) {
+                const cells = rows[i].split(',');
+                if (cells[0] === employeeNumber) {
+                    found = true;
+                    const orderedHeaders = [
+                        "Employee Number", "Names", "Job Title",
+                        "Joining Date", "DOB", "Age Y,M,D"
+                    ];
+
+                    const headerMapping = {
+                        "Employee Number": 0,
+                        "Names": 1,
+                        "Job Title": 4,
+                        "Joining Date": 7,
+                        "DOB": 10,
+                        "Age Y,M,D": 12
+                    };
+
+                    for (let j = 0; j < orderedHeaders.length; j += 2) {
+                        const row = document.createElement('tr');
+
+                        const headerCell1 = document.createElement('th');
+                        headerCell1.textContent = orderedHeaders[j];
+                        row.appendChild(headerCell1);
+
+                        const valueCell1 = document.createElement('td');
+                        const value1 = cells[headerMapping[orderedHeaders[j]]] || ""; // Keep empty if value is "N/A"
+                        valueCell1.textContent = value1;
+                        row.appendChild(valueCell1);
+
+                        if (j + 1 < orderedHeaders.length) {
+                            const headerCell2 = document.createElement('th');
+                            headerCell2.textContent = orderedHeaders[j + 1];
+                            row.appendChild(headerCell2);
+
+                            const valueCell2 = document.createElement('td');
+                            const value2 = cells[headerMapping[orderedHeaders[j + 1]]] || ""; // Keep empty if value is "N/A"
+                            valueCell2.textContent = value2;
+                            row.appendChild(valueCell2);
+                        }
+
+                        body.appendChild(row);
+                    }
+
+                    displayFooter();
+                }
+            }
+            if (!found) {
+                alert("Employee Number not found.");
+            }
+        })
+        .catch(error => {
+            console.error("Error fetching or processing data:", error);
+            alert("Failed to fetch or process data. Please check the data.csv file and try again.");
+        });
+
+    fetch('data1.csv')
+    .then(response => response.text())
+    .then(csv => {
+        const rows = csv.split('\n');
+        const headers = ["Date", "Event Description", "Category"];
+        const columnWidths = [11, 72.35, 16.65]; // Updated column widths in percentage
+        const secondTable = document.createElement('table');
+        secondTable.style.marginTop = "20px";
+        secondTable.style.width = "80%";
+        secondTable.style.borderCollapse = "collapse";
+
+        const headerRow = document.createElement('tr');
+        headers.forEach((header, index) => {
+        const th = document.createElement('th');
+        th.textContent = header;
+        th.style.border = "1px solid black";
+        th.style.textAlign = "center"; // Align text to the center
+        th.style.paddingLeft = "0px"; // Remove left padding since text is centered
+        th.style.width = `${columnWidths[index]}%`; // Assign updated width
+        th.style.fontSize = "18px"; // Set text size to 18px 
+        th.style.color = "blue"; // Set text color to blue
+        headerRow.appendChild(th);
+    });
+        secondTable.appendChild(headerRow);
+
+        let found = false;
+        for (let i = 1; i < rows.length; i++) {
+            const cells = rows[i].split(',');
+            if (cells[0] === employeeNumber) {
+                found = true;
+                const row = document.createElement('tr');
+                const columns = [1, 2, 3];
+                columns.forEach(columnIndex => {
+                    const td = document.createElement('td');
+                    let value = cells[columnIndex]?.trim() || ""; // Keep empty if value is "N/A"
+                    
+                    // Check for text inside asterisks '*' and style it
+                    const styledText = value.replace(/\*([^*]+)\*/g, (match, p1) => {
+                        return `<span style="font-size: 16px; font-weight: bold; color: red;">${p1}</span>`;
+                    });
+
+                    td.innerHTML = styledText; // Use innerHTML to apply styled text
+                    td.style.border = "1px solid black";
+                    td.style.textAlign = "left"; // Align text to the left
+                    td.style.paddingLeft = "10px"; // Increase indent by adding left padding
+                    row.appendChild(td);
+                });
+                secondTable.appendChild(row);
+            }
+        }
+
+        if (!found) {
+            alert("No Historical Data found for the given Employee Number.");
+            return;
+        }
+
+        let container = document.getElementById('second-table-container');
+        if (!container) {
+            container = document.createElement('div');
+            container.id = 'second-table-container';
+            document.getElementById('data-table').parentElement.appendChild(container);
+        }
+
+        container.appendChild(secondTable);
+        displayFooter();
+    })
+    .catch(error => {
+        console.error("Error fetching or processing data1.csv:", error);
+        alert("Failed to fetch or process data1.csv. Please check the file and try again.");
+    });
+}
+
+function clearAllData() {
+    const table = document.getElementById('data-table');
+    const body = table.querySelector('tbody');
+    if (body) {
+        body.innerHTML = '';
+    }
+
+    const secondTableContainer = document.getElementById('second-table-container');
+    if (secondTableContainer) {
+        secondTableContainer.innerHTML = '';
+    }
+
+    const footerDiv = document.getElementById('footer-info');
+    if (footerDiv) {
+        footerDiv.innerHTML = '';
+    }
+}
+
+function displayFooter() {
+    const footerDiv = document.getElementById('footer-info') || document.createElement('div');
+    footerDiv.id = 'footer-info';
+
+    const currentDate = new Date();
+    const formattedDate = `${currentDate.toLocaleDateString()} ${currentDate.toLocaleTimeString()}`;
+    footerDiv.innerHTML = `Last update: ${formattedDate}<br>Created by: Qasim`;
+
+    // Locate the second table or fallback to the first table's parent container
+    const secondTableContainer = document.getElementById('second-table-container');
+    const parentContainer = secondTableContainer || document.getElementById('data-table').parentElement;
+
+    // Append the footer below the second table or the first table
+    parentContainer.appendChild(footerDiv);
+}
+    </script>
+</body>
+</html>
