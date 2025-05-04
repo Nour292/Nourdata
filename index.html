@@ -442,14 +442,8 @@ function searchEmployee() {
                         row.appendChild(headerCell1);
 
                         const valueCell1 = document.createElement('td');
-                        let value1 = cells[headerMapping[orderedHeaders[j]]] || ""; // Keep empty if value is "N/A"
-
-                        // Check for text inside asterisks '*' and style it
-                        value1 = value1.replace(/\*([^*]+)\*/g, (match, p1) => {
-                            return `<span style="font-size: 16px; font-weight: bold; color: red;">${p1}</span>`;
-                        });
-
-                        valueCell1.innerHTML = value1; // Use innerHTML to render styled content
+                        const value1 = cells[headerMapping[orderedHeaders[j]]] || ""; // Keep empty if value is "N/A"
+                        valueCell1.textContent = value1;
                         row.appendChild(valueCell1);
 
                         if (j + 1 < orderedHeaders.length) {
@@ -458,14 +452,8 @@ function searchEmployee() {
                             row.appendChild(headerCell2);
 
                             const valueCell2 = document.createElement('td');
-                            let value2 = cells[headerMapping[orderedHeaders[j + 1]]] || ""; // Keep empty if value is "N/A"
-
-                            // Check for text inside asterisks '*' and style it
-                            value2 = value2.replace(/\*([^*]+)\*/g, (match, p1) => {
-                                return `<span style="font-size: 16px; font-weight: bold; color: red;">${p1}</span>`;
-                            });
-
-                            valueCell2.innerHTML = value2; // Use innerHTML to render styled content
+                            const value2 = cells[headerMapping[orderedHeaders[j + 1]]] || ""; // Keep empty if value is "N/A"
+                            valueCell2.textContent = value2;
                             row.appendChild(valueCell2);
                         }
 
@@ -483,7 +471,7 @@ function searchEmployee() {
             console.error("Error fetching or processing data:", error);
             alert("Failed to fetch or process data. Please check the data.csv file and try again.");
         });
-}
+
         
     fetch('data1.csv')
     .then(response => response.text())
