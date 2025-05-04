@@ -341,8 +341,14 @@ function searchEmployee() {
                         row.appendChild(headerCell1);
 
                         const valueCell1 = document.createElement('td');
-                        const value1 = cells[headerMapping[orderedHeaders[j]]] || ""; // Keep empty if value is "N/A"
-                        valueCell1.textContent = value1;
+                        let value1 = cells[headerMapping[orderedHeaders[j]]] || ""; // Keep empty if value is "N/A"
+
+                        // Check for text inside asterisks '*' and style it
+                        value1 = value1.replace(/\*([^*]+)\*/g, (match, p1) => {
+                            return `<span style="font-size: 16px; font-weight: bold; color: red;">${p1}</span>`;
+                        });
+
+                        valueCell1.innerHTML = value1; // Use innerHTML to render styled content
 
                         // Highlight "Job Ended" if it's not empty
                         if (orderedHeaders[j] === "Job Ended" && value1 !== "") {
@@ -357,8 +363,14 @@ function searchEmployee() {
                             row.appendChild(headerCell2);
 
                             const valueCell2 = document.createElement('td');
-                            const value2 = cells[headerMapping[orderedHeaders[j + 1]]] || ""; // Keep empty if value is "N/A"
-                            valueCell2.textContent = value2;
+                            let value2 = cells[headerMapping[orderedHeaders[j + 1]]] || ""; // Keep empty if value is "N/A"
+
+                            // Check for text inside asterisks '*' and style it
+                            value2 = value2.replace(/\*([^*]+)\*/g, (match, p1) => {
+                                return `<span style="font-size: 16px; font-weight: bold; color: red;">${p1}</span>`;
+                            });
+
+                            valueCell2.innerHTML = value2; // Use innerHTML to render styled content
 
                             // Highlight "Job Ended" if it's not empty
                             if (orderedHeaders[j + 1] === "Job Ended" && value2 !== "") {
@@ -385,7 +397,7 @@ function searchEmployee() {
         });
     document.getElementById('employeeNumber').value = '';
 }
-
+        
         function showHistoricalData() {
     const employeeNumber = document.getElementById('employeeNumber').value.trim();
     if (employeeNumber === "") {
