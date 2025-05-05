@@ -296,7 +296,7 @@
                         "Joining Date": 7,
                         "Service Y-M-D Continuing": 9,
                         "Date of Birth": 10,
-                        "Age Y,M,D": 12,
+                        "Age Y-M-D": 12,
                         "Trasp Status": 21,
                         "Basic": 14,
                         "Contract": 23,
@@ -434,7 +434,7 @@
                     found = true;
                     const orderedHeaders = [
                         "Employee Number", "Names", "Job Title",
-                        "Joining Date", "DOB", "Age Y,M,D"
+                        "Joining Date", "DOB", "Age Y-M-D"
                     ];
 
                     const headerMapping = {
@@ -443,7 +443,7 @@
                         "Job Title": 4,
                         "Joining Date": 7,
                         "DOB": 10,
-                        "Age Y,M,D": 12
+                        "Age Y-M-D": 12
                     };
 
                     for (let j = 0; j < orderedHeaders.length; j += 2) {
