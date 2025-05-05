@@ -330,23 +330,7 @@
                         row.appendChild(headerCell1);
 
                         const valueCell1 = document.createElement('td');
-                        let value1;
-
-                        // Logic for "Service Y-M-D Continuing" and "Service Y-M-D Ended"
-                        if (orderedHeaders[j] === "Service Y-M-D Ended") {
-                            if (
-                                !cells[headerMapping["Service Y-M-D Ended"]] ||
-                                cells[headerMapping["Service Y-M-D Ended"]].trim() === ""
-                            ) {
-                                // If "Service Y-M-D Ended" is empty, use "Service Y-M-D Continuing"
-                                value1 = cells[headerMapping["Service Y-M-D Continuing"]] || "";
-                            } else {
-                                // Otherwise, use "Service Y-M-D Ended"
-                                value1 = cells[headerMapping["Service Y-M-D Ended"]];
-                            }
-                        } else {
-                            value1 = cells[headerMapping[orderedHeaders[j]]] || ""; // Regular mapping for other fields
-                        }
+                        let value1 = cells[headerMapping[orderedHeaders[j]]] || ""; // Keep empty if value is "N/A"
 
                         // Check for text inside asterisks '*' and style it
                         value1 = value1.replace(/\*([^*]+)\*/g, (match, p1) => {
