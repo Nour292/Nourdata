@@ -240,6 +240,13 @@
         });
 
         passwordOverlay.style.display = 'flex';
+
+        function addSearchListeners() {
+    document.getElementById('employeeNumber').addEventListener('keyup', function (event) {
+        if (event.key === 'Enter') {
+            searchEmployee();
+        }
+    });
                
      function searchEmployee() {
     const employeeNumber = document.getElementById('employeeNumber').value.trim();
