@@ -274,17 +274,16 @@ function searchEmployee() {
                     found = true;
                     const orderedHeaders = [
                         "Employee Number", "Names", "Mobile Number", "Nationality",
-                        "Job Title", "Location", "Actual Location", "Joining Date",
-                        "DOB", "Total Service Y,M,D", "Age Y,M,D",
+                        "Job Title", "Location", "Joining Date", "Date of Birth",
+                        "Service Y-M-D Continuing", "Age Y-M-D", "Service Y-M-D Ended"
                         "Trasp Status", "Basic", "Contract", "Food",
                         "Tickets", "Other", "Housing", "Tr-10 %",
                         "Trasp Status", "Other Trasp", "Medical", "Housing 25%",
                         "Contract", "Total", "Annual Leave", "Qiwa Starting",
                         "Tickets", "Qiwa Ending", "Status", "Id No",
-                        "Duty Hours", "Id Profession", "PP number", "Id Exp - Hijri",
-                        "Issue Place", "Id Exp - Gregorian", "Issue date", "ID - Remaining Days",
-                        "Expiry date", "Job Ended", "PP-Remaining Days",
-                        "IBAN", "EMAIL"
+                        "Id Profession", "PP number", "Id Exp - Hijri", "Issue Place",
+                        "Id Exp - Gregorian", "Issue date", "ID - Remaining Days", "Expiry date",
+                        "Job Ended", "PP-Remaining Days", "IBAN", "EMAIL"
                     ];
 
                     const headerMapping = {
@@ -296,9 +295,8 @@ function searchEmployee() {
                         "Location": 5,
                         "Actual Location": 6,
                         "Joining Date": 7,
-                        "Service Days": 8,
-                        "Service Y,M,D": 9,
-                        "DOB": 10,
+                        "Service Y-M-D Continuing": 9,
+                        "Date of Birth": 10,
                         "Age Y,M,D": 12,
                         "Trasp Status": 21,
                         "Basic": 14,
@@ -328,7 +326,7 @@ function searchEmployee() {
                         "Expiry date": 38,
                         "Job Ended": 40,
                         "PP-Remaining Days": 39,
-                        "Total Service Y,M,D": 42,
+                        "Service Y-M-D Ended": 42,
                         "IBAN": 43,
                         "EMAIL": 44
                     };
