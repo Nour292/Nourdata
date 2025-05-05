@@ -241,7 +241,7 @@
 
         passwordOverlay.style.display = 'flex';
                
-        function searchEmployee() {
+     function searchEmployee() {
     const employeeNumber = document.getElementById('employeeNumber').value.trim();
     if (employeeNumber === "") {
         alert("Please enter a valid Employee Number or ID No.");
@@ -344,6 +344,14 @@
                             valueCell1.classList.add('highlight');
                         }
 
+                        // Logic to hide "Service Y-M-D Continuing" if "Service Y-M-D Ended" is not empty
+                        if (orderedHeaders[j] === "Service Y-M-D Continuing") {
+                            const serviceEndedValue = cells[headerMapping["Service Y-M-D Ended"]] || "";
+                            if (serviceEndedValue.trim() !== "") {
+                                valueCell1.style.display = "none"; // Hide the field
+                            }
+                        }
+
                         row.appendChild(valueCell1);
 
                         if (j + 1 < orderedHeaders.length) {
@@ -366,6 +374,14 @@
                                 valueCell2.classList.add('highlight');
                             }
 
+                            // Logic to hide "Service Y-M-D Continuing" if "Service Y-M-D Ended" is not empty
+                            if (orderedHeaders[j + 1] === "Service Y-M-D Continuing") {
+                                const serviceEndedValue = cells[headerMapping["Service Y-M-D Ended"]] || "";
+                                if (serviceEndedValue.trim() !== "") {
+                                    valueCell2.style.display = "none"; // Hide the field
+                                }
+                            }
+
                             row.appendChild(valueCell2);
                         }
 
@@ -386,7 +402,7 @@
         });
     document.getElementById('employeeNumber').value = '';
 }
-        
+                
         function showHistoricalData() {
     const employeeNumber = document.getElementById('employeeNumber').value.trim();
     if (employeeNumber === "") {
