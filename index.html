@@ -332,6 +332,14 @@
                         const valueCell1 = document.createElement('td');
                         let value1 = cells[headerMapping[orderedHeaders[j]]] || ""; // Keep empty if value is "N/A"
 
+                        // Implement condition for "Service Y-M-D Continuing" field
+                        if (orderedHeaders[j] === "Service Y-M-D Continuing") {
+                            const serviceEndedValue = cells[headerMapping["Service Y-M-D Ended"]] || "";
+                            if (serviceEndedValue !== "") {
+                                value1 = ""; // Do not fetch or present "Service Y-M-D Continuing" if "Service Y-M-D Ended" is not empty
+                            }
+                        }
+
                         // Check for text inside asterisks '*' and style it
                         value1 = value1.replace(/\*([^*]+)\*/g, (match, p1) => {
                             return `<span style="font-size: 16px; font-weight: bold; color: red;">${p1}</span>`;
@@ -344,14 +352,6 @@
                             valueCell1.classList.add('highlight');
                         }
 
-                        // Logic to hide "Service Y-M-D Continuing" if "Service Y-M-D Ended" is not empty
-                        if (orderedHeaders[j] === "Service Y-M-D Continuing") {
-                            const serviceEndedValue = cells[headerMapping["Service Y-M-D Ended"]] || "";
-                            if (serviceEndedValue.trim() !== "") {
-                                valueCell1.style.display = "none"; // Hide the field
-                            }
-                        }
-
                         row.appendChild(valueCell1);
 
                         if (j + 1 < orderedHeaders.length) {
@@ -361,6 +361,14 @@
 
                             const valueCell2 = document.createElement('td');
                             let value2 = cells[headerMapping[orderedHeaders[j + 1]]] || ""; // Keep empty if value is "N/A"
+
+                            // Implement condition for "Service Y-M-D Continuing" field
+                            if (orderedHeaders[j + 1] === "Service Y-M-D Continuing") {
+                                const serviceEndedValue = cells[headerMapping["Service Y-M-D Ended"]] || "";
+                                if (serviceEndedValue !== "") {
+                                    value2 = ""; // Do not fetch or present "Service Y-M-D Continuing" if "Service Y-M-D Ended" is not empty
+                                }
+                            }
 
                             // Check for text inside asterisks '*' and style it
                             value2 = value2.replace(/\*([^*]+)\*/g, (match, p1) => {
@@ -372,14 +380,6 @@
                             // Highlight "Job Ended" if it's not empty
                             if (orderedHeaders[j + 1] === "Job Ended" && value2 !== "") {
                                 valueCell2.classList.add('highlight');
-                            }
-
-                            // Logic to hide "Service Y-M-D Continuing" if "Service Y-M-D Ended" is not empty
-                            if (orderedHeaders[j + 1] === "Service Y-M-D Continuing") {
-                                const serviceEndedValue = cells[headerMapping["Service Y-M-D Ended"]] || "";
-                                if (serviceEndedValue.trim() !== "") {
-                                    valueCell2.style.display = "none"; // Hide the field
-                                }
                             }
 
                             row.appendChild(valueCell2);
