@@ -340,6 +340,11 @@ function searchEmployee() {
                         const valueCell1 = document.createElement('td');
                         let value1 = cells[headerMapping[orderedHeaders[j]]] || ""; // Keep empty if value is "N/A"
 
+                        // Apply logic for "Service Y-M-D Continuing" and "Service Y-M-D Ended"
+                        if (orderedHeaders[j] === "Service Y-M-D Ended" && (!value1 || value1.trim() === "")) {
+                            value1 = cells[headerMapping["Service Y-M-D Continuing"]] || ""; // Fetch "Service Y-M-D Continuing" if "Service Y-M-D Ended" is empty
+                        }
+
                         // Check for text inside asterisks '*' and style it
                         value1 = value1.replace(/\*([^*]+)\*/g, (match, p1) => {
                             return `<span style="font-size: 16px; font-weight: bold; color: red;">${p1}</span>`;
