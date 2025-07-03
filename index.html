@@ -579,10 +579,8 @@ function displayFooter() {
     const footerDiv = document.getElementById('footer-info') || document.createElement('div');
     footerDiv.id = 'footer-info';
 
-    const currentDate = new Date();
-    const formattedDate = `${currentDate.toLocaleDateString()} ${currentDate.toLocaleTimeString()}`;
-    footerDiv.innerHTML = `Last update: ${formattedDate}<br>Created by: Qasim`;
-
+   footerDiv.innerHTML = `Created by: Qasim`;
+    
     // Locate the second table or fallback to the first table's parent container
     const secondTableContainer = document.getElementById('second-table-container');
     const parentContainer = secondTableContainer || document.getElementById('data-table').parentElement;
