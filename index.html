@@ -427,6 +427,51 @@ html, body { margin: 0; padding: 0; font-family: 'Calibri', sans-serif; backgrou
 </div>
 
 <script>
+/* ─── Column index map — must be first ─── */
+const COL = {
+  empNum:        0,
+  name:          1,
+  mobile:        2,
+  nationality:   3,
+  jobTitle:      4,
+  location:      5,
+  joiningDate:   7,
+  total:         13,
+  basic:         14,
+  food:          15,
+  other:         16,
+  trPct:         17,
+  otherTrasp:    18,
+  housing25:     19,
+  housing:       20,
+  transpStatus:  21,
+  medical:       22,
+  contract:      23,
+  annualLeave:   24,
+  tickets:       25,
+  qiwaStart:     26,
+  qiwaEnd:       27,
+  status:        28,
+  dutyHours:     29,
+  idNo:          30,
+  idProfession:  31,
+  idExpHijri:    32,
+  idExpGreg:     33,
+  idRemDays:     34,
+  ppNumber:      35,
+  issuePlace:    36,
+  issueDate:     37,
+  ppExpiry:      38,
+  jobEnded:      40,
+  maritalStatus: 41,
+  serviceEnded:  42,
+  iban:          43,
+  email:         44,
+  serviceCont:   9,
+  dob:           10,
+  age:           12,
+};
+
 /* ─── Access Level ─── */
 // 'none' = not logged in | 'employee' = emp number login | 'admin' = nour-pr
 let currentAccessLevel = 'none';
@@ -573,6 +618,9 @@ function loadCardByEmpNum(empNum) {
     document.getElementById('card-area').innerHTML = renderCard(found, currentAccessLevel);
   }
 }
+
+/* ─── Clear Card ─── */
+function clearCard() {
   document.getElementById('card-area').innerHTML = '';
   document.getElementById('employeeNumber').value = '';
   document.getElementById('employeeNumber').focus();
@@ -632,51 +680,6 @@ function todayStr() {
   const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
   return `${String(d.getDate()).padStart(2,'0')}-${months[d.getMonth()]}-${d.getFullYear()}`;
 }
-
-/* Column index map — from Nour's headerMapping */
-const COL = {
-  empNum:        0,
-  name:          1,
-  mobile:        2,
-  nationality:   3,
-  jobTitle:      4,
-  location:      5,
-  joiningDate:   7,
-  total:         13,  // Total Salary
-  basic:         14,
-  food:          15,
-  other:         16,
-  trPct:         17,  // Transport 10%
-  otherTrasp:    18,
-  housing25:     19,
-  housing:       20,
-  transpStatus:  21,
-  medical:       22,
-  contract:      23,
-  annualLeave:   24,
-  tickets:       25,
-  qiwaStart:     26,
-  qiwaEnd:       27,
-  status:        28,
-  dutyHours:     29,
-  idNo:          30,
-  idProfession:  31,
-  idExpHijri:    32,
-  idExpGreg:     33,
-  idRemDays:     34,
-  ppNumber:      35,
-  issuePlace:    36,
-  issueDate:     37,
-  ppExpiry:      38,
-  jobEnded:      40,
-  maritalStatus: 41,
-  serviceEnded:  42,
-  iban:          43,
-  email:         44,
-  serviceCont:   9,
-  dob:           10,
-  age:           12,
-};
 
 /* ─── Parse CSV (handles quoted commas) ─── */
 function parseCSV(text) {
