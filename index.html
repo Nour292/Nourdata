@@ -19,14 +19,13 @@ html, body { margin: 0; padding: 0; font-family: 'Calibri', sans-serif; backgrou
 #top-bar {
   display: flex;
   justify-content: space-between;
-  align-items: stretch;
+  align-items: flex-start;
   margin-bottom: 22px;
   gap: 20px;
 }
 #top-bar-left {
   display: flex;
   flex-direction: column;
-  justify-content: center;
   flex: 1;
   min-width: 0;
 }
@@ -36,6 +35,7 @@ html, body { margin: 0; padding: 0; font-family: 'Calibri', sans-serif; backgrou
   margin: 0 0 10px 0;
   font-weight: 700;
   letter-spacing: 0.3px;
+  line-height: 1.2;
 }
 #input-row {
   width: 100%;
@@ -75,16 +75,17 @@ html, body { margin: 0; padding: 0; font-family: 'Calibri', sans-serif; backgrou
 #clearButton  { background: #e74c3c; color: #fff; }
 #clearButton:hover  { background: #c0392b; }
 
-/* ── Logo ── */
+/* ── Logo ──
+   Total left height = h1(~32px) + margin(10) + input(46) + margin(8) + buttons(46) = 142px */
 #top-bar-right {
+  flex-shrink: 0;
+  height: 142px;
   display: flex;
   align-items: center;
-  flex-shrink: 0;
-  align-self: stretch;
+  justify-content: center;
 }
 #top-bar-right img {
-  height: 100%;
-  min-height: 148px;
+  height: 142px;
   width: auto;
   display: block;
   object-fit: contain;
