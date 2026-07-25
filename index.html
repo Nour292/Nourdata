@@ -91,7 +91,26 @@ html, body { margin: 0; padding: 0; font-family: 'Calibri', sans-serif; backgrou
   object-fit: contain;
 }
 
-/* ── Password Overlay ── */
+/* ── Logout Button ── */
+#logoutButton {
+  position: fixed;
+  top: 12px;
+  right: 18px;
+  z-index: 999;
+  height: 36px;
+  padding: 0 18px;
+  background: #c0392b;
+  color: #fff;
+  font-family: 'Calibri', sans-serif;
+  font-size: 14px;
+  font-weight: bold;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  display: none;
+}
+#logoutButton:hover { background: #922b21; }
+@media print { #logoutButton { display: none !important; } }
 #pw-overlay {
   position: fixed; inset: 0;
   background: rgba(15,30,50,0.72);
@@ -322,12 +341,14 @@ html, body { margin: 0; padding: 0; font-family: 'Calibri', sans-serif; backgrou
   <div id="pw-box">
     <img src="nour_energy_logo.png" alt="Nour Energy" onerror="this.style.display='none'">
     <h2>Nour Energy Data</h2>
-    <p>Enter your Employee Number to access</p>
+    <p>Enter your Employee Number for basic access,<br>or the admin password for full access</p>
     <input type="password" id="pw-input" placeholder="Employee Number" autocomplete="off">
     <button id="pw-submit" onclick="checkPassword()">Login</button>
     <div id="pw-error"></div>
   </div>
 </div>
+
+<button id="logoutButton" onclick="logout()">⏻ Logout</button>
 
 <div id="app-shell">
 
@@ -355,31 +376,63 @@ html, body { margin: 0; padding: 0; font-family: 'Calibri', sans-serif; backgrou
 </div>
 
 <script>
-/* ─── Password gate ─── */
-let csvRows = null; // loaded once after login
+/* ─── Access Level ─── */
+// 'none' = not logged in | 'employee' = emp number login | 'admin' = nour-pr
+let currentAccessLevel = 'none';
+let csvRows = null;
 
 function checkPassword() {
   const entered = document.getElementById('pw-input').value.trim();
-  if (!entered) { document.getElementById('pw-error').textContent = 'Please enter your employee number.'; return; }
+  if (!entered) { document.getElementById('pw-error').textContent = 'Please enter your password or employee number.'; return; }
 
-  // Load CSV, check if entered value matches any employee number
-  fetch('Master File - Test copy.csv')
-    .then(r => r.text())
-    .then(csv => {
-      const rows = parseCSV(csv);
-      csvRows = rows; // cache for later use
-      const valid = rows.slice(1).some(r => (r[COL.empNum]||'').trim() === entered);
-      if (valid) {
-        document.getElementById('pw-overlay').style.display = 'none';
-        document.getElementById('employeeNumber').focus();
-      } else {
-        document.getElementById('pw-error').textContent = 'Access denied. Employee number not recognised.';
-        document.getElementById('pw-input').value = '';
-      }
-    })
-    .catch(() => {
-      document.getElementById('pw-error').textContent = 'Could not load data file. Please try again.';
-    });
+  // Full admin access
+  if (entered === 'nour-pr') {
+    currentAccessLevel = 'admin';
+    unlockApp();
+    return;
+  }
+
+  // Employee number login — needs CSV validation
+  const doValidate = (rows) => {
+    csvRows = rows;
+    const valid = rows.slice(1).some(r => (r[COL.empNum]||'').trim() === entered);
+    if (valid) {
+      currentAccessLevel = 'employee';
+      unlockApp();
+    } else {
+      document.getElementById('pw-error').textContent = 'Access denied. Not recognised.';
+      document.getElementById('pw-input').value = '';
+    }
+  };
+
+  if (csvRows) {
+    doValidate(csvRows);
+  } else {
+    fetch('Master File - Test copy.csv')
+      .then(r => r.text())
+      .then(csv => doValidate(parseCSV(csv)))
+      .catch(() => {
+        document.getElementById('pw-error').textContent = 'Could not load data file. Please try again.';
+      });
+  }
+}
+
+function unlockApp() {
+  document.getElementById('pw-overlay').style.display = 'none';
+  document.getElementById('pw-input').value = '';
+  document.getElementById('pw-error').textContent = '';
+  document.getElementById('logoutButton').style.display = 'block';
+  document.getElementById('employeeNumber').focus();
+}
+
+/* ─── Logout ─── */
+function logout() {
+  currentAccessLevel = 'none';
+  csvRows = null;
+  clearCard();
+  document.getElementById('logoutButton').style.display = 'none';
+  document.getElementById('pw-overlay').style.display = 'flex';
+  document.getElementById('pw-input').focus();
 }
 
 /* ─── Clear Card ─── */
@@ -506,7 +559,8 @@ function parseCSV(text) {
 }
 
 /* ─── Render Card ─── */
-function renderCard(cells) {
+function renderCard(cells, accessLevel) {
+  const isAdmin = accessLevel === 'admin';
   const get = idx => (cells[idx] || '').trim();
 
   const name      = get(COL.name);
@@ -565,17 +619,19 @@ function renderCard(cells) {
 
   html += `</tbody></table>`;
 
-  /* ── Salary ── */
-  html += `<div class="sec-hdr">Salary (SAR)</div>`;
-  html += `<table class="dtbl"><colgroup><col class="lbl"><col class="val"><col class="lbl"><col class="val"></colgroup><tbody>`;
-  html += row2('Basic', get(COL.basic), 'Food', get(COL.food));
-  html += row2('Other', get(COL.other), 'Housing 25%', get(COL.housing25));
-  html += row2('Transport 10%', get(COL.trPct), 'Other Transport', get(COL.otherTrasp));
-  html += `<tr class="salary-total-row">
-    <td class="lbl-cell" style="color:#fff;background:#1e8449;">Total Salary</td>
-    <td colspan="3" style="font-weight:700;font-size:15px;">${v(get(COL.total))} SAR</td>
-  </tr>`;
-  html += `</tbody></table>`;
+  /* ── Salary (admin only) ── */
+  if (isAdmin) {
+    html += `<div class="sec-hdr">Salary (SAR)</div>`;
+    html += `<table class="dtbl"><colgroup><col class="lbl"><col class="val"><col class="lbl"><col class="val"></colgroup><tbody>`;
+    html += row2('Basic', get(COL.basic), 'Food', get(COL.food));
+    html += row2('Other', get(COL.other), 'Housing 25%', get(COL.housing25));
+    html += row2('Transport 10%', get(COL.trPct), 'Other Transport', get(COL.otherTrasp));
+    html += `<tr class="salary-total-row">
+      <td class="lbl-cell" style="color:#fff;background:#1e8449;">Total Salary</td>
+      <td colspan="3" style="font-weight:700;font-size:15px;">${v(get(COL.total))} SAR</td>
+    </tr>`;
+    html += `</tbody></table>`;
+  }
 
   /* ── IDs & Documents ── */
   html += `<div class="sec-hdr">IDs &amp; Documents</div>`;
@@ -670,7 +726,7 @@ function searchEmployee() {
         </p>`;
       return;
     }
-    document.getElementById('card-area').innerHTML = renderCard(found);
+    document.getElementById('card-area').innerHTML = renderCard(found, currentAccessLevel);
   };
 
   if (csvRows) {
