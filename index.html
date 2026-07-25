@@ -52,17 +52,7 @@ html, body { margin: 0; padding: 0; font-family: 'Calibri', sans-serif; backgrou
   cursor: pointer;
 }
 #searchButton:hover { background: #1a5276; }
-#historyButton {
-  font-size: 16px;
-  font-weight: bold;
-  padding: 8px 18px;
-  border-radius: 5px;
-  background: #111;
-  color: #fff;
-  border: none;
-  cursor: pointer;
-}
-#historyButton:hover { background: #333; }
+
 #printButton {
   font-size: 16px;
   font-weight: bold;
@@ -224,27 +214,7 @@ html, body { margin: 0; padding: 0; font-family: 'Calibri', sans-serif; backgrou
   line-height: 1.6;
 }
 
-/* ── History Table ── */
-.history-tbl {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 18px;
-  font-size: 13px;
-}
-.history-tbl th {
-  background: #1a5276;
-  color: #fff;
-  padding: 7px 10px;
-  text-align: left;
-  font-size: 14px;
-  print-color-adjust: exact;
-  -webkit-print-color-adjust: exact;
-}
-.history-tbl td {
-  border: 1px solid #c8d8e8;
-  padding: 6px 10px;
-}
-.history-tbl tr:nth-child(even) td { background: #f7fbff; }
+
 
 /* ── Empty state ── */
 #card-area:empty::after {
@@ -302,7 +272,7 @@ html, body { margin: 0; padding: 0; font-family: 'Calibri', sans-serif; backgrou
       <div id="search-row">
         <input type="text" id="employeeNumber" placeholder="Employee Number or ID No">
         <button id="searchButton" onclick="searchEmployee()">Search</button>
-        <button id="historyButton" onclick="showHistoricalData()">Historical Data</button>
+
         <button id="printButton" onclick="window.print()">Print</button>
       </div>
     </div>
@@ -574,7 +544,7 @@ function searchEmployee() {
 
   document.getElementById('card-area').innerHTML = '<p style="text-align:center;color:#888;padding:40px 0;">Loading…</p>';
 
-  fetch('data.csv')
+  fetch('Master File - Test copy.csv')
     .then(r => r.text())
     .then(csv => {
       const rows = parseCSV(csv);
@@ -607,86 +577,13 @@ function searchEmployee() {
     .catch(err => {
       console.error(err);
       document.getElementById('card-area').innerHTML =
-        `<p style="text-align:center;color:#c0392b;padding:40px 0;">Failed to load data.csv — ${err.message}</p>`;
+        `<p style="text-align:center;color:#c0392b;padding:40px 0;">Failed to load Master File - Test copy.csv — ${err.message}</p>`;
     });
 
   document.getElementById('employeeNumber').value = '';
 }
 
-/* ─── Historical Data ─── */
-function showHistoricalData() {
-  const query = document.getElementById('employeeNumber').value.trim();
-  if (!query) { alert('Please enter an Employee Number.'); return; }
 
-  Promise.all([
-    fetch('data.csv').then(r => r.text()),
-    fetch('data1.csv').then(r => r.text()).catch(() => null)
-  ]).then(([csv, csv1]) => {
-    const rows = parseCSV(csv);
-    let empCells = null;
-    for (let i = 1; i < rows.length; i++) {
-      if ((rows[i][COL.empNum]||'').trim() === query) { empCells = rows[i]; break; }
-    }
-
-    let html = `<div class="card">`;
-
-    /* Mini identity header */
-    if (empCells) {
-      const name = v(empCells[COL.name]);
-      html += `<div class="card-hdr">
-        <img src="nour_energy_logo.png" alt="Logo" onerror="this.style.display='none'">
-        <div class="card-hdr-text">
-          <p class="emp-name">${rtlWrap(name)}</p>
-          <p class="emp-num">${v(empCells[COL.empNum])} — Historical Record</p>
-        </div>
-      </div>`;
-
-      html += `<div class="sec-hdr">Employee Snapshot</div>`;
-      html += `<table class="dtbl"><colgroup><col class="lbl"><col class="val"><col class="lbl"><col class="val"></colgroup><tbody>`;
-      html += `<tr><td class="lbl-cell">Employee No</td><td>${v(empCells[COL.empNum])}</td><td class="lbl-cell">Name</td><td>${rtlWrap(v(empCells[COL.name]))}</td></tr>`;
-      html += `<tr><td class="lbl-cell">Job Title</td><td>${v(empCells[COL.jobTitle])}</td><td class="lbl-cell">Joining Date</td><td>${v(empCells[COL.joiningDate])}</td></tr>`;
-      html += `<tr><td class="lbl-cell">Date of Birth</td><td>${v(empCells[COL.dob])}</td><td class="lbl-cell">Age</td><td>${v(empCells[COL.age])}</td></tr>`;
-      html += `</tbody></table>`;
-    } else {
-      html += `<p style="color:#c0392b;padding:20px 0;">Employee Number not found in data.csv.</p>`;
-    }
-
-    /* History events from data1.csv */
-    if (csv1) {
-      const hrows = parseCSV(csv1);
-      const matched = hrows.slice(1).filter(r => (r[0]||'').trim() === query);
-
-      html += `<div class="sec-hdr">Event History</div>`;
-      if (matched.length === 0) {
-        html += `<p style="padding:10px 0;color:#888;font-size:13px;">No historical events found for this employee.</p>`;
-      } else {
-        html += `<table class="history-tbl"><thead><tr>
-          <th style="width:13%">Date</th>
-          <th style="width:70%">Event Description</th>
-          <th style="width:17%">Category</th>
-        </tr></thead><tbody>`;
-        matched.forEach(r => {
-          const date = v(r[1]);
-          let desc  = (r[2]||'').trim();
-          const cat  = v(r[3]);
-          // Style *text* in red bold
-          desc = desc.replace(/\*([^*]+)\*/g, `<span style="font-size:13px;font-weight:bold;color:#c0392b;">$1</span>`);
-          html += `<tr><td>${date}</td><td>${desc}</td><td>${cat}</td></tr>`;
-        });
-        html += `</tbody></table>`;
-      }
-    }
-
-    html += `<div class="card-footer">Printed: ${todayStr()}<br>Created by: Qasim</div>`;
-    html += `</div>`;
-    document.getElementById('card-area').innerHTML = html;
-  }).catch(err => {
-    document.getElementById('card-area').innerHTML =
-      `<p style="text-align:center;color:#c0392b;padding:40px 0;">Error loading data — ${err.message}</p>`;
-  });
-
-  document.getElementById('employeeNumber').value = '';
-}
 </script>
 </body>
 </html>
