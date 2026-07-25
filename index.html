@@ -20,54 +20,96 @@ html, body { margin: 0; padding: 0; font-family: 'Calibri', sans-serif; backgrou
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 18px;
+  margin-bottom: 22px;
+  gap: 20px;
+}
+#top-bar-left {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 #top-bar-left h1 {
-  font-size: 24px;
+  font-size: 26px;
   color: #1a5276;
-  margin: 0 0 12px 0;
+  margin: 0 0 14px 0;
   font-weight: 700;
+  letter-spacing: 0.3px;
 }
 #search-row {
   display: flex;
-  gap: 8px;
+  gap: 10px;
   align-items: center;
 }
 #employeeNumber {
   font-family: 'Arial Black', sans-serif;
   font-size: 18px;
-  padding: 8px 12px;
+  padding: 10px 14px;
   border: 2px solid #aaa;
-  border-radius: 5px;
-  width: 260px;
+  border-radius: 6px;
+  width: 270px;
+  height: 46px;
 }
-#searchButton {
+/* shared button baseline */
+#search-row button {
+  height: 46px;
+  font-family: 'Calibri', sans-serif;
   font-size: 16px;
   font-weight: bold;
-  padding: 8px 22px;
-  border-radius: 5px;
-  background: #2e86c1;
-  color: #fff;
   border: none;
+  border-radius: 6px;
   cursor: pointer;
+  padding: 0 22px;
+  white-space: nowrap;
 }
-#searchButton:hover { background: #1a5276; }
+#searchButton  { background: #2e86c1; color: #fff; }
+#searchButton:hover  { background: #1a5276; }
+#printButton   { background: #f9e400; color: #111; }
+#printButton:hover   { background: #e5d200; }
+#clearButton   { background: #e74c3c; color: #fff; }
+#clearButton:hover   { background: #c0392b; }
 
-#printButton {
-  font-size: 16px;
-  font-weight: bold;
-  padding: 8px 18px;
-  border-radius: 5px;
-  background: #f9e400;
-  color: #111;
-  border: none;
-  cursor: pointer;
+/* ── Logo ── */
+#top-bar-right {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
 }
-#printButton:hover { background: #e5d200; }
 #top-bar-right img {
-  height: 80px;
+  height: 110px;
   width: auto;
 }
+
+/* ── Password Overlay ── */
+#pw-overlay {
+  position: fixed; inset: 0;
+  background: rgba(15,30,50,0.72);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 9999;
+}
+#pw-box {
+  background: #fff;
+  border-radius: 10px;
+  padding: 36px 40px 30px;
+  box-shadow: 0 8px 40px rgba(0,0,0,0.3);
+  text-align: center;
+  width: 340px;
+}
+#pw-box img { height: 70px; margin-bottom: 16px; }
+#pw-box h2 { font-size: 20px; color: #1a5276; margin: 0 0 6px; }
+#pw-box p  { font-size: 13px; color: #777; margin: 0 0 18px; }
+#pw-input {
+  width: 100%; padding: 10px 14px; font-size: 16px;
+  border: 2px solid #c8d8e8; border-radius: 6px;
+  margin-bottom: 12px; box-sizing: border-box; text-align: center;
+  letter-spacing: 3px;
+}
+#pw-input:focus { border-color: #2e86c1; outline: none; }
+#pw-submit {
+  width: 100%; padding: 11px; font-size: 16px; font-weight: bold;
+  background: #2e86c1; color: #fff; border: none; border-radius: 6px; cursor: pointer;
+}
+#pw-submit:hover { background: #1a5276; }
+#pw-error { color: #c0392b; font-size: 13px; margin-top: 10px; min-height: 18px; }
 
 /* ── Card ── */
 .card {
@@ -233,7 +275,7 @@ html, body { margin: 0; padding: 0; font-family: 'Calibri', sans-serif; backgrou
   @page { margin: 8mm; size: A4; }
   html, body { margin: 0; padding: 0; background: #fff; }
   #app-shell { width: 100%; max-width: 100%; margin: 0; }
-  #top-bar { display: none !important; }
+  #top-bar, #pw-overlay { display: none !important; }
   .card {
     box-shadow: none;
     border-radius: 0;
@@ -263,6 +305,18 @@ html, body { margin: 0; padding: 0; font-family: 'Calibri', sans-serif; backgrou
 </head>
 <body>
 
+<!-- ── Password Overlay ── -->
+<div id="pw-overlay">
+  <div id="pw-box">
+    <img src="nour_energy_logo.png" alt="Nour Energy" onerror="this.style.display='none'">
+    <h2>Nour Energy Data</h2>
+    <p>Enter your Employee Number to access</p>
+    <input type="password" id="pw-input" placeholder="Employee Number" autocomplete="off">
+    <button id="pw-submit" onclick="checkPassword()">Login</button>
+    <div id="pw-error"></div>
+  </div>
+</div>
+
 <div id="app-shell">
 
   <!-- Top Bar -->
@@ -272,8 +326,8 @@ html, body { margin: 0; padding: 0; font-family: 'Calibri', sans-serif; backgrou
       <div id="search-row">
         <input type="text" id="employeeNumber" placeholder="Employee Number or ID No">
         <button id="searchButton" onclick="searchEmployee()">Search</button>
-
         <button id="printButton" onclick="window.print()">Print</button>
+        <button id="clearButton" onclick="clearCard()">Clear Data</button>
       </div>
     </div>
     <div id="top-bar-right">
@@ -287,7 +341,44 @@ html, body { margin: 0; padding: 0; font-family: 'Calibri', sans-serif; backgrou
 </div>
 
 <script>
+/* ─── Password gate ─── */
+let csvRows = null; // loaded once after login
+
+function checkPassword() {
+  const entered = document.getElementById('pw-input').value.trim();
+  if (!entered) { document.getElementById('pw-error').textContent = 'Please enter your employee number.'; return; }
+
+  // Load CSV, check if entered value matches any employee number
+  fetch('Master File - Test copy.csv')
+    .then(r => r.text())
+    .then(csv => {
+      const rows = parseCSV(csv);
+      csvRows = rows; // cache for later use
+      const valid = rows.slice(1).some(r => (r[COL.empNum]||'').trim() === entered);
+      if (valid) {
+        document.getElementById('pw-overlay').style.display = 'none';
+        document.getElementById('employeeNumber').focus();
+      } else {
+        document.getElementById('pw-error').textContent = 'Access denied. Employee number not recognised.';
+        document.getElementById('pw-input').value = '';
+      }
+    })
+    .catch(() => {
+      document.getElementById('pw-error').textContent = 'Could not load data file. Please try again.';
+    });
+}
+
+/* ─── Clear Card ─── */
+function clearCard() {
+  document.getElementById('card-area').innerHTML = '';
+  document.getElementById('employeeNumber').value = '';
+  document.getElementById('employeeNumber').focus();
+}
+
 /* ─── Enter key ─── */
+document.getElementById('pw-input').addEventListener('keyup', e => {
+  if (e.key === 'Enter') checkPassword();
+});
 document.getElementById('employeeNumber').addEventListener('keyup', e => {
   if (e.key === 'Enter') searchEmployee();
 });
@@ -544,41 +635,42 @@ function searchEmployee() {
 
   document.getElementById('card-area').innerHTML = '<p style="text-align:center;color:#888;padding:40px 0;">Loading…</p>';
 
-  fetch('Master File - Test copy.csv')
-    .then(r => r.text())
-    .then(csv => {
-      const rows = parseCSV(csv);
-      let found = null;
-
-      for (let i = 1; i < rows.length; i++) {
-        const cells = rows[i];
-        const empNum = (cells[COL.empNum] || '').trim();
-        const idNo   = (cells[COL.idNo]   || '').trim();
-        if (empNum === query || idNo === query) { found = cells; break; }
-      }
-
-      if (!found) {
-        // Find 3 closest numeric matches
-        const nums = rows.slice(1).map(r => (r[COL.empNum]||'').trim()).filter(n => n);
-        const close = nums
-          .map(n => ({ n, diff: Math.abs(+n - +query) }))
-          .sort((a,b) => a.diff - b.diff)
-          .slice(0,3).map(x => x.n);
-        document.getElementById('card-area').innerHTML =
-          `<p style="text-align:center;color:#c0392b;padding:40px 0;font-size:15px;">
-            Employee not found for "<strong>${query}</strong>".
-            ${close.length ? `<br>Closest matches: <strong>${close.join(', ')}</strong>` : ''}
-          </p>`;
-        return;
-      }
-
-      document.getElementById('card-area').innerHTML = renderCard(found);
-    })
-    .catch(err => {
-      console.error(err);
+  const doSearch = (rows) => {
+    let found = null;
+    for (let i = 1; i < rows.length; i++) {
+      const cells = rows[i];
+      const empNum = (cells[COL.empNum] || '').trim();
+      const idNo   = (cells[COL.idNo]   || '').trim();
+      if (empNum === query || idNo === query) { found = cells; break; }
+    }
+    if (!found) {
+      const nums = rows.slice(1).map(r => (r[COL.empNum]||'').trim()).filter(n => n);
+      const close = nums
+        .map(n => ({ n, diff: Math.abs(+n - +query) }))
+        .sort((a,b) => a.diff - b.diff)
+        .slice(0,3).map(x => x.n);
       document.getElementById('card-area').innerHTML =
-        `<p style="text-align:center;color:#c0392b;padding:40px 0;">Failed to load Master File - Test copy.csv — ${err.message}</p>`;
-    });
+        `<p style="text-align:center;color:#c0392b;padding:40px 0;font-size:15px;">
+          Employee not found for "<strong>${query}</strong>".
+          ${close.length ? `<br>Closest matches: <strong>${close.join(', ')}</strong>` : ''}
+        </p>`;
+      return;
+    }
+    document.getElementById('card-area').innerHTML = renderCard(found);
+  };
+
+  if (csvRows) {
+    doSearch(csvRows);
+  } else {
+    fetch('Master File - Test copy.csv')
+      .then(r => r.text())
+      .then(csv => { csvRows = parseCSV(csv); doSearch(csvRows); })
+      .catch(err => {
+        console.error(err);
+        document.getElementById('card-area').innerHTML =
+          `<p style="text-align:center;color:#c0392b;padding:40px 0;">Failed to load data — ${err.message}</p>`;
+      });
+  }
 
   document.getElementById('employeeNumber').value = '';
 }
