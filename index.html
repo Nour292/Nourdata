@@ -1,593 +1,692 @@
-
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Nour Energy Data</title>
-    <link rel="icon" href="nour_energy_logo.png" type="image/png">
-    <style>
-        /* General styles */
-        body {
-            font-family: Calibri, sans-serif;
-        }
-        table {
-            width: 80%;
-            border-collapse: collapse;
-            margin-top: 20px;
-            margin-left: auto;
-            margin-right: auto;
-        }
-        th,
-        td {
-            border: 1px solid black;
-            padding: 8px;
-            text-align: left;
-        }
-        th {
-            width: 25%; /* Adjust column width */
-        }
-        #footer-info {
-            margin-top: 30px;
-            font-size: 14px;
-            text-align: left;
-            margin-left: auto;
-            margin-right: auto;
-            width: 80%;
-        }
-        #title-logo-container {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            width: 80%;
-            margin-left: auto;
-            margin-right: auto;
-            margin-bottom: 20px;
-        }
-        #left-container {
-            width: 75%; /* Increased width to cover 3 columns of the table */
-        }
-        #title {
-            font-size: 24px;
-            color: blue;
-            margin-bottom: 20px;
-        }
-        #search-container {
-            display: flex;
-            flex-direction: column;
-            align-items: flex-start;
-        }
-        #employeeNumber {
-            width: 102%; /* Extended to the left by 2% */
-            margin-bottom: 10px;
-            font-family: "Arial Black", sans-serif; /* Arial Black font */
-            font-size: 22px; /* Text size 22 */
-            padding: 10px;
-            border-radius: 5px;
-        }
-        #searchButton {
-            width: 105%; /* Increased width by 5% */
-            margin-bottom: 10px;
-            font-size: 22px; /* Calibri size 22 */
-            font-weight: bold; /* Bold text */
-            padding: 10px;
-            border-radius: 5px;
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            cursor: pointer;
-        }
-        #searchButton:hover {
-            background-color: #45a049; /* Change to a slightly darker green on hover */
-        }
-        #button-container {
-            display: flex;
-            justify-content: space-between;
-            gap: 10px; /* Add space between buttons */
-            width: 105%; /* Maintain alignment with other buttons */
-        }
-        #printButton {
-            width: 52.5%; /* Decreased by 50% from actual width (105%) */
-            margin-bottom: 10px;
-            font-size: 22px; /* Calibri size 22 */
-            font-weight: bold; /* Bold text */
-            padding: 10px;
-            border-radius: 5px;
-            background-color: yellow; /* Yellow color */
-            color: black;
-            border: none;
-            cursor: pointer;
-        }
-        #printButton:hover {
-            background-color: #f5e642; /* Slightly darker yellow on hover */
-        }
-        #newButton {
-            width: 52.5%; /* Same width as printButton */
-            margin-bottom: 10px;
-            font-size: 22px; /* Calibri size 22 */
-            font-weight: bold; /* Bold text */
-            padding: 10px;
-            border-radius: 5px;
-            background-color: black; /* Dark black color */
-            color: white;
-            border: none;
-            cursor: pointer;
-        }
-        #newButton:hover {
-            background-color: #333333; /* Slightly lighter black on hover */
-        }
-        #logo-container {
-            width: 25%; /* Adjusted width for the remaining 1 column */
-            display: flex;
-            justify-content: flex-end;
-            align-items: center;
-        }
-        #logo {
-            width: 63.75%; /* Decreased size by 15% from the current width of 75% */
-            height: auto;
-        }
-        .highlight {
-            background-color: red;
-            font-weight: bold;
-            color: black;
-        }
-        #password-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-        #password-prompt {
-            background-color: white;
-            padding: 20px;
-            border-radius: 5px;
-            text-align: center;
-        }
-        #password-prompt input {
-            padding: 10px;
-            margin: 10px;
-            font-size: 16px;
-        }
-        #password-prompt button {
-            padding: 10px 20px;
-            font-size: 16px;
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            white-space: nowrap;
-        }
+<meta charset="UTF-8">
+<title>Nour Energy Data</title>
+<link rel="icon" href="nour_energy_logo.png" type="image/png">
+<style>
+/* ── Reset & Base ── */
+*, *::before, *::after { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; font-family: 'Calibri', sans-serif; background: #f0f4f8; direction: ltr; }
 
-      /* Print-specific styles */
-     @media print {
-    #search-container, #printButton {
-        display: none; /* Hide the search box, search button, and print button during printing */
-    }
-
-    .center-title {
-        display: none; /* Hide the text "Nour Energy Data" in the middle of the page during printing */
-    }
+/* ── App Shell ── */
+#app-shell {
+  width: 940px;
+  margin: 28px auto 40px;
 }
-    </style>
+
+/* ── Top Bar ── */
+#top-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 18px;
+}
+#top-bar-left h1 {
+  font-size: 24px;
+  color: #1a5276;
+  margin: 0 0 12px 0;
+  font-weight: 700;
+}
+#search-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+#employeeNumber {
+  font-family: 'Arial Black', sans-serif;
+  font-size: 18px;
+  padding: 8px 12px;
+  border: 2px solid #aaa;
+  border-radius: 5px;
+  width: 260px;
+}
+#searchButton {
+  font-size: 16px;
+  font-weight: bold;
+  padding: 8px 22px;
+  border-radius: 5px;
+  background: #2e86c1;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+}
+#searchButton:hover { background: #1a5276; }
+#historyButton {
+  font-size: 16px;
+  font-weight: bold;
+  padding: 8px 18px;
+  border-radius: 5px;
+  background: #111;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+}
+#historyButton:hover { background: #333; }
+#printButton {
+  font-size: 16px;
+  font-weight: bold;
+  padding: 8px 18px;
+  border-radius: 5px;
+  background: #f9e400;
+  color: #111;
+  border: none;
+  cursor: pointer;
+}
+#printButton:hover { background: #e5d200; }
+#top-bar-right img {
+  height: 80px;
+  width: auto;
+}
+
+/* ── Card ── */
+.card {
+  width: 100%;
+  max-width: 100%;
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 3px 18px rgba(0,0,0,0.13);
+  padding: 22px 26px 18px;
+  margin: 0 auto;
+}
+
+/* ── Card Header ── */
+.card-hdr {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  margin-bottom: 18px;
+  padding-bottom: 12px;
+  border-bottom: 2px solid #d5e8f5;
+}
+.card-hdr img {
+  height: 90px;
+  width: auto;
+}
+.card-hdr-text .emp-name {
+  font-family: 'Calibri', sans-serif;
+  font-size: 24px;
+  font-weight: 600;
+  color: #1a5276;
+  margin: 0;
+  line-height: 1.2;
+}
+.card-hdr-text .emp-num {
+  font-size: 18px;
+  font-weight: 700;
+  color: #555;
+  margin: 4px 0 0 0;
+}
+
+/* ── Section Headers ── */
+.sec-hdr {
+  background: #1a5276;
+  color: #fff;
+  font-size: 13.5px;
+  font-weight: 700;
+  padding: 5px 10px;
+  margin: 14px 0 0 0;
+  letter-spacing: 0.4px;
+  border-radius: 3px 3px 0 0;
+  print-color-adjust: exact;
+  -webkit-print-color-adjust: exact;
+}
+
+/* ── Data Table ── */
+.dtbl {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+  margin-bottom: 0;
+}
+.dtbl colgroup col.lbl { width: 150px; }
+.dtbl colgroup col.val { width: auto; }
+.dtbl td, .dtbl th {
+  border: 1px solid #c8d8e8;
+  padding: 5px 9px;
+  font-size: 13px;
+  vertical-align: middle;
+  text-align: left;
+}
+.dtbl .lbl-cell {
+  font-weight: 700;
+  background: #eaf2fb;
+  color: #1a3a52;
+  width: 150px;
+  print-color-adjust: exact;
+  -webkit-print-color-adjust: exact;
+}
+.dtbl tr:nth-child(even) td:not(.lbl-cell) { background: #f7fbff; }
+
+/* ── Job Ended highlight ── */
+.job-ended-cell {
+  background: #c0392b !important;
+  color: #fff !important;
+  font-weight: 700 !important;
+  font-size: 15px !important;
+  print-color-adjust: exact;
+  -webkit-print-color-adjust: exact;
+}
+.job-ended-badge {
+  display: inline-block;
+  background: #c0392b;
+  color: #fff;
+  font-weight: 700;
+  font-size: 13px;
+  padding: 2px 10px;
+  border-radius: 4px;
+  margin-left: 10px;
+  vertical-align: middle;
+  print-color-adjust: exact;
+  -webkit-print-color-adjust: exact;
+}
+
+/* ── Salary total row ── */
+.salary-total-row td {
+  background: #1e8449 !important;
+  color: #fff !important;
+  font-weight: 700 !important;
+  font-size: 14px !important;
+  print-color-adjust: exact;
+  -webkit-print-color-adjust: exact;
+}
+
+/* ── Alerts ── */
+.alerts-block {
+  margin-top: 14px;
+  padding: 10px 14px;
+  background: #fdfefe;
+  border: 1px solid #c8d8e8;
+  border-radius: 0 0 4px 4px;
+  font-size: 13px;
+}
+.alerts-block .alert-item { margin: 3px 0; }
+.verdict-line {
+  margin-top: 8px;
+  font-size: 13.5px;
+  font-weight: 700;
+  padding: 5px 10px;
+  border-radius: 4px;
+  display: inline-block;
+  print-color-adjust: exact;
+  -webkit-print-color-adjust: exact;
+}
+.verdict-green { background: #d5f5e3; color: #1e8449; }
+.verdict-yellow { background: #fef9e7; color: #b7950b; }
+.verdict-red { background: #fadbd8; color: #c0392b; }
+
+/* ── Footer ── */
+.card-footer {
+  margin-top: 16px;
+  text-align: right;
+  font-size: 11px;
+  color: #888;
+  line-height: 1.6;
+}
+
+/* ── History Table ── */
+.history-tbl {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 18px;
+  font-size: 13px;
+}
+.history-tbl th {
+  background: #1a5276;
+  color: #fff;
+  padding: 7px 10px;
+  text-align: left;
+  font-size: 14px;
+  print-color-adjust: exact;
+  -webkit-print-color-adjust: exact;
+}
+.history-tbl td {
+  border: 1px solid #c8d8e8;
+  padding: 6px 10px;
+}
+.history-tbl tr:nth-child(even) td { background: #f7fbff; }
+
+/* ── Empty state ── */
+#card-area:empty::after {
+  content: 'Enter an Employee Number above and press Search.';
+  display: block;
+  text-align: center;
+  color: #aaa;
+  font-size: 15px;
+  padding: 60px 0;
+}
+
+/* ══════════════════════════════
+   PRINT
+══════════════════════════════ */
+@media print {
+  @page { margin: 8mm; size: A4; }
+  html, body { margin: 0; padding: 0; background: #fff; }
+  #app-shell { width: 100%; max-width: 100%; margin: 0; }
+  #top-bar { display: none !important; }
+  .card {
+    box-shadow: none;
+    border-radius: 0;
+    padding-top: 15mm;
+    padding-left: 0;
+    padding-right: 0;
+    padding-bottom: 0;
+    width: 100%;
+    max-width: 100%;
+  }
+  .card-hdr img { height: 52px !important; }
+  .card-hdr { margin-bottom: 10px; padding-bottom: 8px; }
+  .card-hdr-text .emp-name { font-size: 20px; }
+  .card-hdr-text .emp-num { font-size: 15px; }
+  .sec-hdr { margin: 8px 0 0 0; font-size: 12px; padding: 4px 8px; print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+  .dtbl td, .dtbl th { font-size: 11.5px; padding: 3px 8px; }
+  .lbl-cell { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+  .job-ended-cell { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+  .salary-total-row td { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+  .alerts-block { font-size: 11.5px; padding: 6px 10px; }
+  .verdict-line { font-size: 12px; padding: 3px 8px; print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+  .card-footer { font-size: 10px; margin-top: 10px; }
+  .history-tbl th { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+  break-inside: avoid;
+}
+</style>
 </head>
 <body>
-    <div class="print-title" style="display: none;">Nour Energy Data</div>
-    <div id="password-overlay">
-        <div id="password-prompt">
-            <label for="passwordInput">Enter Password:</label><br>
-            <input type="password" id="passwordInput" placeholder="Password"><br>
-            <button id="passwordButton">Submit</button>
-        </div>
+
+<div id="app-shell">
+
+  <!-- Top Bar -->
+  <div id="top-bar">
+    <div id="top-bar-left">
+      <h1>Nour Energy Data</h1>
+      <div id="search-row">
+        <input type="text" id="employeeNumber" placeholder="Employee Number or ID No">
+        <button id="searchButton" onclick="searchEmployee()">Search</button>
+        <button id="historyButton" onclick="showHistoricalData()">Historical Data</button>
+        <button id="printButton" onclick="window.print()">Print</button>
+      </div>
     </div>
-
-    <div id="title-logo-container">
-        <div id="left-container">
-            <h1 id="title">Nour Energy Data</h1>
-            <div id="search-container">
-                <input
-                    type="text"
-                    id="employeeNumber"
-                    placeholder="Enter Employee Number or ID No"
-                >
-                <button id="searchButton" onclick="searchEmployee()">Search</button>
-                <div id="button-container">
-                    <button id="newButton" onclick="showHistoricalData()">Historical Data</button>
-                    <button id="printButton" onclick="window.print()">Print me</button>
-                </div>
-            </div>
-        </div>
-        <div id="logo-container">
-            <img id="logo" src="nour_energy_logo.png" alt="Nour Energy Logo">
-        </div>
+    <div id="top-bar-right">
+      <img src="nour_energy_logo.png" alt="Nour Energy Logo">
     </div>
+  </div>
 
-    <table id="data-table">
-        <tbody></tbody>
-    </table>
+  <!-- Card / Output Area -->
+  <div id="card-area"></div>
 
-    <div id="footer-info">
+</div>
+
+<script>
+/* ─── Enter key ─── */
+document.getElementById('employeeNumber').addEventListener('keyup', e => {
+  if (e.key === 'Enter') searchEmployee();
+});
+
+/* ─── Helpers ─── */
+function v(val) {
+  if (!val || val.trim() === '' || val.trim() === 'N/A') return '—';
+  return val.trim();
+}
+
+function rtlWrap(val) {
+  // Wrap Arabic/RTL text
+  if (/[\u0600-\u06FF]/.test(val)) return `<span dir="rtl">${val}</span>`;
+  return val;
+}
+
+function parseDate(str) {
+  if (!str || str.trim() === '' || str.trim() === '—') return null;
+  const s = str.trim();
+  // Try DD/MM/YYYY or YYYY-MM-DD
+  let m = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+  if (m) return new Date(+m[3], +m[2]-1, +m[1]);
+  m = s.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  if (m) return new Date(+m[1], +m[2]-1, +m[3]);
+  const d = new Date(s);
+  return isNaN(d) ? null : d;
+}
+
+function daysDiff(dateStr) {
+  const d = parseDate(dateStr);
+  if (!d) return null;
+  const now = new Date(); now.setHours(0,0,0,0);
+  return Math.round((d - now) / 86400000);
+}
+
+function alertEmoji(days) {
+  if (days === null) return null;
+  if (days < 0)  return '🔴';
+  if (days <= 30) return '🟠';
+  if (days <= 90) return '🟡';
+  return '🟢';
+}
+
+function fmtDate(str) { return v(str); }
+
+function todayStr() {
+  const d = new Date();
+  const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  return `${String(d.getDate()).padStart(2,'0')}-${months[d.getMonth()]}-${d.getFullYear()}`;
+}
+
+/* Column index map — from Nour's headerMapping */
+const COL = {
+  empNum:        0,
+  name:          1,
+  mobile:        2,
+  nationality:   3,
+  jobTitle:      4,
+  location:      5,
+  joiningDate:   7,
+  total:         13,  // Total Salary
+  basic:         14,
+  food:          15,
+  other:         16,
+  trPct:         17,  // Transport 10%
+  otherTrasp:    18,
+  housing25:     19,
+  housing:       20,
+  transpStatus:  21,
+  medical:       22,
+  contract:      23,
+  annualLeave:   24,
+  tickets:       25,
+  qiwaStart:     26,
+  qiwaEnd:       27,
+  status:        28,
+  dutyHours:     29,
+  idNo:          30,
+  idProfession:  31,
+  idExpHijri:    32,
+  idExpGreg:     33,
+  idRemDays:     34,
+  ppNumber:      35,
+  issuePlace:    36,
+  issueDate:     37,
+  ppExpiry:      38,
+  jobEnded:      40,
+  maritalStatus: 41,
+  serviceEnded:  42,
+  iban:          43,
+  email:         44,
+  serviceCont:   9,
+  dob:           10,
+  age:           12,
+};
+
+/* ─── Parse CSV (handles quoted commas) ─── */
+function parseCSV(text) {
+  const lines = text.split('\n').filter(l => l.trim() !== '');
+  return lines.map(line => {
+    const cells = []; let cur = ''; let inQ = false;
+    for (let i = 0; i < line.length; i++) {
+      const ch = line[i];
+      if (ch === '"') { inQ = !inQ; }
+      else if (ch === ',' && !inQ) { cells.push(cur); cur = ''; }
+      else { cur += ch; }
+    }
+    cells.push(cur);
+    return cells;
+  });
+}
+
+/* ─── Render Card ─── */
+function renderCard(cells) {
+  const get = idx => (cells[idx] || '').trim();
+
+  const name      = get(COL.name);
+  const empNum    = get(COL.empNum);
+  const jobEnded  = get(COL.jobEnded);
+  const isEnded   = jobEnded !== '' && jobEnded !== '—';
+  const service   = isEnded ? get(COL.serviceEnded) : get(COL.serviceCont);
+
+  /* ── Header ── */
+  let html = `<div class="card">`;
+  html += `<div class="card-hdr">
+    <img src="nour_energy_logo.png" alt="Logo" onerror="this.style.display='none'">
+    <div class="card-hdr-text">
+      <p class="emp-name">${rtlWrap(v(name))}${isEnded ? `<span class="job-ended-badge">JOB ENDED</span>` : ''}</p>
+      <p class="emp-num">${v(empNum)}</p>
     </div>
+  </div>`;
 
-    <script>
-        const passwordOverlay = document.getElementById('password-overlay');
-        const passwordInput = document.getElementById('passwordInput');
-        const passwordButton = document.getElementById('passwordButton');
+  /* ── Personal & Employment ── */
+  html += `<div class="sec-hdr">Personal &amp; Employment</div>`;
+  html += `<table class="dtbl"><colgroup><col class="lbl"><col class="val"><col class="lbl"><col class="val"></colgroup><tbody>`;
 
-        function checkPassword(password) {
-            if (password !== "nour-pr") {
-                alert("Incorrect password. Access denied.");
-                return false;
-            }
-            passwordOverlay.style.display = 'none';
-            document.getElementById('employeeNumber').focus();
-            addSearchListeners();
-            return true;
-        }
+  function row2(l1, v1, l2, v2, opts={}) {
+    const c1 = opts.red1 ? ' job-ended-cell' : '';
+    const c2 = opts.red2 ? ' job-ended-cell' : '';
+    return `<tr>
+      <td class="lbl-cell">${l1}</td><td class="${c1}">${rtlWrap(v(v1))}</td>
+      <td class="lbl-cell">${l2}</td><td class="${c2}">${rtlWrap(v(v2))}</td>
+    </tr>`;
+  }
+  function row1(l1, v1, opts={}) {
+    const c1 = opts.red1 ? ' job-ended-cell' : '';
+    return `<tr>
+      <td class="lbl-cell">${l1}</td><td colspan="3" class="${c1}">${rtlWrap(v(v1))}</td>
+    </tr>`;
+  }
 
-        passwordButton.addEventListener('click', function () {
-            const password = passwordInput.value;
-            checkPassword(password);
-        });
+  html += row2('Job Title', get(COL.jobTitle), 'Location', get(COL.location));
+  html += row2('Nationality', get(COL.nationality), 'Mobile', get(COL.mobile));
+  html += row2('Date of Birth', get(COL.dob), 'Age', get(COL.age));
 
-        passwordInput.addEventListener('keyup', function (event) {
-            if (event.key === 'Enter') {
-                checkPassword(passwordInput.value);
-            }
-        });
+  if (isEnded) {
+    html += row2('Joining Date', get(COL.joiningDate), 'Job Ended', get(COL.jobEnded), {red2: true});
+    html += row2('Contract', get(COL.contract), 'Total Service (Y,M,D)', service);
+    html += row2('Annual Leave', get(COL.annualLeave), 'Tickets', get(COL.tickets));
+    html += row2('Medical', get(COL.medical), 'Marital Status', get(COL.maritalStatus));
+    html += row1('Email', get(COL.email));
+    html += row1('IBAN', get(COL.iban));
+  } else {
+    html += row2('Joining Date', get(COL.joiningDate), 'Service', service);
+    html += row2('Contract', get(COL.contract), 'Annual Leave', get(COL.annualLeave));
+    html += row2('Tickets', get(COL.tickets), 'Medical', get(COL.medical));
+    html += row2('Marital Status', get(COL.maritalStatus), 'Email', get(COL.email));
+    html += row1('IBAN', get(COL.iban));
+  }
 
-        passwordOverlay.style.display = 'flex';
+  html += `</tbody></table>`;
 
-        function addSearchListeners() {
-    document.getElementById('employeeNumber').addEventListener('keyup', function (event) {
-        if (event.key === 'Enter') {
-            searchEmployee();
-        }
+  /* ── Salary ── */
+  html += `<div class="sec-hdr">Salary (SAR)</div>`;
+  html += `<table class="dtbl"><colgroup><col class="lbl"><col class="val"><col class="lbl"><col class="val"></colgroup><tbody>`;
+  html += row2('Basic', get(COL.basic), 'Food', get(COL.food));
+  html += row2('Other', get(COL.other), 'Housing 25%', get(COL.housing25));
+  html += row2('Transport 10%', get(COL.trPct), 'Other Transport', get(COL.otherTrasp));
+  html += `<tr class="salary-total-row">
+    <td class="lbl-cell" style="color:#fff;background:#1e8449;">Total Salary</td>
+    <td colspan="3" style="font-weight:700;font-size:15px;">${v(get(COL.total))} SAR</td>
+  </tr>`;
+  html += `</tbody></table>`;
+
+  /* ── IDs & Documents ── */
+  html += `<div class="sec-hdr">IDs &amp; Documents</div>`;
+  html += `<table class="dtbl"><colgroup><col class="lbl"><col class="val"><col class="lbl"><col class="val"></colgroup><tbody>`;
+  html += row2('ID No', get(COL.idNo), 'ID Profession', get(COL.idProfession));
+  html += row2('ID Exp (Gregorian)', get(COL.idExpGreg), 'ID Remaining Days', get(COL.idRemDays));
+  html += row2('Qiwa Start', get(COL.qiwaStart), 'Qiwa Ending', get(COL.qiwaEnd));
+  html += row2('Passport No', get(COL.ppNumber), 'PP Expiry', get(COL.ppExpiry));
+  html += `</tbody></table>`;
+
+  /* ── Alerts ── */
+  html += `<div class="alerts-block">`;
+
+  if (isEnded) {
+    html += `<p style="color:#888;margin:0;">Employee left ${v(jobEnded)} — no document alerts generated.</p>`;
+  } else {
+    const checks = [
+      { label: 'Iqama (ID)',   dateVal: get(COL.idExpGreg),  remDays: get(COL.idRemDays) },
+      { label: 'Passport',     dateVal: get(COL.ppExpiry),   remDays: null },
+      { label: 'Qiwa',         dateVal: get(COL.qiwaEnd),    remDays: null },
+    ];
+
+    let alertItems = [];
+    let worstLevel = 0; // 0=clear,1=yellow,2=orange,3=red
+
+    checks.forEach(ch => {
+      let days;
+      if (ch.remDays && ch.remDays !== '—' && !isNaN(+ch.remDays)) {
+        days = +ch.remDays;
+      } else {
+        days = daysDiff(ch.dateVal);
+      }
+      const emoji = alertEmoji(days);
+      if (!emoji || emoji === '🟢') {
+        if (days !== null) worstLevel = Math.max(worstLevel, 0);
+        return;
+      }
+      const level = emoji === '🔴' ? 3 : emoji === '🟠' ? 2 : 1;
+      worstLevel = Math.max(worstLevel, level);
+      const daysLabel = days === null ? '' : days < 0 ? ` (${Math.abs(days)}d overdue)` : ` (${days}d left)`;
+      alertItems.push(`<div class="alert-item">${emoji} <strong>${ch.label}</strong> — ${fmtDate(ch.dateVal)}${daysLabel}</div>`);
     });
-}
-                     
-     function searchEmployee() {
-    const employeeNumber = document.getElementById('employeeNumber').value.trim();
-    if (employeeNumber === "") {
-        alert("Please enter a valid Employee Number or ID No.");
-        return;
+
+    if (alertItems.length === 0) {
+      html += `<div class="alert-item">🟢 All documents checked — no immediate alerts.</div>`;
+    } else {
+      html += alertItems.join('');
     }
 
-    // Clear all previous data
-    clearAllData();
+    const verdictClass = worstLevel >= 3 ? 'verdict-red' : worstLevel >= 2 ? 'verdict-yellow' : worstLevel >= 1 ? 'verdict-yellow' : 'verdict-green';
+    const verdictText  = worstLevel >= 3 ? '🔴 Document Health: URGENT' : worstLevel >= 2 ? '🟠 Document Health: Attention' : worstLevel >= 1 ? '🟡 Document Health: Attention' : '🟢 Document Health: Clear';
+    html += `<div class="verdict-line ${verdictClass}">${verdictText}</div>`;
+  }
 
-    fetch('data.csv')
-        .then(response => response.text())
-        .then(csv => {
-            const rows = csv.split('\n');
-            const table = document.getElementById('data-table');
-            const body = table.querySelector('tbody');
+  html += `</div>`; // alerts-block
 
-            let found = false;
+  /* ── Footer ── */
+  html += `<div class="card-footer">
+    Printed: ${todayStr()}<br>
+    Created by: Qasim
+  </div>`;
 
-            for (let i = 1; i < rows.length; i++) {
-                const cells = rows[i].split(',');
-                if (cells[0] === employeeNumber || cells[30] === employeeNumber) {
-                    found = true;
-                    const orderedHeaders = [
-                        "Employee Number", "Names", "Mobile Number", "Nationality",
-                        "Job Title", "Location", "Joining Date", "Date of Birth",
-                        "Service Y-M-D Continuing", "Age Y-M-D", "Service Y-M-D Ended",
-                        "Trasp Status", "Basic", "Contract", "Food",
-                        "Tickets", "Other", "Housing", "Tr-10 %",
-                        "Trasp Status", "Other Trasp", "Medical", "Housing 25%",
-                        "Contract", "Total", "Annual Leave", "Qiwa Starting",
-                        "Tickets", "Qiwa Ending", "Status", "Id No",
-                        "Id Profession", "PP number", "Id Exp - Hijri", "Issue Place",
-                        "Id Exp - Gregorian", "Issue date", "ID - Remaining Days", "Expiry date",
-                        "Job Ended", "IBAN", "EMAIL"
-                    ];
-
-                    const headerMapping = {
-                        "Employee Number": 0,
-                        "Names": 1,
-                        "Mobile Number": 2,
-                        "Nationality": 3,
-                        "Job Title": 4,
-                        "Location": 5,
-                        "Joining Date": 7,
-                        "Service Y-M-D Continuing": 9,
-                        "Date of Birth": 10,
-                        "Age Y-M-D": 12,
-                        "Trasp Status": 21,
-                        "Basic": 14,
-                        "Contract": 23,
-                        "Food": 15,
-                        "Tickets": 25,
-                        "Other": 16,
-                        "Housing": 20,
-                        "Tr-10 %": 17,
-                        "Other Trasp": 18,
-                        "Medical": 22,
-                        "Housing 25%": 19,
-                        "Total": 13,
-                        "Annual Leave": 24,
-                        "Qiwa Starting": 26,
-                        "Qiwa Ending": 27,
-                        "Status": 28,
-                        "Id No": 30,
-                        "Duty Hours": 29,
-                        "Id Profession": 31,
-                        "PP number": 35,
-                        "Id Exp - Hijri": 32,
-                        "Issue Place": 36,
-                        "Id Exp - Gregorian": 33,
-                        "Issue date": 37,
-                        "ID - Remaining Days": 34,
-                        "Expiry date": 38,
-                        "Job Ended": 40,
-                        "Service Y-M-D Ended": 42,
-                        "IBAN": 43,
-                        "EMAIL": 44
-                    };
-
-                    for (let j = 0; j < orderedHeaders.length; j += 2) {
-                        const row = document.createElement('tr');
-
-                        const headerCell1 = document.createElement('th');
-                        headerCell1.textContent = orderedHeaders[j];
-                        row.appendChild(headerCell1);
-
-                        const valueCell1 = document.createElement('td');
-                        let value1 = cells[headerMapping[orderedHeaders[j]]] || ""; // Keep empty if value is "N/A"
-
-                        // Implement condition for "Service Y-M-D Continuing" field
-                        if (orderedHeaders[j] === "Service Y-M-D Continuing") {
-                            const serviceEndedValue = cells[headerMapping["Service Y-M-D Ended"]] || "";
-                            if (serviceEndedValue !== "") {
-                                value1 = ""; // Do not fetch or present "Service Y-M-D Continuing" if "Service Y-M-D Ended" is not empty
-                            }
-                        }
-
-                        // Check for text inside asterisks '*' and style it
-                        value1 = value1.replace(/\*([^*]+)\*/g, (match, p1) => {
-                            return `<span style="font-size: 16px; font-weight: bold; color: red;">${p1}</span>`;
-                        });
-
-                        valueCell1.innerHTML = value1; // Use innerHTML to render styled content
-
-                        // Highlight "Job Ended" if it's not empty
-                        if (orderedHeaders[j] === "Job Ended" && value1 !== "") {
-                            valueCell1.classList.add('highlight');
-                        }
-
-                        row.appendChild(valueCell1);
-
-                        if (j + 1 < orderedHeaders.length) {
-                            const headerCell2 = document.createElement('th');
-                            headerCell2.textContent = orderedHeaders[j + 1];
-                            row.appendChild(headerCell2);
-
-                            const valueCell2 = document.createElement('td');
-                            let value2 = cells[headerMapping[orderedHeaders[j + 1]]] || ""; // Keep empty if value is "N/A"
-
-                            // Implement condition for "Service Y-M-D Continuing" field
-                            if (orderedHeaders[j + 1] === "Service Y-M-D Continuing") {
-                                const serviceEndedValue = cells[headerMapping["Service Y-M-D Ended"]] || "";
-                                if (serviceEndedValue !== "") {
-                                    value2 = ""; // Do not fetch or present "Service Y-M-D Continuing" if "Service Y-M-D Ended" is not empty
-                                }
-                            }
-
-                            // Check for text inside asterisks '*' and style it
-                            value2 = value2.replace(/\*([^*]+)\*/g, (match, p1) => {
-                                return `<span style="font-size: 16px; font-weight: bold; color: red;">${p1}</span>`;
-                            });
-
-                            valueCell2.innerHTML = value2; // Use innerHTML to render styled content
-
-                            // Highlight "Job Ended" if it's not empty
-                            if (orderedHeaders[j + 1] === "Job Ended" && value2 !== "") {
-                                valueCell2.classList.add('highlight');
-                            }
-
-                            row.appendChild(valueCell2);
-                        }
-
-                        body.appendChild(row);
-                    }
-
-                    displayFooter();
-                    return;
-                }
-            }
-            if (!found) {
-                alert("Employee Number or ID No not found.");
-            }
-        })
-        .catch(error => {
-            console.error("Error fetching or processing data:", error);
-            alert("Failed to fetch or process data. Please check the data.csv file and try again.");
-        });
-    document.getElementById('employeeNumber').value = '';
+  html += `</div>`; // .card
+  return html;
 }
-                
-        function showHistoricalData() {
-    const employeeNumber = document.getElementById('employeeNumber').value.trim();
-    if (employeeNumber === "") {
-        alert("Please enter a valid Employee Number or ID No.");
-        return;
-    }
 
-    // Clear all previous data
-    clearAllData();
+/* ─── Search Employee ─── */
+function searchEmployee() {
+  const query = document.getElementById('employeeNumber').value.trim();
+  if (!query) { alert('Please enter an Employee Number or ID No.'); return; }
 
-    fetch('data.csv')
-        .then(response => response.text())
-        .then(csv => {
-            const rows = csv.split('\n');
-            let found = false;
-            const table = document.getElementById('data-table');
-            const body = table.querySelector('tbody');
+  document.getElementById('card-area').innerHTML = '<p style="text-align:center;color:#888;padding:40px 0;">Loading…</p>';
 
-            for (let i = 1; i < rows.length; i++) {
-                const cells = rows[i].split(',');
-                if (cells[0] === employeeNumber) {
-                    found = true;
-                    const orderedHeaders = [
-                        "Employee Number", "Names", "Job Title",
-                        "Joining Date", "DOB", "Age Y-M-D"
-                    ];
-
-                    const headerMapping = {
-                        "Employee Number": 0,
-                        "Names": 1,
-                        "Job Title": 4,
-                        "Joining Date": 7,
-                        "DOB": 10,
-                        "Age Y-M-D": 12
-                    };
-
-                    for (let j = 0; j < orderedHeaders.length; j += 2) {
-                        const row = document.createElement('tr');
-
-                        const headerCell1 = document.createElement('th');
-                        headerCell1.textContent = orderedHeaders[j];
-                        row.appendChild(headerCell1);
-
-                        const valueCell1 = document.createElement('td');
-                        const value1 = cells[headerMapping[orderedHeaders[j]]] || ""; // Keep empty if value is "N/A"
-                        valueCell1.textContent = value1;
-                        row.appendChild(valueCell1);
-
-                        if (j + 1 < orderedHeaders.length) {
-                            const headerCell2 = document.createElement('th');
-                            headerCell2.textContent = orderedHeaders[j + 1];
-                            row.appendChild(headerCell2);
-
-                            const valueCell2 = document.createElement('td');
-                            const value2 = cells[headerMapping[orderedHeaders[j + 1]]] || ""; // Keep empty if value is "N/A"
-                            valueCell2.textContent = value2;
-                            row.appendChild(valueCell2);
-                        }
-
-                        body.appendChild(row);
-                    }
-
-                    displayFooter();
-                }
-            }
-            if (!found) {
-                alert("Employee Number not found.");
-            }
-        })
-        .catch(error => {
-            console.error("Error fetching or processing data:", error);
-            alert("Failed to fetch or process data. Please check the data.csv file and try again.");
-        });
-
-        
-    fetch('data1.csv')
-    .then(response => response.text())
+  fetch('data.csv')
+    .then(r => r.text())
     .then(csv => {
-        const rows = csv.split('\n');
-        const headers = ["Date", "Event Description", "Category"];
-        const columnWidths = [11, 72.35, 16.65]; // Updated column widths in percentage
-        const secondTable = document.createElement('table');
-        secondTable.style.marginTop = "20px";
-        secondTable.style.width = "80%";
-        secondTable.style.borderCollapse = "collapse";
+      const rows = parseCSV(csv);
+      let found = null;
 
-        const headerRow = document.createElement('tr');
-        headers.forEach((header, index) => {
-        const th = document.createElement('th');
-        th.textContent = header;
-        th.style.border = "1px solid black";
-        th.style.textAlign = "center"; // Align text to the center
-        th.style.paddingLeft = "0px"; // Remove left padding since text is centered
-        th.style.width = `${columnWidths[index]}%`; // Assign updated width
-        th.style.fontSize = "18px"; // Set text size to 18px 
-        th.style.color = "blue"; // Set text color to blue
-        headerRow.appendChild(th);
-    });
-        secondTable.appendChild(headerRow);
+      for (let i = 1; i < rows.length; i++) {
+        const cells = rows[i];
+        const empNum = (cells[COL.empNum] || '').trim();
+        const idNo   = (cells[COL.idNo]   || '').trim();
+        if (empNum === query || idNo === query) { found = cells; break; }
+      }
 
-        let found = false;
-        for (let i = 1; i < rows.length; i++) {
-            const cells = rows[i].split(',');
-            if (cells[0] === employeeNumber) {
-                found = true;
-                const row = document.createElement('tr');
-                const columns = [1, 2, 3];
-                columns.forEach(columnIndex => {
-                    const td = document.createElement('td');
-                    let value = cells[columnIndex]?.trim() || ""; // Keep empty if value is "N/A"
-                    
-                    // Check for text inside asterisks '*' and style it
-                    const styledText = value.replace(/\*([^*]+)\*/g, (match, p1) => {
-                        return `<span style="font-size: 16px; font-weight: bold; color: red;">${p1}</span>`;
-                    });
+      if (!found) {
+        // Find 3 closest numeric matches
+        const nums = rows.slice(1).map(r => (r[COL.empNum]||'').trim()).filter(n => n);
+        const close = nums
+          .map(n => ({ n, diff: Math.abs(+n - +query) }))
+          .sort((a,b) => a.diff - b.diff)
+          .slice(0,3).map(x => x.n);
+        document.getElementById('card-area').innerHTML =
+          `<p style="text-align:center;color:#c0392b;padding:40px 0;font-size:15px;">
+            Employee not found for "<strong>${query}</strong>".
+            ${close.length ? `<br>Closest matches: <strong>${close.join(', ')}</strong>` : ''}
+          </p>`;
+        return;
+      }
 
-                    td.innerHTML = styledText; // Use innerHTML to apply styled text
-                    td.style.border = "1px solid black";
-                    td.style.textAlign = "left"; // Align text to the left
-                    td.style.paddingLeft = "10px"; // Increase indent by adding left padding
-                    row.appendChild(td);
-                });
-                secondTable.appendChild(row);
-            }
-        }
-
-        if (!found) {
-            alert("No Historical Data found for the given Employee Number.");
-            return;
-        }
-
-        let container = document.getElementById('second-table-container');
-        if (!container) {
-            container = document.createElement('div');
-            container.id = 'second-table-container';
-            document.getElementById('data-table').parentElement.appendChild(container);
-        }
-
-        container.appendChild(secondTable);
-        displayFooter();
+      document.getElementById('card-area').innerHTML = renderCard(found);
     })
-    .catch(error => {
-        console.error("Error fetching or processing data1.csv:", error);
-        alert("Failed to fetch or process data1.csv. Please check the file and try again.");
+    .catch(err => {
+      console.error(err);
+      document.getElementById('card-area').innerHTML =
+        `<p style="text-align:center;color:#c0392b;padding:40px 0;">Failed to load data.csv — ${err.message}</p>`;
     });
+
+  document.getElementById('employeeNumber').value = '';
 }
 
-function clearAllData() {
-    const table = document.getElementById('data-table');
-    const body = table.querySelector('tbody');
-    if (body) {
-        body.innerHTML = '';
+/* ─── Historical Data ─── */
+function showHistoricalData() {
+  const query = document.getElementById('employeeNumber').value.trim();
+  if (!query) { alert('Please enter an Employee Number.'); return; }
+
+  Promise.all([
+    fetch('data.csv').then(r => r.text()),
+    fetch('data1.csv').then(r => r.text()).catch(() => null)
+  ]).then(([csv, csv1]) => {
+    const rows = parseCSV(csv);
+    let empCells = null;
+    for (let i = 1; i < rows.length; i++) {
+      if ((rows[i][COL.empNum]||'').trim() === query) { empCells = rows[i]; break; }
     }
 
-    const secondTableContainer = document.getElementById('second-table-container');
-    if (secondTableContainer) {
-        secondTableContainer.innerHTML = '';
+    let html = `<div class="card">`;
+
+    /* Mini identity header */
+    if (empCells) {
+      const name = v(empCells[COL.name]);
+      html += `<div class="card-hdr">
+        <img src="nour_energy_logo.png" alt="Logo" onerror="this.style.display='none'">
+        <div class="card-hdr-text">
+          <p class="emp-name">${rtlWrap(name)}</p>
+          <p class="emp-num">${v(empCells[COL.empNum])} — Historical Record</p>
+        </div>
+      </div>`;
+
+      html += `<div class="sec-hdr">Employee Snapshot</div>`;
+      html += `<table class="dtbl"><colgroup><col class="lbl"><col class="val"><col class="lbl"><col class="val"></colgroup><tbody>`;
+      html += `<tr><td class="lbl-cell">Employee No</td><td>${v(empCells[COL.empNum])}</td><td class="lbl-cell">Name</td><td>${rtlWrap(v(empCells[COL.name]))}</td></tr>`;
+      html += `<tr><td class="lbl-cell">Job Title</td><td>${v(empCells[COL.jobTitle])}</td><td class="lbl-cell">Joining Date</td><td>${v(empCells[COL.joiningDate])}</td></tr>`;
+      html += `<tr><td class="lbl-cell">Date of Birth</td><td>${v(empCells[COL.dob])}</td><td class="lbl-cell">Age</td><td>${v(empCells[COL.age])}</td></tr>`;
+      html += `</tbody></table>`;
+    } else {
+      html += `<p style="color:#c0392b;padding:20px 0;">Employee Number not found in data.csv.</p>`;
     }
 
-    const footerDiv = document.getElementById('footer-info');
-    if (footerDiv) {
-        footerDiv.innerHTML = '';
+    /* History events from data1.csv */
+    if (csv1) {
+      const hrows = parseCSV(csv1);
+      const matched = hrows.slice(1).filter(r => (r[0]||'').trim() === query);
+
+      html += `<div class="sec-hdr">Event History</div>`;
+      if (matched.length === 0) {
+        html += `<p style="padding:10px 0;color:#888;font-size:13px;">No historical events found for this employee.</p>`;
+      } else {
+        html += `<table class="history-tbl"><thead><tr>
+          <th style="width:13%">Date</th>
+          <th style="width:70%">Event Description</th>
+          <th style="width:17%">Category</th>
+        </tr></thead><tbody>`;
+        matched.forEach(r => {
+          const date = v(r[1]);
+          let desc  = (r[2]||'').trim();
+          const cat  = v(r[3]);
+          // Style *text* in red bold
+          desc = desc.replace(/\*([^*]+)\*/g, `<span style="font-size:13px;font-weight:bold;color:#c0392b;">$1</span>`);
+          html += `<tr><td>${date}</td><td>${desc}</td><td>${cat}</td></tr>`;
+        });
+        html += `</tbody></table>`;
+      }
     }
+
+    html += `<div class="card-footer">Printed: ${todayStr()}<br>Created by: Qasim</div>`;
+    html += `</div>`;
+    document.getElementById('card-area').innerHTML = html;
+  }).catch(err => {
+    document.getElementById('card-area').innerHTML =
+      `<p style="text-align:center;color:#c0392b;padding:40px 0;">Error loading data — ${err.message}</p>`;
+  });
+
+  document.getElementById('employeeNumber').value = '';
 }
-
-function displayFooter() {
-    const footerDiv = document.getElementById('footer-info') || document.createElement('div');
-    footerDiv.id = 'footer-info';
-
-   footerDiv.innerHTML = `Created by: Qasim`;
-    
-    // Locate the second table or fallback to the first table's parent container
-    const secondTableContainer = document.getElementById('second-table-container');
-    const parentContainer = secondTableContainer || document.getElementById('data-table').parentElement;
-
-    // Append the footer below the second table or the first table
-    parentContainer.appendChild(footerDiv);
-}
-            </script>
+</script>
 </body>
 </html>
