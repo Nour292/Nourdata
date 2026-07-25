@@ -70,6 +70,8 @@ html, body { margin: 0; padding: 0; font-family: 'Calibri', sans-serif; backgrou
 }
 #searchButton { background: #2e86c1; color: #fff; }
 #searchButton:hover { background: #1a5276; }
+#deepSearchButton { background: #6c3483; color: #fff; }
+#deepSearchButton:hover { background: #512e5f; }
 #printButton  { background: #f9e400; color: #111; }
 #printButton:hover  { background: #e5d200; }
 #clearButton  { background: #e74c3c; color: #fff; }
@@ -289,7 +291,55 @@ html, body { margin: 0; padding: 0; font-family: 'Calibri', sans-serif; backgrou
 
 
 
-/* ── Empty state ── */
+/* ── Deep Search Results ── */
+.ds-wrap {
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 3px 18px rgba(0,0,0,0.13);
+  padding: 20px 26px 18px;
+}
+.ds-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 14px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid #d5e8f5;
+}
+.ds-header img { height: 52px; width: auto; }
+.ds-header span {
+  font-size: 16px;
+  font-weight: 700;
+  color: #1a5276;
+}
+.ds-tbl {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+.ds-tbl th {
+  background: #1a5276;
+  color: #fff;
+  padding: 7px 10px;
+  text-align: left;
+  font-size: 13px;
+  font-weight: 700;
+  print-color-adjust: exact;
+  -webkit-print-color-adjust: exact;
+}
+.ds-tbl td {
+  border: 1px solid #c8d8e8;
+  padding: 6px 10px;
+  vertical-align: middle;
+}
+.ds-tbl tr:nth-child(even) td { background: #f7fbff; }
+.ds-tbl tr:hover td { background: #eaf4fb; cursor: pointer; }
+.ds-count {
+  font-size: 12px;
+  color: #888;
+  margin-top: 8px;
+  text-align: right;
+}
 #card-area:empty::after {
   content: 'Enter an Employee Number above and press Search.';
   display: block;
@@ -361,6 +411,7 @@ html, body { margin: 0; padding: 0; font-family: 'Calibri', sans-serif; backgrou
       </div>
       <div id="btn-row">
         <button id="searchButton" onclick="searchEmployee()">Search</button>
+        <button id="deepSearchButton" onclick="deepSearch()" style="display:none;">Deep Search</button>
         <button id="printButton" onclick="window.print()">Print</button>
         <button id="clearButton" onclick="clearCard()">Clear Data</button>
       </div>
@@ -422,6 +473,9 @@ function unlockApp() {
   document.getElementById('pw-input').value = '';
   document.getElementById('pw-error').textContent = '';
   document.getElementById('logoutButton').style.display = 'block';
+  // Deep Search only for admin
+  document.getElementById('deepSearchButton').style.display =
+    currentAccessLevel === 'admin' ? 'block' : 'none';
   document.getElementById('employeeNumber').focus();
 }
 
@@ -431,12 +485,94 @@ function logout() {
   csvRows = null;
   clearCard();
   document.getElementById('logoutButton').style.display = 'none';
+  document.getElementById('deepSearchButton').style.display = 'none';
   document.getElementById('pw-overlay').style.display = 'flex';
   document.getElementById('pw-input').focus();
 }
 
-/* ─── Clear Card ─── */
-function clearCard() {
+/* ─── Deep Search ─── */
+function deepSearch() {
+  const query = document.getElementById('employeeNumber').value.trim().toLowerCase();
+  if (!query) { alert('Type something in the search box first.'); return; }
+
+  const doSearch = (rows) => {
+    // Match against emp number, name, mobile, job title, nationality, location
+    const matched = rows.slice(1).filter(r => {
+      return [
+        r[COL.empNum], r[COL.name], r[COL.mobile],
+        r[COL.jobTitle], r[COL.nationality], r[COL.location]
+      ].some(cell => (cell||'').toLowerCase().includes(query));
+    });
+
+    if (matched.length === 0) {
+      document.getElementById('card-area').innerHTML =
+        `<p style="text-align:center;color:#c0392b;padding:40px 0;font-size:15px;">No results found for "<strong>${query}</strong>".</p>`;
+      return;
+    }
+
+    let html = `<div class="ds-wrap">`;
+    // Header with logo
+    html += `<div class="ds-header">
+      <img src="nour_energy_logo.png" alt="Logo" onerror="this.style.display='none'">
+      <span>Deep Search Results — "${query}"</span>
+    </div>`;
+
+    // Table
+    html += `<table class="ds-tbl">
+      <thead><tr>
+        <th>Emp No</th>
+        <th>Name</th>
+        <th>Mobile</th>
+        <th>Job Title</th>
+        <th>Nationality</th>
+        <th>Location</th>
+      </tr></thead><tbody>`;
+
+    matched.forEach(r => {
+      const empNo  = v(r[COL.empNum]);
+      const name   = v(r[COL.name]);
+      const mobile = v(r[COL.mobile]);
+      const title  = v(r[COL.jobTitle]);
+      const nat    = v(r[COL.nationality]);
+      const loc    = v(r[COL.location]);
+      // Click row to load full card
+      html += `<tr onclick="loadCardByEmpNum('${(r[COL.empNum]||'').trim()}')">
+        <td>${empNo}</td>
+        <td>${rtlWrap(name)}</td>
+        <td>${mobile}</td>
+        <td>${title}</td>
+        <td>${nat}</td>
+        <td>${loc}</td>
+      </tr>`;
+    });
+
+    html += `</tbody></table>`;
+    html += `<div class="ds-count">${matched.length} record${matched.length !== 1 ? 's' : ''} found — click a row to open full card</div>`;
+    html += `</div>`;
+    document.getElementById('card-area').innerHTML = html;
+  };
+
+  if (csvRows) {
+    doSearch(csvRows);
+  } else {
+    fetch('Master File - Test copy.csv')
+      .then(r => r.text())
+      .then(csv => { csvRows = parseCSV(csv); doSearch(csvRows); })
+      .catch(err => {
+        document.getElementById('card-area').innerHTML =
+          `<p style="text-align:center;color:#c0392b;padding:40px 0;">Failed to load data — ${err.message}</p>`;
+      });
+  }
+}
+
+/* ─── Load full card by clicking a Deep Search row ─── */
+function loadCardByEmpNum(empNum) {
+  if (!csvRows) return;
+  const found = csvRows.slice(1).find(r => (r[COL.empNum]||'').trim() === empNum);
+  if (found) {
+    document.getElementById('card-area').innerHTML = renderCard(found, currentAccessLevel);
+  }
+}
   document.getElementById('card-area').innerHTML = '';
   document.getElementById('employeeNumber').value = '';
   document.getElementById('employeeNumber').focus();
