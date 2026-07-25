@@ -33,15 +33,13 @@ html, body { margin: 0; padding: 0; font-family: 'Calibri', sans-serif; backgrou
 #top-bar-left h1 {
   font-size: 26px;
   color: #1a5276;
-  margin: 0 0 14px 0;
+  margin: 0 0 10px 0;
   font-weight: 700;
   letter-spacing: 0.3px;
 }
-#search-row {
-  display: flex;
-  gap: 10px;
-  align-items: center;
+#input-row {
   width: 100%;
+  margin-bottom: 8px;
 }
 #employeeNumber {
   font-family: 'Arial Black', sans-serif;
@@ -49,17 +47,20 @@ html, body { margin: 0; padding: 0; font-family: 'Calibri', sans-serif; backgrou
   padding: 10px 14px;
   border: 2px solid #aaa;
   border-radius: 6px;
-  width: 270px;
-  min-width: 200px;
-  flex-shrink: 0;
+  width: 100%;
   height: 46px;
+  box-sizing: border-box;
 }
-/* buttons share remaining space equally */
-#search-row button {
+#btn-row {
+  display: flex;
+  gap: 10px;
+  width: 100%;
+}
+#btn-row button {
   flex: 1;
   height: 46px;
   font-family: 'Calibri', sans-serif;
-  font-size: 16px;
+  font-size: 17px;
   font-weight: bold;
   border: none;
   border-radius: 6px;
@@ -67,12 +68,12 @@ html, body { margin: 0; padding: 0; font-family: 'Calibri', sans-serif; backgrou
   padding: 0;
   white-space: nowrap;
 }
-#searchButton  { background: #2e86c1; color: #fff; }
-#searchButton:hover  { background: #1a5276; }
-#printButton   { background: #f9e400; color: #111; }
-#printButton:hover   { background: #e5d200; }
-#clearButton   { background: #e74c3c; color: #fff; }
-#clearButton:hover   { background: #c0392b; }
+#searchButton { background: #2e86c1; color: #fff; }
+#searchButton:hover { background: #1a5276; }
+#printButton  { background: #f9e400; color: #111; }
+#printButton:hover  { background: #e5d200; }
+#clearButton  { background: #e74c3c; color: #fff; }
+#clearButton:hover  { background: #c0392b; }
 
 /* ── Logo ── */
 #top-bar-right {
@@ -329,8 +330,10 @@ html, body { margin: 0; padding: 0; font-family: 'Calibri', sans-serif; backgrou
   <div id="top-bar">
     <div id="top-bar-left">
       <h1>Nour Energy Data</h1>
-      <div id="search-row">
+      <div id="input-row">
         <input type="text" id="employeeNumber" placeholder="Employee Number or ID No">
+      </div>
+      <div id="btn-row">
         <button id="searchButton" onclick="searchEmployee()">Search</button>
         <button id="printButton" onclick="window.print()">Print</button>
         <button id="clearButton" onclick="clearCard()">Clear Data</button>
