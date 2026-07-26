@@ -99,6 +99,76 @@ html, body { margin: 0; padding: 0; font-family: 'Calibri', sans-serif; backgrou
 #dataFormButton { background: #117a65; color: #fff; }
 #dataFormButton:hover { background: #0e6655; }
 
+/* ── Inline Tab Row ── */
+#tab-row {
+  display: flex;
+  width: 100%;
+  margin-top: 8px;
+  border-radius: 6px;
+  overflow: hidden;
+  border: 2px solid #1a5276;
+}
+.inline-tab {
+  flex: 1;
+  height: 40px;
+  font-family: 'Calibri', sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  border: none;
+  background: #eaf2fb;
+  color: #1a5276;
+  cursor: pointer;
+  border-right: 1px solid #1a5276;
+}
+.inline-tab:last-child { border-right: none; }
+.inline-tab.active { background: #1a5276; color: #fff; }
+.inline-tab:hover:not(.active) { background: #d5e8f5; }
+
+/* ── Inline Search Panel ── */
+#inline-search-panel {
+  background: #fff;
+  border-radius: 0 0 10px 10px;
+  box-shadow: 0 3px 18px rgba(0,0,0,0.10);
+  padding: 18px 20px 20px;
+  margin-top: 0;
+  width: 940px;
+  box-sizing: border-box;
+  margin-bottom: 16px;
+}
+.ipane { width: 100%; }
+#isl-ds-row { display: flex; gap: 10px; margin-bottom: 14px; }
+#isl-ds-input {
+  flex: 1; padding: 9px 14px; font-size: 15px;
+  border: 2px solid #aaa; border-radius: 6px;
+}
+#isl-ds-row button {
+  padding: 9px 22px; font-size: 15px; font-weight: bold;
+  background: #2e86c1; color: #fff; border: none;
+  border-radius: 6px; cursor: pointer;
+}
+#isl-ds-row button:hover { background: #1a5276; }
+#isl-quick-btns { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 4px; }
+#isl-quick-btns button {
+  padding: 7px 14px; font-size: 13px; font-weight: 600;
+  border: 1px solid #d5e8f5; border-radius: 5px;
+  background: #eaf2fb; color: #1a5276; cursor: pointer;
+}
+#isl-quick-btns button:hover { background: #2e86c1; color: #fff; }
+#isl-filter-grid { display: flex; flex-direction: column; gap: 8px; }
+#isl-col-picks { display: flex; flex-wrap: wrap; gap: 8px 16px; margin-bottom: 4px; }
+#isl-col-picks label { font-size: 13px; color: #333; cursor: pointer; display: flex; align-items: center; gap: 5px; }
+#isl-filter-actions { display: flex; gap: 12px; margin-top: 14px; }
+#isl-filter-actions button {
+  padding: 9px 22px; font-size: 14px; font-weight: bold;
+  border: none; border-radius: 6px; cursor: pointer;
+}
+#isl-run-btn { background: #1a5276; color: #fff; }
+#isl-run-btn:hover { background: #154360; }
+#isl-filter-actions button:last-child { background: #e5e7e9; color: #333; }
+#isl-ds-result, #isl-list-result { margin-top: 14px; }
+@media screen { #inline-search-panel { width: 100%; } }
+@media print { #inline-search-panel, #tab-row { display: none !important; } }
+
 /* ── Data Form Modal ── */
 #df-overlay {
   display: none;
@@ -686,9 +756,112 @@ html, body { margin: 0; padding: 0; font-family: 'Calibri', sans-serif; backgrou
         <button id="clearButton" onclick="clearCard()">Clear Data</button>
         <button id="dataFormButton" onclick="openDataForm()" style="display:none;">➕ Add / Update</button>
       </div>
+      <!-- Tab row — below 4 buttons, admin only -->
+      <div id="tab-row" style="display:none;">
+        <button class="inline-tab active" id="itab-deep" onclick="switchInlineTab('deep')">🔍 Deep Search</button>
+        <button class="inline-tab" id="itab-lists" onclick="switchInlineTab('lists')">📋 Smart Lists</button>
+      </div>
     </div>
     <div id="top-bar-right">
       <img src="nour_energy_logo.png" alt="Nour Energy Logo">
+    </div>
+  </div>
+
+  <!-- Inline Search Panel -->
+  <div id="inline-search-panel" style="display:none;">
+
+    <!-- Deep Search pane -->
+    <div id="ipane-deep" class="ipane">
+      <div id="isl-ds-row">
+        <input type="text" id="isl-ds-input" placeholder="Type anything — searches all 37 fields…">
+        <button onclick="runInlineDeepSearch()">Search</button>
+      </div>
+      <div id="isl-ds-result"></div>
+      <div id="isl-ds-print-bar" style="display:none;">
+        <button class="sl-print-btn" onclick="printInlineResult('ds')">🖨 Print Result</button>
+      </div>
+    </div>
+
+    <!-- Smart Lists pane -->
+    <div id="ipane-lists" class="ipane" style="display:none;">
+
+      <div class="sl-section-hdr">Quick Lists</div>
+      <div id="isl-quick-btns">
+        <button onclick="runInlineQuickList('active')">🟢 Active Employees</button>
+        <button onclick="runInlineQuickList('ended')">🔴 Job Ended</button>
+        <button onclick="runInlineQuickList('iqama30')">🟠 Iqama — 30 Days</button>
+        <button onclick="runInlineQuickList('iqama60')">🟡 Iqama — 60 Days</button>
+        <button onclick="runInlineQuickList('iqama90')">⚪ Iqama — 90 Days</button>
+        <button onclick="runInlineQuickList('pp30')">🟠 Passport — 30 Days</button>
+        <button onclick="runInlineQuickList('pp60')">🟡 Passport — 60 Days</button>
+        <button onclick="runInlineQuickList('pp90')">⚪ Passport — 90 Days</button>
+        <button onclick="runInlineQuickList('qiwa30')">🟠 Qiwa — 30 Days</button>
+        <button onclick="runInlineQuickList('qiwa60')">🟡 Qiwa — 60 Days</button>
+        <button onclick="runInlineQuickList('qiwa90')">⚪ Qiwa — 90 Days</button>
+      </div>
+
+      <div class="sl-section-hdr">Combined Filter</div>
+      <div id="isl-filter-grid">
+        <div class="sl-filter-row"><label>Job Title</label><input type="text" id="ifl-jobTitle" placeholder="e.g. Driver"></div>
+        <div class="sl-filter-row"><label>Location</label><input type="text" id="ifl-location" placeholder="e.g. Riyadh"></div>
+        <div class="sl-filter-row"><label>Nationality</label><input type="text" id="ifl-nationality" placeholder="e.g. Pakistani"></div>
+        <div class="sl-filter-row">
+          <label>Age</label>
+          <select id="ifl-age-op">
+            <option value="">— Any —</option>
+            <option value="lt">Under</option>
+            <option value="gte">Above or Equal</option>
+            <option value="between">Between</option>
+            <option value="exact">Exact</option>
+          </select>
+          <input type="number" id="ifl-age-val1" placeholder="e.g. 50" min="0" max="99">
+          <span id="ifl-age-and" style="display:none;">and</span>
+          <input type="number" id="ifl-age-val2" placeholder="e.g. 60" min="0" max="99" style="display:none;">
+        </div>
+        <div class="sl-filter-row"><label>Marital Status</label>
+          <select id="ifl-marital">
+            <option value="">— Any —</option>
+            <option>Single</option><option>Married</option><option>Divorced</option><option>Widowed</option>
+          </select>
+        </div>
+        <div class="sl-filter-row"><label>Status</label><input type="text" id="ifl-status" placeholder="e.g. Active"></div>
+        <div class="sl-filter-row"><label>Job Ended</label>
+          <select id="ifl-ended">
+            <option value="no">Active only</option>
+            <option value="yes">Include ended</option>
+            <option value="only">Only ended</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="sl-section-hdr">Extra Columns</div>
+      <div id="isl-col-picks">
+        <label><input type="checkbox" value="jobTitle" checked> Job Title</label>
+        <label><input type="checkbox" value="location"> Location</label>
+        <label><input type="checkbox" value="nationality"> Nationality</label>
+        <label><input type="checkbox" value="age" checked> Age</label>
+        <label><input type="checkbox" value="mobile"> Mobile</label>
+        <label><input type="checkbox" value="maritalStatus"> Marital Status</label>
+        <label><input type="checkbox" value="joiningDate"> Joining Date</label>
+        <label><input type="checkbox" value="idExpGreg"> Iqama Expiry</label>
+        <label><input type="checkbox" value="idRemDays"> Iqama Days Left</label>
+        <label><input type="checkbox" value="ppExpiry"> Passport Expiry</label>
+        <label><input type="checkbox" value="qiwaEnd"> Qiwa Ending</label>
+        <label><input type="checkbox" value="jobEnded"> Job Ended</label>
+        <label><input type="checkbox" value="email"> Email</label>
+        <label><input type="checkbox" value="iban"> IBAN</label>
+      </div>
+
+      <div id="isl-filter-actions">
+        <button id="isl-run-btn" onclick="runInlineCombinedFilter()">▶ Generate List</button>
+        <button onclick="resetInlineFilter()">↺ Reset</button>
+      </div>
+
+      <div id="isl-list-result"></div>
+      <div id="isl-list-print-bar" style="display:none;">
+        <button class="sl-print-btn" onclick="printInlineResult('list')">🖨 Print Result</button>
+      </div>
+
     </div>
   </div>
 
@@ -792,6 +965,7 @@ function unlockApp() {
   const isAdmin = currentAccessLevel === 'admin';
   document.getElementById('deepSearchButton').style.display = isAdmin ? 'block' : 'none';
   document.getElementById('dataFormButton').style.display  = isAdmin ? 'block' : 'none';
+  document.getElementById('tab-row').style.display         = isAdmin ? 'flex'  : 'none';
   document.getElementById('employeeNumber').focus();
 }
 
@@ -803,6 +977,8 @@ function logout() {
   document.getElementById('logoutButton').style.display    = 'none';
   document.getElementById('deepSearchButton').style.display = 'none';
   document.getElementById('dataFormButton').style.display  = 'none';
+  document.getElementById('tab-row').style.display         = 'none';
+  document.getElementById('inline-search-panel').style.display = 'none';
   document.getElementById('pw-overlay').style.display = 'flex';
   document.getElementById('pw-input').focus();
 }
@@ -1974,6 +2150,179 @@ function resetFilter() {
   document.getElementById('fl-ended').value = 'no';
   document.getElementById('sl-list-result').innerHTML = '';
   document.getElementById('sl-list-print-bar').style.display = 'none';
+}
+
+/* ════════════════════════════
+   INLINE SEARCH & LISTS
+════════════════════════════ */
+let inlineCurrentTab = 'deep';
+
+function switchInlineTab(tab) {
+  inlineCurrentTab = tab;
+  document.getElementById('itab-deep').classList.toggle('active', tab === 'deep');
+  document.getElementById('itab-lists').classList.toggle('active', tab === 'lists');
+  document.getElementById('ipane-deep').style.display  = tab === 'deep'  ? 'block' : 'none';
+  document.getElementById('ipane-lists').style.display = tab === 'lists' ? 'block' : 'none';
+  document.getElementById('inline-search-panel').style.display = 'block';
+  if (tab === 'deep') setTimeout(() => { document.getElementById('isl-ds-input').focus(); }, 50);
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  // Inline deep search enter key
+  const dsi = document.getElementById('isl-ds-input');
+  if (dsi) dsi.addEventListener('keyup', e => { if (e.key === 'Enter') runInlineDeepSearch(); });
+  // Inline age filter
+  const aop = document.getElementById('ifl-age-op');
+  if (aop) aop.addEventListener('change', function() {
+    const b = this.value === 'between';
+    document.getElementById('ifl-age-and').style.display  = b ? 'inline' : 'none';
+    document.getElementById('ifl-age-val2').style.display = b ? 'inline-block' : 'none';
+  });
+  // Modal age filter
+  const maop = document.getElementById('fl-age-op');
+  if (maop) maop.addEventListener('change', function() {
+    const b = this.value === 'between';
+    document.getElementById('fl-age-and').style.display  = b ? 'inline' : 'none';
+    document.getElementById('fl-age-val2').style.display = b ? 'inline-block' : 'none';
+  });
+});
+
+function runInlineDeepSearch() {
+  const query = document.getElementById('isl-ds-input').value.trim().toLowerCase();
+  if (!query) { alert('Type something to search.'); return; }
+  const doSearch = (rows) => {
+    const results = [];
+    rows.slice(1).forEach(r => {
+      const matchedCols = [];
+      DS_ALL_COLS.forEach(col => { if ((r[col.idx]||'').toLowerCase().includes(query)) matchedCols.push(col); });
+      if (matchedCols.length > 0) results.push({ r, matchedCols });
+    });
+    if (results.length === 0) {
+      document.getElementById('isl-ds-result').innerHTML = `<p style="color:#c0392b;font-size:14px;">No results for "<strong>${query}</strong>".</p>`;
+      document.getElementById('isl-ds-print-bar').style.display = 'none';
+      return;
+    }
+    const extraColKeys = new Set();
+    results.forEach(({ matchedCols }) => matchedCols.forEach(col => { if (!DS_FIXED_IDX.has(col.idx)) extraColKeys.add(col.key); }));
+    const extraCols = DS_ALL_COLS.filter(c => extraColKeys.has(c.key));
+    let html = `<div class="ds-wrap"><div class="ds-header">
+      <img src="nour_energy_logo.png" alt="Logo" onerror="this.style.display='none'">
+      <span>Deep Search — "<em>${query}</em>" · ${results.length} record${results.length!==1?'s':''}</span>
+    </div><table class="ds-tbl"><thead><tr>`;
+    DS_FIXED.forEach(c => { html += `<th>${c.label}</th>`; });
+    extraCols.forEach(c => { html += `<th>${c.label}</th>`; });
+    html += `</tr></thead><tbody>`;
+    results.forEach(({ r, matchedCols }) => {
+      const midx = new Set(matchedCols.map(c => c.idx));
+      html += `<tr onclick="loadCardByEmpNum('${(r[COL.empNum]||'').trim().replace(/'/g,"\\'")}')">`;
+      DS_FIXED.forEach(c => { html += `<td class="${midx.has(c.idx)?' ds-match':''}">${c.idx===COL.name?rtlWrap(v(r[c.idx])):v(r[c.idx])}</td>`; });
+      extraCols.forEach(c => { html += `<td class="${midx.has(c.idx)?' ds-match':''}">${v(r[c.idx])}</td>`; });
+      html += `</tr>`;
+    });
+    html += `</tbody></table><div class="ds-count">${results.length} record${results.length!==1?'s':''} — click row to open card</div>
+    <div class="card-footer">Printed: ${todayStr()}<br>Created by: Qasim</div></div>`;
+    document.getElementById('isl-ds-result').innerHTML = html;
+    document.getElementById('isl-ds-print-bar').style.display = 'block';
+  };
+  if (csvRows) doSearch(csvRows);
+  else fetch('Master File - Test copy.csv').then(r=>r.text()).then(csv=>{csvRows=parseCSV(csv);doSearch(csvRows);})
+       .catch(()=>{ document.getElementById('isl-ds-result').innerHTML='<p style="color:#c0392b">Failed to load data.</p>'; });
+}
+
+function runInlineQuickList(type) {
+  const doList = (rows) => {
+    let filtered=[], extraCols=[], title='';
+    const active = rows.slice(1).filter(r=>{ const je=(r[COL.jobEnded]||'').trim(); return je===''||je==='—'; });
+    if (type==='active') { filtered=active; extraCols=[SL_COL_MAP.jobTitle,SL_COL_MAP.location,SL_COL_MAP.nationality]; title='🟢 Active Employees'; }
+    else if (type==='ended') { filtered=rows.slice(1).filter(r=>{ const je=(r[COL.jobEnded]||'').trim(); return je!==''&&je!=='—'; }); extraCols=[SL_COL_MAP.jobTitle,SL_COL_MAP.location,SL_COL_MAP.jobEnded]; title='🔴 Job Ended'; }
+    else {
+      const days=parseInt(type.replace(/[^0-9]/g,''));
+      if (type.startsWith('iqama')) { extraCols=[SL_COL_MAP.jobTitle,SL_COL_MAP.idExpGreg,SL_COL_MAP.idRemDays]; title=`🟠 Iqama — Within ${days} Days`; filtered=active.filter(r=>{ const d=parseRemDays(r[COL.idRemDays]); return d!==null&&d>=0&&d<=days; }); }
+      else if (type.startsWith('pp')) { extraCols=[SL_COL_MAP.jobTitle,SL_COL_MAP.ppExpiry]; title=`🟠 Passport — Within ${days} Days`; filtered=active.filter(r=>{ const d=daysDiff((r[COL.ppExpiry]||'').trim()); return d!==null&&d>=0&&d<=days; }); }
+      else { extraCols=[SL_COL_MAP.jobTitle,SL_COL_MAP.qiwaEnd]; title=`🟠 Qiwa — Within ${days} Days`; filtered=active.filter(r=>{ const d=daysDiff((r[COL.qiwaEnd]||'').trim()); return d!==null&&d>=0&&d<=days; }); }
+    }
+    document.getElementById('isl-list-result').innerHTML = buildResultTable(filtered, extraCols, title);
+    document.getElementById('isl-list-print-bar').style.display = filtered.length > 0 ? 'block' : 'none';
+  };
+  if (csvRows) doList(csvRows);
+  else fetch('Master File - Test copy.csv').then(r=>r.text()).then(csv=>{csvRows=parseCSV(csv);doList(csvRows);})
+       .catch(()=>{ document.getElementById('isl-list-result').innerHTML='<p style="color:#c0392b">Failed to load.</p>'; });
+}
+
+function runInlineCombinedFilter() {
+  const flJobTitle=document.getElementById('ifl-jobTitle').value.trim().toLowerCase();
+  const flLocation=document.getElementById('ifl-location').value.trim().toLowerCase();
+  const flNationality=document.getElementById('ifl-nationality').value.trim().toLowerCase();
+  const flAgeOp=document.getElementById('ifl-age-op').value;
+  const flAgeVal1=parseInt(document.getElementById('ifl-age-val1').value);
+  const flAgeVal2=parseInt(document.getElementById('ifl-age-val2').value);
+  const flMarital=document.getElementById('ifl-marital').value.trim().toLowerCase();
+  const flStatus=document.getElementById('ifl-status').value.trim().toLowerCase();
+  const flEnded=document.getElementById('ifl-ended').value;
+  const checkedCols=[];
+  document.querySelectorAll('#isl-col-picks input[type=checkbox]:checked').forEach(cb=>{ if(SL_COL_MAP[cb.value]) checkedCols.push(SL_COL_MAP[cb.value]); });
+  const doFilter=(rows)=>{
+    const filtered=rows.slice(1).filter(r=>{
+      const je=(r[COL.jobEnded]||'').trim(); const isEnded=je!==''&&je!=='—';
+      if(flEnded==='no'&&isEnded) return false;
+      if(flEnded==='only'&&!isEnded) return false;
+      if(flJobTitle&&!(r[COL.jobTitle]||'').toLowerCase().includes(flJobTitle)) return false;
+      if(flLocation&&!(r[COL.location]||'').toLowerCase().includes(flLocation)) return false;
+      if(flNationality&&!(r[COL.nationality]||'').toLowerCase().includes(flNationality)) return false;
+      if(flMarital&&!(r[COL.maritalStatus]||'').toLowerCase().includes(flMarital)) return false;
+      if(flStatus&&!(r[COL.status]||'').toLowerCase().includes(flStatus)) return false;
+      if(flAgeOp&&!isNaN(flAgeVal1)){
+        const age=parseAge(r[COL.age]); if(age===null) return false;
+        if(flAgeOp==='lt'&&!(age<flAgeVal1)) return false;
+        if(flAgeOp==='gte'&&!(age>=flAgeVal1)) return false;
+        if(flAgeOp==='exact'&&!(age===flAgeVal1)) return false;
+        if(flAgeOp==='between'&&!isNaN(flAgeVal2)&&!(age>=flAgeVal1&&age<=flAgeVal2)) return false;
+      }
+      return true;
+    });
+    const parts=[];
+    if(flJobTitle) parts.push(`Job: ${flJobTitle}`);
+    if(flLocation) parts.push(`Location: ${flLocation}`);
+    if(flNationality) parts.push(`Nationality: ${flNationality}`);
+    if(flMarital) parts.push(`Marital: ${flMarital}`);
+    if(flStatus) parts.push(`Status: ${flStatus}`);
+    if(flAgeOp&&!isNaN(flAgeVal1)){
+      if(flAgeOp==='lt') parts.push(`Age < ${flAgeVal1}`);
+      if(flAgeOp==='gte') parts.push(`Age ≥ ${flAgeVal1}`);
+      if(flAgeOp==='exact') parts.push(`Age = ${flAgeVal1}`);
+      if(flAgeOp==='between') parts.push(`Age ${flAgeVal1}–${flAgeVal2}`);
+    }
+    const title=parts.length?`📋 ${parts.join(' · ')}`:'📋 All Employees';
+    document.getElementById('isl-list-result').innerHTML=buildResultTable(filtered,checkedCols,title);
+    document.getElementById('isl-list-print-bar').style.display=filtered.length>0?'block':'none';
+  };
+  if(csvRows) doFilter(csvRows);
+  else fetch('Master File - Test copy.csv').then(r=>r.text()).then(csv=>{csvRows=parseCSV(csv);doFilter(csvRows);})
+       .catch(()=>{ document.getElementById('isl-list-result').innerHTML='<p style="color:#c0392b">Failed to load.</p>'; });
+}
+
+function resetInlineFilter() {
+  ['ifl-jobTitle','ifl-location','ifl-nationality','ifl-status'].forEach(id=>{document.getElementById(id).value='';});
+  document.getElementById('ifl-age-op').value='';
+  document.getElementById('ifl-age-val1').value='';
+  document.getElementById('ifl-age-val2').value='';
+  document.getElementById('ifl-age-and').style.display='none';
+  document.getElementById('ifl-age-val2').style.display='none';
+  document.getElementById('ifl-marital').value='';
+  document.getElementById('ifl-ended').value='no';
+  document.getElementById('isl-list-result').innerHTML='';
+  document.getElementById('isl-list-print-bar').style.display='none';
+}
+
+function printInlineResult(pane) {
+  const el = document.getElementById(pane==='ds'?'isl-ds-result':'isl-list-result');
+  if (!el||!el.innerHTML.trim()) return;
+  const win = window.open('','_blank','width=900,height=700');
+  win.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Nour Energy Report</title>
+  <style>body{font-family:Calibri,sans-serif;margin:10mm}.ds-header{display:flex;align-items:center;gap:14px;margin-bottom:12px;padding-bottom:8px;border-bottom:2px solid #d5e8f5}.ds-header img{height:52px}.ds-header span{font-size:15px;font-weight:700;color:#1a5276}table{width:100%;border-collapse:collapse;font-size:12px}th{background:#1a5276;color:#fff;padding:6px 8px;text-align:left;-webkit-print-color-adjust:exact;print-color-adjust:exact}td{border:1px solid #c8d8e8;padding:5px 8px}tr:nth-child(even) td{background:#f7fbff}.card-footer{margin-top:12px;text-align:right;font-size:10px;color:#888}.ds-count{font-size:11px;color:#888;margin-top:6px;text-align:right}</style>
+  </head><body>${el.innerHTML}</body></html>`);
+  win.document.close(); win.focus();
+  setTimeout(()=>{ win.print(); }, 400);
 }
 </script>
 </body>
