@@ -874,50 +874,70 @@ html, body { margin: 0; padding: 0; font-family: 'Calibri', sans-serif; backgrou
 </div>
 
 <script>
-/* ─── Column index map — must be first ─── */
+/* ─── Column index map — Google Sheet Row 1 headers ─── */
 const COL = {
-  empNum:        0,
-  name:          1,
-  mobile:        2,
-  nationality:   3,
-  jobTitle:      4,
-  location:      5,
-  joiningDate:   7,
-  total:         13,
-  basic:         14,
-  food:          15,
-  other:         16,
-  trPct:         17,
-  otherTrasp:    18,
-  housing25:     19,
-  housing:       20,
-  transpStatus:  21,
-  medical:       22,
-  contract:      23,
-  annualLeave:   24,
-  tickets:       25,
-  qiwaStart:     26,
-  qiwaEnd:       27,
-  status:        28,
-  dutyHours:     29,
-  idNo:          30,
-  idProfession:  31,
-  idExpHijri:    32,
-  idExpGreg:     33,
-  idRemDays:     34,
-  ppNumber:      35,
-  issuePlace:    36,
-  issueDate:     37,
-  ppExpiry:      38,
-  jobEnded:      40,
-  maritalStatus: 41,
-  serviceEnded:  42,
-  iban:          43,
-  email:         44,
-  serviceCont:   9,
-  dob:           10,
-  age:           12,
+  empNum:        0,   // Employee Number
+  name:          1,   // Names
+  mobile:        2,   // Mobile Number
+  nationality:   3,   // Nationality
+  jobTitle:      4,   // Job Title
+  location:      5,   // Location
+  actualLocation:6,   // Actual Location
+  joiningDate:   7,   // Joining Date
+  serviceDays:   8,   // Service Days
+  serviceCont:   9,   // Service Y,M,D
+  dob:           10,  // DOB
+  days:          11,  // Days
+  age:           12,  // Age Y,M,D
+  total:         13,  // Total
+  basic:         14,  // Basic
+  food:          15,  // Food
+  other:         16,  // Other
+  trPct:         17,  // Tr-10 %
+  otherTrasp:    18,  // Other Trasp
+  housing25:     19,  // Housing 25%
+  housing:       20,  // Housing
+  transpStatus:  21,  // Trasp Status
+  medical:       22,  // Medical
+  contract:      23,  // Contract
+  annualLeave:   24,  // Annual Leave
+  tickets:       25,  // Tickets
+  qiwaStart:     26,  // Qiwa Starting
+  qiwaEnd:       27,  // Qiwa Ending
+  status:        28,  // Status
+  dutyHours:     29,  // Duty Hours
+  idNo:          30,  // Id No
+  idProfession:  31,  // Id Profession
+  idExpHijri:    32,  // Id Exp - Hijri
+  idExpGreg:     33,  // Id Exp - Gregorian
+  idRemDays:     34,  // ID - Remaining Days
+  ppNumber:      35,  // PP number
+  issuePlace:    36,  // Issue Place
+  issueDate:     37,  // Issue date
+  ppExpiry:      38,  // Expiry date
+  ppRemDays:     39,  // PP-Remaining Days
+  jobEnded:      40,  // Job Ended
+  serviceEndDays:41,  // Total Service Days
+  serviceEnded:  42,  // Total Service Y,M,D
+  iban:          43,  // IBAN
+  email:         44,  // EMAIL
 };
+
+/* ─── Google Sheets Config ─── */
+const GS_ID    = '16QYl00ATXVIlQKkqRxdAIdU6J3u7lDfg0PIoJfaDBpo';
+const GS_TAB   = 'Master File';
+const GS_KEY   = 'AIzaSyBfjtlvDvGxmS1OcqFVGNMMadqza1ofCrI';
+const GS_URL   = `https://sheets.googleapis.com/v4/spreadsheets/${GS_ID}/values/${encodeURIComponent(GS_TAB)}?key=${GS_KEY}`;
+
+/* Load rows from Google Sheets — returns array of arrays (row 0 = headers) */
+async function loadSheetRows() {
+  if (csvRows) return csvRows;
+  const res  = await fetch(GS_URL);
+  if (!res.ok) throw new Error(`Sheets API error: ${res.status}`);
+  const data = await res.json();
+  csvRows = data.values || [];
+  return csvRows;
+}
 
 /* ─── Access Level ─── */
 // 'none' = not logged in | 'employee' = emp number login | 'admin' = nour-pr
@@ -1106,9 +1126,8 @@ function deepSearch() {
   if (csvRows) {
     doSearch(csvRows);
   } else {
-    fetch('Master File - Test copy.csv')
-      .then(r => r.text())
-      .then(csv => { csvRows = parseCSV(csv); doSearch(csvRows); })
+    loadSheetRows()
+      .then(rows => doSearch(rows))
       .catch(err => {
         document.getElementById('card-area').innerHTML =
           `<p style="text-align:center;color:#c0392b;padding:40px 0;">Failed to load data — ${err.message}</p>`;
@@ -1381,14 +1400,11 @@ function searchEmployee() {
     document.getElementById('card-area').innerHTML = renderCard(found, currentAccessLevel);
   };
 
-  if (csvRows) {
-    doSearch(csvRows);
-  } else {
-    fetch('Master File - Test copy.csv')
-      .then(r => r.text())
-      .then(csv => { csvRows = parseCSV(csv); doSearch(csvRows); })
+  if (csvRows) { doSearch(csvRows); }
+  else {
+    loadSheetRows()
+      .then(rows => doSearch(rows))
       .catch(err => {
-        console.error(err);
         document.getElementById('card-area').innerHTML =
           `<p style="text-align:center;color:#c0392b;padding:40px 0;">Failed to load data — ${err.message}</p>`;
       });
@@ -1407,14 +1423,6 @@ function searchEmployee() {
       <img src="nour_energy_logo.png" alt="Logo" onerror="this.style.display='none'">
       <span>Employee Data Form</span>
       <button id="df-close" onclick="closeDataForm()">✕</button>
-    </div>
-
-    <!-- PAT Entry — saved permanently in browser -->
-    <div id="df-pat-row">
-      <label>🔑 GitHub Token</label>
-      <input type="password" id="df-pat-input" placeholder="Paste PAT once then click Remember" autocomplete="off">
-      <button id="df-pat-save" onclick="savePAT()">💾 Remember</button>
-      <span id="df-pat-status"></span>
     </div>
 
     <!-- Tabs -->
@@ -1500,10 +1508,7 @@ function searchEmployee() {
 /* ════════════════════════════════════════
    DATA FORM — GitHub API Read / Write
 ════════════════════════════════════════ */
-const GH_OWNER = 'Nour292';
-const GH_REPO  = 'Nourdata';
-const GH_FILE  = 'Master File - Test copy.csv';
-let GH_PAT     = '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';
+/* ─── GitHub constants removed — now using Google Sheets ─── */
 
 let dfCurrentTab = 'add';
 let dfEditRowIdx = -1;
@@ -1607,7 +1612,6 @@ function clearForm() {
   dfStatusMsg('', '');
 }
 function loadEmployeeForEdit() {
-  GH_PAT = document.getElementById('df-pat-input').value.trim();
   const empNum = document.getElementById('df-search-emp').value.trim();
   if (!empNum) { document.getElementById('df-load-msg').textContent = 'Enter an employee number.'; return; }
   const doLoad = (rows) => {
@@ -1623,8 +1627,8 @@ function loadEmployeeForEdit() {
   };
   if (csvRows) { doLoad(csvRows); }
   else {
-    fetch(`https://raw.githubusercontent.com/${GH_OWNER}/${GH_REPO}/main/${encodeURIComponent(GH_FILE)}?t=${Date.now()}`)
-      .then(r => r.text()).then(csv => { csvRows = parseCSV(csv); doLoad(csvRows); })
+    loadSheetRows()
+      .then(rows => doLoad(rows))
       .catch(() => { document.getElementById('df-load-msg').textContent = 'Failed to load data.'; });
   }
 }
@@ -1643,46 +1647,46 @@ function csvCell(val) {
 function rowsToCSV(rows) { return rows.map(r => r.map(csvCell).join(',')).join('\n'); }
 
 async function submitForm() {
-  GH_PAT = document.getElementById('df-pat-input').value.trim();
   const empNum = document.getElementById('f-empNum').value.trim();
   const name   = document.getElementById('f-name').value.trim();
-  if (!GH_PAT) { dfStatusMsg('❌ GitHub Token missing — paste and click Remember.', 'err'); return; }
   if (!empNum) { dfStatusMsg('Employee Number is required.', 'err'); return; }
   if (!name)   { dfStatusMsg('Name is required.', 'err'); return; }
 
-  dfStatusMsg('Connecting to GitHub…', '');
+  dfStatusMsg('Saving to Google Sheets…', '');
   document.getElementById('df-submit-btn').disabled = true;
   try {
-    const apiUrl = `https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/contents/${encodeURIComponent(GH_FILE)}`;
-    const getRes = await fetch(apiUrl, { headers: { 'Authorization': `token ${GH_PAT}`, 'Accept': 'application/vnd.github.v3+json' } });
-    if (!getRes.ok) throw new Error(`GitHub API error: ${getRes.status}`);
-    const fileData = await getRes.json();
-    const sha = fileData.sha;
-    const currentCSV = decodeURIComponent(escape(atob(fileData.content.replace(/\n/g, ''))));
-    const rows = parseCSV(currentCSV);
-
+    const rows = await loadSheetRows();
     if (dfCurrentTab === 'add') {
       const exists = rows.slice(1).some(r => (r[COL.empNum]||'').trim() === empNum);
       if (exists) { dfStatusMsg(`Employee ${empNum} already exists. Use Update tab.`, 'err'); document.getElementById('df-submit-btn').disabled = false; return; }
-      rows.push(formToRow(null));
+      const newRow = formToRow(null);
+      const appendUrl = `https://sheets.googleapis.com/v4/spreadsheets/${GS_ID}/values/${encodeURIComponent(GS_TAB)}:append?valueInputOption=RAW&key=${GS_KEY}`;
+      const appendRes = await fetch(appendUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ values: [newRow] })
+      });
+      if (!appendRes.ok) throw new Error(`Sheets append error: ${appendRes.status}`);
+      rows.push(newRow);
+      csvRows = rows;
+      dfStatusMsg('✅ Employee added to Google Sheets!', 'ok');
+      clearForm();
     } else {
       if (dfEditRowIdx === -1) { dfStatusMsg('Load an employee first.', 'err'); document.getElementById('df-submit-btn').disabled = false; return; }
-      rows[dfEditRowIdx] = formToRow(rows[dfEditRowIdx]);
+      const updatedRow = formToRow(rows[dfEditRowIdx]);
+      const sheetRow = dfEditRowIdx + 1;
+      const range = `${encodeURIComponent(GS_TAB)}!A${sheetRow}`;
+      const updateUrl = `https://sheets.googleapis.com/v4/spreadsheets/${GS_ID}/values/${range}?valueInputOption=RAW&key=${GS_KEY}`;
+      const updateRes = await fetch(updateUrl, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ values: [updatedRow] })
+      });
+      if (!updateRes.ok) throw new Error(`Sheets update error: ${updateRes.status}`);
+      rows[dfEditRowIdx] = updatedRow;
+      csvRows = rows;
+      dfStatusMsg('✅ Employee updated in Google Sheets!', 'ok');
     }
-
-    const newCSV    = rowsToCSV(rows);
-    const newBase64 = btoa(encodeURIComponent(newCSV).replace(/%([0-9A-F]{2})/g, (_, p1) => String.fromCharCode(parseInt(p1, 16))));
-    const action    = dfCurrentTab === 'add' ? 'Add' : 'Update';
-    const putRes = await fetch(apiUrl, {
-      method: 'PUT',
-      headers: { 'Authorization': `token ${GH_PAT}`, 'Accept': 'application/vnd.github.v3+json', 'Content-Type': 'application/json' },
-      body: JSON.stringify({ message: `${action} employee ${empNum} — ${name}`, content: newBase64, sha })
-    });
-    if (!putRes.ok) { const err = await putRes.json(); throw new Error(err.message || putRes.status); }
-
-    csvRows = rows;
-    dfStatusMsg(`✅ Employee ${dfCurrentTab === 'add' ? 'added' : 'updated'} successfully!`, 'ok');
-    if (dfCurrentTab === 'add') clearForm();
   } catch(e) {
     dfStatusMsg(`❌ Error: ${e.message}`, 'err');
   }
@@ -2008,7 +2012,7 @@ function runDeepSearch() {
   };
 
   if (csvRows) doSearch(csvRows);
-  else fetch('Master File - Test copy.csv').then(r=>r.text()).then(csv=>{csvRows=parseCSV(csv);doSearch(csvRows);})
+  else loadSheetRows().then(rows=>{doSearch(rows);})
        .catch(()=>{ document.getElementById('sl-ds-result').innerHTML='<p style="color:#c0392b">Failed to load data.</p>'; });
 }
 
@@ -2062,7 +2066,7 @@ function runQuickList(type) {
   };
 
   if (csvRows) doList(csvRows);
-  else fetch('Master File - Test copy.csv').then(r=>r.text()).then(csv=>{csvRows=parseCSV(csv);doList(csvRows);})
+  else loadSheetRows().then(rows=>{doList(rows);})
        .catch(()=>{ document.getElementById('sl-list-result').innerHTML='<p style="color:#c0392b">Failed to load data.</p>'; });
 }
 
@@ -2133,7 +2137,7 @@ function runCombinedFilter() {
   };
 
   if (csvRows) doFilter(csvRows);
-  else fetch('Master File - Test copy.csv').then(r=>r.text()).then(csv=>{csvRows=parseCSV(csv);doFilter(csvRows);})
+  else loadSheetRows().then(rows=>{doFilter(rows);})
        .catch(()=>{ document.getElementById('sl-list-result').innerHTML='<p style="color:#c0392b">Failed to load data.</p>'; });
 }
 
@@ -2241,7 +2245,7 @@ function runInlineDeepSearch() {
     document.getElementById('isl-ds-print-bar').style.display = 'block';
   };
   if (csvRows) doSearch(csvRows);
-  else fetch('Master File - Test copy.csv').then(r=>r.text()).then(csv=>{csvRows=parseCSV(csv);doSearch(csvRows);})
+  else loadSheetRows().then(rows=>{doSearch(rows);})
        .catch(()=>{ document.getElementById('isl-ds-result').innerHTML='<p style="color:#c0392b">Failed to load data.</p>'; });
 }
 
@@ -2261,7 +2265,7 @@ function runInlineQuickList(type) {
     document.getElementById('isl-list-print-bar').style.display = filtered.length > 0 ? 'block' : 'none';
   };
   if (csvRows) doList(csvRows);
-  else fetch('Master File - Test copy.csv').then(r=>r.text()).then(csv=>{csvRows=parseCSV(csv);doList(csvRows);})
+  else loadSheetRows().then(rows=>{doList(rows);})
        .catch(()=>{ document.getElementById('isl-list-result').innerHTML='<p style="color:#c0392b">Failed to load.</p>'; });
 }
 
@@ -2314,7 +2318,7 @@ function runInlineCombinedFilter() {
     document.getElementById('isl-count-badge').textContent = `${filtered.length} record${filtered.length !== 1 ? 's' : ''} found`;
   };
   if (csvRows) doFilter(csvRows);
-  else fetch('Master File - Test copy.csv').then(r=>r.text()).then(csv=>{csvRows=parseCSV(csv);doFilter(csvRows);})
+  else loadSheetRows().then(rows=>{doFilter(rows);})
        .catch(()=>{ document.getElementById('isl-list-result').innerHTML='<p style="color:#c0392b">Failed to load.</p>'; });
 }
 
