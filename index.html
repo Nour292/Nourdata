@@ -1669,16 +1669,17 @@ function switchSLTab(tab) {
   document.getElementById('sl-lists-pane').style.display = tab === 'lists' ? 'block' : 'none';
 }
 
-/* Enter key for deep search */
-document.getElementById('sl-ds-input').addEventListener('keyup', e => {
-  if (e.key === 'Enter') runDeepSearch();
-});
+/* Enter key for deep search + Age filter — init after DOM ready */
+document.addEventListener('DOMContentLoaded', function() {
+  const dsInput = document.getElementById('sl-ds-input');
+  if (dsInput) dsInput.addEventListener('keyup', e => { if (e.key === 'Enter') runDeepSearch(); });
 
-/* Age filter show/hide second field */
-document.getElementById('fl-age-op').addEventListener('change', function() {
-  const isBetween = this.value === 'between';
-  document.getElementById('fl-age-and').style.display   = isBetween ? 'inline' : 'none';
-  document.getElementById('fl-age-val2').style.display  = isBetween ? 'inline-block' : 'none';
+  const ageOp = document.getElementById('fl-age-op');
+  if (ageOp) ageOp.addEventListener('change', function() {
+    const isBetween = this.value === 'between';
+    document.getElementById('fl-age-and').style.display  = isBetween ? 'inline' : 'none';
+    document.getElementById('fl-age-val2').style.display = isBetween ? 'inline-block' : 'none';
+  });
 });
 
 /* ── Column map for Smart Lists ── */
