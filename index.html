@@ -572,7 +572,7 @@ html, body { margin: 0; padding: 0; font-family: 'Calibri', sans-serif; backgrou
       </div>
       <div id="btn-row">
         <button id="searchButton" onclick="searchEmployee()">Search</button>
-        <button id="deepSearchButton" onclick="deepSearch()" style="display:none;">Deep Search</button>
+        <button id="deepSearchButton" onclick="openSearchPanel()" style="display:none;">🔍 Search & Lists</button>
         <button id="printButton" onclick="window.print()">Print</button>
         <button id="clearButton" onclick="clearCard()">Clear Data</button>
         <button id="dataFormButton" onclick="openDataForm()" style="display:none;">➕ Add / Update</button>
@@ -1404,6 +1404,537 @@ async function submitForm() {
     dfStatusMsg(`❌ Error: ${e.message}`, 'err');
   }
   document.getElementById('df-submit-btn').disabled = false;
+}
+<!-- ── Search & Lists Panel ── -->
+<div id="sl-overlay">
+  <div id="sl-modal">
+
+    <div id="sl-header">
+      <img src="nour_energy_logo.png" alt="Logo" onerror="this.style.display='none'">
+      <span>Search & Lists</span>
+      <button id="sl-close" onclick="closeSearchPanel()">✕</button>
+    </div>
+
+    <div id="sl-tabs">
+      <button class="sl-tab active" id="sl-tab-deep" onclick="switchSLTab('deep')">🔍 Deep Search</button>
+      <button class="sl-tab" id="sl-tab-lists" onclick="switchSLTab('lists')">📋 Smart Lists</button>
+    </div>
+
+    <!-- Deep Search Tab -->
+    <div id="sl-deep-pane">
+      <div id="sl-ds-row">
+        <input type="text" id="sl-ds-input" placeholder="Type anything — searches all 37 fields…">
+        <button onclick="runDeepSearch()">Search</button>
+      </div>
+      <div id="sl-ds-result"></div>
+    </div>
+
+    <!-- Smart Lists Tab -->
+    <div id="sl-lists-pane" style="display:none;">
+
+      <!-- Quick Lists -->
+      <div class="sl-section-hdr">Quick Lists</div>
+      <div id="sl-quick-btns">
+        <button onclick="runQuickList('active')">🟢 Active Employees</button>
+        <button onclick="runQuickList('ended')">🔴 Job Ended</button>
+        <button onclick="runQuickList('iqama30')">🟠 Iqama — 30 Days</button>
+        <button onclick="runQuickList('iqama60')">🟡 Iqama — 60 Days</button>
+        <button onclick="runQuickList('iqama90')">⚪ Iqama — 90 Days</button>
+        <button onclick="runQuickList('pp30')">🟠 Passport — 30 Days</button>
+        <button onclick="runQuickList('pp60')">🟡 Passport — 60 Days</button>
+        <button onclick="runQuickList('pp90')">⚪ Passport — 90 Days</button>
+        <button onclick="runQuickList('qiwa30')">🟠 Qiwa — 30 Days</button>
+        <button onclick="runQuickList('qiwa60')">🟡 Qiwa — 60 Days</button>
+        <button onclick="runQuickList('qiwa90')">⚪ Qiwa — 90 Days</button>
+      </div>
+
+      <!-- Combined Filter -->
+      <div class="sl-section-hdr">Combined Filter</div>
+      <div id="sl-filter-grid">
+
+        <div class="sl-filter-row">
+          <label>Job Title</label>
+          <input type="text" id="fl-jobTitle" placeholder="e.g. Driver">
+        </div>
+        <div class="sl-filter-row">
+          <label>Location</label>
+          <input type="text" id="fl-location" placeholder="e.g. Riyadh">
+        </div>
+        <div class="sl-filter-row">
+          <label>Nationality</label>
+          <input type="text" id="fl-nationality" placeholder="e.g. Pakistani">
+        </div>
+        <div class="sl-filter-row">
+          <label>Age</label>
+          <select id="fl-age-op">
+            <option value="">— Any —</option>
+            <option value="lt">Under</option>
+            <option value="gte">Above or Equal</option>
+            <option value="between">Between</option>
+            <option value="exact">Exact</option>
+          </select>
+          <input type="number" id="fl-age-val1" placeholder="e.g. 50" min="0" max="99">
+          <span id="fl-age-and" style="display:none;">and</span>
+          <input type="number" id="fl-age-val2" placeholder="e.g. 60" min="0" max="99" style="display:none;">
+        </div>
+        <div class="sl-filter-row">
+          <label>Marital Status</label>
+          <select id="fl-marital">
+            <option value="">— Any —</option>
+            <option>Single</option>
+            <option>Married</option>
+            <option>Divorced</option>
+            <option>Widowed</option>
+          </select>
+        </div>
+        <div class="sl-filter-row">
+          <label>Status</label>
+          <input type="text" id="fl-status" placeholder="e.g. Active">
+        </div>
+        <div class="sl-filter-row">
+          <label>Include Job Ended</label>
+          <select id="fl-ended">
+            <option value="no">No — Active only</option>
+            <option value="yes">Yes — Include ended</option>
+            <option value="only">Only ended</option>
+          </select>
+        </div>
+
+      </div>
+
+      <!-- Columns to show -->
+      <div class="sl-section-hdr">Extra Columns to Show</div>
+      <div id="sl-col-picks">
+        <label><input type="checkbox" value="jobTitle" checked> Job Title</label>
+        <label><input type="checkbox" value="location"> Location</label>
+        <label><input type="checkbox" value="nationality"> Nationality</label>
+        <label><input type="checkbox" value="age" checked> Age</label>
+        <label><input type="checkbox" value="mobile"> Mobile</label>
+        <label><input type="checkbox" value="maritalStatus"> Marital Status</label>
+        <label><input type="checkbox" value="joiningDate"> Joining Date</label>
+        <label><input type="checkbox" value="idExpGreg"> Iqama Expiry</label>
+        <label><input type="checkbox" value="idRemDays"> Iqama Days Left</label>
+        <label><input type="checkbox" value="ppExpiry"> Passport Expiry</label>
+        <label><input type="checkbox" value="qiwaEnd"> Qiwa Ending</label>
+        <label><input type="checkbox" value="jobEnded"> Job Ended</label>
+        <label><input type="checkbox" value="email"> Email</label>
+        <label><input type="checkbox" value="iban"> IBAN</label>
+      </div>
+
+      <div id="sl-filter-actions">
+        <button id="sl-run-btn" onclick="runCombinedFilter()">▶ Generate List</button>
+        <button onclick="resetFilter()">↺ Reset</button>
+      </div>
+
+      <div id="sl-list-result"></div>
+    </div>
+
+  </div>
+</div>
+
+<style>
+/* ── Search & Lists Modal ── */
+#sl-overlay {
+  display: none; position: fixed; inset: 0;
+  background: rgba(10,25,40,0.65);
+  z-index: 7777; align-items: flex-start;
+  justify-content: center; padding: 24px 16px; overflow-y: auto;
+}
+#sl-modal {
+  background: #fff; border-radius: 10px;
+  width: 100%; max-width: 900px;
+  box-shadow: 0 8px 40px rgba(0,0,0,0.28);
+  margin: auto; padding-bottom: 20px;
+}
+#sl-header {
+  display: flex; align-items: center; gap: 14px;
+  padding: 14px 24px; background: #1a5276;
+  border-radius: 10px 10px 0 0;
+}
+#sl-header img { height: 40px; width: auto; }
+#sl-header span { font-size: 17px; font-weight: 700; color: #fff; flex: 1; }
+#sl-close {
+  background: rgba(255,255,255,0.2); border: none; color: #fff;
+  font-size: 17px; font-weight: bold; width: 30px; height: 30px;
+  border-radius: 50%; cursor: pointer;
+}
+#sl-close:hover { background: rgba(255,255,255,0.35); }
+#sl-tabs {
+  display: flex; border-bottom: 2px solid #d5e8f5;
+  padding: 0 24px; background: #eaf2fb;
+}
+.sl-tab {
+  padding: 11px 26px; font-size: 14px; font-weight: 700;
+  border: none; background: none; cursor: pointer; color: #555;
+  border-bottom: 3px solid transparent; margin-bottom: -2px;
+}
+.sl-tab.active { color: #1a5276; border-bottom-color: #1a5276; background: #fff; }
+.sl-tab:hover { color: #1a5276; }
+
+/* Deep Search pane */
+#sl-deep-pane { padding: 16px 24px; }
+#sl-ds-row { display: flex; gap: 10px; margin-bottom: 14px; }
+#sl-ds-input {
+  flex: 1; padding: 9px 14px; font-size: 15px;
+  border: 2px solid #aaa; border-radius: 6px;
+}
+#sl-ds-row button {
+  padding: 9px 22px; font-size: 15px; font-weight: bold;
+  background: #2e86c1; color: #fff; border: none;
+  border-radius: 6px; cursor: pointer;
+}
+#sl-ds-row button:hover { background: #1a5276; }
+
+/* Smart Lists pane */
+#sl-lists-pane { padding: 0 24px 10px; }
+.sl-section-hdr {
+  background: #1a5276; color: #fff;
+  font-size: 13px; font-weight: 700;
+  padding: 5px 10px; margin: 14px 0 10px;
+  border-radius: 3px;
+}
+#sl-quick-btns {
+  display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 4px;
+}
+#sl-quick-btns button {
+  padding: 7px 14px; font-size: 13px; font-weight: 600;
+  border: 1px solid #d5e8f5; border-radius: 5px;
+  background: #eaf2fb; color: #1a5276; cursor: pointer;
+}
+#sl-quick-btns button:hover { background: #2e86c1; color: #fff; }
+
+/* Combined filter */
+#sl-filter-grid { display: flex; flex-direction: column; gap: 8px; }
+.sl-filter-row {
+  display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+}
+.sl-filter-row label {
+  font-size: 13px; font-weight: 700; color: #1a3a52;
+  width: 120px; flex-shrink: 0;
+}
+.sl-filter-row input[type="text"],
+.sl-filter-row input[type="number"],
+.sl-filter-row select {
+  padding: 6px 10px; font-size: 13px;
+  border: 1px solid #c8d8e8; border-radius: 5px;
+  font-family: 'Calibri', sans-serif; min-width: 140px;
+}
+.sl-filter-row input[type="text"]:focus,
+.sl-filter-row input[type="number"]:focus,
+.sl-filter-row select:focus { border-color: #2e86c1; outline: none; }
+
+/* Column picks */
+#sl-col-picks {
+  display: flex; flex-wrap: wrap; gap: 8px 18px;
+}
+#sl-col-picks label {
+  font-size: 13px; color: #333; cursor: pointer;
+  display: flex; align-items: center; gap: 5px;
+}
+#sl-filter-actions {
+  display: flex; gap: 12px; margin-top: 14px;
+}
+#sl-filter-actions button {
+  padding: 9px 24px; font-size: 14px; font-weight: bold;
+  border: none; border-radius: 6px; cursor: pointer;
+}
+#sl-run-btn { background: #1a5276; color: #fff; }
+#sl-run-btn:hover { background: #154360; }
+#sl-filter-actions button:last-child { background: #e5e7e9; color: #333; }
+#sl-filter-actions button:last-child:hover { background: #ccc; }
+#sl-list-result, #sl-ds-result { margin-top: 14px; }
+@media print { #sl-overlay { display: none !important; } }
+</style>
+
+<script>
+/* ════════════════════════════════
+   SEARCH & LISTS PANEL
+════════════════════════════════ */
+let slCurrentTab = 'deep';
+
+function openSearchPanel() {
+  slCurrentTab = 'deep';
+  switchSLTab('deep');
+  document.getElementById('sl-overlay').style.display = 'flex';
+  document.getElementById('sl-ds-input').focus();
+}
+function closeSearchPanel() {
+  document.getElementById('sl-overlay').style.display = 'none';
+}
+function switchSLTab(tab) {
+  slCurrentTab = tab;
+  document.getElementById('sl-tab-deep').classList.toggle('active', tab === 'deep');
+  document.getElementById('sl-tab-lists').classList.toggle('active', tab === 'lists');
+  document.getElementById('sl-deep-pane').style.display  = tab === 'deep'  ? 'block' : 'none';
+  document.getElementById('sl-lists-pane').style.display = tab === 'lists' ? 'block' : 'none';
+}
+
+/* Enter key for deep search */
+document.getElementById('sl-ds-input').addEventListener('keyup', e => {
+  if (e.key === 'Enter') runDeepSearch();
+});
+
+/* Age filter show/hide second field */
+document.getElementById('fl-age-op').addEventListener('change', function() {
+  const isBetween = this.value === 'between';
+  document.getElementById('fl-age-and').style.display   = isBetween ? 'inline' : 'none';
+  document.getElementById('fl-age-val2').style.display  = isBetween ? 'inline-block' : 'none';
+});
+
+/* ── Column map for Smart Lists ── */
+const SL_COL_MAP = {
+  jobTitle:     { idx: COL.jobTitle,     label: 'Job Title'       },
+  location:     { idx: COL.location,     label: 'Location'        },
+  nationality:  { idx: COL.nationality,  label: 'Nationality'     },
+  age:          { idx: COL.age,          label: 'Age'             },
+  mobile:       { idx: COL.mobile,       label: 'Mobile'          },
+  maritalStatus:{ idx: COL.maritalStatus,label: 'Marital Status'  },
+  joiningDate:  { idx: COL.joiningDate,  label: 'Joining Date'    },
+  idExpGreg:    { idx: COL.idExpGreg,    label: 'Iqama Expiry'    },
+  idRemDays:    { idx: COL.idRemDays,    label: 'Iqama Days Left' },
+  ppExpiry:     { idx: COL.ppExpiry,     label: 'Passport Expiry' },
+  qiwaEnd:      { idx: COL.qiwaEnd,      label: 'Qiwa Ending'     },
+  jobEnded:     { idx: COL.jobEnded,     label: 'Job Ended'       },
+  email:        { idx: COL.email,        label: 'Email'           },
+  iban:         { idx: COL.iban,         label: 'IBAN'            },
+};
+
+/* ── Parse age value from cell (handles "35 Years", "35Y", "35") ── */
+function parseAge(val) {
+  if (!val) return null;
+  const n = parseInt(val.toString().replace(/[^0-9]/g, ''));
+  return isNaN(n) ? null : n;
+}
+
+/* ── Parse remaining days (handles "073 Days to Expire", "-5", "73") ── */
+function parseRemDays(val) {
+  if (!val) return null;
+  const n = parseInt(val.toString().replace(/[^0-9\-]/g, ''));
+  return isNaN(n) ? null : n;
+}
+
+/* ── Build result table ── */
+function buildResultTable(rows, extraCols, title) {
+  if (rows.length === 0) return `<p style="color:#c0392b;padding:20px 0;font-size:14px;">No records found.</p>`;
+
+  let html = `<div class="ds-wrap">`;
+  html += `<div class="ds-header">
+    <img src="nour_energy_logo.png" alt="Logo" onerror="this.style.display='none'">
+    <span>${title} &nbsp;·&nbsp; ${rows.length} record${rows.length !== 1 ? 's' : ''}</span>
+  </div>`;
+  html += `<table class="ds-tbl"><thead><tr>
+    <th>Emp No</th><th>Name</th>`;
+  extraCols.forEach(c => { html += `<th>${c.label}</th>`; });
+  html += `</tr></thead><tbody>`;
+  rows.forEach(r => {
+    html += `<tr onclick="closeSearchPanel();loadCardByEmpNum('${(r[COL.empNum]||'').trim().replace(/'/g,"\\'")}')">
+      <td>${v(r[COL.empNum])}</td>
+      <td>${rtlWrap(v(r[COL.name]))}</td>`;
+    extraCols.forEach(c => { html += `<td>${v(r[c.idx])}</td>`; });
+    html += `</tr>`;
+  });
+  html += `</tbody></table>`;
+  html += `<div class="ds-count">${rows.length} record${rows.length !== 1 ? 's' : ''} — click row to open card</div>`;
+  html += `<div class="card-footer">Printed: ${todayStr()}<br>Created by: Qasim</div>`;
+  html += `</div>`;
+  return html;
+}
+
+/* ── Deep Search ── */
+function runDeepSearch() {
+  const query = document.getElementById('sl-ds-input').value.trim().toLowerCase();
+  if (!query) { alert('Type something to search.'); return; }
+
+  const doSearch = (rows) => {
+    const results = [];
+    rows.slice(1).forEach(r => {
+      const matchedCols = [];
+      DS_ALL_COLS.forEach(col => {
+        if ((r[col.idx]||'').toLowerCase().includes(query)) matchedCols.push(col);
+      });
+      if (matchedCols.length > 0) results.push({ r, matchedCols });
+    });
+
+    if (results.length === 0) {
+      document.getElementById('sl-ds-result').innerHTML =
+        `<p style="color:#c0392b;font-size:14px;">No results for "<strong>${query}</strong>".</p>`;
+      return;
+    }
+
+    const extraColKeys = new Set();
+    results.forEach(({ matchedCols }) => matchedCols.forEach(col => {
+      if (!DS_FIXED_IDX.has(col.idx)) extraColKeys.add(col.key);
+    }));
+    const extraCols = DS_ALL_COLS.filter(c => extraColKeys.has(c.key));
+
+    let html = `<div class="ds-wrap">`;
+    html += `<div class="ds-header">
+      <img src="nour_energy_logo.png" alt="Logo" onerror="this.style.display='none'">
+      <span>Deep Search — "<em>${query}</em>" &nbsp;·&nbsp; ${results.length} record${results.length !== 1 ? 's' : ''}</span>
+    </div>`;
+    html += `<table class="ds-tbl"><thead><tr>`;
+    DS_FIXED.forEach(c => { html += `<th>${c.label}</th>`; });
+    extraCols.forEach(c => { html += `<th>${c.label}</th>`; });
+    html += `</tr></thead><tbody>`;
+    results.forEach(({ r, matchedCols }) => {
+      const matchedIdxSet = new Set(matchedCols.map(c => c.idx));
+      html += `<tr onclick="closeSearchPanel();loadCardByEmpNum('${(r[COL.empNum]||'').trim().replace(/'/g,"\\'")}')">`;
+      DS_FIXED.forEach(c => {
+        const val = v(r[c.idx]);
+        const hi  = matchedIdxSet.has(c.idx) ? ' ds-match' : '';
+        html += `<td class="${hi}">${c.idx === COL.name ? rtlWrap(val) : val}</td>`;
+      });
+      extraCols.forEach(c => {
+        const hi = matchedIdxSet.has(c.idx) ? ' ds-match' : '';
+        html += `<td class="${hi}">${v(r[c.idx])}</td>`;
+      });
+      html += `</tr>`;
+    });
+    html += `</tbody></table>`;
+    html += `<div class="ds-count">${results.length} record${results.length !== 1 ? 's' : ''} — click row to open card</div>`;
+    html += `<div class="card-footer">Printed: ${todayStr()}<br>Created by: Qasim</div>`;
+    html += `</div>`;
+    document.getElementById('sl-ds-result').innerHTML = html;
+  };
+
+  if (csvRows) doSearch(csvRows);
+  else fetch('Master File - Test copy.csv').then(r=>r.text()).then(csv=>{csvRows=parseCSV(csv);doSearch(csvRows);})
+       .catch(()=>{ document.getElementById('sl-ds-result').innerHTML='<p style="color:#c0392b">Failed to load data.</p>'; });
+}
+
+/* ── Quick Lists ── */
+function runQuickList(type) {
+  const doList = (rows) => {
+    const today = new Date(); today.setHours(0,0,0,0);
+    let filtered = [], extraCols = [], title = '';
+
+    const active = rows.slice(1).filter(r => { const je=(r[COL.jobEnded]||'').trim(); return je===''||je==='—'; });
+    const all    = rows.slice(1);
+
+    if (type === 'active') {
+      filtered  = active;
+      extraCols = [SL_COL_MAP.jobTitle, SL_COL_MAP.location, SL_COL_MAP.nationality];
+      title     = '🟢 Active Employees';
+    } else if (type === 'ended') {
+      filtered  = all.filter(r => { const je=(r[COL.jobEnded]||'').trim(); return je!==''&&je!=='—'; });
+      extraCols = [SL_COL_MAP.jobTitle, SL_COL_MAP.location, SL_COL_MAP.jobEnded];
+      title     = '🔴 Job Ended';
+    } else {
+      const days = parseInt(type.replace(/[^0-9]/g,''));
+      let colIdx, colLabel, expLabel;
+      if (type.startsWith('iqama')) {
+        colIdx=COL.idRemDays; expLabel=`Iqama — Within ${days} Days`;
+        extraCols=[SL_COL_MAP.jobTitle, SL_COL_MAP.idExpGreg, SL_COL_MAP.idRemDays];
+        filtered = active.filter(r => {
+          const d = parseRemDays(r[colIdx]);
+          return d !== null && d >= 0 && d <= days;
+        });
+      } else if (type.startsWith('pp')) {
+        expLabel=`Passport — Within ${days} Days`;
+        extraCols=[SL_COL_MAP.jobTitle, SL_COL_MAP.ppExpiry];
+        filtered = active.filter(r => {
+          const d = daysDiff((r[COL.ppExpiry]||'').trim());
+          return d !== null && d >= 0 && d <= days;
+        });
+      } else {
+        expLabel=`Qiwa — Within ${days} Days`;
+        extraCols=[SL_COL_MAP.jobTitle, SL_COL_MAP.qiwaEnd];
+        filtered = active.filter(r => {
+          const d = daysDiff((r[COL.qiwaEnd]||'').trim());
+          return d !== null && d >= 0 && d <= days;
+        });
+      }
+      title = `🟠 ${expLabel}`;
+    }
+
+    document.getElementById('sl-list-result').innerHTML = buildResultTable(filtered, extraCols, title);
+  };
+
+  if (csvRows) doList(csvRows);
+  else fetch('Master File - Test copy.csv').then(r=>r.text()).then(csv=>{csvRows=parseCSV(csv);doList(csvRows);})
+       .catch(()=>{ document.getElementById('sl-list-result').innerHTML='<p style="color:#c0392b">Failed to load data.</p>'; });
+}
+
+/* ── Combined Filter ── */
+function runCombinedFilter() {
+  const flJobTitle    = document.getElementById('fl-jobTitle').value.trim().toLowerCase();
+  const flLocation    = document.getElementById('fl-location').value.trim().toLowerCase();
+  const flNationality = document.getElementById('fl-nationality').value.trim().toLowerCase();
+  const flAgeOp       = document.getElementById('fl-age-op').value;
+  const flAgeVal1     = parseInt(document.getElementById('fl-age-val1').value);
+  const flAgeVal2     = parseInt(document.getElementById('fl-age-val2').value);
+  const flMarital     = document.getElementById('fl-marital').value.trim().toLowerCase();
+  const flStatus      = document.getElementById('fl-status').value.trim().toLowerCase();
+  const flEnded       = document.getElementById('fl-ended').value;
+
+  // Selected extra columns
+  const checkedCols = [];
+  document.querySelectorAll('#sl-col-picks input[type=checkbox]:checked').forEach(cb => {
+    if (SL_COL_MAP[cb.value]) checkedCols.push(SL_COL_MAP[cb.value]);
+  });
+
+  const doFilter = (rows) => {
+    const filtered = rows.slice(1).filter(r => {
+      const je = (r[COL.jobEnded]||'').trim();
+      const isEnded = je !== '' && je !== '—';
+
+      // Job ended filter
+      if (flEnded === 'no'   && isEnded)  return false;
+      if (flEnded === 'only' && !isEnded) return false;
+
+      // Text filters (partial match)
+      if (flJobTitle    && !(r[COL.jobTitle]    ||'').toLowerCase().includes(flJobTitle))    return false;
+      if (flLocation    && !(r[COL.location]    ||'').toLowerCase().includes(flLocation))    return false;
+      if (flNationality && !(r[COL.nationality] ||'').toLowerCase().includes(flNationality)) return false;
+      if (flMarital     && !(r[COL.maritalStatus]||'').toLowerCase().includes(flMarital))    return false;
+      if (flStatus      && !(r[COL.status]      ||'').toLowerCase().includes(flStatus))      return false;
+
+      // Age filter
+      if (flAgeOp && !isNaN(flAgeVal1)) {
+        const age = parseAge(r[COL.age]);
+        if (age === null) return false;
+        if (flAgeOp === 'lt'      && !(age <  flAgeVal1)) return false;
+        if (flAgeOp === 'gte'     && !(age >= flAgeVal1)) return false;
+        if (flAgeOp === 'exact'   && !(age === flAgeVal1)) return false;
+        if (flAgeOp === 'between' && !isNaN(flAgeVal2) && !(age >= flAgeVal1 && age <= flAgeVal2)) return false;
+      }
+
+      return true;
+    });
+
+    // Build title from active filters
+    const parts = [];
+    if (flJobTitle)    parts.push(`Job: ${flJobTitle}`);
+    if (flLocation)    parts.push(`Location: ${flLocation}`);
+    if (flNationality) parts.push(`Nationality: ${flNationality}`);
+    if (flMarital)     parts.push(`Marital: ${flMarital}`);
+    if (flStatus)      parts.push(`Status: ${flStatus}`);
+    if (flAgeOp && !isNaN(flAgeVal1)) {
+      if (flAgeOp==='lt')      parts.push(`Age < ${flAgeVal1}`);
+      if (flAgeOp==='gte')     parts.push(`Age ≥ ${flAgeVal1}`);
+      if (flAgeOp==='exact')   parts.push(`Age = ${flAgeVal1}`);
+      if (flAgeOp==='between') parts.push(`Age ${flAgeVal1}–${flAgeVal2}`);
+    }
+    const title = parts.length ? `📋 ${parts.join(' · ')}` : '📋 All Employees';
+
+    document.getElementById('sl-list-result').innerHTML = buildResultTable(filtered, checkedCols, title);
+  };
+
+  if (csvRows) doFilter(csvRows);
+  else fetch('Master File - Test copy.csv').then(r=>r.text()).then(csv=>{csvRows=parseCSV(csv);doFilter(csvRows);})
+       .catch(()=>{ document.getElementById('sl-list-result').innerHTML='<p style="color:#c0392b">Failed to load data.</p>'; });
+}
+
+function resetFilter() {
+  ['fl-jobTitle','fl-location','fl-nationality','fl-status'].forEach(id=>{ document.getElementById(id).value=''; });
+  document.getElementById('fl-age-op').value = '';
+  document.getElementById('fl-age-val1').value = '';
+  document.getElementById('fl-age-val2').value = '';
+  document.getElementById('fl-age-and').style.display = 'none';
+  document.getElementById('fl-age-val2').style.display = 'none';
+  document.getElementById('fl-marital').value = '';
+  document.getElementById('fl-ended').value = 'no';
+  document.getElementById('sl-list-result').innerHTML = '';
 }
 </script>
 </body>
