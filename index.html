@@ -772,10 +772,6 @@ html, body { margin: 0; padding: 0; font-family: 'Calibri', sans-serif; backgrou
 
     <!-- Deep Search pane -->
     <div id="ipane-deep" class="ipane">
-      <div id="isl-ds-row">
-        <input type="text" id="isl-ds-input" placeholder="Type anything — searches all 37 fields…">
-        <button onclick="runInlineDeepSearch()">Search</button>
-      </div>
       <div id="isl-ds-result"></div>
       <div id="isl-ds-print-bar" style="display:none;">
         <button class="sl-print-btn" onclick="printInlineResult('ds')">🖨 Print Result</button>
@@ -979,6 +975,9 @@ function logout() {
   document.getElementById('dataFormButton').style.display  = 'none';
   document.getElementById('tab-row').style.display         = 'none';
   document.getElementById('inline-search-panel').style.display = 'none';
+  document.getElementById('employeeNumber').placeholder = 'Employee Number or ID No';
+  document.getElementById('searchButton').textContent  = 'Search';
+  document.getElementById('searchButton').onclick      = searchEmployee;
   document.getElementById('pw-overlay').style.display = 'flex';
   document.getElementById('pw-input').focus();
 }
@@ -1145,9 +1144,7 @@ function clearCard() {
 document.getElementById('pw-input').addEventListener('keyup', e => {
   if (e.key === 'Enter') checkPassword();
 });
-document.getElementById('employeeNumber').addEventListener('keyup', e => {
-  if (e.key === 'Enter') searchEmployee();
-});
+/* Enter key handled in DOMContentLoaded below */
 
 /* ─── Helpers ─── */
 function v(val) {
@@ -2164,13 +2161,35 @@ function switchInlineTab(tab) {
   document.getElementById('ipane-deep').style.display  = tab === 'deep'  ? 'block' : 'none';
   document.getElementById('ipane-lists').style.display = tab === 'lists' ? 'block' : 'none';
   document.getElementById('inline-search-panel').style.display = 'block';
-  if (tab === 'deep') setTimeout(() => { document.getElementById('isl-ds-input').focus(); }, 50);
+
+  const input  = document.getElementById('employeeNumber');
+  const btn    = document.getElementById('searchButton');
+
+  if (tab === 'deep') {
+    input.placeholder = 'Deep Search — type anything…';
+    btn.textContent   = '🔍 Deep Search';
+    btn.onclick       = runInlineDeepSearch;
+    input.focus();
+  } else {
+    // restore top search box to normal
+    input.placeholder = 'Employee Number or ID No';
+    btn.textContent   = 'Search';
+    btn.onclick       = searchEmployee;
+  }
 }
 
 document.addEventListener('DOMContentLoaded', function() {
-  // Inline deep search enter key
-  const dsi = document.getElementById('isl-ds-input');
-  if (dsi) dsi.addEventListener('keyup', e => { if (e.key === 'Enter') runInlineDeepSearch(); });
+  // Top search box enter key — works for both normal search and deep search
+  const topInput = document.getElementById('employeeNumber');
+  if (topInput) topInput.addEventListener('keyup', e => {
+    if (e.key === 'Enter') {
+      if (inlineCurrentTab === 'deep' && document.getElementById('inline-search-panel').style.display !== 'none') {
+        runInlineDeepSearch();
+      } else {
+        searchEmployee();
+      }
+    }
+  });
   // Inline age filter
   const aop = document.getElementById('ifl-age-op');
   if (aop) aop.addEventListener('change', function() {
@@ -2188,8 +2207,8 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 function runInlineDeepSearch() {
-  const query = document.getElementById('isl-ds-input').value.trim().toLowerCase();
-  if (!query) { alert('Type something to search.'); return; }
+  const query = document.getElementById('employeeNumber').value.trim().toLowerCase();
+  if (!query) { alert('Type something in the search box above.'); return; }
   const doSearch = (rows) => {
     const results = [];
     rows.slice(1).forEach(r => {
