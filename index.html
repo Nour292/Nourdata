@@ -307,11 +307,29 @@ html, body { margin: 0; padding: 0; font-family: 'Calibri', sans-serif; backgrou
 
 
 /* ── Deep Search Results ── */
-.ds-wrap {
-  background: #fff;
-  border-radius: 10px;
-  box-shadow: 0 3px 18px rgba(0,0,0,0.13);
-  padding: 20px 26px 18px;
+@media screen {
+  .ds-wrap {
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 3px 18px rgba(0,0,0,0.13);
+    padding: 20px 26px 18px;
+  }
+}
+@media print {
+  .ds-wrap {
+    width: 100% !important;
+    background: #fff !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    page-break-inside: avoid;
+  }
+  .ds-tbl { width: 100% !important; font-size: 11.5px; }
+  .ds-tbl th { font-size: 11.5px; padding: 3px 8px; print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+  .ds-tbl td { font-size: 11px; padding: 3px 8px; }
+  .ds-header img { height: 44px !important; }
+  .ds-header span { font-size: 13px; }
 }
 .ds-header {
   display: flex;
@@ -633,7 +651,7 @@ function deepSearch() {
     const extraCols = DS_ALL_COLS.filter(c => extraColKeys.has(c.key));
 
     // Build table
-    let html = `<div class="ds-wrap no-print">`;
+    let html = `<div class="ds-wrap">`;
 
     // Header: logo left + title
     html += `<div class="ds-header">
