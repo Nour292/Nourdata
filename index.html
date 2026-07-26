@@ -95,7 +95,115 @@ html, body { margin: 0; padding: 0; font-family: 'Calibri', sans-serif; backgrou
   object-fit: contain;
 }
 
-/* ── Logout Button ── */
+/* ── Add/Update Button ── */
+#dataFormButton { background: #117a65; color: #fff; }
+#dataFormButton:hover { background: #0e6655; }
+
+/* ── Data Form Modal ── */
+#df-overlay {
+  display: none;
+  position: fixed; inset: 0;
+  background: rgba(10,25,40,0.65);
+  z-index: 8888;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 30px 16px;
+  overflow-y: auto;
+}
+#df-modal {
+  background: #fff;
+  border-radius: 10px;
+  width: 100%;
+  max-width: 860px;
+  box-shadow: 0 8px 40px rgba(0,0,0,0.28);
+  padding: 0 0 24px 0;
+  margin: auto;
+}
+#df-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px 24px;
+  border-bottom: 2px solid #d5e8f5;
+  background: #1a5276;
+  border-radius: 10px 10px 0 0;
+}
+#df-header img { height: 44px; width: auto; }
+#df-header span { font-size: 18px; font-weight: 700; color: #fff; flex: 1; }
+#df-close {
+  background: rgba(255,255,255,0.2); border: none; color: #fff;
+  font-size: 18px; font-weight: bold; width: 32px; height: 32px;
+  border-radius: 50%; cursor: pointer; line-height: 1;
+}
+#df-close:hover { background: rgba(255,255,255,0.35); }
+#df-tabs {
+  display: flex;
+  gap: 0;
+  border-bottom: 2px solid #d5e8f5;
+  padding: 0 24px;
+  background: #eaf2fb;
+}
+.df-tab {
+  padding: 11px 22px;
+  font-size: 14px; font-weight: 700;
+  border: none; background: none;
+  cursor: pointer; color: #555;
+  border-bottom: 3px solid transparent;
+  margin-bottom: -2px;
+}
+.df-tab.active { color: #1a5276; border-bottom-color: #1a5276; background: #fff; }
+.df-tab:hover { color: #1a5276; }
+#df-update-search { padding: 16px 24px 0; }
+#df-search-emp {
+  flex: 1; padding: 9px 12px; font-size: 14px;
+  border: 2px solid #aaa; border-radius: 6px;
+}
+#df-load-btn {
+  padding: 9px 20px; font-size: 14px; font-weight: bold;
+  background: #2e86c1; color: #fff; border: none;
+  border-radius: 6px; cursor: pointer;
+}
+#df-load-btn:hover { background: #1a5276; }
+#df-load-msg { font-size: 13px; color: #c0392b; margin-top: 4px; }
+#df-fields { padding: 0 24px; }
+.df-section-hdr {
+  background: #1a5276; color: #fff;
+  font-size: 13px; font-weight: 700;
+  padding: 5px 10px; margin: 16px 0 10px;
+  border-radius: 3px;
+}
+.df-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px 16px;
+}
+.df-field { display: flex; flex-direction: column; gap: 3px; }
+.df-field label { font-size: 12px; font-weight: 700; color: #1a3a52; }
+.df-field input, .df-field select {
+  padding: 7px 10px; font-size: 13px;
+  border: 1px solid #c8d8e8; border-radius: 5px;
+  font-family: 'Calibri', sans-serif;
+}
+.df-field input:focus, .df-field select:focus {
+  border-color: #2e86c1; outline: none;
+}
+#df-status-msg {
+  margin: 14px 0 0;
+  font-size: 13px; font-weight: 700;
+  min-height: 20px;
+}
+#df-actions {
+  display: flex; gap: 12px; margin-top: 14px;
+}
+#df-actions button {
+  padding: 10px 24px; font-size: 14px; font-weight: bold;
+  border: none; border-radius: 6px; cursor: pointer;
+}
+#df-submit-btn { background: #117a65; color: #fff; }
+#df-submit-btn:hover { background: #0e6655; }
+#df-actions button:last-child { background: #e5e7e9; color: #333; }
+#df-actions button:last-child:hover { background: #ccd; }
+@media print { #df-overlay { display: none !important; } }
 #logoutButton {
   position: fixed;
   top: 12px;
@@ -442,6 +550,7 @@ html, body { margin: 0; padding: 0; font-family: 'Calibri', sans-serif; backgrou
         <button id="deepSearchButton" onclick="deepSearch()" style="display:none;">Deep Search</button>
         <button id="printButton" onclick="window.print()">Print</button>
         <button id="clearButton" onclick="clearCard()">Clear Data</button>
+        <button id="dataFormButton" onclick="openDataForm()" style="display:none;">➕ Add / Update</button>
       </div>
     </div>
     <div id="top-bar-right">
@@ -546,9 +655,9 @@ function unlockApp() {
   document.getElementById('pw-input').value = '';
   document.getElementById('pw-error').textContent = '';
   document.getElementById('logoutButton').style.display = 'block';
-  // Deep Search only for admin
-  document.getElementById('deepSearchButton').style.display =
-    currentAccessLevel === 'admin' ? 'block' : 'none';
+  const isAdmin = currentAccessLevel === 'admin';
+  document.getElementById('deepSearchButton').style.display = isAdmin ? 'block' : 'none';
+  document.getElementById('dataFormButton').style.display  = isAdmin ? 'block' : 'none';
   document.getElementById('employeeNumber').focus();
 }
 
@@ -557,8 +666,9 @@ function logout() {
   currentAccessLevel = 'none';
   csvRows = null;
   clearCard();
-  document.getElementById('logoutButton').style.display = 'none';
+  document.getElementById('logoutButton').style.display    = 'none';
   document.getElementById('deepSearchButton').style.display = 'none';
+  document.getElementById('dataFormButton').style.display  = 'none';
   document.getElementById('pw-overlay').style.display = 'flex';
   document.getElementById('pw-input').focus();
 }
@@ -979,7 +1089,268 @@ function searchEmployee() {
   document.getElementById('employeeNumber').value = '';
 }
 
+</script>
 
+<!-- ── Add / Update Modal ── -->
+<div id="df-overlay">
+  <div id="df-modal">
+
+    <div id="df-header">
+      <img src="nour_energy_logo.png" alt="Logo" onerror="this.style.display='none'">
+      <span>Employee Data Form</span>
+      <button id="df-close" onclick="closeDataForm()">✕</button>
+    </div>
+
+    <!-- Tabs -->
+    <div id="df-tabs">
+      <button class="df-tab active" id="tab-add" onclick="switchTab('add')">➕ Add New Employee</button>
+      <button class="df-tab" id="tab-update" onclick="switchTab('update')">✏️ Update Employee</button>
+    </div>
+
+    <!-- Update: load existing -->
+    <div id="df-update-search" style="display:none;">
+      <div style="display:flex;gap:10px;align-items:center;margin-bottom:16px;">
+        <input type="text" id="df-search-emp" placeholder="Enter Employee Number to load">
+        <button id="df-load-btn" onclick="loadEmployeeForEdit()">Load</button>
+      </div>
+      <div id="df-load-msg"></div>
+    </div>
+
+    <!-- Form fields -->
+    <div id="df-fields" style="display:none;">
+      <div class="df-section-hdr">Personal & Employment</div>
+      <div class="df-grid">
+        <div class="df-field"><label>Employee No *</label><input type="text" id="f-empNum" placeholder="e.g. 1001"></div>
+        <div class="df-field"><label>Name *</label><input type="text" id="f-name"></div>
+        <div class="df-field"><label>Mobile</label><input type="text" id="f-mobile"></div>
+        <div class="df-field"><label>Nationality</label><input type="text" id="f-nationality"></div>
+        <div class="df-field"><label>Job Title</label><input type="text" id="f-jobTitle"></div>
+        <div class="df-field"><label>Location</label><input type="text" id="f-location"></div>
+        <div class="df-field"><label>Joining Date</label><input type="text" id="f-joiningDate" placeholder="DD/MM/YYYY"></div>
+        <div class="df-field"><label>Date of Birth</label><input type="text" id="f-dob" placeholder="DD/MM/YYYY"></div>
+        <div class="df-field"><label>Marital Status</label>
+          <select id="f-maritalStatus"><option value="">—</option><option>Single</option><option>Married</option><option>Divorced</option><option>Widowed</option></select>
+        </div>
+        <div class="df-field"><label>Contract</label><input type="text" id="f-contract"></div>
+        <div class="df-field"><label>Annual Leave</label><input type="text" id="f-annualLeave"></div>
+        <div class="df-field"><label>Tickets</label><input type="text" id="f-tickets"></div>
+        <div class="df-field"><label>Medical</label><input type="text" id="f-medical"></div>
+        <div class="df-field"><label>Duty Hours</label><input type="text" id="f-dutyHours"></div>
+        <div class="df-field"><label>Status</label><input type="text" id="f-status"></div>
+        <div class="df-field"><label>Email</label><input type="text" id="f-email"></div>
+        <div class="df-field"><label>IBAN</label><input type="text" id="f-iban"></div>
+        <div class="df-field"><label>Job Ended</label><input type="text" id="f-jobEnded" placeholder="DD/MM/YYYY or leave blank"></div>
+      </div>
+
+      <div class="df-section-hdr">Salary (SAR)</div>
+      <div class="df-grid">
+        <div class="df-field"><label>Basic</label><input type="text" id="f-basic"></div>
+        <div class="df-field"><label>Food</label><input type="text" id="f-food"></div>
+        <div class="df-field"><label>Other</label><input type="text" id="f-other"></div>
+        <div class="df-field"><label>Housing 25%</label><input type="text" id="f-housing25"></div>
+        <div class="df-field"><label>Transport 10%</label><input type="text" id="f-trPct"></div>
+        <div class="df-field"><label>Other Transport</label><input type="text" id="f-otherTrasp"></div>
+        <div class="df-field"><label>Housing</label><input type="text" id="f-housing"></div>
+        <div class="df-field"><label>Total Salary</label><input type="text" id="f-total"></div>
+        <div class="df-field"><label>Transport Status</label><input type="text" id="f-transpStatus"></div>
+      </div>
+
+      <div class="df-section-hdr">IDs & Documents</div>
+      <div class="df-grid">
+        <div class="df-field"><label>ID No</label><input type="text" id="f-idNo"></div>
+        <div class="df-field"><label>ID Profession</label><input type="text" id="f-idProfession"></div>
+        <div class="df-field"><label>ID Exp (Hijri)</label><input type="text" id="f-idExpHijri"></div>
+        <div class="df-field"><label>ID Exp (Gregorian)</label><input type="text" id="f-idExpGreg"></div>
+        <div class="df-field"><label>ID Remaining Days</label><input type="text" id="f-idRemDays"></div>
+        <div class="df-field"><label>Passport No</label><input type="text" id="f-ppNumber"></div>
+        <div class="df-field"><label>Issue Place</label><input type="text" id="f-issuePlace"></div>
+        <div class="df-field"><label>Issue Date</label><input type="text" id="f-issueDate" placeholder="DD/MM/YYYY"></div>
+        <div class="df-field"><label>PP Expiry</label><input type="text" id="f-ppExpiry" placeholder="DD/MM/YYYY"></div>
+        <div class="df-field"><label>Qiwa Start</label><input type="text" id="f-qiwaStart" placeholder="DD/MM/YYYY"></div>
+        <div class="df-field"><label>Qiwa Ending</label><input type="text" id="f-qiwaEnd" placeholder="DD/MM/YYYY"></div>
+      </div>
+
+      <div id="df-status-msg"></div>
+      <div id="df-actions">
+        <button id="df-submit-btn" onclick="submitForm()">💾 Save to GitHub</button>
+        <button onclick="clearForm()">🗑 Clear Form</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+/* ════════════════════════════════════════
+   DATA FORM — GitHub API Read / Write
+════════════════════════════════════════ */
+const GH_OWNER = 'Nour292';
+const GH_REPO  = 'Nourdata';
+const GH_FILE  = 'Master File - Test copy.csv';
+const GH_PAT   = 'PASTE_YOUR_PAT_HERE'; // ← replace with your GitHub PAT
+
+let dfCurrentTab = 'add';
+let dfEditRowIdx = -1;
+
+const FORM_FIELDS = [
+  { id:'f-empNum',       idx: 0  },
+  { id:'f-name',         idx: 1  },
+  { id:'f-mobile',       idx: 2  },
+  { id:'f-nationality',  idx: 3  },
+  { id:'f-jobTitle',     idx: 4  },
+  { id:'f-location',     idx: 5  },
+  { id:'f-joiningDate',  idx: 7  },
+  { id:'f-dob',          idx: 10 },
+  { id:'f-total',        idx: 13 },
+  { id:'f-basic',        idx: 14 },
+  { id:'f-food',         idx: 15 },
+  { id:'f-other',        idx: 16 },
+  { id:'f-trPct',        idx: 17 },
+  { id:'f-otherTrasp',   idx: 18 },
+  { id:'f-housing25',    idx: 19 },
+  { id:'f-housing',      idx: 20 },
+  { id:'f-transpStatus', idx: 21 },
+  { id:'f-medical',      idx: 22 },
+  { id:'f-contract',     idx: 23 },
+  { id:'f-annualLeave',  idx: 24 },
+  { id:'f-tickets',      idx: 25 },
+  { id:'f-qiwaStart',    idx: 26 },
+  { id:'f-qiwaEnd',      idx: 27 },
+  { id:'f-status',       idx: 28 },
+  { id:'f-dutyHours',    idx: 29 },
+  { id:'f-idNo',         idx: 30 },
+  { id:'f-idProfession', idx: 31 },
+  { id:'f-idExpHijri',   idx: 32 },
+  { id:'f-idExpGreg',    idx: 33 },
+  { id:'f-idRemDays',    idx: 34 },
+  { id:'f-ppNumber',     idx: 35 },
+  { id:'f-issuePlace',   idx: 36 },
+  { id:'f-issueDate',    idx: 37 },
+  { id:'f-ppExpiry',     idx: 38 },
+  { id:'f-jobEnded',     idx: 40 },
+  { id:'f-maritalStatus',idx: 41 },
+  { id:'f-serviceEnded', idx: 42 },
+  { id:'f-iban',         idx: 43 },
+  { id:'f-email',        idx: 44 },
+];
+
+function openDataForm() {
+  dfCurrentTab = 'add';
+  dfEditRowIdx = -1;
+  switchTab('add');
+  clearForm();
+  document.getElementById('df-overlay').style.display = 'flex';
+}
+function closeDataForm() {
+  document.getElementById('df-overlay').style.display = 'none';
+  dfStatusMsg('', '');
+}
+function switchTab(tab) {
+  dfCurrentTab = tab;
+  document.getElementById('tab-add').classList.toggle('active', tab === 'add');
+  document.getElementById('tab-update').classList.toggle('active', tab === 'update');
+  document.getElementById('df-update-search').style.display = tab === 'update' ? 'block' : 'none';
+  if (tab === 'add') {
+    dfEditRowIdx = -1;
+    clearForm();
+    document.getElementById('df-fields').style.display = 'block';
+    document.getElementById('f-empNum').removeAttribute('readonly');
+  } else {
+    document.getElementById('df-fields').style.display = 'none';
+    document.getElementById('df-search-emp').value = '';
+    document.getElementById('df-load-msg').textContent = '';
+  }
+  dfStatusMsg('', '');
+}
+function dfStatusMsg(msg, type) {
+  const el = document.getElementById('df-status-msg');
+  el.textContent = msg;
+  el.style.color = type === 'ok' ? '#117a65' : type === 'err' ? '#c0392b' : '#555';
+}
+function clearForm() {
+  FORM_FIELDS.forEach(f => { const el = document.getElementById(f.id); if (el) el.value = ''; });
+  dfStatusMsg('', '');
+}
+function loadEmployeeForEdit() {
+  const empNum = document.getElementById('df-search-emp').value.trim();
+  if (!empNum) { document.getElementById('df-load-msg').textContent = 'Enter an employee number.'; return; }
+  const doLoad = (rows) => {
+    const idx = rows.slice(1).findIndex(r => (r[COL.empNum]||'').trim() === empNum);
+    if (idx === -1) { document.getElementById('df-load-msg').textContent = `Employee ${empNum} not found.`; return; }
+    dfEditRowIdx = idx + 1;
+    const r = rows[dfEditRowIdx];
+    FORM_FIELDS.forEach(f => { const el = document.getElementById(f.id); if (el) el.value = (r[f.idx]||'').trim(); });
+    document.getElementById('f-empNum').setAttribute('readonly', true);
+    document.getElementById('df-load-msg').textContent = '';
+    document.getElementById('df-fields').style.display = 'block';
+    dfStatusMsg(`Loaded: ${(r[COL.name]||'').trim()} — edit fields then click Save.`, 'info');
+  };
+  if (csvRows) { doLoad(csvRows); }
+  else {
+    fetch(`https://raw.githubusercontent.com/${GH_OWNER}/${GH_REPO}/main/${encodeURIComponent(GH_FILE)}?t=${Date.now()}`)
+      .then(r => r.text()).then(csv => { csvRows = parseCSV(csv); doLoad(csvRows); })
+      .catch(() => { document.getElementById('df-load-msg').textContent = 'Failed to load data.'; });
+  }
+}
+function formToRow(existingRow) {
+  const maxCol = 45;
+  const row = existingRow ? [...existingRow] : new Array(maxCol).fill('');
+  while (row.length < maxCol) row.push('');
+  FORM_FIELDS.forEach(f => { const el = document.getElementById(f.id); if (el) row[f.idx] = el.value.trim(); });
+  return row;
+}
+function csvCell(val) {
+  val = String(val == null ? '' : val);
+  if (val.includes(',') || val.includes('"') || val.includes('\n')) return '"' + val.replace(/"/g, '""') + '"';
+  return val;
+}
+function rowsToCSV(rows) { return rows.map(r => r.map(csvCell).join(',')).join('\n'); }
+
+async function submitForm() {
+  const empNum = document.getElementById('f-empNum').value.trim();
+  const name   = document.getElementById('f-name').value.trim();
+  if (!empNum) { dfStatusMsg('Employee Number is required.', 'err'); return; }
+  if (!name)   { dfStatusMsg('Name is required.', 'err'); return; }
+  if (GH_PAT === 'PASTE_YOUR_PAT_HERE') { dfStatusMsg('Please set your GitHub PAT in the code first.', 'err'); return; }
+
+  dfStatusMsg('Connecting to GitHub…', '');
+  document.getElementById('df-submit-btn').disabled = true;
+  try {
+    const apiUrl = `https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/contents/${encodeURIComponent(GH_FILE)}`;
+    const getRes = await fetch(apiUrl, { headers: { 'Authorization': `token ${GH_PAT}`, 'Accept': 'application/vnd.github.v3+json' } });
+    if (!getRes.ok) throw new Error(`GitHub API error: ${getRes.status}`);
+    const fileData = await getRes.json();
+    const sha = fileData.sha;
+    const currentCSV = decodeURIComponent(escape(atob(fileData.content.replace(/\n/g, ''))));
+    const rows = parseCSV(currentCSV);
+
+    if (dfCurrentTab === 'add') {
+      const exists = rows.slice(1).some(r => (r[COL.empNum]||'').trim() === empNum);
+      if (exists) { dfStatusMsg(`Employee ${empNum} already exists. Use Update tab.`, 'err'); document.getElementById('df-submit-btn').disabled = false; return; }
+      rows.push(formToRow(null));
+    } else {
+      if (dfEditRowIdx === -1) { dfStatusMsg('Load an employee first.', 'err'); document.getElementById('df-submit-btn').disabled = false; return; }
+      rows[dfEditRowIdx] = formToRow(rows[dfEditRowIdx]);
+    }
+
+    const newCSV    = rowsToCSV(rows);
+    const newBase64 = btoa(encodeURIComponent(newCSV).replace(/%([0-9A-F]{2})/g, (_, p1) => String.fromCharCode(parseInt(p1, 16))));
+    const action    = dfCurrentTab === 'add' ? 'Add' : 'Update';
+    const putRes = await fetch(apiUrl, {
+      method: 'PUT',
+      headers: { 'Authorization': `token ${GH_PAT}`, 'Accept': 'application/vnd.github.v3+json', 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message: `${action} employee ${empNum} — ${name}`, content: newBase64, sha })
+    });
+    if (!putRes.ok) { const err = await putRes.json(); throw new Error(err.message || putRes.status); }
+
+    csvRows = rows;
+    dfStatusMsg(`✅ Employee ${dfCurrentTab === 'add' ? 'added' : 'updated'} successfully!`, 'ok');
+    if (dfCurrentTab === 'add') clearForm();
+  } catch(e) {
+    dfStatusMsg(`❌ Error: ${e.message}`, 'err');
+  }
+  document.getElementById('df-submit-btn').disabled = false;
+}
 </script>
 </body>
 </html>
