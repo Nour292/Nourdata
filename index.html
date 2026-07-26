@@ -115,14 +115,11 @@ html, body { margin: 0; padding: 0; font-family: 'Calibri', sans-serif; backgrou
   font-size: 15px;
   font-weight: 700;
   border: none;
-  background: #eaf2fb;
-  color: #1a5276;
+  background: #1a5276;
+  color: #fff;
   cursor: pointer;
-  border-right: 1px solid #1a5276;
 }
-.inline-tab:last-child { border-right: none; }
-.inline-tab.active { background: #1a5276; color: #fff; }
-.inline-tab:hover:not(.active) { background: #d5e8f5; }
+.inline-tab:hover { background: #154360; }
 
 /* ── Inline Search Panel ── */
 #inline-search-panel {
@@ -768,10 +765,9 @@ html, body { margin: 0; padding: 0; font-family: 'Calibri', sans-serif; backgrou
         <button id="clearButton" onclick="clearCard()">Clear Data</button>
         <button id="dataFormButton" onclick="openDataForm()" style="display:none;">➕ Add / Update</button>
       </div>
-      <!-- Tab row — below 4 buttons, admin only -->
+      <!-- Tab row — below buttons, admin only -->
       <div id="tab-row" style="display:none;">
-        <button class="inline-tab active" id="itab-deep" onclick="switchInlineTab('deep')">🔍 Deep Search</button>
-        <button class="inline-tab" id="itab-lists" onclick="switchInlineTab('lists')">📋 Smart Lists</button>
+        <button class="inline-tab active" id="itab-lists" onclick="switchInlineTab('lists')">📋 Smart Lists</button>
       </div>
     </div>
     <div id="top-bar-right">
@@ -782,20 +778,8 @@ html, body { margin: 0; padding: 0; font-family: 'Calibri', sans-serif; backgrou
   <!-- Inline Search Panel -->
   <div id="inline-search-panel" style="display:none;">
 
-    <!-- Deep Search pane -->
-    <div id="ipane-deep" class="ipane">
-      <div id="isl-ds-row">
-        <input type="text" id="isl-deep-input" placeholder="Type anything — name, nationality, job title, age, location…">
-        <button onclick="runInlineDeepSearch()">🔍 Search</button>
-      </div>
-      <div id="isl-ds-result"></div>
-      <div id="isl-ds-print-bar" style="display:none;">
-        <button class="sl-print-btn" onclick="printInlineResult('ds')">🖨 Print Result</button>
-      </div>
-    </div>
-
     <!-- Smart Lists pane -->
-    <div id="ipane-lists" class="ipane" style="display:none;">
+    <div id="ipane-lists" class="ipane">
 
       <!-- Extra Columns — at the top -->
       <div class="sl-section-hdr">Columns to Show</div>
@@ -955,10 +939,10 @@ function unlockApp() {
   const isAdmin = currentAccessLevel === 'admin';
   document.getElementById('dataFormButton').style.display = isAdmin ? 'block' : 'none';
   document.getElementById('tab-row').style.display        = isAdmin ? 'flex'  : 'none';
-  // Always keep Search button wired to searchEmployee
-  document.getElementById('searchButton').textContent = 'Search';
-  document.getElementById('searchButton').onclick = searchEmployee;
-  document.getElementById('employeeNumber').placeholder = 'Employee Number or ID No';
+  if (isAdmin) {
+    document.getElementById('inline-search-panel').style.display = 'block';
+    document.getElementById('ipane-lists').style.display = 'block';
+  }
   document.getElementById('employeeNumber').focus();
 }
 
@@ -2150,16 +2134,8 @@ let inlineCurrentTab = 'deep';
 
 function switchInlineTab(tab) {
   inlineCurrentTab = tab;
-  document.getElementById('itab-deep').classList.toggle('active', tab === 'deep');
-  document.getElementById('itab-lists').classList.toggle('active', tab === 'lists');
-  document.getElementById('ipane-deep').style.display  = tab === 'deep'  ? 'block' : 'none';
-  document.getElementById('ipane-lists').style.display = tab === 'lists' ? 'block' : 'none';
   document.getElementById('inline-search-panel').style.display = 'block';
-  // Top Search button NEVER changes — always searchEmployee
-  document.getElementById('searchButton').textContent = 'Search';
-  document.getElementById('searchButton').onclick = searchEmployee;
-  document.getElementById('employeeNumber').placeholder = 'Employee Number or ID No';
-  if (tab === 'deep') setTimeout(() => { const i = document.getElementById('isl-deep-input'); if(i) i.focus(); }, 50);
+  document.getElementById('ipane-lists').style.display = 'block';
 }
 
 document.addEventListener('DOMContentLoaded', function() {
