@@ -155,6 +155,13 @@ html, body { margin: 0; padding: 0; font-family: 'Calibri', sans-serif; backgrou
   background: #fff;
 }
 #df-pat-input:focus { border-color: #b7950b; outline: none; }
+#df-pat-save {
+  padding: 7px 16px; font-size: 13px; font-weight: bold;
+  background: #117a65; color: #fff; border: none; border-radius: 5px; cursor: pointer; white-space: nowrap;
+}
+#df-pat-save:hover { background: #0e6655; }
+#df-pat-status { font-size: 12px; font-weight: 700; }
+#df-tabs {
   display: flex;
   gap: 0;
   border-bottom: 2px solid #d5e8f5;
@@ -1119,6 +1126,14 @@ function searchEmployee() {
       <button id="df-close" onclick="closeDataForm()">✕</button>
     </div>
 
+    <!-- PAT Entry — saved permanently in browser -->
+    <div id="df-pat-row">
+      <label>🔑 GitHub Token</label>
+      <input type="password" id="df-pat-input" placeholder="Paste PAT once then click Remember" autocomplete="off">
+      <button id="df-pat-save" onclick="savePAT()">💾 Remember</button>
+      <span id="df-pat-status"></span>
+    </div>
+
     <!-- Tabs -->
     <div id="df-tabs">
       <button class="df-tab active" id="tab-add" onclick="switchTab('add')">➕ Add New Employee</button>
@@ -1257,7 +1272,26 @@ function openDataForm() {
   dfEditRowIdx = -1;
   switchTab('add');
   clearForm();
+  // Auto-load saved PAT from localStorage
+  const saved = localStorage.getItem('nour_gh_pat');
+  if (saved) {
+    document.getElementById('df-pat-input').value = saved;
+    document.getElementById('df-pat-status').textContent = '✅ Token loaded';
+    document.getElementById('df-pat-status').style.color = '#117a65';
+  }
   document.getElementById('df-overlay').style.display = 'flex';
+}
+
+function savePAT() {
+  const pat = document.getElementById('df-pat-input').value.trim();
+  if (!pat) { 
+    document.getElementById('df-pat-status').textContent = '❌ Empty — paste your PAT first';
+    document.getElementById('df-pat-status').style.color = '#c0392b';
+    return; 
+  }
+  localStorage.setItem('nour_gh_pat', pat);
+  document.getElementById('df-pat-status').textContent = '✅ Saved permanently';
+  document.getElementById('df-pat-status').style.color = '#117a65';
 }
 function closeDataForm() {
   document.getElementById('df-overlay').style.display = 'none';
@@ -1290,6 +1324,7 @@ function clearForm() {
   dfStatusMsg('', '');
 }
 function loadEmployeeForEdit() {
+  GH_PAT = document.getElementById('df-pat-input').value.trim();
   const empNum = document.getElementById('df-search-emp').value.trim();
   if (!empNum) { document.getElementById('df-load-msg').textContent = 'Enter an employee number.'; return; }
   const doLoad = (rows) => {
@@ -1325,8 +1360,10 @@ function csvCell(val) {
 function rowsToCSV(rows) { return rows.map(r => r.map(csvCell).join(',')).join('\n'); }
 
 async function submitForm() {
+  GH_PAT = document.getElementById('df-pat-input').value.trim();
   const empNum = document.getElementById('f-empNum').value.trim();
   const name   = document.getElementById('f-name').value.trim();
+  if (!GH_PAT) { dfStatusMsg('❌ GitHub Token missing — paste and click Remember.', 'err'); return; }
   if (!empNum) { dfStatusMsg('Employee Number is required.', 'err'); return; }
   if (!name)   { dfStatusMsg('Name is required.', 'err'); return; }
 
