@@ -553,9 +553,9 @@ html, body { margin: 0; padding: 0; font-family: 'Calibri', sans-serif; backgrou
 }
 #sl-modal {
   background: #fff; border-radius: 10px;
-  width: 100%; max-width: 900px;
+  width: 100%; max-width: 1100px;
   box-shadow: 0 8px 40px rgba(0,0,0,0.28);
-  margin: auto; padding-bottom: 20px;
+  margin: auto; overflow: hidden;
 }
 #sl-header {
   display: flex; align-items: center; gap: 14px;
@@ -570,18 +570,26 @@ html, body { margin: 0; padding: 0; font-family: 'Calibri', sans-serif; backgrou
   border-radius: 50%; cursor: pointer;
 }
 #sl-close:hover { background: rgba(255,255,255,0.35); }
+
+/* 50/50 tab row */
 #sl-tabs {
-  display: flex; border-bottom: 2px solid #d5e8f5;
-  padding: 0 24px; background: #eaf2fb;
+  display: flex; border-bottom: 2px solid #d5e8f5; background: #eaf2fb;
 }
 .sl-tab {
-  padding: 11px 26px; font-size: 14px; font-weight: 700;
+  flex: 1; padding: 12px 0; font-size: 14px; font-weight: 700;
   border: none; background: none; cursor: pointer; color: #555;
   border-bottom: 3px solid transparent; margin-bottom: -2px;
+  text-align: center;
 }
 .sl-tab.active { color: #1a5276; border-bottom-color: #1a5276; background: #fff; }
 .sl-tab:hover { color: #1a5276; }
-#sl-deep-pane { padding: 16px 24px; }
+
+/* Body — single pane takes full width */
+#sl-body { width: 100%; }
+.sl-pane { width: 100%; display: block; }
+.sl-pane-inner { padding: 18px 24px 20px; }
+
+/* Deep Search */
 #sl-ds-row { display: flex; gap: 10px; margin-bottom: 14px; }
 #sl-ds-input {
   flex: 1; padding: 9px 14px; font-size: 15px;
@@ -593,7 +601,8 @@ html, body { margin: 0; padding: 0; font-family: 'Calibri', sans-serif; backgrou
   border-radius: 6px; cursor: pointer;
 }
 #sl-ds-row button:hover { background: #1a5276; }
-#sl-lists-pane { padding: 0 24px 10px; }
+
+/* Smart Lists */
 .sl-section-hdr {
   background: #1a5276; color: #fff;
   font-size: 13px; font-weight: 700;
@@ -609,20 +618,20 @@ html, body { margin: 0; padding: 0; font-family: 'Calibri', sans-serif; backgrou
 #sl-quick-btns button:hover { background: #2e86c1; color: #fff; }
 #sl-filter-grid { display: flex; flex-direction: column; gap: 8px; }
 .sl-filter-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
-.sl-filter-row label { font-size: 13px; font-weight: 700; color: #1a3a52; width: 120px; flex-shrink: 0; }
+.sl-filter-row label { font-size: 13px; font-weight: 700; color: #1a3a52; width: 110px; flex-shrink: 0; }
 .sl-filter-row input[type="text"],
 .sl-filter-row input[type="number"],
 .sl-filter-row select {
   padding: 6px 10px; font-size: 13px;
   border: 1px solid #c8d8e8; border-radius: 5px;
-  font-family: 'Calibri', sans-serif; min-width: 140px;
+  font-family: 'Calibri', sans-serif; min-width: 130px;
 }
 .sl-filter-row input:focus, .sl-filter-row select:focus { border-color: #2e86c1; outline: none; }
-#sl-col-picks { display: flex; flex-wrap: wrap; gap: 8px 18px; }
+#sl-col-picks { display: flex; flex-wrap: wrap; gap: 8px 16px; }
 #sl-col-picks label { font-size: 13px; color: #333; cursor: pointer; display: flex; align-items: center; gap: 5px; }
 #sl-filter-actions { display: flex; gap: 12px; margin-top: 14px; }
 #sl-filter-actions button {
-  padding: 9px 24px; font-size: 14px; font-weight: bold;
+  padding: 9px 22px; font-size: 14px; font-weight: bold;
   border: none; border-radius: 6px; cursor: pointer;
 }
 #sl-run-btn { background: #1a5276; color: #fff; }
@@ -630,6 +639,18 @@ html, body { margin: 0; padding: 0; font-family: 'Calibri', sans-serif; backgrou
 #sl-filter-actions button:last-child { background: #e5e7e9; color: #333; }
 #sl-filter-actions button:last-child:hover { background: #ccc; }
 #sl-list-result, #sl-ds-result { margin-top: 14px; }
+
+/* Print bar — appears after result generated */
+.sl-print-bar {
+  margin-top: 12px; padding-top: 12px;
+  border-top: 1px solid #d5e8f5;
+}
+.sl-print-btn {
+  padding: 9px 24px; font-size: 14px; font-weight: bold;
+  background: #f9e400; color: #111; border: none;
+  border-radius: 6px; cursor: pointer;
+}
+.sl-print-btn:hover { background: #e5d200; }
 @media print { #sl-overlay { display: none !important; } }
 </style>
 </head>
@@ -1505,120 +1526,129 @@ async function submitForm() {
       <button id="sl-close" onclick="closeSearchPanel()">✕</button>
     </div>
 
+    <!-- 50/50 tab row -->
     <div id="sl-tabs">
       <button class="sl-tab active" id="sl-tab-deep" onclick="switchSLTab('deep')">🔍 Deep Search</button>
       <button class="sl-tab" id="sl-tab-lists" onclick="switchSLTab('lists')">📋 Smart Lists</button>
     </div>
 
-    <!-- Deep Search Tab -->
-    <div id="sl-deep-pane">
-      <div id="sl-ds-row">
-        <input type="text" id="sl-ds-input" placeholder="Type anything — searches all 37 fields…">
-        <button onclick="runDeepSearch()">Search</button>
-      </div>
-      <div id="sl-ds-result"></div>
-    </div>
+    <!-- Two panes side by side -->
+    <div id="sl-body">
 
-    <!-- Smart Lists Tab -->
-    <div id="sl-lists-pane" style="display:none;">
-
-      <!-- Quick Lists -->
-      <div class="sl-section-hdr">Quick Lists</div>
-      <div id="sl-quick-btns">
-        <button onclick="runQuickList('active')">🟢 Active Employees</button>
-        <button onclick="runQuickList('ended')">🔴 Job Ended</button>
-        <button onclick="runQuickList('iqama30')">🟠 Iqama — 30 Days</button>
-        <button onclick="runQuickList('iqama60')">🟡 Iqama — 60 Days</button>
-        <button onclick="runQuickList('iqama90')">⚪ Iqama — 90 Days</button>
-        <button onclick="runQuickList('pp30')">🟠 Passport — 30 Days</button>
-        <button onclick="runQuickList('pp60')">🟡 Passport — 60 Days</button>
-        <button onclick="runQuickList('pp90')">⚪ Passport — 90 Days</button>
-        <button onclick="runQuickList('qiwa30')">🟠 Qiwa — 30 Days</button>
-        <button onclick="runQuickList('qiwa60')">🟡 Qiwa — 60 Days</button>
-        <button onclick="runQuickList('qiwa90')">⚪ Qiwa — 90 Days</button>
+      <!-- LEFT: Deep Search pane -->
+      <div id="sl-deep-pane" class="sl-pane">
+        <div class="sl-pane-inner">
+          <div id="sl-ds-row">
+            <input type="text" id="sl-ds-input" placeholder="Type anything — searches all 37 fields…">
+            <button onclick="runDeepSearch()">Search</button>
+          </div>
+          <div id="sl-ds-result"></div>
+          <div id="sl-ds-print-bar" style="display:none;">
+            <button class="sl-print-btn" onclick="printPaneResult('ds')">🖨 Print Result</button>
+          </div>
+        </div>
       </div>
 
-      <!-- Combined Filter -->
-      <div class="sl-section-hdr">Combined Filter</div>
-      <div id="sl-filter-grid">
+      <!-- RIGHT: Smart Lists pane -->
+      <div id="sl-lists-pane" class="sl-pane" style="display:none;">
+        <div class="sl-pane-inner">
 
-        <div class="sl-filter-row">
-          <label>Job Title</label>
-          <input type="text" id="fl-jobTitle" placeholder="e.g. Driver">
-        </div>
-        <div class="sl-filter-row">
-          <label>Location</label>
-          <input type="text" id="fl-location" placeholder="e.g. Riyadh">
-        </div>
-        <div class="sl-filter-row">
-          <label>Nationality</label>
-          <input type="text" id="fl-nationality" placeholder="e.g. Pakistani">
-        </div>
-        <div class="sl-filter-row">
-          <label>Age</label>
-          <select id="fl-age-op">
-            <option value="">— Any —</option>
-            <option value="lt">Under</option>
-            <option value="gte">Above or Equal</option>
-            <option value="between">Between</option>
-            <option value="exact">Exact</option>
-          </select>
-          <input type="number" id="fl-age-val1" placeholder="e.g. 50" min="0" max="99">
-          <span id="fl-age-and" style="display:none;">and</span>
-          <input type="number" id="fl-age-val2" placeholder="e.g. 60" min="0" max="99" style="display:none;">
-        </div>
-        <div class="sl-filter-row">
-          <label>Marital Status</label>
-          <select id="fl-marital">
-            <option value="">— Any —</option>
-            <option>Single</option>
-            <option>Married</option>
-            <option>Divorced</option>
-            <option>Widowed</option>
-          </select>
-        </div>
-        <div class="sl-filter-row">
-          <label>Status</label>
-          <input type="text" id="fl-status" placeholder="e.g. Active">
-        </div>
-        <div class="sl-filter-row">
-          <label>Include Job Ended</label>
-          <select id="fl-ended">
-            <option value="no">No — Active only</option>
-            <option value="yes">Yes — Include ended</option>
-            <option value="only">Only ended</option>
-          </select>
-        </div>
+          <div class="sl-section-hdr">Quick Lists</div>
+          <div id="sl-quick-btns">
+            <button onclick="runQuickList('active')">🟢 Active Employees</button>
+            <button onclick="runQuickList('ended')">🔴 Job Ended</button>
+            <button onclick="runQuickList('iqama30')">🟠 Iqama — 30 Days</button>
+            <button onclick="runQuickList('iqama60')">🟡 Iqama — 60 Days</button>
+            <button onclick="runQuickList('iqama90')">⚪ Iqama — 90 Days</button>
+            <button onclick="runQuickList('pp30')">🟠 Passport — 30 Days</button>
+            <button onclick="runQuickList('pp60')">🟡 Passport — 60 Days</button>
+            <button onclick="runQuickList('pp90')">⚪ Passport — 90 Days</button>
+            <button onclick="runQuickList('qiwa30')">🟠 Qiwa — 30 Days</button>
+            <button onclick="runQuickList('qiwa60')">🟡 Qiwa — 60 Days</button>
+            <button onclick="runQuickList('qiwa90')">⚪ Qiwa — 90 Days</button>
+          </div>
 
+          <div class="sl-section-hdr">Combined Filter</div>
+          <div id="sl-filter-grid">
+            <div class="sl-filter-row">
+              <label>Job Title</label>
+              <input type="text" id="fl-jobTitle" placeholder="e.g. Driver">
+            </div>
+            <div class="sl-filter-row">
+              <label>Location</label>
+              <input type="text" id="fl-location" placeholder="e.g. Riyadh">
+            </div>
+            <div class="sl-filter-row">
+              <label>Nationality</label>
+              <input type="text" id="fl-nationality" placeholder="e.g. Pakistani">
+            </div>
+            <div class="sl-filter-row">
+              <label>Age</label>
+              <select id="fl-age-op">
+                <option value="">— Any —</option>
+                <option value="lt">Under</option>
+                <option value="gte">Above or Equal</option>
+                <option value="between">Between</option>
+                <option value="exact">Exact</option>
+              </select>
+              <input type="number" id="fl-age-val1" placeholder="e.g. 50" min="0" max="99">
+              <span id="fl-age-and" style="display:none;">and</span>
+              <input type="number" id="fl-age-val2" placeholder="e.g. 60" min="0" max="99" style="display:none;">
+            </div>
+            <div class="sl-filter-row">
+              <label>Marital Status</label>
+              <select id="fl-marital">
+                <option value="">— Any —</option>
+                <option>Single</option><option>Married</option>
+                <option>Divorced</option><option>Widowed</option>
+              </select>
+            </div>
+            <div class="sl-filter-row">
+              <label>Status</label>
+              <input type="text" id="fl-status" placeholder="e.g. Active">
+            </div>
+            <div class="sl-filter-row">
+              <label>Job Ended</label>
+              <select id="fl-ended">
+                <option value="no">Active only</option>
+                <option value="yes">Include ended</option>
+                <option value="only">Only ended</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="sl-section-hdr">Extra Columns</div>
+          <div id="sl-col-picks">
+            <label><input type="checkbox" value="jobTitle" checked> Job Title</label>
+            <label><input type="checkbox" value="location"> Location</label>
+            <label><input type="checkbox" value="nationality"> Nationality</label>
+            <label><input type="checkbox" value="age" checked> Age</label>
+            <label><input type="checkbox" value="mobile"> Mobile</label>
+            <label><input type="checkbox" value="maritalStatus"> Marital Status</label>
+            <label><input type="checkbox" value="joiningDate"> Joining Date</label>
+            <label><input type="checkbox" value="idExpGreg"> Iqama Expiry</label>
+            <label><input type="checkbox" value="idRemDays"> Iqama Days Left</label>
+            <label><input type="checkbox" value="ppExpiry"> Passport Expiry</label>
+            <label><input type="checkbox" value="qiwaEnd"> Qiwa Ending</label>
+            <label><input type="checkbox" value="jobEnded"> Job Ended</label>
+            <label><input type="checkbox" value="email"> Email</label>
+            <label><input type="checkbox" value="iban"> IBAN</label>
+          </div>
+
+          <div id="sl-filter-actions">
+            <button id="sl-run-btn" onclick="runCombinedFilter()">▶ Generate List</button>
+            <button onclick="resetFilter()">↺ Reset</button>
+          </div>
+
+          <div id="sl-list-result"></div>
+          <div id="sl-list-print-bar" style="display:none;">
+            <button class="sl-print-btn" onclick="printPaneResult('list')">🖨 Print Result</button>
+          </div>
+
+        </div>
       </div>
 
-      <!-- Columns to show -->
-      <div class="sl-section-hdr">Extra Columns to Show</div>
-      <div id="sl-col-picks">
-        <label><input type="checkbox" value="jobTitle" checked> Job Title</label>
-        <label><input type="checkbox" value="location"> Location</label>
-        <label><input type="checkbox" value="nationality"> Nationality</label>
-        <label><input type="checkbox" value="age" checked> Age</label>
-        <label><input type="checkbox" value="mobile"> Mobile</label>
-        <label><input type="checkbox" value="maritalStatus"> Marital Status</label>
-        <label><input type="checkbox" value="joiningDate"> Joining Date</label>
-        <label><input type="checkbox" value="idExpGreg"> Iqama Expiry</label>
-        <label><input type="checkbox" value="idRemDays"> Iqama Days Left</label>
-        <label><input type="checkbox" value="ppExpiry"> Passport Expiry</label>
-        <label><input type="checkbox" value="qiwaEnd"> Qiwa Ending</label>
-        <label><input type="checkbox" value="jobEnded"> Job Ended</label>
-        <label><input type="checkbox" value="email"> Email</label>
-        <label><input type="checkbox" value="iban"> IBAN</label>
-      </div>
-
-      <div id="sl-filter-actions">
-        <button id="sl-run-btn" onclick="runCombinedFilter()">▶ Generate List</button>
-        <button onclick="resetFilter()">↺ Reset</button>
-      </div>
-
-      <div id="sl-list-result"></div>
-    </div>
-
+    </div><!-- sl-body -->
   </div>
 </div>
 
@@ -1633,7 +1663,7 @@ function openSearchPanel() {
   slCurrentTab = 'deep';
   switchSLTab('deep');
   document.getElementById('sl-overlay').style.display = 'flex';
-  document.getElementById('sl-ds-input').focus();
+  setTimeout(() => { const el = document.getElementById('sl-ds-input'); if(el) el.focus(); }, 100);
 }
 function closeSearchPanel() {
   document.getElementById('sl-overlay').style.display = 'none';
@@ -1644,6 +1674,33 @@ function switchSLTab(tab) {
   document.getElementById('sl-tab-lists').classList.toggle('active', tab === 'lists');
   document.getElementById('sl-deep-pane').style.display  = tab === 'deep'  ? 'block' : 'none';
   document.getElementById('sl-lists-pane').style.display = tab === 'lists' ? 'block' : 'none';
+}
+
+/* Print result in new window */
+function printPaneResult(pane) {
+  const resultEl = document.getElementById(pane === 'ds' ? 'sl-ds-result' : 'sl-list-result');
+  if (!resultEl || !resultEl.innerHTML.trim()) return;
+  const win = window.open('', '_blank', 'width=900,height=700');
+  win.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8">
+  <title>Nour Energy — Report</title>
+  <style>
+    body { font-family: Calibri, sans-serif; margin: 10mm; }
+    .ds-wrap { width: 100%; }
+    .ds-header { display:flex; align-items:center; gap:14px; margin-bottom:12px; padding-bottom:8px; border-bottom:2px solid #d5e8f5; }
+    .ds-header img { height:52px; }
+    .ds-header span { font-size:15px; font-weight:700; color:#1a5276; }
+    table { width:100%; border-collapse:collapse; font-size:12px; }
+    th { background:#1a5276; color:#fff; padding:6px 8px; text-align:left; }
+    td { border:1px solid #c8d8e8; padding:5px 8px; }
+    tr:nth-child(even) td { background:#f7fbff; }
+    .card-footer { margin-top:12px; text-align:right; font-size:10px; color:#888; }
+    .ds-count { font-size:11px; color:#888; margin-top:6px; text-align:right; }
+  </style></head><body>
+  ${resultEl.innerHTML}
+  </body></html>`);
+  win.document.close();
+  win.focus();
+  setTimeout(() => { win.print(); }, 400);
 }
 
 /* Enter key for deep search + Age filter — init after DOM ready */
@@ -1773,6 +1830,7 @@ function runDeepSearch() {
     html += `<div class="card-footer">Printed: ${todayStr()}<br>Created by: Qasim</div>`;
     html += `</div>`;
     document.getElementById('sl-ds-result').innerHTML = html;
+    document.getElementById('sl-ds-print-bar').style.display = 'block';
   };
 
   if (csvRows) doSearch(csvRows);
@@ -1826,6 +1884,7 @@ function runQuickList(type) {
     }
 
     document.getElementById('sl-list-result').innerHTML = buildResultTable(filtered, extraCols, title);
+    document.getElementById('sl-list-print-bar').style.display = 'block';
   };
 
   if (csvRows) doList(csvRows);
@@ -1896,6 +1955,7 @@ function runCombinedFilter() {
     const title = parts.length ? `📋 ${parts.join(' · ')}` : '📋 All Employees';
 
     document.getElementById('sl-list-result').innerHTML = buildResultTable(filtered, checkedCols, title);
+    document.getElementById('sl-list-print-bar').style.display = 'block';
   };
 
   if (csvRows) doFilter(csvRows);
@@ -1913,6 +1973,7 @@ function resetFilter() {
   document.getElementById('fl-marital').value = '';
   document.getElementById('fl-ended').value = 'no';
   document.getElementById('sl-list-result').innerHTML = '';
+  document.getElementById('sl-list-print-bar').style.display = 'none';
 }
 </script>
 </body>
