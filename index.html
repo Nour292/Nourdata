@@ -340,6 +340,13 @@ html, body { margin: 0; padding: 0; font-family: 'Calibri', sans-serif; backgrou
   margin-top: 8px;
   text-align: right;
 }
+.ds-match {
+  background: #fef9e7 !important;
+  font-weight: 700;
+  color: #1a5276;
+}
+.no-print { display: block; }
+@media print { .no-print { display: none !important; } }
 #card-area:empty::after {
   content: 'Enter an Employee Number above and press Search.';
   display: block;
@@ -536,64 +543,127 @@ function logout() {
 }
 
 /* ─── Deep Search ─── */
+
+// All searchable columns with their label and COL key
+const DS_ALL_COLS = [
+  { key: 'empNum',       label: 'Emp No',            idx: 0  },
+  { key: 'name',         label: 'Name',               idx: 1  },
+  { key: 'mobile',       label: 'Mobile',             idx: 2  },
+  { key: 'nationality',  label: 'Nationality',        idx: 3  },
+  { key: 'jobTitle',     label: 'Job Title',          idx: 4  },
+  { key: 'location',     label: 'Location',           idx: 5  },
+  { key: 'joiningDate',  label: 'Joining Date',       idx: 7  },
+  { key: 'serviceCont',  label: 'Service',            idx: 9  },
+  { key: 'dob',          label: 'Date of Birth',      idx: 10 },
+  { key: 'age',          label: 'Age',                idx: 12 },
+  { key: 'total',        label: 'Total Salary',       idx: 13 },
+  { key: 'basic',        label: 'Basic Salary',       idx: 14 },
+  { key: 'food',         label: 'Food Allowance',     idx: 15 },
+  { key: 'other',        label: 'Other',              idx: 16 },
+  { key: 'trPct',        label: 'Transport 10%',      idx: 17 },
+  { key: 'otherTrasp',   label: 'Other Transport',    idx: 18 },
+  { key: 'housing25',    label: 'Housing 25%',        idx: 19 },
+  { key: 'housing',      label: 'Housing',            idx: 20 },
+  { key: 'medical',      label: 'Medical',            idx: 22 },
+  { key: 'contract',     label: 'Contract',           idx: 23 },
+  { key: 'annualLeave',  label: 'Annual Leave',       idx: 24 },
+  { key: 'tickets',      label: 'Tickets',            idx: 25 },
+  { key: 'qiwaStart',    label: 'Qiwa Start',         idx: 26 },
+  { key: 'qiwaEnd',      label: 'Qiwa Ending',        idx: 27 },
+  { key: 'status',       label: 'Status',             idx: 28 },
+  { key: 'idNo',         label: 'ID No',              idx: 30 },
+  { key: 'idProfession', label: 'ID Profession',      idx: 31 },
+  { key: 'idExpGreg',    label: 'ID Expiry',          idx: 33 },
+  { key: 'idRemDays',    label: 'ID Remaining Days',  idx: 34 },
+  { key: 'ppNumber',     label: 'Passport No',        idx: 35 },
+  { key: 'ppExpiry',     label: 'Passport Expiry',    idx: 38 },
+  { key: 'jobEnded',     label: 'Job Ended',          idx: 40 },
+  { key: 'maritalStatus',label: 'Marital Status',     idx: 41 },
+  { key: 'serviceEnded', label: 'Service Ended',      idx: 42 },
+  { key: 'iban',         label: 'IBAN',               idx: 43 },
+  { key: 'email',        label: 'Email',              idx: 44 },
+];
+
+// Fixed columns always shown (if match is one of these, no extra column added)
+const DS_FIXED = [
+  { label: 'Emp No',    idx: COL.empNum   },
+  { label: 'Name',      idx: COL.name     },
+  { label: 'Mobile',    idx: COL.mobile   },
+  { label: 'Job Title', idx: COL.jobTitle },
+];
+const DS_FIXED_IDX = new Set(DS_FIXED.map(c => c.idx));
+
 function deepSearch() {
   const query = document.getElementById('employeeNumber').value.trim().toLowerCase();
   if (!query) { alert('Type something in the search box first.'); return; }
 
   const doSearch = (rows) => {
-    // Match against emp number, name, mobile, job title, nationality, location
-    const matched = rows.slice(1).filter(r => {
-      return [
-        r[COL.empNum], r[COL.name], r[COL.mobile],
-        r[COL.jobTitle], r[COL.nationality], r[COL.location]
-      ].some(cell => (cell||'').toLowerCase().includes(query));
+    const header = rows[0] || [];
+
+    // For each row, find which columns matched
+    const results = [];
+    rows.slice(1).forEach(r => {
+      const matchedCols = [];
+      DS_ALL_COLS.forEach(col => {
+        const cell = (r[col.idx] || '').toLowerCase();
+        if (cell.includes(query)) matchedCols.push(col);
+      });
+      if (matchedCols.length > 0) results.push({ r, matchedCols });
     });
 
-    if (matched.length === 0) {
+    if (results.length === 0) {
       document.getElementById('card-area').innerHTML =
         `<p style="text-align:center;color:#c0392b;padding:40px 0;font-size:15px;">No results found for "<strong>${query}</strong>".</p>`;
       return;
     }
 
-    let html = `<div class="ds-wrap">`;
-    // Header with logo
+    // Determine extra columns: matched columns NOT already in fixed set
+    const extraColKeys = new Set();
+    results.forEach(({ matchedCols }) => {
+      matchedCols.forEach(col => {
+        if (!DS_FIXED_IDX.has(col.idx)) extraColKeys.add(col.key);
+      });
+    });
+    const extraCols = DS_ALL_COLS.filter(c => extraColKeys.has(c.key));
+
+    // Build table
+    let html = `<div class="ds-wrap no-print">`;
+
+    // Header: logo left + title
     html += `<div class="ds-header">
       <img src="nour_energy_logo.png" alt="Logo" onerror="this.style.display='none'">
-      <span>Deep Search Results — "${query}"</span>
+      <span>Deep Search — "<em>${query}</em>" &nbsp;·&nbsp; ${results.length} record${results.length !== 1 ? 's' : ''} found</span>
     </div>`;
 
-    // Table
-    html += `<table class="ds-tbl">
-      <thead><tr>
-        <th>Emp No</th>
-        <th>Name</th>
-        <th>Mobile</th>
-        <th>Job Title</th>
-        <th>Nationality</th>
-        <th>Location</th>
-      </tr></thead><tbody>`;
+    // Table header
+    html += `<table class="ds-tbl"><thead><tr>`;
+    DS_FIXED.forEach(c => { html += `<th>${c.label}</th>`; });
+    extraCols.forEach(c => { html += `<th>${c.label}</th>`; });
+    html += `</tr></thead><tbody>`;
 
-    matched.forEach(r => {
-      const empNo  = v(r[COL.empNum]);
-      const name   = v(r[COL.name]);
-      const mobile = v(r[COL.mobile]);
-      const title  = v(r[COL.jobTitle]);
-      const nat    = v(r[COL.nationality]);
-      const loc    = v(r[COL.location]);
-      // Click row to load full card
-      html += `<tr onclick="loadCardByEmpNum('${(r[COL.empNum]||'').trim()}')">
-        <td>${empNo}</td>
-        <td>${rtlWrap(name)}</td>
-        <td>${mobile}</td>
-        <td>${title}</td>
-        <td>${nat}</td>
-        <td>${loc}</td>
-      </tr>`;
+    // Rows
+    results.forEach(({ r, matchedCols }) => {
+      const matchedIdxSet = new Set(matchedCols.map(c => c.idx));
+      html += `<tr onclick="loadCardByEmpNum('${(r[COL.empNum]||'').trim().replace(/'/g,"\\'")}')">`;
+      DS_FIXED.forEach(c => {
+        const val = v(r[c.idx]);
+        const hi  = matchedIdxSet.has(c.idx) ? ' ds-match' : '';
+        html += `<td class="${hi}">${c.idx === COL.name ? rtlWrap(val) : val}</td>`;
+      });
+      extraCols.forEach(c => {
+        const val = v(r[c.idx]);
+        const hi  = matchedIdxSet.has(c.idx) ? ' ds-match' : '';
+        html += `<td class="${hi}">${val}</td>`;
+      });
+      html += `</tr>`;
     });
 
     html += `</tbody></table>`;
-    html += `<div class="ds-count">${matched.length} record${matched.length !== 1 ? 's' : ''} found — click a row to open full card</div>`;
+
+    // Footer same as card
+    html += `<div class="card-footer">Printed: ${todayStr()}<br>Created by: Qasim</div>`;
     html += `</div>`;
+
     document.getElementById('card-area').innerHTML = html;
   };
 
