@@ -928,7 +928,7 @@ const GS_ID    = '16QYl00ATXVIlQKkqRxdAIdU6J3u7lDfg0PIoJfaDBpo';
 const GS_TAB   = 'Master File';
 const GS_KEY   = 'AIzaSyBfjtlvDvGxmS1OcqFVGNMMadqza1ofCrI';
 const GS_URL   = `https://sheets.googleapis.com/v4/spreadsheets/${GS_ID}/values/${encodeURIComponent(GS_TAB)}?key=${GS_KEY}`;
-const GS_WRITE = 'https://script.google.com/macros/s/AKfycbw3gv0sSMPMhgA0PQFNZezFi5GQR2tJf67UDnGfeTYzazoLtEUdHef-JRHkNTsQQCPPag/exec';
+const GS_WRITE = 'https://script.google.com/macros/s/AKfycbzGXoDV-fdif6qiP_wFjmoULC0pXoRDVsH1P_-LptWEAIwYC3NBzDo-aWwOr4OXoaVuxQ/exec';
 
 /* Load rows from Google Sheets — returns array of arrays (row 0 = headers) */
 async function loadSheetRows() {
@@ -1643,12 +1643,11 @@ async function submitForm() {
       const exists = rows.slice(1).some(r => (r[COL.empNum]||'').trim() === empNum);
       if (exists) { dfStatusMsg(`Employee ${empNum} already exists. Use Update tab.`, 'err'); document.getElementById('df-submit-btn').disabled = false; return; }
       const newRow = formToRow(null);
-      const res = await fetch(GS_WRITE, {
+      await fetch(GS_WRITE, {
         method: 'POST',
+        mode: 'no-cors',
         body: JSON.stringify({ action: 'add', row: newRow })
       });
-      const result = await res.json();
-      if (result.status !== 'ok') throw new Error(result.message || 'Add failed');
       rows.push(newRow);
       csvRows = rows;
       dfStatusMsg('✅ Employee added to Google Sheets!', 'ok');
@@ -1657,13 +1656,12 @@ async function submitForm() {
     } else {
       if (dfEditRowIdx === -1) { dfStatusMsg('Load an employee first.', 'err'); document.getElementById('df-submit-btn').disabled = false; return; }
       const updatedRow = formToRow(rows[dfEditRowIdx]);
-      const sheetRow   = dfEditRowIdx + 1; // +1 because sheet rows are 1-indexed
-      const res = await fetch(GS_WRITE, {
+      const sheetRow   = dfEditRowIdx + 1;
+      await fetch(GS_WRITE, {
         method: 'POST',
+        mode: 'no-cors',
         body: JSON.stringify({ action: 'update', row: updatedRow, rowNum: sheetRow })
       });
-      const result = await res.json();
-      if (result.status !== 'ok') throw new Error(result.message || 'Update failed');
       rows[dfEditRowIdx] = updatedRow;
       csvRows = rows;
       dfStatusMsg('✅ Employee updated in Google Sheets!', 'ok');
