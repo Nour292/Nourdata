@@ -771,7 +771,7 @@ html, body { margin: 0; padding: 0; font-family: 'Calibri', sans-serif; backgrou
       </div>
       <div id="btn-row">
         <button id="searchButton" onclick="searchEmployee()">Search</button>
-        <button id="printButton" onclick="window.print()">Print</button>
+        <button id="printButton" onclick="printCard()">Print</button>
         <button id="clearButton" onclick="clearCard()">Clear Data</button>
         <button id="dataFormButton" onclick="openDataForm()" style="display:none;">➕ Add / Update</button>
       </div>
@@ -936,7 +936,7 @@ function checkPassword() {
   }
 
   // Fixed basic access passwords
-  if (entered === '36553656' || entered === '4190') {
+  if (entered === '3655' || entered === '4190') {
     currentAccessLevel = 'employee';
     unlockApp();
     return;
@@ -1125,7 +1125,16 @@ function loadCardByEmpNum(empNum) {
   }
 }
 
-/* ─── Clear Card ─── */
+/* ─── Print Card — sets PDF filename ─── */
+function printCard() {
+  const card = document.querySelector('.card');
+  const empNumEl = card ? card.querySelector('.emp-num') : null;
+  const empNum = empNumEl ? empNumEl.textContent.trim() : 'Employee';
+  const prevTitle = document.title;
+  document.title = `${empNum} - Employee card`;
+  window.print();
+  setTimeout(() => { document.title = prevTitle; }, 1000);
+}
 function clearCard() {
   document.getElementById('card-area').innerHTML = '';
   document.getElementById('employeeNumber').value = '';
@@ -1289,7 +1298,7 @@ function renderCard(cells, accessLevel) {
   html += `<div class="alerts-block">`;
 
   if (isEnded) {
-    html += `<p style="color:#888;margin:0;">Employee left ${v(jobEnded)} — no document alerts generated.</p>`;
+    html += `<p style="color:#888;margin:0;">🔴 File is closed — ${v(jobEnded)}</p>`;
   } else {
     const checks = [
       { label: 'Iqama (ID)',   dateVal: get(COL.idExpGreg),  remDays: get(COL.idRemDays) },
