@@ -751,7 +751,7 @@ html, body { margin: 0; padding: 0; font-family: 'Calibri', sans-serif; backgrou
   <div id="pw-box">
     <img src="nour_energy_logo.png" alt="Nour Energy" onerror="this.style.display='none'">
     <h2>Nour Energy Data</h2>
-    <p>Enter your Employee Number for basic access,<br>or the admin password for full access</p>
+    <p>Enter your password to access</p>
     <input type="password" id="pw-input" placeholder="Employee Number" autocomplete="off">
     <button id="pw-submit" onclick="checkPassword()">Login</button>
     <div id="pw-error"></div>
@@ -926,7 +926,7 @@ let csvRows = null;
 
 function checkPassword() {
   const entered = document.getElementById('pw-input').value.trim();
-  if (!entered) { document.getElementById('pw-error').textContent = 'Please enter your password or employee number.'; return; }
+  if (!entered) { document.getElementById('pw-error').textContent = 'Please enter your password.'; return; }
 
   // Full admin access
   if (entered === 'nour-pr') {
@@ -935,29 +935,17 @@ function checkPassword() {
     return;
   }
 
-  // Employee number login — needs CSV validation
-  const doValidate = (rows) => {
-    csvRows = rows;
-    const valid = rows.slice(1).some(r => (r[COL.empNum]||'').trim() === entered);
-    if (valid) {
-      currentAccessLevel = 'employee';
-      unlockApp();
-    } else {
-      document.getElementById('pw-error').textContent = 'Access denied. Not recognised.';
-      document.getElementById('pw-input').value = '';
-    }
-  };
-
-  if (csvRows) {
-    doValidate(csvRows);
-  } else {
-    fetch('Master File - Test copy.csv')
-      .then(r => r.text())
-      .then(csv => doValidate(parseCSV(csv)))
-      .catch(() => {
-        document.getElementById('pw-error').textContent = 'Could not load data file. Please try again.';
-      });
+  // Fixed basic access passwords
+  if (entered === '3655' || entered === '4190') {
+    currentAccessLevel = 'employee';
+    unlockApp();
+    return;
   }
+
+  // Access denied
+  document.getElementById('pw-error').textContent = 'Access denied. Invalid password.';
+  document.getElementById('pw-input').value = '';
+  document.getElementById('pw-input').focus();
 }
 
 function unlockApp() {
@@ -2179,6 +2167,10 @@ function switchInlineTab(tab) {
 }
 
 document.addEventListener('DOMContentLoaded', function() {
+  // Auto-focus password box on load
+  const pwInput = document.getElementById('pw-input');
+  if (pwInput) setTimeout(() => pwInput.focus(), 100);
+
   // Top search box — always employee card search
   const topInput = document.getElementById('employeeNumber');
   if (topInput) topInput.addEventListener('keyup', e => { if (e.key === 'Enter') searchEmployee(); });
