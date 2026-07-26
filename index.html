@@ -751,7 +751,6 @@ html, body { margin: 0; padding: 0; font-family: 'Calibri', sans-serif; backgrou
       </div>
       <div id="btn-row">
         <button id="searchButton" onclick="searchEmployee()">Search</button>
-        <button id="deepSearchButton" onclick="openSearchPanel()" style="display:none;">🔍 Search & Lists</button>
         <button id="printButton" onclick="window.print()">Print</button>
         <button id="clearButton" onclick="clearCard()">Clear Data</button>
         <button id="dataFormButton" onclick="openDataForm()" style="display:none;">➕ Add / Update</button>
@@ -781,26 +780,28 @@ html, body { margin: 0; padding: 0; font-family: 'Calibri', sans-serif; backgrou
     <!-- Smart Lists pane -->
     <div id="ipane-lists" class="ipane" style="display:none;">
 
-      <div class="sl-section-hdr">Quick Lists</div>
-      <div id="isl-quick-btns">
-        <button onclick="runInlineQuickList('active')">🟢 Active Employees</button>
-        <button onclick="runInlineQuickList('ended')">🔴 Job Ended</button>
-        <button onclick="runInlineQuickList('iqama30')">🟠 Iqama — 30 Days</button>
-        <button onclick="runInlineQuickList('iqama60')">🟡 Iqama — 60 Days</button>
-        <button onclick="runInlineQuickList('iqama90')">⚪ Iqama — 90 Days</button>
-        <button onclick="runInlineQuickList('pp30')">🟠 Passport — 30 Days</button>
-        <button onclick="runInlineQuickList('pp60')">🟡 Passport — 60 Days</button>
-        <button onclick="runInlineQuickList('pp90')">⚪ Passport — 90 Days</button>
-        <button onclick="runInlineQuickList('qiwa30')">🟠 Qiwa — 30 Days</button>
-        <button onclick="runInlineQuickList('qiwa60')">🟡 Qiwa — 60 Days</button>
-        <button onclick="runInlineQuickList('qiwa90')">⚪ Qiwa — 90 Days</button>
+      <!-- Extra Columns — at the top -->
+      <div class="sl-section-hdr">Columns to Show</div>
+      <div id="isl-col-picks">
+        <label><input type="checkbox" value="jobTitle" checked> Job Title</label>
+        <label><input type="checkbox" value="location" checked> Location</label>
+        <label><input type="checkbox" value="nationality" checked> Nationality</label>
+        <label><input type="checkbox" value="age" checked> Age</label>
+        <label><input type="checkbox" value="mobile"> Mobile</label>
+        <label><input type="checkbox" value="maritalStatus"> Marital Status</label>
+        <label><input type="checkbox" value="joiningDate"> Joining Date</label>
+        <label><input type="checkbox" value="idExpGreg"> Iqama Expiry</label>
+        <label><input type="checkbox" value="idRemDays"> Iqama Days Left</label>
+        <label><input type="checkbox" value="ppExpiry"> Passport Expiry</label>
+        <label><input type="checkbox" value="qiwaEnd"> Qiwa Ending</label>
+        <label><input type="checkbox" value="jobEnded"> Job Ended</label>
+        <label><input type="checkbox" value="email"> Email</label>
+        <label><input type="checkbox" value="iban"> IBAN</label>
       </div>
 
-      <div class="sl-section-hdr">Combined Filter</div>
+      <!-- Filter — Age and Job Ended only -->
+      <div class="sl-section-hdr">Filter</div>
       <div id="isl-filter-grid">
-        <div class="sl-filter-row"><label>Job Title</label><input type="text" id="ifl-jobTitle" placeholder="e.g. Driver"></div>
-        <div class="sl-filter-row"><label>Location</label><input type="text" id="ifl-location" placeholder="e.g. Riyadh"></div>
-        <div class="sl-filter-row"><label>Nationality</label><input type="text" id="ifl-nationality" placeholder="e.g. Pakistani"></div>
         <div class="sl-filter-row">
           <label>Age</label>
           <select id="ifl-age-op">
@@ -814,38 +815,14 @@ html, body { margin: 0; padding: 0; font-family: 'Calibri', sans-serif; backgrou
           <span id="ifl-age-and" style="display:none;">and</span>
           <input type="number" id="ifl-age-val2" placeholder="e.g. 60" min="0" max="99" style="display:none;">
         </div>
-        <div class="sl-filter-row"><label>Marital Status</label>
-          <select id="ifl-marital">
-            <option value="">— Any —</option>
-            <option>Single</option><option>Married</option><option>Divorced</option><option>Widowed</option>
-          </select>
-        </div>
-        <div class="sl-filter-row"><label>Status</label><input type="text" id="ifl-status" placeholder="e.g. Active"></div>
-        <div class="sl-filter-row"><label>Job Ended</label>
+        <div class="sl-filter-row">
+          <label>Job Ended</label>
           <select id="ifl-ended">
             <option value="no">Active only</option>
             <option value="yes">Include ended</option>
             <option value="only">Only ended</option>
           </select>
         </div>
-      </div>
-
-      <div class="sl-section-hdr">Extra Columns</div>
-      <div id="isl-col-picks">
-        <label><input type="checkbox" value="jobTitle" checked> Job Title</label>
-        <label><input type="checkbox" value="location"> Location</label>
-        <label><input type="checkbox" value="nationality"> Nationality</label>
-        <label><input type="checkbox" value="age" checked> Age</label>
-        <label><input type="checkbox" value="mobile"> Mobile</label>
-        <label><input type="checkbox" value="maritalStatus"> Marital Status</label>
-        <label><input type="checkbox" value="joiningDate"> Joining Date</label>
-        <label><input type="checkbox" value="idExpGreg"> Iqama Expiry</label>
-        <label><input type="checkbox" value="idRemDays"> Iqama Days Left</label>
-        <label><input type="checkbox" value="ppExpiry"> Passport Expiry</label>
-        <label><input type="checkbox" value="qiwaEnd"> Qiwa Ending</label>
-        <label><input type="checkbox" value="jobEnded"> Job Ended</label>
-        <label><input type="checkbox" value="email"> Email</label>
-        <label><input type="checkbox" value="iban"> IBAN</label>
       </div>
 
       <div id="isl-filter-actions">
@@ -959,9 +936,9 @@ function unlockApp() {
   document.getElementById('pw-error').textContent = '';
   document.getElementById('logoutButton').style.display = 'block';
   const isAdmin = currentAccessLevel === 'admin';
-  document.getElementById('deepSearchButton').style.display = isAdmin ? 'block' : 'none';
-  document.getElementById('dataFormButton').style.display  = isAdmin ? 'block' : 'none';
-  document.getElementById('tab-row').style.display         = isAdmin ? 'flex'  : 'none';
+  document.getElementById('dataFormButton').style.display = isAdmin ? 'block' : 'none';
+  document.getElementById('tab-row').style.display        = isAdmin ? 'flex'  : 'none';
+  if (isAdmin) switchInlineTab('deep');
   document.getElementById('employeeNumber').focus();
 }
 
@@ -970,14 +947,13 @@ function logout() {
   currentAccessLevel = 'none';
   csvRows = null;
   clearCard();
-  document.getElementById('logoutButton').style.display    = 'none';
-  document.getElementById('deepSearchButton').style.display = 'none';
-  document.getElementById('dataFormButton').style.display  = 'none';
-  document.getElementById('tab-row').style.display         = 'none';
+  document.getElementById('logoutButton').style.display   = 'none';
+  document.getElementById('dataFormButton').style.display = 'none';
+  document.getElementById('tab-row').style.display        = 'none';
   document.getElementById('inline-search-panel').style.display = 'none';
   document.getElementById('employeeNumber').placeholder = 'Employee Number or ID No';
-  document.getElementById('searchButton').textContent  = 'Search';
-  document.getElementById('searchButton').onclick      = searchEmployee;
+  document.getElementById('searchButton').textContent   = 'Search';
+  document.getElementById('searchButton').onclick       = searchEmployee;
   document.getElementById('pw-overlay').style.display = 'flex';
   document.getElementById('pw-input').focus();
 }
@@ -2269,68 +2245,57 @@ function runInlineQuickList(type) {
 }
 
 function runInlineCombinedFilter() {
-  const flJobTitle=document.getElementById('ifl-jobTitle').value.trim().toLowerCase();
-  const flLocation=document.getElementById('ifl-location').value.trim().toLowerCase();
-  const flNationality=document.getElementById('ifl-nationality').value.trim().toLowerCase();
-  const flAgeOp=document.getElementById('ifl-age-op').value;
-  const flAgeVal1=parseInt(document.getElementById('ifl-age-val1').value);
-  const flAgeVal2=parseInt(document.getElementById('ifl-age-val2').value);
-  const flMarital=document.getElementById('ifl-marital').value.trim().toLowerCase();
-  const flStatus=document.getElementById('ifl-status').value.trim().toLowerCase();
-  const flEnded=document.getElementById('ifl-ended').value;
-  const checkedCols=[];
-  document.querySelectorAll('#isl-col-picks input[type=checkbox]:checked').forEach(cb=>{ if(SL_COL_MAP[cb.value]) checkedCols.push(SL_COL_MAP[cb.value]); });
-  const doFilter=(rows)=>{
-    const filtered=rows.slice(1).filter(r=>{
-      const je=(r[COL.jobEnded]||'').trim(); const isEnded=je!==''&&je!=='—';
-      if(flEnded==='no'&&isEnded) return false;
-      if(flEnded==='only'&&!isEnded) return false;
-      if(flJobTitle&&!(r[COL.jobTitle]||'').toLowerCase().includes(flJobTitle)) return false;
-      if(flLocation&&!(r[COL.location]||'').toLowerCase().includes(flLocation)) return false;
-      if(flNationality&&!(r[COL.nationality]||'').toLowerCase().includes(flNationality)) return false;
-      if(flMarital&&!(r[COL.maritalStatus]||'').toLowerCase().includes(flMarital)) return false;
-      if(flStatus&&!(r[COL.status]||'').toLowerCase().includes(flStatus)) return false;
-      if(flAgeOp&&!isNaN(flAgeVal1)){
-        const age=parseAge(r[COL.age]); if(age===null) return false;
-        if(flAgeOp==='lt'&&!(age<flAgeVal1)) return false;
-        if(flAgeOp==='gte'&&!(age>=flAgeVal1)) return false;
-        if(flAgeOp==='exact'&&!(age===flAgeVal1)) return false;
-        if(flAgeOp==='between'&&!isNaN(flAgeVal2)&&!(age>=flAgeVal1&&age<=flAgeVal2)) return false;
+  const flAgeOp    = document.getElementById('ifl-age-op').value;
+  const flAgeVal1  = parseInt(document.getElementById('ifl-age-val1').value);
+  const flAgeVal2  = parseInt(document.getElementById('ifl-age-val2').value);
+  const flEnded    = document.getElementById('ifl-ended').value;
+  const checkedCols = [];
+  document.querySelectorAll('#isl-col-picks input[type=checkbox]:checked').forEach(cb => {
+    if (SL_COL_MAP[cb.value]) checkedCols.push(SL_COL_MAP[cb.value]);
+  });
+  const doFilter = (rows) => {
+    const filtered = rows.slice(1).filter(r => {
+      const je = (r[COL.jobEnded]||'').trim();
+      const isEnded = je !== '' && je !== '—';
+      if (flEnded === 'no'   && isEnded)  return false;
+      if (flEnded === 'only' && !isEnded) return false;
+      if (flAgeOp && !isNaN(flAgeVal1)) {
+        const age = parseAge(r[COL.age]);
+        if (age === null) return false;
+        if (flAgeOp === 'lt'      && !(age <  flAgeVal1)) return false;
+        if (flAgeOp === 'gte'     && !(age >= flAgeVal1)) return false;
+        if (flAgeOp === 'exact'   && !(age === flAgeVal1)) return false;
+        if (flAgeOp === 'between' && !isNaN(flAgeVal2) && !(age >= flAgeVal1 && age <= flAgeVal2)) return false;
       }
       return true;
     });
-    const parts=[];
-    if(flJobTitle) parts.push(`Job: ${flJobTitle}`);
-    if(flLocation) parts.push(`Location: ${flLocation}`);
-    if(flNationality) parts.push(`Nationality: ${flNationality}`);
-    if(flMarital) parts.push(`Marital: ${flMarital}`);
-    if(flStatus) parts.push(`Status: ${flStatus}`);
-    if(flAgeOp&&!isNaN(flAgeVal1)){
-      if(flAgeOp==='lt') parts.push(`Age < ${flAgeVal1}`);
-      if(flAgeOp==='gte') parts.push(`Age ≥ ${flAgeVal1}`);
-      if(flAgeOp==='exact') parts.push(`Age = ${flAgeVal1}`);
-      if(flAgeOp==='between') parts.push(`Age ${flAgeVal1}–${flAgeVal2}`);
+    const parts = [];
+    if (flAgeOp && !isNaN(flAgeVal1)) {
+      if (flAgeOp === 'lt')      parts.push(`Age < ${flAgeVal1}`);
+      if (flAgeOp === 'gte')     parts.push(`Age ≥ ${flAgeVal1}`);
+      if (flAgeOp === 'exact')   parts.push(`Age = ${flAgeVal1}`);
+      if (flAgeOp === 'between') parts.push(`Age ${flAgeVal1}–${flAgeVal2}`);
     }
-    const title=parts.length?`📋 ${parts.join(' · ')}`:'📋 All Employees';
-    document.getElementById('isl-list-result').innerHTML=buildResultTable(filtered,checkedCols,title);
-    document.getElementById('isl-list-print-bar').style.display=filtered.length>0?'block':'none';
+    if (flEnded === 'only') parts.push('Job Ended');
+    if (flEnded === 'no')   parts.push('Active Only');
+    const title = parts.length ? `📋 ${parts.join(' · ')}` : '📋 All Employees';
+    document.getElementById('isl-list-result').innerHTML = buildResultTable(filtered, checkedCols, title);
+    document.getElementById('isl-list-print-bar').style.display = filtered.length > 0 ? 'block' : 'none';
   };
-  if(csvRows) doFilter(csvRows);
+  if (csvRows) doFilter(csvRows);
   else fetch('Master File - Test copy.csv').then(r=>r.text()).then(csv=>{csvRows=parseCSV(csv);doFilter(csvRows);})
        .catch(()=>{ document.getElementById('isl-list-result').innerHTML='<p style="color:#c0392b">Failed to load.</p>'; });
 }
 
 function resetInlineFilter() {
-  ['ifl-jobTitle','ifl-location','ifl-nationality','ifl-status'].forEach(id=>{document.getElementById(id).value='';});
-  document.getElementById('ifl-age-op').value='';
-  document.getElementById('ifl-age-val1').value='';
-  document.getElementById('ifl-age-val2').value='';
-  document.getElementById('ifl-age-and').style.display='none';
-  document.getElementById('ifl-age-val2').style.display='none';
-  document.getElementById('ifl-marital').value='';
-  document.getElementById('ifl-ended').value='no';
-  document.getElementById('isl-list-result').innerHTML='';
-  document.getElementById('isl-list-print-bar').style.display='none';
+  document.getElementById('ifl-age-op').value = '';
+  document.getElementById('ifl-age-val1').value = '';
+  document.getElementById('ifl-age-val2').value = '';
+  document.getElementById('ifl-age-and').style.display = 'none';
+  document.getElementById('ifl-age-val2').style.display = 'none';
+  document.getElementById('ifl-ended').value = 'no';
+  document.getElementById('isl-list-result').innerHTML = '';
+  document.getElementById('isl-list-print-bar').style.display = 'none';
 }
 
 function printInlineResult(pane) {
