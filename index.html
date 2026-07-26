@@ -1560,26 +1560,7 @@ function openDataForm() {
   dfEditRowIdx = -1;
   switchTab('add');
   clearForm();
-  // Auto-load saved PAT from localStorage
-  const saved = localStorage.getItem('nour_gh_pat');
-  if (saved) {
-    document.getElementById('df-pat-input').value = saved;
-    document.getElementById('df-pat-status').textContent = '✅ Token loaded';
-    document.getElementById('df-pat-status').style.color = '#117a65';
-  }
   document.getElementById('df-overlay').style.display = 'flex';
-}
-
-function savePAT() {
-  const pat = document.getElementById('df-pat-input').value.trim();
-  if (!pat) { 
-    document.getElementById('df-pat-status').textContent = '❌ Empty — paste your PAT first';
-    document.getElementById('df-pat-status').style.color = '#c0392b';
-    return; 
-  }
-  localStorage.setItem('nour_gh_pat', pat);
-  document.getElementById('df-pat-status').textContent = '✅ Saved permanently';
-  document.getElementById('df-pat-status').style.color = '#117a65';
 }
 function closeDataForm() {
   document.getElementById('df-overlay').style.display = 'none';
