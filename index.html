@@ -136,7 +136,25 @@ html, body { margin: 0; padding: 0; font-family: 'Calibri', sans-serif; backgrou
   border-radius: 50%; cursor: pointer; line-height: 1;
 }
 #df-close:hover { background: rgba(255,255,255,0.35); }
-#df-tabs {
+#df-pat-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 24px;
+  background: #fef9e7;
+  border-bottom: 1px solid #f0d080;
+}
+#df-pat-row label {
+  font-size: 13px; font-weight: 700; color: #7d6608;
+  white-space: nowrap;
+}
+#df-pat-input {
+  flex: 1; padding: 7px 12px; font-size: 13px;
+  border: 1px solid #d4ac0d; border-radius: 5px;
+  font-family: monospace;
+  background: #fff;
+}
+#df-pat-input:focus { border-color: #b7950b; outline: none; }
   display: flex;
   gap: 0;
   border-bottom: 2px solid #d5e8f5;
@@ -1101,6 +1119,12 @@ function searchEmployee() {
       <button id="df-close" onclick="closeDataForm()">✕</button>
     </div>
 
+    <!-- PAT Entry — runtime only, never saved -->
+    <div id="df-pat-row">
+      <label>🔑 GitHub Token (PAT)</label>
+      <input type="password" id="df-pat-input" placeholder="Paste your GitHub PAT here — session only" autocomplete="off">
+    </div>
+
     <!-- Tabs -->
     <div id="df-tabs">
       <button class="df-tab active" id="tab-add" onclick="switchTab('add')">➕ Add New Employee</button>
@@ -1187,7 +1211,7 @@ function searchEmployee() {
 const GH_OWNER = 'Nour292';
 const GH_REPO  = 'Nourdata';
 const GH_FILE  = 'Master File - Test copy.csv';
-const GH_PAT   = 'PASTE_YOUR_PAT_HERE'; // ← replace with your GitHub PAT
+let GH_PAT     = ''; // entered at runtime — never stored in code
 
 let dfCurrentTab = 'add';
 let dfEditRowIdx = -1;
@@ -1274,6 +1298,7 @@ function clearForm() {
 function loadEmployeeForEdit() {
   const empNum = document.getElementById('df-search-emp').value.trim();
   if (!empNum) { document.getElementById('df-load-msg').textContent = 'Enter an employee number.'; return; }
+  GH_PAT = document.getElementById('df-pat-input').value.trim();
   const doLoad = (rows) => {
     const idx = rows.slice(1).findIndex(r => (r[COL.empNum]||'').trim() === empNum);
     if (idx === -1) { document.getElementById('df-load-msg').textContent = `Employee ${empNum} not found.`; return; }
@@ -1309,9 +1334,10 @@ function rowsToCSV(rows) { return rows.map(r => r.map(csvCell).join(',')).join('
 async function submitForm() {
   const empNum = document.getElementById('f-empNum').value.trim();
   const name   = document.getElementById('f-name').value.trim();
-  if (!empNum) { dfStatusMsg('Employee Number is required.', 'err'); return; }
-  if (!name)   { dfStatusMsg('Name is required.', 'err'); return; }
-  if (GH_PAT === 'PASTE_YOUR_PAT_HERE') { dfStatusMsg('Please set your GitHub PAT in the code first.', 'err'); return; }
+  GH_PAT       = document.getElementById('df-pat-input').value.trim();
+  if (!GH_PAT)   { dfStatusMsg('Please paste your GitHub PAT at the top of this form.', 'err'); return; }
+  if (!empNum)   { dfStatusMsg('Employee Number is required.', 'err'); return; }
+  if (!name)     { dfStatusMsg('Name is required.', 'err'); return; }
 
   dfStatusMsg('Connecting to GitHub…', '');
   document.getElementById('df-submit-btn').disabled = true;
