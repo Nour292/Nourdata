@@ -2434,6 +2434,8 @@ function printDashboard() {
   win.document.close(); win.focus();
   setTimeout(() => win.print(), 400);
 }
+
+function populateFilterDropdowns(rows) {
   const get = (col) => [...new Set(
     rows.slice(1)
       .map(r => (r[col]||'').trim())
@@ -2458,31 +2460,6 @@ function printDashboard() {
   fill('ifl-status',      get(COL.status));
 }
 
-function toggleSmartLists() {
-  const panel = document.getElementById('inline-search-panel');
-  const btn   = document.getElementById('itab-lists');
-  const isOpen = panel.style.display !== 'none';
-  if (isOpen) {
-    panel.style.display = 'none';
-    btn.classList.remove('active');
-  } else {
-    panel.style.display = 'block';
-    document.getElementById('ipane-lists').style.display = 'block';
-    btn.classList.add('active');
-    // Populate dropdowns from live data
-    if (csvRows) {
-      populateFilterDropdowns(csvRows);
-    } else {
-      loadSheetRows().then(rows => populateFilterDropdowns(rows)).catch(()=>{});
-    }
-  }
-}
-
-function switchInlineTab(tab) {
-  inlineCurrentTab = tab;
-  document.getElementById('inline-search-panel').style.display = 'block';
-  document.getElementById('ipane-lists').style.display = 'block';
-}
 
 document.addEventListener('DOMContentLoaded', function() {
   // Auto-focus password box on load
