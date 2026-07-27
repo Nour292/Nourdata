@@ -801,7 +801,7 @@ html, body { margin: 0; padding: 0; font-family: 'Calibri', sans-serif; backgrou
         <label><input type="checkbox" value="nationality" checked> Nationality</label>
         <label><input type="checkbox" value="age" checked> Age</label>
         <label><input type="checkbox" value="mobile"> Mobile</label>
-        <label><input type="checkbox" value="maritalStatus"> Marital Status</label>
+        <label><input type="checkbox" value="status"> Status</label>
         <label><input type="checkbox" value="joiningDate"> Joining Date</label>
         <label><input type="checkbox" value="idExpGreg"> Iqama Expiry</label>
         <label><input type="checkbox" value="idRemDays"> Iqama Days Left</label>
@@ -1027,7 +1027,7 @@ const DS_ALL_COLS = [
   { key: 'tickets',      label: 'Tickets',            idx: 25 },
   { key: 'qiwaStart',    label: 'Qiwa Start',         idx: 26 },
   { key: 'qiwaEnd',      label: 'Qiwa Ending',        idx: 27 },
-  { key: 'status',       label: 'Status',             idx: 28 },
+  { key: 'status',      label: 'Status',           idx: 28 },
   { key: 'idNo',         label: 'ID No',              idx: 30 },
   { key: 'idProfession', label: 'ID Profession',      idx: 31 },
   { key: 'idExpGreg',    label: 'ID Expiry',          idx: 33 },
@@ -1035,7 +1035,7 @@ const DS_ALL_COLS = [
   { key: 'ppNumber',     label: 'Passport No',        idx: 35 },
   { key: 'ppExpiry',     label: 'Passport Expiry',    idx: 38 },
   { key: 'jobEnded',     label: 'Job Ended',          idx: 40 },
-  { key: 'maritalStatus',label: 'Marital Status',     idx: 41 },
+  { key: 'status',      label: 'Status',           idx: 28 },
   { key: 'serviceEnded', label: 'Service Ended',      idx: 42 },
   { key: 'iban',         label: 'IBAN',               idx: 43 },
   { key: 'email',        label: 'Email',              idx: 44 },
@@ -1291,14 +1291,14 @@ function renderCard(cells, accessLevel) {
     html += row2('Joining Date', get(COL.joiningDate), 'Job Ended', get(COL.jobEnded), {red2: true});
     html += row2('Contract', get(COL.contract), 'Total Service (Y,M,D)', service);
     html += row2('Annual Leave', get(COL.annualLeave), 'Tickets', get(COL.tickets));
-    html += row2('Medical', get(COL.medical), 'Marital Status', get(COL.maritalStatus));
+    html += row2('Medical', get(COL.medical), 'Status', get(COL.status));
     html += row1('Email', get(COL.email));
     html += row1('IBAN', get(COL.iban));
   } else {
     html += row2('Joining Date', get(COL.joiningDate), 'Service', service);
     html += row2('Contract', get(COL.contract), 'Annual Leave', get(COL.annualLeave));
     html += row2('Tickets', get(COL.tickets), 'Medical', get(COL.medical));
-    html += row2('Marital Status', get(COL.maritalStatus), 'Email', get(COL.email));
+    html += row2('Status', get(COL.status), 'Email', get(COL.email));
     html += row1('IBAN', get(COL.iban));
   }
 
@@ -1466,8 +1466,8 @@ function searchEmployee() {
         <div class="df-field"><label>Location</label><input type="text" id="f-location"></div>
         <div class="df-field"><label>Joining Date</label><input type="text" id="f-joiningDate" placeholder="DD/MM/YYYY"></div>
         <div class="df-field"><label>Date of Birth</label><input type="text" id="f-dob" placeholder="DD/MM/YYYY"></div>
-        <div class="df-field"><label>Marital Status</label>
-          <select id="f-maritalStatus"><option value="">—</option><option>Single</option><option>Married</option><option>Divorced</option><option>Widowed</option></select>
+        <div class="df-field"><label>Status</label>
+          <select id="f-status"><option value="">—</option><option>Single</option><option>Married</option><option>Divorced</option><option>Widowed</option></select>
         </div>
         <div class="df-field"><label>Contract</label><input type="text" id="f-contract"></div>
         <div class="df-field"><label>Annual Leave</label><input type="text" id="f-annualLeave"></div>
@@ -1563,7 +1563,7 @@ const FORM_FIELDS = [
   { id:'f-issueDate',    idx: 37 },
   { id:'f-ppExpiry',     idx: 38 },
   { id:'f-jobEnded',     idx: 40 },
-  { id:'f-maritalStatus',idx: 41 },
+  { id:'f-status',idx: 41 },
   { id:'f-serviceEnded', idx: 42 },
   { id:'f-iban',         idx: 43 },
   { id:'f-email',        idx: 44 },
@@ -1766,14 +1766,6 @@ async function submitForm() {
               <input type="number" id="fl-age-val2" placeholder="e.g. 60" min="0" max="99" style="display:none;">
             </div>
             <div class="sl-filter-row">
-              <label>Marital Status</label>
-              <select id="fl-marital">
-                <option value="">— Any —</option>
-                <option>Single</option><option>Married</option>
-                <option>Divorced</option><option>Widowed</option>
-              </select>
-            </div>
-            <div class="sl-filter-row">
               <label>Status</label>
               <input type="text" id="fl-status" placeholder="e.g. Active">
             </div>
@@ -1794,7 +1786,7 @@ async function submitForm() {
             <label><input type="checkbox" value="nationality"> Nationality</label>
             <label><input type="checkbox" value="age" checked> Age</label>
             <label><input type="checkbox" value="mobile"> Mobile</label>
-            <label><input type="checkbox" value="maritalStatus"> Marital Status</label>
+            <label><input type="checkbox" value="status"> Status</label>
             <label><input type="checkbox" value="joiningDate"> Joining Date</label>
             <label><input type="checkbox" value="idExpGreg"> Iqama Expiry</label>
             <label><input type="checkbox" value="idRemDays"> Iqama Days Left</label>
@@ -1893,7 +1885,7 @@ const SL_COL_MAP = {
   nationality:  { idx: COL.nationality,  label: 'Nationality'     },
   age:          { idx: COL.age,          label: 'Age'             },
   mobile:       { idx: COL.mobile,       label: 'Mobile'          },
-  maritalStatus:{ idx: COL.maritalStatus,label: 'Marital Status'  },
+  status:{ idx: COL.status,label: 'Status'  },
   joiningDate:  { idx: COL.joiningDate,  label: 'Joining Date'    },
   idExpGreg:    { idx: COL.idExpGreg,    label: 'Iqama Expiry'    },
   idRemDays:    { idx: COL.idRemDays,    label: 'Iqama Days Left' },
@@ -1907,8 +1899,9 @@ const SL_COL_MAP = {
 /* ── Parse age value from cell (handles "35 Years", "35Y", "35") ── */
 function parseAge(val) {
   if (!val) return null;
-  const n = parseInt(val.toString().replace(/[^0-9]/g, ''));
-  return isNaN(n) ? null : n;
+  const m = val.toString().match(/^(\d+)/);
+  if (m) return parseInt(m[1]);
+  return null;
 }
 
 /* ── Parse remaining days (handles "073 Days to Expire", "-5", "73") ── */
@@ -2070,7 +2063,6 @@ function runCombinedFilter() {
   const flAgeOp       = document.getElementById('fl-age-op').value;
   const flAgeVal1     = parseInt(document.getElementById('fl-age-val1').value);
   const flAgeVal2     = parseInt(document.getElementById('fl-age-val2').value);
-  const flMarital     = document.getElementById('fl-marital').value.trim().toLowerCase();
   const flStatus      = document.getElementById('fl-status').value.trim().toLowerCase();
   const flEnded       = document.getElementById('fl-ended').value;
 
@@ -2093,8 +2085,7 @@ function runCombinedFilter() {
       if (flJobTitle    && !(r[COL.jobTitle]    ||'').toLowerCase().includes(flJobTitle))    return false;
       if (flLocation    && !(r[COL.location]    ||'').toLowerCase().includes(flLocation))    return false;
       if (flNationality && !(r[COL.nationality] ||'').toLowerCase().includes(flNationality)) return false;
-      if (flMarital     && !(r[COL.maritalStatus]||'').toLowerCase().includes(flMarital))    return false;
-      if (flStatus      && !(r[COL.status]      ||'').toLowerCase().includes(flStatus))      return false;
+      if (flStatus      && !(r[COL.status]||'').toLowerCase().includes(flStatus)) return false;
 
       // Age filter
       if (flAgeOp && !isNaN(flAgeVal1)) {
@@ -2114,7 +2105,6 @@ function runCombinedFilter() {
     if (flJobTitle)    parts.push(`Job: ${flJobTitle}`);
     if (flLocation)    parts.push(`Location: ${flLocation}`);
     if (flNationality) parts.push(`Nationality: ${flNationality}`);
-    if (flMarital)     parts.push(`Marital: ${flMarital}`);
     if (flStatus)      parts.push(`Status: ${flStatus}`);
     if (flAgeOp && !isNaN(flAgeVal1)) {
       if (flAgeOp==='lt')      parts.push(`Age < ${flAgeVal1}`);
@@ -2140,7 +2130,6 @@ function resetFilter() {
   document.getElementById('fl-age-val2').value = '';
   document.getElementById('fl-age-and').style.display = 'none';
   document.getElementById('fl-age-val2').style.display = 'none';
-  document.getElementById('fl-marital').value = '';
   document.getElementById('fl-ended').value = 'no';
   document.getElementById('sl-list-result').innerHTML = '';
   document.getElementById('sl-list-print-bar').style.display = 'none';
