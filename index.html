@@ -947,8 +947,7 @@ let csvRows = null;
 
 // Password hashes (SHA-256) — do not store plain passwords here
 const PW_ADMIN     = '2d8f693a554950343de320b8789f03563e1291bde42cdab4658cae4be8654f1b';
-const PW_EMP_1     = 'a2c2bc574f1171703f07c2a44eb792452f9f9354666d866a420da17d5bf4f020';
-const PW_EMP_2     = 'd4e2501734145318e12b209000cf646434ff9d3fae8bc9302dba2d7ce01f3073';
+const PW_EMP_1     = 'd4e2501734145318e12b209000cf646434ff9d3fae8bc9302dba2d7ce01f3073';
 
 async function hashPassword(str) {
   const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
@@ -967,7 +966,7 @@ async function checkPassword() {
     return;
   }
 
-  if (hashed === PW_EMP_1 || hashed === PW_EMP_2) {
+  if (hashed === PW_EMP_1) {
     currentAccessLevel = 'employee';
     unlockApp();
     return;
