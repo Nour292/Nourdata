@@ -753,7 +753,7 @@ html, body { margin: 0; padding: 0; font-family: 'Calibri', sans-serif; backgrou
     <h2>Nour Energy Data</h2>
     <p>Enter your password to access</p>
     <input type="password" id="pw-input" placeholder="Employee Number" autocomplete="off">
-    <button id="pw-submit" onclick="checkPassword()">Login</button>
+    <button id="pw-submit" onclick="checkPassword();" >Login</button>
     <div id="pw-error"></div>
   </div>
 </div>
@@ -941,29 +941,38 @@ async function loadSheetRows() {
 }
 
 /* ─── Access Level ─── */
-// 'none' = not logged in | 'employee' = emp number login | 'admin' = nour-pr
+// 'none' = not logged in | 'employee' = standard access | 'admin' = full access
 let currentAccessLevel = 'none';
 let csvRows = null;
 
-function checkPassword() {
+// Password hashes (SHA-256) — do not store plain passwords here
+const PW_ADMIN     = '2d8f693a554950343de320b8789f03563e1291bde42cdab4658cae4be8654f1b';
+const PW_EMP_1     = 'a2c2bc574f1171703f07c2a44eb792452f9f9354666d866a420da17d5bf4f020';
+const PW_EMP_2     = 'd4e2501734145318e12b209000cf646434ff9d3fae8bc9302dba2d7ce01f3073';
+
+async function hashPassword(str) {
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
+  return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,'0')).join('');
+}
+
+async function checkPassword() {
   const entered = document.getElementById('pw-input').value.trim();
   if (!entered) { document.getElementById('pw-error').textContent = 'Please enter your password.'; return; }
 
-  // Full admin access
-  if (entered === 'nour-pr') {
+  const hashed = await hashPassword(entered);
+
+  if (hashed === PW_ADMIN) {
     currentAccessLevel = 'admin';
     unlockApp();
     return;
   }
 
-  // Fixed basic access passwords
-  if (entered === '3655' || entered === '4190') {
+  if (hashed === PW_EMP_1 || hashed === PW_EMP_2) {
     currentAccessLevel = 'employee';
     unlockApp();
     return;
   }
 
-  // Access denied
   document.getElementById('pw-error').textContent = 'Access denied. Invalid password.';
   document.getElementById('pw-input').value = '';
   document.getElementById('pw-input').focus();
@@ -1163,7 +1172,7 @@ function clearCard() {
 
 /* ─── Enter key ─── */
 document.getElementById('pw-input').addEventListener('keyup', e => {
-  if (e.key === 'Enter') checkPassword();
+  if (e.key === 'Enter') checkPassword();  // async — handled automatically
 });
 /* Enter key handled in DOMContentLoaded below */
 
