@@ -286,7 +286,7 @@ html, body { margin: 0; padding: 0; font-family: 'Calibri', sans-serif; backgrou
 }
 .df-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   gap: 10px 16px;
 }
 .df-field { display: flex; flex-direction: column; gap: 3px; }
@@ -954,10 +954,10 @@ html, body { margin: 0; padding: 0; font-family: 'Calibri', sans-serif; backgrou
         <span id="isl-count-badge"></span>
       </div>
 
-<div id="isl-list-print-bar" style="display:none;text-align:right;margin-bottom:10px;position:sticky;top:0;z-index:10;background:#f0f4f8;padding:6px 0;">
-  <button class="sl-print-btn" onclick="printInlineResult('list')">🖨 Print Result</button>
-</div>
-<div id="isl-list-result"></div>
+      <div id="isl-list-result"></div>
+      <div id="isl-list-print-bar" style="display:none;">
+        <button class="sl-print-btn" onclick="printInlineResult('list')">🖨 Print Result</button>
+      </div>
 
     </div>
   </div>
@@ -1564,13 +1564,15 @@ function searchEmployee() {
         <div class="df-field"><label>Location</label><input type="text" id="f-location"></div>
         <div class="df-field"><label>Joining Date</label><input type="text" id="f-joiningDate" placeholder="DD/MM/YYYY"></div>
         <div class="df-field"><label>Date of Birth</label><input type="text" id="f-dob" placeholder="DD/MM/YYYY"></div>
-       <div class="df-field"><label>Status</label><input type="text" id="f-status"></div>
+        <div class="df-field"><label>Status</label>
+          <select id="f-status"><option value="">—</option><option>Single</option><option>Married</option><option>Divorced</option><option>Widowed</option></select>
         </div>
         <div class="df-field"><label>Contract</label><input type="text" id="f-contract"></div>
         <div class="df-field"><label>Annual Leave</label><input type="text" id="f-annualLeave"></div>
         <div class="df-field"><label>Tickets</label><input type="text" id="f-tickets"></div>
         <div class="df-field"><label>Medical</label><input type="text" id="f-medical"></div>
         <div class="df-field"><label>Duty Hours</label><input type="text" id="f-dutyHours"></div>
+        <div class="df-field"><label>Status</label><input type="text" id="f-status"></div>
         <div class="df-field"><label>Email</label><input type="text" id="f-email"></div>
         <div class="df-field"><label>IBAN</label><input type="text" id="f-iban"></div>
         <div class="df-field"><label>Job Ended</label><input type="text" id="f-jobEnded" placeholder="DD/MM/YYYY or leave blank"></div>
