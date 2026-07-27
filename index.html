@@ -12,8 +12,11 @@ html, body { margin: 0; padding: 0; font-family: 'Calibri', sans-serif; backgrou
 /* ── App Shell ── */
 @media screen {
   #app-shell {
-    width: 940px;
+    width: 100%;
+    max-width: 940px;
     margin: 28px auto 40px;
+    padding: 0 16px;
+    box-sizing: border-box;
   }
 }
 
@@ -128,7 +131,7 @@ html, body { margin: 0; padding: 0; font-family: 'Calibri', sans-serif; backgrou
   box-shadow: 0 3px 18px rgba(0,0,0,0.10);
   padding: 18px 20px 20px;
   margin-top: 0;
-  width: 940px;
+  width: 100%;
   box-sizing: border-box;
   margin-bottom: 16px;
 }
@@ -138,13 +141,6 @@ html, body { margin: 0; padding: 0; font-family: 'Calibri', sans-serif; backgrou
   flex: 1; padding: 9px 14px; font-size: 15px;
   border: 2px solid #aaa; border-radius: 6px;
 }
-#isl-ds-row button {
-  padding: 9px 22px; font-size: 15px; font-weight: bold;
-  background: #2e86c1; color: #fff; border: none;
-  border-radius: 6px; cursor: pointer;
-}
-#isl-ds-row button:hover { background: #1a5276; }
-#isl-ds-row { display: flex; gap: 10px; margin-bottom: 14px; }
 #isl-deep-input {
   flex: 1; padding: 9px 14px; font-size: 15px;
   border: 2px solid #aaa; border-radius: 6px;
