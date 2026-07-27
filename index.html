@@ -820,79 +820,58 @@ html, body { margin: 0; padding: 0; font-family: 'Calibri', sans-serif; backgrou
       <div class="sl-section-hdr">Filter</div>
       <div id="isl-filter-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px 16px;">
 
-        <div class="sl-filter-row" style="flex-direction:column;align-items:flex-start;gap:4px;">
-          <label style="font-size:12px;font-weight:700;color:#1a3a52;">Job Title</label>
-          <input type="text" id="ifl-jobTitle" placeholder="partial match" style="width:100%;padding:6px 10px;font-size:13px;border:1px solid #c8d8e8;border-radius:5px;">
+        <div style="display:flex;align-items:center;gap:8px;">
+          <label style="font-size:12px;font-weight:700;color:#1a3a52;white-space:nowrap;width:90px;flex-shrink:0;">Job Title</label>
+          <input type="text" id="ifl-jobTitle" placeholder="partial match" style="flex:1;padding:6px 10px;font-size:13px;border:1px solid #c8d8e8;border-radius:5px;">
         </div>
 
-        <div class="sl-filter-row" style="flex-direction:column;align-items:flex-start;gap:4px;">
-          <label style="font-size:12px;font-weight:700;color:#1a3a52;">Nationality</label>
-          <input type="text" id="ifl-nationality" placeholder="partial match" style="width:100%;padding:6px 10px;font-size:13px;border:1px solid #c8d8e8;border-radius:5px;">
+        <div style="display:flex;align-items:center;gap:8px;">
+          <label style="font-size:12px;font-weight:700;color:#1a3a52;white-space:nowrap;width:90px;flex-shrink:0;">Nationality</label>
+          <select id="ifl-nationality" style="flex:1;padding:6px 10px;font-size:13px;border:1px solid #c8d8e8;border-radius:5px;">
+            <option value="">— All —</option>
+          </select>
         </div>
 
-        <div class="sl-filter-row" style="flex-direction:column;align-items:flex-start;gap:4px;">
-          <label style="font-size:12px;font-weight:700;color:#1a3a52;">Location</label>
-          <input type="text" id="ifl-location" placeholder="partial match" style="width:100%;padding:6px 10px;font-size:13px;border:1px solid #c8d8e8;border-radius:5px;">
+        <div style="display:flex;align-items:center;gap:8px;">
+          <label style="font-size:12px;font-weight:700;color:#1a3a52;white-space:nowrap;width:90px;flex-shrink:0;">Location</label>
+          <select id="ifl-location" style="flex:1;padding:6px 10px;font-size:13px;border:1px solid #c8d8e8;border-radius:5px;">
+            <option value="">— All —</option>
+          </select>
         </div>
 
-        <div class="sl-filter-row" style="flex-direction:column;align-items:flex-start;gap:4px;">
-          <label style="font-size:12px;font-weight:700;color:#1a3a52;">Mobile</label>
-          <input type="text" id="ifl-mobile" placeholder="partial match" style="width:100%;padding:6px 10px;font-size:13px;border:1px solid #c8d8e8;border-radius:5px;">
+        <div style="display:flex;align-items:center;gap:8px;">
+          <label style="font-size:12px;font-weight:700;color:#1a3a52;white-space:nowrap;width:90px;flex-shrink:0;">Status</label>
+          <select id="ifl-status" style="flex:1;padding:6px 10px;font-size:13px;border:1px solid #c8d8e8;border-radius:5px;">
+            <option value="">— All —</option>
+          </select>
         </div>
 
-        <div class="sl-filter-row" style="flex-direction:column;align-items:flex-start;gap:4px;">
-          <label style="font-size:12px;font-weight:700;color:#1a3a52;">Status</label>
-          <input type="text" id="ifl-status" placeholder="partial match" style="width:100%;padding:6px 10px;font-size:13px;border:1px solid #c8d8e8;border-radius:5px;">
+        <div style="display:flex;align-items:center;gap:8px;">
+          <label style="font-size:12px;font-weight:700;color:#1a3a52;white-space:nowrap;width:90px;flex-shrink:0;">ID Profession</label>
+          <input type="text" id="ifl-idProfession" placeholder="partial match" style="flex:1;padding:6px 10px;font-size:13px;border:1px solid #c8d8e8;border-radius:5px;">
         </div>
 
-        <div class="sl-filter-row" style="flex-direction:column;align-items:flex-start;gap:4px;">
-          <label style="font-size:12px;font-weight:700;color:#1a3a52;">ID No</label>
-          <input type="text" id="ifl-idNo" placeholder="partial match" style="width:100%;padding:6px 10px;font-size:13px;border:1px solid #c8d8e8;border-radius:5px;">
-        </div>
-
-        <div class="sl-filter-row" style="flex-direction:column;align-items:flex-start;gap:4px;">
-          <label style="font-size:12px;font-weight:700;color:#1a3a52;">ID Profession</label>
-          <input type="text" id="ifl-idProfession" placeholder="partial match" style="width:100%;padding:6px 10px;font-size:13px;border:1px solid #c8d8e8;border-radius:5px;">
-        </div>
-
-        <div class="sl-filter-row" style="flex-direction:column;align-items:flex-start;gap:4px;">
-          <label style="font-size:12px;font-weight:700;color:#1a3a52;">Passport No</label>
-          <input type="text" id="ifl-ppNumber" placeholder="partial match" style="width:100%;padding:6px 10px;font-size:13px;border:1px solid #c8d8e8;border-radius:5px;">
-        </div>
-
-        <div class="sl-filter-row" style="flex-direction:column;align-items:flex-start;gap:4px;">
-          <label style="font-size:12px;font-weight:700;color:#1a3a52;">IBAN</label>
-          <input type="text" id="ifl-iban" placeholder="partial match" style="width:100%;padding:6px 10px;font-size:13px;border:1px solid #c8d8e8;border-radius:5px;">
-        </div>
-
-        <div class="sl-filter-row" style="flex-direction:column;align-items:flex-start;gap:4px;">
-          <label style="font-size:12px;font-weight:700;color:#1a3a52;">Email</label>
-          <input type="text" id="ifl-email" placeholder="partial match" style="width:100%;padding:6px 10px;font-size:13px;border:1px solid #c8d8e8;border-radius:5px;">
-        </div>
-
-        <div class="sl-filter-row" style="flex-direction:column;align-items:flex-start;gap:4px;">
-          <label style="font-size:12px;font-weight:700;color:#1a3a52;">Age</label>
-          <div style="display:flex;gap:6px;align-items:center;width:100%;">
-            <select id="ifl-age-op" style="flex:1;padding:6px 8px;font-size:13px;border:1px solid #c8d8e8;border-radius:5px;">
-              <option value="">— Any —</option>
-              <option value="lt">Under</option>
-              <option value="gte">Above or Equal</option>
-              <option value="between">Between</option>
-              <option value="exact">Exact</option>
-            </select>
-            <input type="number" id="ifl-age-val1" placeholder="e.g. 50" min="0" max="99" style="width:70px;padding:6px 8px;font-size:13px;border:1px solid #c8d8e8;border-radius:5px;">
-            <span id="ifl-age-and" style="display:none;font-size:12px;">–</span>
-            <input type="number" id="ifl-age-val2" placeholder="e.g. 60" min="0" max="99" style="display:none;width:70px;padding:6px 8px;font-size:13px;border:1px solid #c8d8e8;border-radius:5px;">
-          </div>
-        </div>
-
-        <div class="sl-filter-row" style="flex-direction:column;align-items:flex-start;gap:4px;">
-          <label style="font-size:12px;font-weight:700;color:#1a3a52;">Job Ended</label>
-          <select id="ifl-ended" style="width:100%;padding:6px 10px;font-size:13px;border:1px solid #c8d8e8;border-radius:5px;">
+        <div style="display:flex;align-items:center;gap:8px;">
+          <label style="font-size:12px;font-weight:700;color:#1a3a52;white-space:nowrap;width:90px;flex-shrink:0;">Job Ended</label>
+          <select id="ifl-ended" style="flex:1;padding:6px 10px;font-size:13px;border:1px solid #c8d8e8;border-radius:5px;">
             <option value="no">Active only</option>
             <option value="yes">Include ended</option>
             <option value="only">Only ended</option>
           </select>
+        </div>
+
+        <div style="display:flex;align-items:center;gap:8px;grid-column:span 2;">
+          <label style="font-size:12px;font-weight:700;color:#1a3a52;white-space:nowrap;width:90px;flex-shrink:0;">Age</label>
+          <select id="ifl-age-op" style="padding:6px 8px;font-size:13px;border:1px solid #c8d8e8;border-radius:5px;min-width:130px;">
+            <option value="">— Any —</option>
+            <option value="lt">Under</option>
+            <option value="gte">Above or Equal</option>
+            <option value="between">Between</option>
+            <option value="exact">Exact</option>
+          </select>
+          <input type="number" id="ifl-age-val1" placeholder="e.g. 50" min="0" max="99" style="width:80px;padding:6px 8px;font-size:13px;border:1px solid #c8d8e8;border-radius:5px;">
+          <span id="ifl-age-and" style="display:none;font-size:12px;font-weight:700;">–</span>
+          <input type="number" id="ifl-age-val2" placeholder="e.g. 60" min="0" max="99" style="display:none;width:80px;padding:6px 8px;font-size:13px;border:1px solid #c8d8e8;border-radius:5px;">
         </div>
 
       </div>
@@ -2191,6 +2170,31 @@ function resetFilter() {
 ════════════════════════════ */
 let inlineCurrentTab = 'deep';
 
+function populateFilterDropdowns(rows) {
+  const get = (col) => [...new Set(
+    rows.slice(1)
+      .map(r => (r[col]||'').trim())
+      .filter(v => v && v !== '—')
+  )].sort();
+
+  const fill = (id, values) => {
+    const sel = document.getElementById(id);
+    if (!sel) return;
+    const current = sel.value;
+    sel.innerHTML = '<option value="">— All —</option>';
+    values.forEach(v => {
+      const opt = document.createElement('option');
+      opt.value = v; opt.textContent = v;
+      sel.appendChild(opt);
+    });
+    sel.value = current;
+  };
+
+  fill('ifl-nationality', get(COL.nationality));
+  fill('ifl-location',    get(COL.location));
+  fill('ifl-status',      get(COL.status));
+}
+
 function toggleSmartLists() {
   const panel = document.getElementById('inline-search-panel');
   const btn   = document.getElementById('itab-lists');
@@ -2202,6 +2206,12 @@ function toggleSmartLists() {
     panel.style.display = 'block';
     document.getElementById('ipane-lists').style.display = 'block';
     btn.classList.add('active');
+    // Populate dropdowns from live data
+    if (csvRows) {
+      populateFilterDropdowns(csvRows);
+    } else {
+      loadSheetRows().then(rows => populateFilterDropdowns(rows)).catch(()=>{});
+    }
   }
 }
 
@@ -2305,13 +2315,8 @@ function runInlineCombinedFilter() {
   const flJobTitle    = document.getElementById('ifl-jobTitle').value.trim().toLowerCase();
   const flNationality = document.getElementById('ifl-nationality').value.trim().toLowerCase();
   const flLocation    = document.getElementById('ifl-location').value.trim().toLowerCase();
-  const flMobile      = document.getElementById('ifl-mobile').value.trim().toLowerCase();
   const flStatus      = document.getElementById('ifl-status').value.trim().toLowerCase();
-  const flIdNo        = document.getElementById('ifl-idNo').value.trim().toLowerCase();
   const flIdProf      = document.getElementById('ifl-idProfession').value.trim().toLowerCase();
-  const flPpNumber    = document.getElementById('ifl-ppNumber').value.trim().toLowerCase();
-  const flIban        = document.getElementById('ifl-iban').value.trim().toLowerCase();
-  const flEmail       = document.getElementById('ifl-email').value.trim().toLowerCase();
   const flAgeOp       = document.getElementById('ifl-age-op').value;
   const flAgeVal1     = parseInt(document.getElementById('ifl-age-val1').value);
   const flAgeVal2     = parseInt(document.getElementById('ifl-age-val2').value);
@@ -2327,15 +2332,10 @@ function runInlineCombinedFilter() {
       if (flEnded === 'no'   && isEnded)  return false;
       if (flEnded === 'only' && !isEnded) return false;
       if (flJobTitle    && !(r[COL.jobTitle]     ||'').toLowerCase().includes(flJobTitle))    return false;
-      if (flNationality && !(r[COL.nationality]  ||'').toLowerCase().includes(flNationality)) return false;
-      if (flLocation    && !(r[COL.location]     ||'').toLowerCase().includes(flLocation))    return false;
-      if (flMobile      && !(r[COL.mobile]       ||'').toLowerCase().includes(flMobile))      return false;
-      if (flStatus      && !(r[COL.status]       ||'').toLowerCase().includes(flStatus))      return false;
-      if (flIdNo        && !(r[COL.idNo]         ||'').toLowerCase().includes(flIdNo))        return false;
+      if (flNationality && (r[COL.nationality]   ||'').trim().toLowerCase() !== flNationality) return false;
+      if (flLocation    && (r[COL.location]      ||'').trim().toLowerCase() !== flLocation)    return false;
+      if (flStatus      && (r[COL.status]        ||'').trim().toLowerCase() !== flStatus)      return false;
       if (flIdProf      && !(r[COL.idProfession] ||'').toLowerCase().includes(flIdProf))      return false;
-      if (flPpNumber    && !(r[COL.ppNumber]     ||'').toLowerCase().includes(flPpNumber))    return false;
-      if (flIban        && !(r[COL.iban]         ||'').toLowerCase().includes(flIban))        return false;
-      if (flEmail       && !(r[COL.email]        ||'').toLowerCase().includes(flEmail))       return false;
       if (flAgeOp && !isNaN(flAgeVal1)) {
         const age = parseAge(r[COL.age]);
         if (age === null) return false;
@@ -2350,13 +2350,8 @@ function runInlineCombinedFilter() {
     if (flJobTitle)    parts.push(`Job: ${flJobTitle}`);
     if (flNationality) parts.push(`Nationality: ${flNationality}`);
     if (flLocation)    parts.push(`Location: ${flLocation}`);
-    if (flMobile)      parts.push(`Mobile: ${flMobile}`);
     if (flStatus)      parts.push(`Status: ${flStatus}`);
-    if (flIdNo)        parts.push(`ID No: ${flIdNo}`);
     if (flIdProf)      parts.push(`ID Prof: ${flIdProf}`);
-    if (flPpNumber)    parts.push(`PP No: ${flPpNumber}`);
-    if (flIban)        parts.push(`IBAN: ${flIban}`);
-    if (flEmail)       parts.push(`Email: ${flEmail}`);
     if (flAgeOp && !isNaN(flAgeVal1)) {
       if (flAgeOp === 'lt')      parts.push(`Age < ${flAgeVal1}`);
       if (flAgeOp === 'gte')     parts.push(`Age ≥ ${flAgeVal1}`);
@@ -2380,9 +2375,11 @@ function setAllCols(checked) {
 }
 
 function resetInlineFilter() {
-  ['ifl-jobTitle','ifl-nationality','ifl-location','ifl-mobile','ifl-status',
-   'ifl-idNo','ifl-idProfession','ifl-ppNumber','ifl-iban','ifl-email'].forEach(id => {
+  ['ifl-jobTitle','ifl-idProfession'].forEach(id => {
     const el = document.getElementById(id); if (el) el.value = '';
+  });
+  ['ifl-nationality','ifl-location','ifl-status','ifl-ended'].forEach(id => {
+    const el = document.getElementById(id); if (el) el.value = el.options[0].value;
   });
   document.getElementById('ifl-age-op').value      = '';
   document.getElementById('ifl-age-val1').value    = '';
