@@ -1078,7 +1078,7 @@ function deepSearch() {
 
     if (results.length === 0) {
       document.getElementById('card-area').innerHTML =
-        `<p style="text-align:center;color:#c0392b;padding:40px 0;font-size:15px;">No results found for "<strong>${query}</strong>".</p>`;
+        `<p style="text-align:center;color:#c0392b;padding:40px 0;font-size:15px;">No results found for "<strong>${escHtml(query)}</strong>".</p>`;
       return;
     }
 
@@ -1097,7 +1097,7 @@ function deepSearch() {
     // Header: logo left + title
     html += `<div class="ds-header">
       <img src="nour_energy_logo.png" alt="Logo" onerror="this.style.display='none'">
-      <span>Deep Search — "<em>${query}</em>" &nbsp;·&nbsp; ${results.length} record${results.length !== 1 ? 's' : ''} found</span>
+      <span>Deep Search — "<em>${escHtml(query)}</em>" &nbsp;·&nbsp; ${results.length} record${results.length !== 1 ? 's' : ''} found</span>
     </div>`;
 
     // Table header
@@ -1176,6 +1176,15 @@ document.getElementById('pw-input').addEventListener('keyup', e => {
 /* Enter key handled in DOMContentLoaded below */
 
 /* ─── Helpers ─── */
+function escHtml(str) {
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
 function v(val) {
   if (!val || val.trim() === '' || val.trim() === 'N/A') return '—';
   return val.trim();
@@ -1401,7 +1410,7 @@ function searchEmployee() {
         .slice(0,3).map(x => x.n);
       document.getElementById('card-area').innerHTML =
         `<p style="text-align:center;color:#c0392b;padding:40px 0;font-size:15px;">
-          Employee not found for "<strong>${query}</strong>".
+          Employee not found for "<strong>${escHtml(query)}</strong>".
           ${close.length ? `<br>Closest matches: <strong>${close.join(', ')}</strong>` : ''}
         </p>`;
       return;
@@ -1957,7 +1966,7 @@ function runDeepSearch() {
 
     if (results.length === 0) {
       document.getElementById('sl-ds-result').innerHTML =
-        `<p style="color:#c0392b;font-size:14px;">No results for "<strong>${query}</strong>".</p>`;
+        `<p style="color:#c0392b;font-size:14px;">No results for "<strong>${escHtml(query)}</strong>".</p>`;
       return;
     }
 
@@ -1970,7 +1979,7 @@ function runDeepSearch() {
     let html = `<div class="ds-wrap">`;
     html += `<div class="ds-header">
       <img src="nour_energy_logo.png" alt="Logo" onerror="this.style.display='none'">
-      <span>Deep Search — "<em>${query}</em>" &nbsp;·&nbsp; ${results.length} record${results.length !== 1 ? 's' : ''}</span>
+      <span>Deep Search — "<em>${escHtml(query)}</em>" &nbsp;·&nbsp; ${results.length} record${results.length !== 1 ? 's' : ''}</span>
     </div>`;
     html += `<table class="ds-tbl"><thead><tr>`;
     DS_FIXED.forEach(c => { html += `<th>${c.label}</th>`; });
@@ -2205,7 +2214,7 @@ function runInlineDeepSearch() {
       if (matchedCols.length > 0) results.push({ r, matchedCols });
     });
     if (results.length === 0) {
-      document.getElementById('isl-ds-result').innerHTML = `<p style="color:#c0392b;font-size:14px;">No results for "<strong>${query}</strong>".</p>`;
+      document.getElementById('isl-ds-result').innerHTML = `<p style="color:#c0392b;font-size:14px;">No results for "<strong>${escHtml(query)}</strong>".</p>`;
       document.getElementById('isl-ds-print-bar').style.display = 'none';
       return;
     }
@@ -2214,7 +2223,7 @@ function runInlineDeepSearch() {
     const extraCols = DS_ALL_COLS.filter(c => extraColKeys.has(c.key));
     let html = `<div class="ds-wrap"><div class="ds-header">
       <img src="nour_energy_logo.png" alt="Logo" onerror="this.style.display='none'">
-      <span>Deep Search — "<em>${query}</em>" · ${results.length} record${results.length!==1?'s':''}</span>
+      <span>Deep Search — "<em>${escHtml(query)}</em>" · ${results.length} record${results.length!==1?'s':''}</span>
     </div><table class="ds-tbl"><thead><tr>`;
     DS_FIXED.forEach(c => { html += `<th>${c.label}</th>`; });
     extraCols.forEach(c => { html += `<th>${c.label}</th>`; });
