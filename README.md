@@ -34,4 +34,4 @@ An internal HR data management web app for Nour Energy — built as a single-pag
 
 ## Maintained by
 
-Qasim — HR & Administration, Nour Energy
+Qasim — Nour Energy
