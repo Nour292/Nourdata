@@ -737,8 +737,70 @@ html, body { margin: 0; padding: 0; font-family: 'Calibri', sans-serif; backgrou
   border-radius: 6px; cursor: pointer;
 }
 .sl-print-btn:hover { background: #e5d200; }
-@media print { #sl-overlay { display: none !important; } }
-</style>
+/* ── Dashboard ── */
+#dash-content { padding: 4px 0 10px; }
+.dash-summary {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+  margin-bottom: 20px;
+}
+.dash-card {
+  border-radius: 8px;
+  padding: 16px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+.dash-card .dash-num {
+  font-size: 32px;
+  font-weight: 700;
+  line-height: 1;
+}
+.dash-card .dash-lbl {
+  font-size: 13px;
+  font-weight: 600;
+  opacity: 0.85;
+}
+.dash-card.green  { background: #eafaf1; color: #1e8449; border-left: 5px solid #27ae60; }
+.dash-card.orange { background: #fef5e7; color: #d35400; border-left: 5px solid #e67e22; }
+.dash-card.red    { background: #fdecea; color: #c0392b; border-left: 5px solid #e74c3c; }
+.dash-alerts {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+.dash-alert-col { min-width: 0; }
+.dash-alert-col .dash-col-hdr {
+  font-size: 13px; font-weight: 700;
+  color: #fff; background: #1a5276;
+  padding: 6px 10px; border-radius: 5px 5px 0 0;
+  margin-bottom: 0;
+}
+.dash-alert-tbl {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+.dash-alert-tbl th {
+  background: #d5e8f5; color: #1a3a52;
+  padding: 5px 8px; text-align: left;
+  font-size: 11px; font-weight: 700;
+}
+.dash-alert-tbl td {
+  border-bottom: 1px solid #eaf2fb;
+  padding: 5px 8px;
+  vertical-align: middle;
+}
+.dash-alert-tbl tr:hover td { background: #eaf4fb; cursor: pointer; }
+.dash-row-red    td { background: #fdecea !important; }
+.dash-row-orange td { background: #fef5e7 !important; }
+.dash-row-yellow td { background: #fefde7 !important; }
+.dash-none { font-size:12px; color:#888; padding:10px 8px; }
+.dash-print-bar { margin-top:14px; padding-top:12px; border-top:1px solid #d5e8f5; }
+@media print { #ipane-dashboard .dash-print-bar { display:none !important; } }
+
 </head>
 <body>
 
@@ -773,7 +835,8 @@ html, body { margin: 0; padding: 0; font-family: 'Calibri', sans-serif; backgrou
       </div>
       <!-- Tab row — below buttons, admin only -->
       <div id="tab-row" style="display:none;">
-        <button class="inline-tab active" id="itab-lists" onclick="toggleSmartLists()">📋 Smart Lists</button>
+        <button class="inline-tab active" id="itab-dashboard" onclick="switchToTab('dashboard')">📊 Dashboard</button>
+        <button class="inline-tab" id="itab-lists" onclick="switchToTab('lists')">📋 Smart Lists</button>
       </div>
     </div>
     <div id="top-bar-right">
@@ -783,6 +846,13 @@ html, body { margin: 0; padding: 0; font-family: 'Calibri', sans-serif; backgrou
 
   <!-- Inline Search Panel -->
   <div id="inline-search-panel" style="display:none;">
+
+    <!-- ── Dashboard Pane ── -->
+    <div id="ipane-dashboard" class="ipane">
+      <div id="dash-content">
+        <p style="text-align:center;color:#888;padding:30px 0;">Loading dashboard…</p>
+      </div>
+    </div>
 
     <!-- Smart Lists pane -->
     <div id="ipane-lists" class="ipane">
@@ -2170,7 +2240,200 @@ function resetFilter() {
 ════════════════════════════ */
 let inlineCurrentTab = 'deep';
 
-function populateFilterDropdowns(rows) {
+/* ════════════════════════════
+   TAB SWITCHING
+════════════════════════════ */
+function switchToTab(tab) {
+  // Hide all panes
+  document.getElementById('ipane-dashboard').style.display = 'none';
+  document.getElementById('ipane-lists').style.display     = 'none';
+  // Deactivate all tabs
+  document.querySelectorAll('.inline-tab').forEach(b => b.classList.remove('active'));
+  // Show panel
+  document.getElementById('inline-search-panel').style.display = 'block';
+  if (tab === 'dashboard') {
+    document.getElementById('ipane-dashboard').style.display = 'block';
+    document.getElementById('itab-dashboard').classList.add('active');
+    buildDashboard();
+  } else {
+    document.getElementById('ipane-lists').style.display = 'block';
+    document.getElementById('itab-lists').classList.add('active');
+    if (csvRows) populateFilterDropdowns(csvRows);
+    else loadSheetRows().then(rows => populateFilterDropdowns(rows)).catch(()=>{});
+  }
+}
+
+function toggleSmartLists() {
+  const panel = document.getElementById('inline-search-panel');
+  const isOpen = panel.style.display !== 'none';
+  if (isOpen) {
+    panel.style.display = 'none';
+    document.querySelectorAll('.inline-tab').forEach(b => b.classList.remove('active'));
+    document.getElementById('itab-dashboard').classList.add('active');
+  } else {
+    switchToTab('dashboard');
+  }
+}
+
+function switchInlineTab(tab) { switchToTab(tab); }
+
+/* ════════════════════════════
+   DASHBOARD BUILDER
+════════════════════════════ */
+function buildDashboard() {
+  const container = document.getElementById('dash-content');
+  container.innerHTML = '<p style="text-align:center;color:#888;padding:30px 0;">Loading…</p>';
+
+  const render = (rows) => {
+    const active = rows.slice(1).filter(r => {
+      const je = (r[COL.jobEnded]||'').trim();
+      return je === '' || je === '—';
+    });
+
+    const today = new Date();
+
+    // Helper: days until expiry
+    const daysUntil = (dateStr) => {
+      const d = parseDate(dateStr);
+      if (!d) return null;
+      return Math.round((d - today) / 86400000);
+    };
+
+    // Count expiry buckets for a column
+    const countExpiry = (rows, getDay) => {
+      let expired=0, d30=0, d60=0, d90=0;
+      rows.forEach(r => {
+        const d = getDay(r);
+        if (d === null) return;
+        if (d < 0)   expired++;
+        else if (d <= 30) d30++;
+        else if (d <= 60) d60++;
+        else if (d <= 90) d90++;
+      });
+      return { expired, d30, d60, d90 };
+    };
+
+    const iqamaBuckets   = countExpiry(active, r => {
+      const rem = (r[COL.idRemDays]||'').trim();
+      if (rem && rem !== '—' && !isNaN(+rem)) return +rem;
+      return daysUntil((r[COL.idExpGreg]||'').trim());
+    });
+    const ppBuckets      = countExpiry(active, r => daysUntil((r[COL.ppExpiry]||'').trim()));
+    const qiwaBuckets    = countExpiry(active, r => daysUntil((r[COL.qiwaEnd]||'').trim()));
+
+    const totalExpiring = (b) => b.expired + b.d30 + b.d60 + b.d90;
+    const totalExpired  = iqamaBuckets.expired + ppBuckets.expired + qiwaBuckets.expired;
+    const totalSoon     = (iqamaBuckets.d30+iqamaBuckets.d60+iqamaBuckets.d90) +
+                          (ppBuckets.d30+ppBuckets.d60+ppBuckets.d90) +
+                          (qiwaBuckets.d30+qiwaBuckets.d60+qiwaBuckets.d90);
+
+    /* ── Section 1: Summary Cards ── */
+    let html = `<div class="dash-summary">
+      <div class="dash-card green">
+        <div class="dash-num">${active.length}</div>
+        <div class="dash-lbl">🟢 Active Employees</div>
+      </div>
+      <div class="dash-card orange">
+        <div class="dash-num">${totalSoon}</div>
+        <div class="dash-lbl">⚠️ Expiring Within 90 Days</div>
+      </div>
+      <div class="dash-card red">
+        <div class="dash-num">${totalExpired}</div>
+        <div class="dash-lbl">🚨 Expired Documents</div>
+      </div>
+    </div>`;
+
+    /* ── Section 2: Alert Tables ── */
+    const buildAlertTable = (rows, colIdx, getDay, title) => {
+      // Collect expiring/expired employees, sorted by days
+      const list = [];
+      rows.forEach(r => {
+        const d = getDay(r);
+        if (d === null || d > 90) return;
+        list.push({ r, d });
+      });
+      list.sort((a,b) => a.d - b.d);
+
+      let t = `<div class="dash-alert-col">
+        <div class="dash-col-hdr">${title} — ${list.length} alert${list.length!==1?'s':''}</div>`;
+
+      if (list.length === 0) {
+        t += `<div class="dash-none">✅ No alerts within 90 days</div>`;
+      } else {
+        t += `<table class="dash-alert-tbl"><thead><tr>
+          <th>Emp No</th><th>Name</th><th>Days</th><th>Expiry</th>
+        </tr></thead><tbody>`;
+        list.forEach(({r, d}) => {
+          const rowClass = d < 0 ? 'dash-row-red' : d <= 30 ? 'dash-row-orange' : d <= 60 ? 'dash-row-yellow' : '';
+          const dLabel = d < 0 ? `🔴 ${Math.abs(d)}d overdue` : d === 0 ? '🔴 Today' : d <= 30 ? `🟠 ${d}d` : d <= 60 ? `🟡 ${d}d` : `🟡 ${d}d`;
+          const expiry = v((r[colIdx]||'').trim());
+          const empNum = (r[COL.empNum]||'').trim();
+          t += `<tr class="${rowClass}" onclick="loadCardByEmpNum('${empNum.replace(/'/g,"\\'")}')">
+            <td>${escHtml(empNum)}</td>
+            <td>${rtlWrap(v(r[COL.name]))}</td>
+            <td>${dLabel}</td>
+            <td>${escHtml(expiry)}</td>
+          </tr>`;
+        });
+        t += `</tbody></table>`;
+      }
+      t += `</div>`;
+      return t;
+    };
+
+    html += `<div class="dash-alerts">`;
+    html += buildAlertTable(active, COL.idExpGreg, r => {
+      const rem = (r[COL.idRemDays]||'').trim();
+      if (rem && rem !== '—' && !isNaN(+rem)) return +rem;
+      return daysUntil((r[COL.idExpGreg]||'').trim());
+    }, '🪪 Iqama');
+    html += buildAlertTable(active, COL.ppExpiry,  r => daysUntil((r[COL.ppExpiry]||'').trim()),  '🛂 Passport');
+    html += buildAlertTable(active, COL.qiwaEnd,   r => daysUntil((r[COL.qiwaEnd]||'').trim()),   '📋 Qiwa');
+    html += `</div>`;
+
+    // Footer + print
+    html += `<div class="dash-print-bar">
+      <button class="sl-print-btn" onclick="printDashboard()">🖨 Print Dashboard</button>
+      <span style="font-size:11px;color:#aaa;margin-left:12px;">Updated: ${todayStr()}</span>
+    </div>`;
+
+    container.innerHTML = html;
+  };
+
+  if (csvRows) render(csvRows);
+  else loadSheetRows().then(rows => render(rows))
+       .catch(() => { container.innerHTML = '<p style="color:#c0392b;padding:20px;">Failed to load data.</p>'; });
+}
+
+function printDashboard() {
+  const el = document.getElementById('dash-content');
+  if (!el) return;
+  const win = window.open('','_blank','width=1000,height=750');
+  win.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Nour Energy Dashboard</title>
+  <style>
+    body{font-family:Calibri,sans-serif;margin:10mm;font-size:12px;}
+    .dash-summary{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px;}
+    .dash-card{border-radius:6px;padding:12px 16px;border-left:5px solid #ccc;}
+    .dash-card .dash-num{font-size:28px;font-weight:700;}
+    .dash-card .dash-lbl{font-size:12px;font-weight:600;}
+    .dash-card.green{background:#eafaf1;color:#1e8449;border-color:#27ae60;}
+    .dash-card.orange{background:#fef5e7;color:#d35400;border-color:#e67e22;}
+    .dash-card.red{background:#fdecea;color:#c0392b;border-color:#e74c3c;}
+    .dash-alerts{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;}
+    .dash-col-hdr{font-size:12px;font-weight:700;color:#fff;background:#1a5276;padding:5px 8px;border-radius:4px 4px 0 0;}
+    .dash-alert-tbl{width:100%;border-collapse:collapse;font-size:11px;}
+    .dash-alert-tbl th{background:#d5e8f5;color:#1a3a52;padding:4px 6px;text-align:left;}
+    .dash-alert-tbl td{border-bottom:1px solid #eaf2fb;padding:4px 6px;}
+    .dash-row-red td{background:#fdecea!important;}
+    .dash-row-orange td{background:#fef5e7!important;}
+    .dash-row-yellow td{background:#fefde7!important;}
+    .dash-none{font-size:11px;color:#888;padding:8px;}
+    .dash-print-bar{display:none;}
+    -webkit-print-color-adjust:exact;print-color-adjust:exact;
+  </style></head><body>${el.innerHTML}</body></html>`);
+  win.document.close(); win.focus();
+  setTimeout(() => win.print(), 400);
+}
   const get = (col) => [...new Set(
     rows.slice(1)
       .map(r => (r[col]||'').trim())
