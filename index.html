@@ -2246,13 +2246,26 @@ let inlineCurrentTab = 'deep';
    TAB SWITCHING
 ════════════════════════════ */
 function switchToTab(tab) {
-  // Hide all panes
+  const panel = document.getElementById('inline-search-panel');
+  const isOpen = panel.style.display !== 'none';
+  const activeTab = document.querySelector('.inline-tab.active');
+  const activeId = activeTab ? activeTab.id : '';
+
+  // If same tab clicked while open → close panel
+  if (isOpen && ((tab === 'dashboard' && activeId === 'itab-dashboard') ||
+                 (tab === 'lists'     && activeId === 'itab-lists'))) {
+    panel.style.display = 'none';
+    document.querySelectorAll('.inline-tab').forEach(b => b.classList.remove('active'));
+    return;
+  }
+
+  // Hide all panes, deactivate all tabs
   document.getElementById('ipane-dashboard').style.display = 'none';
   document.getElementById('ipane-lists').style.display     = 'none';
-  // Deactivate all tabs
   document.querySelectorAll('.inline-tab').forEach(b => b.classList.remove('active'));
-  // Show panel
-  document.getElementById('inline-search-panel').style.display = 'block';
+
+  // Show panel + selected pane
+  panel.style.display = 'block';
   if (tab === 'dashboard') {
     document.getElementById('ipane-dashboard').style.display = 'block';
     document.getElementById('itab-dashboard').classList.add('active');
@@ -2271,7 +2284,6 @@ function toggleSmartLists() {
   if (isOpen) {
     panel.style.display = 'none';
     document.querySelectorAll('.inline-tab').forEach(b => b.classList.remove('active'));
-    document.getElementById('itab-dashboard').classList.add('active');
   } else {
     switchToTab('dashboard');
   }
