@@ -1559,20 +1559,43 @@ function searchEmployee() {
         <div class="df-field"><label>Employee No *</label><input type="text" id="f-empNum" placeholder="e.g. 1001"></div>
         <div class="df-field"><label>Name *</label><input type="text" id="f-name"></div>
         <div class="df-field"><label>Mobile</label><input type="text" id="f-mobile"></div>
-        <div class="df-field"><label>Nationality</label><input type="text" id="f-nationality"></div>
+        <div class="df-field"><label>Nationality</label>
+          <select id="f-nationality"><option value="">— Select —</option></select>
+        </div>
         <div class="df-field"><label>Job Title</label><input type="text" id="f-jobTitle"></div>
-        <div class="df-field"><label>Location</label><input type="text" id="f-location"></div>
+        <div class="df-field"><label>Location</label>
+          <select id="f-location"><option value="">— Select —</option></select>
+        </div>
         <div class="df-field"><label>Joining Date</label><input type="text" id="f-joiningDate" placeholder="DD/MM/YYYY"></div>
         <div class="df-field"><label>Date of Birth</label><input type="text" id="f-dob" placeholder="DD/MM/YYYY"></div>
         <div class="df-field"><label>Status</label>
-          <select id="f-status"><option value="">—</option><option>Single</option><option>Married</option><option>Divorced</option><option>Widowed</option></select>
+          <select id="f-status"><option value="">—</option><option>Single</option><option>Married</option></select>
         </div>
         <div class="df-field"><label>Contract</label><input type="text" id="f-contract"></div>
-        <div class="df-field"><label>Annual Leave</label><input type="text" id="f-annualLeave"></div>
-        <div class="df-field"><label>Tickets</label><input type="text" id="f-tickets"></div>
+        <div class="df-field"><label>Annual Leave</label>
+          <select id="f-annualLeave">
+            <option value="">—</option>
+            <option>21 Days - 1 Year</option>
+            <option>30 Days - 1 Year</option>
+            <option>42 Days - 2 Years</option>
+          </select>
+        </div>
+        <div class="df-field"><label>Tickets</label>
+          <select id="f-tickets">
+            <option value="">—</option>
+            <option>Round Trip - 1 Year</option>
+            <option>Round Trip - 2 Years</option>
+          </select>
+        </div>
         <div class="df-field"><label>Medical</label><input type="text" id="f-medical"></div>
-        <div class="df-field"><label>Duty Hours</label><input type="text" id="f-dutyHours"></div>
-        <div class="df-field"><label>Status</label><input type="text" id="f-status"></div>
+        <div class="df-field"><label>Duty Hours</label>
+          <select id="f-dutyHours">
+            <option value="">—</option>
+            <option>Normal Duty - 8 Hours</option>
+            <option>Normal Duty - 10 Hours</option>
+            <option>Normal Duty - 12 Hours</option>
+          </select>
+        </div>
         <div class="df-field"><label>Email</label><input type="text" id="f-email"></div>
         <div class="df-field"><label>IBAN</label><input type="text" id="f-iban"></div>
         <div class="df-field"><label>Job Ended</label><input type="text" id="f-jobEnded" placeholder="DD/MM/YYYY or leave blank"></div>
@@ -1673,6 +1696,22 @@ function openDataForm() {
   switchTab('add');
   clearForm();
   document.getElementById('df-overlay').style.display = 'flex';
+  // Populate Nationality and Location dropdowns from live data
+  const fillFormDropdown = (id, col) => {
+    const sel = document.getElementById(id);
+    if (!sel) return;
+    const current = sel.value;
+    const base = '<option value="">— Select —</option>';
+    const doFill = (rows) => {
+      const vals = [...new Set(rows.slice(1).map(r=>(r[col]||'').trim()).filter(v=>v&&v!=='—'))].sort();
+      sel.innerHTML = base + vals.map(v=>`<option>${v}</option>`).join('');
+      sel.value = current;
+    };
+    if (csvRows) doFill(csvRows);
+    else loadSheetRows().then(rows=>doFill(rows)).catch(()=>{});
+  };
+  fillFormDropdown('f-nationality', COL.nationality);
+  fillFormDropdown('f-location',    COL.location);
 }
 function closeDataForm() {
   document.getElementById('df-overlay').style.display = 'none';
@@ -1713,6 +1752,17 @@ function loadEmployeeForEdit() {
     dfEditRowIdx = idx + 1;
     const r = rows[dfEditRowIdx];
     FORM_FIELDS.forEach(f => { const el = document.getElementById(f.id); if (el) el.value = (r[f.idx]||'').trim(); });
+    // Re-populate dropdowns then restore values
+    const natVal = (r[COL.nationality]||'').trim();
+    const locVal = (r[COL.location]||'').trim();
+    const fillAndSet = (id, col, val) => {
+      const sel = document.getElementById(id); if (!sel) return;
+      const vals = [...new Set(rows.slice(1).map(r2=>(r2[col]||'').trim()).filter(v=>v&&v!=='—'))].sort();
+      sel.innerHTML = '<option value="">— Select —</option>' + vals.map(v=>`<option>${v}</option>`).join('');
+      sel.value = val;
+    };
+    fillAndSet('f-nationality', COL.nationality, natVal);
+    fillAndSet('f-location',    COL.location,    locVal);
     document.getElementById('f-empNum').setAttribute('readonly', true);
     document.getElementById('df-load-msg').textContent = '';
     document.getElementById('df-fields').style.display = 'block';
