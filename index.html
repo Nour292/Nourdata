@@ -1305,7 +1305,7 @@ function deepSearchInline() {
     html += `<div class="ds-header">
       <img src="nour_energy_logo.png" alt="Logo" onerror="this.style.display='none'">
       <span>Deep Search — "<em>${escHtml(query)}</em>" &nbsp;·&nbsp; ${results.length} record${results.length !== 1 ? 's' : ''} found</span>
-      <button onclick="window.print()" style="margin-left:auto;padding:5px 14px;background:#6c3483;color:#fff;border:none;border-radius:5px;font-size:13px;font-weight:700;cursor:pointer;">🖨 Print</button>
+      <button onclick="printDeepSearch()" style="margin-left:auto;padding:5px 14px;background:#6c3483;color:#fff;border:none;border-radius:5px;font-size:13px;font-weight:700;cursor:pointer;">🖨 Print</button>
     </div>`;
 
     html += `<table class="ds-tbl"><thead><tr>`;
@@ -1344,6 +1344,36 @@ function deepSearchInline() {
         area.innerHTML = `<p style="text-align:center;color:#c0392b;padding:40px 0;">Failed to load data — ${err.message}</p>`;
       });
   }
+}
+
+/* ─── Print Deep Search results in a clean window ─── */
+function printDeepSearch() {
+  const area = document.getElementById('ds-result-area');
+  if (!area) return;
+  const wrap = area.querySelector('.ds-wrap');
+  if (!wrap) { alert('No results to print.'); return; }
+
+  const win = window.open('', '_blank', 'width=900,height=700');
+  win.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8">
+<title>Deep Search — Nour Energy</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: Calibri, sans-serif; font-size: 12px; padding: 18px; }
+  .ds-header { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
+  .ds-header img { height: 48px; }
+  .ds-header span { font-size: 15px; font-weight: 700; color: #1a5276; }
+  table { width: 100%; border-collapse: collapse; }
+  th { background: #1a5276; color: #fff; padding: 7px 10px; text-align: left; font-size: 12px; }
+  td { padding: 6px 10px; border-bottom: 1px solid #e0e0e0; font-size: 12px; }
+  tr:nth-child(even) td { background: #f5f8fa; }
+  .ds-match { background: #fef9e7 !important; font-weight: 700; color: #7d6608; }
+  .card-footer { margin-top: 14px; font-size: 11px; color: #888; text-align: right; }
+  button { display: none; }
+</style>
+</head><body>${wrap.innerHTML}</body></html>`);
+  win.document.close();
+  win.focus();
+  setTimeout(() => { win.print(); win.close(); }, 400);
 }
 
 /* ─── Load full card by clicking a Deep Search row ─── */
