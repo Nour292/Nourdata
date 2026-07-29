@@ -342,6 +342,54 @@ html, body { margin: 0; padding: 0; font-family: 'Calibri', sans-serif; backgrou
 }
 #logoutButton:hover { background: #922b21; }
 @media print { #logoutButton { display: none !important; } }
+
+/* ── Dark Mode Toggle ── */
+#darkModeToggle {
+  position: fixed;
+  top: 54px;
+  right: 18px;
+  z-index: 999;
+  height: 30px;
+  padding: 0 12px;
+  background: #2c3e50;
+  color: #fff;
+  font-family: 'Calibri', sans-serif;
+  font-size: 12px;
+  font-weight: bold;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  display: none;
+}
+#darkModeToggle:hover { background: #1a252f; }
+@media print { #darkModeToggle { display: none !important; } }
+
+/* ── Dark Mode Styles ── */
+body.dark-mode { background: #1a1a2e; color: #e0e0e0; }
+body.dark-mode #app-shell { color: #e0e0e0; }
+body.dark-mode #top-bar-left h1 { color: #7fb3d3; }
+body.dark-mode #employeeNumber { background: #2c2c3e; color: #e0e0e0; border-color: #444; }
+body.dark-mode #employeeNumber::placeholder { color: #888; }
+body.dark-mode #inline-search-panel { background: #22223b; box-shadow: 0 3px 18px rgba(0,0,0,0.4); }
+body.dark-mode .sl-section-hdr { background: #16213e; color: #a8c8e8; }
+body.dark-mode #isl-col-picks label { color: #ccc; }
+body.dark-mode .ds-tbl th { background: #16213e; }
+body.dark-mode .ds-tbl td { border-color: #3a3a5c; color: #ddd; }
+body.dark-mode .ds-tbl tr:nth-child(even) td { background: #2a2a4a; }
+body.dark-mode .ds-tbl tr:hover td { background: #333355; }
+body.dark-mode .ds-header { border-bottom-color: #3a3a5c; }
+body.dark-mode .ds-header span { color: #7fb3d3; }
+body.dark-mode .card-footer { color: #888; }
+body.dark-mode .ds-count { color: #888; }
+body.dark-mode select, body.dark-mode input[type=text], body.dark-mode input[type=number] { background: #2c2c3e; color: #e0e0e0; border-color: #444; }
+body.dark-mode #top-bar-right img { filter: brightness(0.8); }
+body.dark-mode .dash-kpi { background: #22223b; border-color: #3a3a5c; }
+body.dark-mode .dash-kpi-val { color: #7fb3d3; }
+body.dark-mode .dash-kpi-lbl { color: #aaa; }
+body.dark-mode #card-area { color: #ddd; }
+body.dark-mode .card-section-hdr { background: #16213e; color: #a8c8e8; }
+body.dark-mode .card-field-label { color: #aaa; }
+body.dark-mode .ifl-filter-grid label { color: #ccc; }
 #pw-overlay {
   position: fixed; inset: 0;
   background: rgba(15,30,50,0.72);
@@ -826,6 +874,7 @@ html, body { margin: 0; padding: 0; font-family: 'Calibri', sans-serif; backgrou
 </div>
 
 <button id="logoutButton" onclick="logout()">⏻ Logout</button>
+<button id="darkModeToggle" onclick="toggleDarkMode()">🌙 Dark</button>
 
 <div id="app-shell">
 
@@ -1099,6 +1148,7 @@ function unlockApp() {
   document.getElementById('pw-input').value = '';
   document.getElementById('pw-error').textContent = '';
   document.getElementById('logoutButton').style.display = 'block';
+  document.getElementById('darkModeToggle').style.display = 'block';
   const isAdmin = currentAccessLevel === 'admin';
   document.getElementById('dataFormButton').style.display = isAdmin ? 'block' : 'none';
   document.getElementById('tab-row').style.display        = isAdmin ? 'flex'  : 'none';
@@ -1108,12 +1158,22 @@ function unlockApp() {
   if (isAdmin) switchToTab('dashboard');
 }
 
+/* ─── Dark Mode ─── */
+function toggleDarkMode() {
+  const isDark = document.body.classList.toggle('dark-mode');
+  const btn = document.getElementById('darkModeToggle');
+  btn.textContent = isDark ? '☀️ Light' : '🌙 Dark';
+  btn.style.background = isDark ? '#e67e22' : '#2c3e50';
+}
+
 /* ─── Logout ─── */
 function logout() {
   currentAccessLevel = 'none';
   csvRows = null;
   clearCard();
   document.getElementById('logoutButton').style.display   = 'none';
+  document.getElementById('darkModeToggle').style.display = 'none';
+  document.body.classList.remove('dark-mode');
   document.getElementById('dataFormButton').style.display = 'none';
   document.getElementById('tab-row').style.display        = 'none';
   document.getElementById('inline-search-panel').style.display = 'none';
