@@ -1279,6 +1279,10 @@ function deepSearchInline() {
   const doSearch = (rows) => {
     const results = [];
     rows.slice(1).forEach(r => {
+      // Exclude job-ended employees
+      const jobEndedVal = (r[COL.jobEnded] || '').trim();
+      if (jobEndedVal !== '' && jobEndedVal !== '—') return;
+
       const matchedCols = [];
       DS_ALL_COLS.forEach(col => {
         const cell = (r[col.idx] || '').toLowerCase();
@@ -1353,22 +1357,23 @@ function printDeepSearch() {
   const wrap = area.querySelector('.ds-wrap');
   if (!wrap) { alert('No results to print.'); return; }
 
-  const win = window.open('', '_blank', 'width=900,height=700');
+  const win = window.open('', '_blank', 'width=1000,height=750');
   win.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8">
 <title>Deep Search — Nour Energy</title>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: Calibri, sans-serif; font-size: 12px; padding: 18px; }
-  .ds-header { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
-  .ds-header img { height: 48px; }
-  .ds-header span { font-size: 15px; font-weight: 700; color: #1a5276; }
-  table { width: 100%; border-collapse: collapse; }
-  th { background: #1a5276; color: #fff; padding: 7px 10px; text-align: left; font-size: 12px; }
-  td { padding: 6px 10px; border-bottom: 1px solid #e0e0e0; font-size: 12px; }
-  tr:nth-child(even) td { background: #f5f8fa; }
-  .ds-match { background: #fef9e7 !important; font-weight: 700; color: #7d6608; }
-  .card-footer { margin-top: 14px; font-size: 11px; color: #888; text-align: right; }
-  button { display: none; }
+  body { font-family: Calibri, sans-serif; font-size: 12px; padding: 20px; }
+  .ds-header { display:flex; align-items:center; gap:14px; margin-bottom:14px; padding-bottom:10px; border-bottom:2px solid #d5e8f5; }
+  .ds-header img { height:52px; width:auto; }
+  .ds-header span { font-size:16px; font-weight:700; color:#1a5276; }
+  .ds-tbl { width:100%; border-collapse:collapse; font-size:12px; }
+  .ds-tbl th { background:#1a5276; color:#fff; padding:7px 10px; text-align:left; font-size:12px; font-weight:700; print-color-adjust:exact; -webkit-print-color-adjust:exact; }
+  .ds-tbl td { border:1px solid #c8d8e8; padding:6px 10px; vertical-align:middle; }
+  .ds-tbl tr:nth-child(even) td { background:#f7fbff; }
+  .ds-match { background:#fef9e7 !important; font-weight:700; color:#1a5276; }
+  .ds-count { font-size:11px; color:#888; margin-top:8px; text-align:right; }
+  .card-footer { margin-top:14px; font-size:11px; color:#888; text-align:right; border-top:1px solid #eee; padding-top:6px; }
+  button { display:none !important; }
 </style>
 </head><body>${wrap.innerHTML}</body></html>`);
   win.document.close();
