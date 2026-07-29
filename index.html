@@ -838,6 +838,7 @@ html, body { margin: 0; padding: 0; font-family: 'Calibri', sans-serif; backgrou
       <!-- Tab row — below buttons, admin only -->
       <div id="tab-row" style="display:none;">
         <button class="inline-tab active" id="itab-dashboard" onclick="switchToTab('dashboard')">📊 Dashboard</button>
+        <button class="inline-tab" id="itab-deepsearch" onclick="switchToTab('deepsearch')">🔍 Deep Search</button>
         <button class="inline-tab" id="itab-lists" onclick="switchToTab('lists')">📋 Smart Lists</button>
       </div>
     </div>
@@ -853,6 +854,13 @@ html, body { margin: 0; padding: 0; font-family: 'Calibri', sans-serif; backgrou
     <div id="ipane-dashboard" class="ipane">
       <div id="dash-content">
         <p style="text-align:center;color:#888;padding:30px 0;">Loading dashboard…</p>
+      </div>
+    </div>
+
+    <!-- Deep Search pane -->
+    <div id="ipane-deepsearch" class="ipane" style="display:none;">
+      <div id="ds-result-area">
+        <p style="text-align:center;color:#888;padding:30px 0;">Type in the search box above and click <strong>🔍 Deep Search</strong> to search all employee data.</p>
       </div>
     </div>
 
@@ -1244,6 +1252,87 @@ function deepSearch() {
       .catch(err => {
         document.getElementById('card-area').innerHTML =
           `<p style="text-align:center;color:#c0392b;padding:40px 0;">Failed to load data — ${err.message}</p>`;
+      });
+  }
+}
+
+/* ─── Deep Search — inline pane version ─── */
+function deepSearchInline() {
+  const query = document.getElementById('employeeNumber').value.trim().toLowerCase();
+  const area  = document.getElementById('ds-result-area');
+  if (!area) return;
+  if (!query) {
+    area.innerHTML = '<p style="text-align:center;color:#888;padding:30px 0;">Type in the search box above and click <strong>🔍 Deep Search</strong>.</p>';
+    return;
+  }
+
+  area.innerHTML = '<p style="text-align:center;color:#888;padding:30px 0;">Searching…</p>';
+
+  const doSearch = (rows) => {
+    const results = [];
+    rows.slice(1).forEach(r => {
+      const matchedCols = [];
+      DS_ALL_COLS.forEach(col => {
+        const cell = (r[col.idx] || '').toLowerCase();
+        if (cell.includes(query)) matchedCols.push(col);
+      });
+      if (matchedCols.length > 0) results.push({ r, matchedCols });
+    });
+
+    if (results.length === 0) {
+      area.innerHTML = `<p style="text-align:center;color:#c0392b;padding:40px 0;font-size:15px;">No results found for "<strong>${escHtml(query)}</strong>".</p>`;
+      return;
+    }
+
+    // Determine extra columns based on matched data
+    const extraColKeys = new Set();
+    results.forEach(({ matchedCols }) => {
+      matchedCols.forEach(col => {
+        if (!DS_FIXED_IDX.has(col.idx)) extraColKeys.add(col.key);
+      });
+    });
+    const extraCols = DS_ALL_COLS.filter(c => extraColKeys.has(c.key));
+
+    let html = `<div class="ds-wrap">`;
+    html += `<div class="ds-header">
+      <img src="nour_energy_logo.png" alt="Logo" onerror="this.style.display='none'">
+      <span>Deep Search — "<em>${escHtml(query)}</em>" &nbsp;·&nbsp; ${results.length} record${results.length !== 1 ? 's' : ''} found</span>
+    </div>`;
+
+    html += `<table class="ds-tbl"><thead><tr>`;
+    DS_FIXED.forEach(c  => { html += `<th>${c.label}</th>`; });
+    extraCols.forEach(c => { html += `<th>${c.label}</th>`; });
+    html += `</tr></thead><tbody>`;
+
+    results.forEach(({ r, matchedCols }) => {
+      const matchedIdxSet = new Set(matchedCols.map(c => c.idx));
+      html += `<tr onclick="loadCardByEmpNum('${(r[COL.empNum]||'').trim().replace(/'/g,"\\'")}')">`;
+      DS_FIXED.forEach(c => {
+        const val = v(r[c.idx]);
+        const hi  = matchedIdxSet.has(c.idx) ? ' ds-match' : '';
+        html += `<td class="${hi}">${c.idx === COL.name ? rtlWrap(val) : val}</td>`;
+      });
+      extraCols.forEach(c => {
+        const val = v(r[c.idx]);
+        const hi  = matchedIdxSet.has(c.idx) ? ' ds-match' : '';
+        html += `<td class="${hi}">${val}</td>`;
+      });
+      html += `</tr>`;
+    });
+
+    html += `</tbody></table>`;
+    html += `<div class="card-footer">Searched: ${todayStr()} &nbsp;·&nbsp; Created by: Qasim</div>`;
+    html += `</div>`;
+    area.innerHTML = html;
+  };
+
+  if (csvRows) {
+    doSearch(csvRows);
+  } else {
+    loadSheetRows()
+      .then(rows => { csvRows = rows; doSearch(rows); })
+      .catch(err => {
+        area.innerHTML = `<p style="text-align:center;color:#c0392b;padding:40px 0;">Failed to load data — ${err.message}</p>`;
       });
   }
 }
@@ -2334,16 +2423,18 @@ function switchToTab(tab) {
   const activeId = activeTab ? activeTab.id : '';
 
   // If same tab clicked while open → close panel
-  if (isOpen && ((tab === 'dashboard' && activeId === 'itab-dashboard') ||
-                 (tab === 'lists'     && activeId === 'itab-lists'))) {
+  if (isOpen && ((tab === 'dashboard'  && activeId === 'itab-dashboard')  ||
+                 (tab === 'deepsearch' && activeId === 'itab-deepsearch') ||
+                 (tab === 'lists'      && activeId === 'itab-lists'))) {
     panel.style.display = 'none';
     document.querySelectorAll('.inline-tab').forEach(b => b.classList.remove('active'));
     return;
   }
 
   // Hide all panes, deactivate all tabs
-  document.getElementById('ipane-dashboard').style.display = 'none';
-  document.getElementById('ipane-lists').style.display     = 'none';
+  document.getElementById('ipane-dashboard').style.display   = 'none';
+  document.getElementById('ipane-deepsearch').style.display  = 'none';
+  document.getElementById('ipane-lists').style.display       = 'none';
   document.querySelectorAll('.inline-tab').forEach(b => b.classList.remove('active'));
 
   // Show panel + selected pane
@@ -2352,6 +2443,12 @@ function switchToTab(tab) {
     document.getElementById('ipane-dashboard').style.display = 'block';
     document.getElementById('itab-dashboard').classList.add('active');
     buildDashboard();
+  } else if (tab === 'deepsearch') {
+    document.getElementById('ipane-deepsearch').style.display = 'block';
+    document.getElementById('itab-deepsearch').classList.add('active');
+    // Auto-run search if query already typed
+    const q = document.getElementById('employeeNumber').value.trim();
+    if (q) deepSearchInline();
   } else {
     document.getElementById('ipane-lists').style.display = 'block';
     document.getElementById('itab-lists').classList.add('active');
@@ -2562,9 +2659,18 @@ document.addEventListener('DOMContentLoaded', function() {
   const pwInput = document.getElementById('pw-input');
   if (pwInput) setTimeout(() => pwInput.focus(), 100);
 
-  // Top search box — always employee card search
+  // Top search box — employee card search OR deep search depending on active tab
   const topInput = document.getElementById('employeeNumber');
-  if (topInput) topInput.addEventListener('keyup', e => { if (e.key === 'Enter') searchEmployee(); });
+  if (topInput) topInput.addEventListener('keyup', e => {
+    if (e.key === 'Enter') {
+      const activeTab = document.querySelector('.inline-tab.active');
+      if (activeTab && activeTab.id === 'itab-deepsearch') {
+        deepSearchInline();
+      } else {
+        searchEmployee();
+      }
+    }
+  });
 
   // Deep search own input enter key
   const dsi = document.getElementById('isl-deep-input');
