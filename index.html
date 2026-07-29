@@ -365,31 +365,83 @@ html, body { margin: 0; padding: 0; font-family: 'Calibri', sans-serif; backgrou
 @media print { #darkModeToggle { display: none !important; } }
 
 /* ── Dark Mode Styles ── */
-body.dark-mode { background: #1a1a2e; color: #e0e0e0; }
+body.dark-mode { background: #1a1a2e !important; color: #e0e0e0 !important; }
 body.dark-mode #app-shell { color: #e0e0e0; }
 body.dark-mode #top-bar-left h1 { color: #7fb3d3; }
-body.dark-mode #employeeNumber { background: #2c2c3e; color: #e0e0e0; border-color: #444; }
+
+/* Search box */
+body.dark-mode #employeeNumber { background: #2c2c3e !important; color: #e0e0e0 !important; border-color: #555 !important; }
 body.dark-mode #employeeNumber::placeholder { color: #888; }
-body.dark-mode #inline-search-panel { background: #22223b; box-shadow: 0 3px 18px rgba(0,0,0,0.4); }
-body.dark-mode .sl-section-hdr { background: #16213e; color: #a8c8e8; }
-body.dark-mode #isl-col-picks label { color: #ccc; }
-body.dark-mode .ds-tbl th { background: #16213e; }
-body.dark-mode .ds-tbl td { border-color: #3a3a5c; color: #ddd; }
-body.dark-mode .ds-tbl tr:nth-child(even) td { background: #2a2a4a; }
-body.dark-mode .ds-tbl tr:hover td { background: #333355; }
-body.dark-mode .ds-header { border-bottom-color: #3a3a5c; }
-body.dark-mode .ds-header span { color: #7fb3d3; }
-body.dark-mode .card-footer { color: #888; }
-body.dark-mode .ds-count { color: #888; }
-body.dark-mode select, body.dark-mode input[type=text], body.dark-mode input[type=number] { background: #2c2c3e; color: #e0e0e0; border-color: #444; }
-body.dark-mode #top-bar-right img { filter: brightness(0.8); }
-body.dark-mode .dash-kpi { background: #22223b; border-color: #3a3a5c; }
-body.dark-mode .dash-kpi-val { color: #7fb3d3; }
-body.dark-mode .dash-kpi-lbl { color: #aaa; }
-body.dark-mode #card-area { color: #ddd; }
-body.dark-mode .card-section-hdr { background: #16213e; color: #a8c8e8; }
-body.dark-mode .card-field-label { color: #aaa; }
-body.dark-mode .ifl-filter-grid label { color: #ccc; }
+
+/* All input/select fields */
+body.dark-mode input[type=text], body.dark-mode input[type=number], body.dark-mode select {
+  background: #2c2c3e !important; color: #e0e0e0 !important; border-color: #555 !important;
+}
+
+/* Main result/card white panel */
+body.dark-mode #card-area { background: #22223b !important; color: #ddd !important; border-radius: 10px; }
+body.dark-mode #card-area > div { background: #22223b !important; }
+
+/* Employee card */
+body.dark-mode .card { background: #22223b !important; }
+body.dark-mode .card-hdr { border-bottom-color: #3a3a5c !important; }
+body.dark-mode .emp-name { color: #7fb3d3 !important; }
+body.dark-mode .emp-num { color: #aaa !important; }
+body.dark-mode .sec-hdr { background: #16213e !important; color: #a8c8e8 !important; }
+body.dark-mode .dtbl td { border-color: #3a3a5c !important; color: #ddd !important; background: #22223b !important; }
+body.dark-mode .dtbl .lbl-cell { color: #aaa !important; background: #1e1e35 !important; }
+body.dark-mode .dtbl tr:nth-child(even) td { background: #2a2a4a !important; }
+body.dark-mode .alerts-block { background: #1e1e35 !important; border-color: #3a3a5c !important; }
+body.dark-mode .alert-item { color: #ccc !important; }
+
+/* Inline search panel */
+body.dark-mode #inline-search-panel { background: #22223b !important; box-shadow: 0 3px 18px rgba(0,0,0,0.5) !important; }
+
+/* Section headers */
+body.dark-mode .sl-section-hdr { background: #16213e !important; color: #a8c8e8 !important; }
+
+/* Checkboxes labels */
+body.dark-mode #isl-col-picks label { color: #ccc !important; }
+
+/* Filter labels */
+body.dark-mode #isl-filter-grid label, body.dark-mode #isl-filter-grid div { color: #ccc !important; }
+
+/* Tables (Smart Lists + Deep Search) */
+body.dark-mode .ds-tbl { background: #22223b !important; }
+body.dark-mode .ds-tbl th { background: #16213e !important; color: #a8c8e8 !important; }
+body.dark-mode .ds-tbl td { background: #22223b !important; border-color: #3a3a5c !important; color: #ddd !important; }
+body.dark-mode .ds-tbl tr:nth-child(even) td { background: #2a2a4a !important; }
+body.dark-mode .ds-tbl tr:hover td { background: #333366 !important; cursor: pointer; }
+body.dark-mode .ds-match { background: #3d3000 !important; color: #ffd966 !important; font-weight: 700; }
+
+/* ds-wrap result container */
+body.dark-mode .ds-wrap { background: #22223b !important; border-radius: 8px; padding: 4px; }
+body.dark-mode .ds-header { border-bottom-color: #3a3a5c !important; }
+body.dark-mode .ds-header span { color: #7fb3d3 !important; }
+body.dark-mode .ds-count { color: #888 !important; }
+body.dark-mode .card-footer { color: #666 !important; }
+
+/* Deep search result area */
+body.dark-mode #ds-result-area { background: #22223b !important; border-radius: 8px; padding: 8px; }
+body.dark-mode #isl-list-result { background: #22223b !important; border-radius: 8px; }
+
+/* Dashboard KPI cards */
+body.dark-mode .dash-card { background: #22223b !important; border-left-color: #3a3a5c !important; color: #ddd !important; }
+body.dark-mode .dash-card.green  { background: #1a2e20 !important; color: #6dbe8d !important; border-left-color: #27ae60 !important; }
+body.dark-mode .dash-card.orange { background: #2e1f0a !important; color: #e8965a !important; border-left-color: #e67e22 !important; }
+body.dark-mode .dash-card.red    { background: #2e0f0f !important; color: #e07070 !important; border-left-color: #e74c3c !important; }
+body.dark-mode .dash-card .dash-num { color: inherit !important; }
+body.dark-mode .dash-card .dash-lbl { color: inherit !important; opacity: 0.85; }
+
+/* Dashboard alert tables */
+body.dark-mode .dash-alert-box { background: #22223b !important; border-color: #3a3a5c !important; }
+body.dark-mode .dash-alert-col .dash-col-hdr { background: #16213e !important; color: #a8c8e8 !important; }
+body.dark-mode .dash-alert-tbl td { color: #ddd !important; border-color: #3a3a5c !important; }
+body.dark-mode .dash-alert-tbl tr:nth-child(even) td { background: #2a2a4a !important; }
+body.dark-mode #dash-content { background: #22223b !important; border-radius: 8px; padding: 4px; }
+
+/* Logo */
+body.dark-mode #top-bar-right img { filter: brightness(0.75) !important; }
 #pw-overlay {
   position: fixed; inset: 0;
   background: rgba(15,30,50,0.72);
