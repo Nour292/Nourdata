@@ -1106,6 +1106,8 @@ function unlockApp() {
   document.getElementById('tab-row').style.display        = isAdmin ? 'flex'  : 'none';
   document.getElementById('inline-search-panel').style.display = 'none';
   document.getElementById('employeeNumber').focus();
+  // Auto-open dashboard for admin
+  if (isAdmin) switchToTab('dashboard');
 }
 
 /* ─── Logout ─── */
@@ -1303,6 +1305,7 @@ function deepSearchInline() {
     html += `<div class="ds-header">
       <img src="nour_energy_logo.png" alt="Logo" onerror="this.style.display='none'">
       <span>Deep Search — "<em>${escHtml(query)}</em>" &nbsp;·&nbsp; ${results.length} record${results.length !== 1 ? 's' : ''} found</span>
+      <button onclick="window.print()" style="margin-left:auto;padding:5px 14px;background:#6c3483;color:#fff;border:none;border-radius:5px;font-size:13px;font-weight:700;cursor:pointer;">🖨 Print</button>
     </div>`;
 
     html += `<table class="ds-tbl"><thead><tr>`;
