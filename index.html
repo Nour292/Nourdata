@@ -880,7 +880,6 @@ html, body { margin: 0; padding: 0; font-family: 'Calibri', sans-serif; backgrou
         <span>
           <button class="sl-col-ctrl" onclick="setAllCols(true)">✅ Select All</button>
           <button class="sl-col-ctrl" onclick="setAllCols(false)">☐ Clear All</button>
-          <button class="sl-col-ctrl" onclick="printInlineResult('list')" style="background:#117a65;color:#fff;border-color:#117a65;">🖨 Print</button>
         </span>
       </div>
       <div id="isl-col-picks">
@@ -978,6 +977,7 @@ html, body { margin: 0; padding: 0; font-family: 'Calibri', sans-serif; backgrou
         <button id="isl-run-btn" onclick="runInlineCombinedFilter()">▶ Generate List</button>
         <button onclick="resetInlineFilter()">↺ Reset</button>
         <span id="isl-count-badge"></span>
+        <button onclick="printInlineResult('list')" style="margin-left:auto;padding:9px 22px;font-size:14px;font-weight:bold;background:#117a65;color:#fff;border:none;border-radius:6px;cursor:pointer;">🖨 Print</button>
       </div>
 
       <div id="isl-list-result"></div>
