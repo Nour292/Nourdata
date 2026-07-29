@@ -119,11 +119,18 @@ html, body { margin: 0; padding: 0; font-family: 'Calibri', sans-serif; backgrou
   font-size: 15px;
   font-weight: 700;
   border: none;
-  background: #1a5276;
-  color: #fff;
   cursor: pointer;
+  color: #fff;
+  opacity: 0.72;
+  transition: opacity 0.15s, filter 0.15s;
 }
-.inline-tab:hover { background: #154360; }
+.inline-tab:hover { opacity: 1; filter: brightness(1.12); }
+.inline-tab.active { opacity: 1; box-shadow: inset 0 -3px 0 rgba(255,255,255,0.55); }
+
+/* Per-tab colors */
+#itab-dashboard   { background: #1a5276; }   /* deep navy */
+#itab-deepsearch  { background: #6c3483; }   /* rich purple */
+#itab-lists       { background: #117a65; }   /* forest green */
 
 /* ── Inline Search Panel ── */
 #inline-search-panel {
@@ -1154,7 +1161,6 @@ const DS_ALL_COLS = [
   { key: 'status',      label: 'Status',           idx: 28 },
   { key: 'serviceEnded', label: 'Service Ended',      idx: 42 },
   { key: 'iban',         label: 'IBAN',               idx: 43 },
-  { key: 'email',        label: 'Email',              idx: 44 },
 ];
 
 // Fixed columns always shown (if match is one of these, no extra column added)
