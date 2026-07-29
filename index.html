@@ -1222,6 +1222,14 @@ function unlockApp() {
   document.getElementById('tab-row').style.display        = isAdmin ? 'flex'  : 'none';
   document.getElementById('inline-search-panel').style.display = 'none';
   document.getElementById('employeeNumber').focus();
+  // Save session with timestamp (1 hour expiry)
+  sessionStorage.setItem('nd_access', currentAccessLevel);
+  sessionStorage.setItem('nd_login_time', Date.now().toString());
+  // Auto-logout after 1 hour
+  setTimeout(() => {
+    alert('Your session has expired. Please log in again.');
+    logout();
+  }, 60 * 60 * 1000);
   // Auto-open dashboard for admin
   if (isAdmin) switchToTab('dashboard');
 }
@@ -1239,6 +1247,8 @@ function logout() {
   currentAccessLevel = 'none';
   csvRows = null;
   clearCard();
+  sessionStorage.removeItem('nd_access');
+  sessionStorage.removeItem('nd_login_time');
   document.getElementById('logoutButton').style.display   = 'none';
   document.getElementById('darkModeToggle').style.display = 'none';
   document.body.classList.remove('dark-mode');
@@ -2825,9 +2835,28 @@ function populateFilterDropdowns(rows) {
 
 
 document.addEventListener('DOMContentLoaded', function() {
-  // Auto-focus password box on load
+  // ── Session restore (survives refresh, expires after 1 hour) ──
+  const SESSION_MS = 60 * 60 * 1000; // 1 hour
+  const savedAccess = sessionStorage.getItem('nd_access');
+  const savedTime   = parseInt(sessionStorage.getItem('nd_login_time') || '0');
+  if (savedAccess && savedAccess !== 'none' && (Date.now() - savedTime) < SESSION_MS) {
+    currentAccessLevel = savedAccess;
+    unlockApp();
+    // Schedule auto-logout for remaining time
+    const remaining = SESSION_MS - (Date.now() - savedTime);
+    setTimeout(() => {
+      alert('Your session has expired. Please log in again.');
+      logout();
+    }, remaining);
+  } else {
+    // Clear any stale session
+    sessionStorage.removeItem('nd_access');
+    sessionStorage.removeItem('nd_login_time');
+  }
+
+  // Auto-focus password box on load (only if not already logged in)
   const pwInput = document.getElementById('pw-input');
-  if (pwInput) setTimeout(() => pwInput.focus(), 100);
+  if (pwInput && currentAccessLevel === 'none') setTimeout(() => pwInput.focus(), 100);
 
   // Top search box — employee card search OR deep search depending on active tab
   const topInput = document.getElementById('employeeNumber');
