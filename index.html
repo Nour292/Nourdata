@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8">
 <title>Nour Energy Data</title>
-<link rel="icon" href="nour_energy_logo.png" type="image/png">
+<link rel="icon" href="https://nour292.github.io/Nourdata/nour_energy_logo.png" type="image/png">
 <style>
 /* ── Reset & Base ── */
 *, *::before, *::after { box-sizing: border-box; }
@@ -932,7 +932,7 @@ body.dark-mode #top-bar-right img { filter: brightness(0.75) !important; }
 <!-- ── Password Overlay ── -->
 <div id="pw-overlay">
   <div id="pw-box">
-    <img src="nour_energy_logo.png" alt="Nour Energy" onerror="this.style.display='none'">
+    <img src="https://nour292.github.io/Nourdata/nour_energy_logo.png" alt="Nour Energy" onerror="this.style.display='none'">
     <h2>Nour Energy Data</h2>
     <p>Enter your password to access</p>
     <input type="password" id="pw-input" placeholder="Employee Number" autocomplete="off">
@@ -967,7 +967,7 @@ body.dark-mode #top-bar-right img { filter: brightness(0.75) !important; }
       </div>
     </div>
     <div id="top-bar-right">
-      <img src="nour_energy_logo.png" alt="Nour Energy Logo">
+      <img src="https://nour292.github.io/Nourdata/nour_energy_logo.png" alt="Nour Energy Logo">
     </div>
   </div>
 
@@ -1352,7 +1352,7 @@ function deepSearch() {
 
     // Header: logo left + title
     html += `<div class="ds-header">
-      <img src="nour_energy_logo.png" alt="Logo" onerror="this.style.display='none'">
+      <img src="https://nour292.github.io/Nourdata/nour_energy_logo.png" alt="Logo" onerror="this.style.display='none'">
       <span>Deep Search — "<em>${escHtml(query)}</em>" &nbsp;·&nbsp; ${results.length} record${results.length !== 1 ? 's' : ''} found</span>
     </div>`;
 
@@ -1443,7 +1443,7 @@ function deepSearchInline() {
 
     let html = `<div class="ds-wrap">`;
     html += `<div class="ds-header">
-      <img src="nour_energy_logo.png" alt="Logo" onerror="this.style.display='none'">
+      <img src="https://nour292.github.io/Nourdata/nour_energy_logo.png" alt="Logo" onerror="this.style.display='none'">
       <span>Deep Search — "<em>${escHtml(query)}</em>" &nbsp;·&nbsp; ${results.length} record${results.length !== 1 ? 's' : ''} found</span>
       <button onclick="printDeepSearch()" style="margin-left:auto;padding:5px 14px;background:#6c3483;color:#fff;border:none;border-radius:5px;font-size:13px;font-weight:700;cursor:pointer;">🖨 Print</button>
     </div>`;
@@ -1634,7 +1634,7 @@ function renderCard(cells, accessLevel) {
   /* ── Header ── */
   let html = `<div class="card">`;
   html += `<div class="card-hdr">
-    <img src="nour_energy_logo.png" alt="Logo" onerror="this.style.display='none'">
+    <img src="https://nour292.github.io/Nourdata/nour_energy_logo.png" alt="Logo" onerror="this.style.display='none'">
     <div class="card-hdr-text">
       <p class="emp-name">${rtlWrap(v(name))}${isEnded ? `<span class="job-ended-badge">JOB ENDED</span>` : ''}</p>
       <p class="emp-num">${v(empNum)}</p>
@@ -1811,7 +1811,7 @@ function searchEmployee() {
   <div id="df-modal">
 
     <div id="df-header">
-      <img src="nour_energy_logo.png" alt="Logo" onerror="this.style.display='none'">
+      <img src="https://nour292.github.io/Nourdata/nour_energy_logo.png" alt="Logo" onerror="this.style.display='none'">
       <span>Employee Data Form</span>
       <button id="df-close" onclick="closeDataForm()">✕</button>
     </div>
@@ -2120,7 +2120,7 @@ async function submitForm() {
   <div id="sl-modal">
 
     <div id="sl-header">
-      <img src="nour_energy_logo.png" alt="Logo" onerror="this.style.display='none'">
+      <img src="https://nour292.github.io/Nourdata/nour_energy_logo.png" alt="Logo" onerror="this.style.display='none'">
       <span>Search & Lists</span>
       <button id="sl-close" onclick="closeSearchPanel()">✕</button>
     </div>
@@ -2370,7 +2370,7 @@ function buildResultTable(rows, extraCols, title) {
 
   let html = `<div class="ds-wrap">`;
   html += `<div class="ds-header">
-    <img src="nour_energy_logo.png" alt="Logo" onerror="this.style.display='none'">
+    <img src="https://nour292.github.io/Nourdata/nour_energy_logo.png" alt="Logo" onerror="this.style.display='none'">
     <span>${title} &nbsp;·&nbsp; ${rows.length} record${rows.length !== 1 ? 's' : ''}</span>
   </div>`;
   html += `<table class="ds-tbl"><thead><tr>
@@ -2420,7 +2420,7 @@ function runDeepSearch() {
 
     let html = `<div class="ds-wrap">`;
     html += `<div class="ds-header">
-      <img src="nour_energy_logo.png" alt="Logo" onerror="this.style.display='none'">
+      <img src="https://nour292.github.io/Nourdata/nour_energy_logo.png" alt="Logo" onerror="this.style.display='none'">
       <span>Deep Search — "<em>${escHtml(query)}</em>" &nbsp;·&nbsp; ${results.length} record${results.length !== 1 ? 's' : ''}</span>
     </div>`;
     html += `<table class="ds-tbl"><thead><tr>`;
@@ -2909,7 +2909,7 @@ function runInlineDeepSearch() {
     results.forEach(({ matchedCols }) => matchedCols.forEach(col => { if (!DS_FIXED_IDX.has(col.idx)) extraColKeys.add(col.key); }));
     const extraCols = DS_ALL_COLS.filter(c => extraColKeys.has(c.key));
     let html = `<div class="ds-wrap"><div class="ds-header">
-      <img src="nour_energy_logo.png" alt="Logo" onerror="this.style.display='none'">
+      <img src="https://nour292.github.io/Nourdata/nour_energy_logo.png" alt="Logo" onerror="this.style.display='none'">
       <span>Deep Search — "<em>${escHtml(query)}</em>" · ${results.length} record${results.length!==1?'s':''}</span>
     </div><table class="ds-tbl"><thead><tr>`;
     DS_FIXED.forEach(c => { html += `<th>${c.label}</th>`; });
