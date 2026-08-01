@@ -4,194 +4,275 @@
 <head>
 <meta charset="UTF-8">
 <title>Nour Energy Data</title>
-<link rel="icon" href="nour_energy_logo.png" type="image/png">
+<link rel="icon" href="https://nour292.github.io/Nourdata/nour_energy_logo.png" type="image/png">
 <style>
 /* ── Reset & Base ── */
 *, *::before, *::after { box-sizing: border-box; }
-html, body { margin: 0; padding: 0; font-family: 'Calibri', sans-serif; background: #f0f4f8; direction: ltr; }
+html, body { margin: 0; padding: 0; font-family: 'Calibri', sans-serif; background: #f0f4f8; direction: ltr; height: 100%; }
 
-/* ── App Shell ── */
+/* ══════════════════════════════════════
+   SIDEBAR LAYOUT
+══════════════════════════════════════ */
+#layout {
+  display: flex;
+  min-height: 100vh;
+}
+
+/* ── Sidebar ── */
+#sidebar {
+  width: 240px;
+  min-width: 240px;
+  background: #1a2b3c;
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  position: fixed;
+  top: 0; left: 0; bottom: 0;
+  z-index: 200;
+  transition: width 0.25s cubic-bezier(.4,0,.2,1), min-width 0.25s;
+  overflow: hidden;
+}
+#sidebar.collapsed {
+  width: 56px;
+  min-width: 56px;
+}
+
+/* Sidebar header */
+#sb-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 16px 14px 14px;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  min-height: 64px;
+}
+#sb-logo {
+  width: 34px; height: 34px;
+  border-radius: 8px;
+  object-fit: contain;
+  flex-shrink: 0;
+  background: rgba(255,255,255,0.08);
+  padding: 2px;
+}
+#sb-title {
+  font-size: 14px; font-weight: 700;
+  color: #fff; white-space: nowrap;
+  opacity: 1; transition: opacity 0.2s;
+  line-height: 1.3;
+}
+#sb-title small { display: block; font-size: 11px; font-weight: 400; color: #8fa8c0; }
+#sidebar.collapsed #sb-title { opacity: 0; pointer-events: none; width: 0; }
+
+/* Toggle button */
+#sb-toggle {
+  position: fixed;
+  top: 18px;
+  left: 204px;
+  width: 28px; height: 28px;
+  background: #2e86c1;
+  border: none; border-radius: 50%;
+  color: #fff; font-size: 13px;
+  cursor: pointer; z-index: 300;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+  transition: left 0.25s cubic-bezier(.4,0,.2,1);
+}
+#sidebar.collapsed ~ #sb-toggle,
+body.sb-collapsed #sb-toggle { left: 42px; }
+
+/* Sidebar nav items */
+#sb-nav {
+  flex: 1;
+  padding: 10px 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+.sb-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 11px 16px;
+  cursor: pointer;
+  color: #b8cfe0;
+  font-size: 14px; font-weight: 600;
+  border: none; background: none;
+  width: 100%; text-align: left;
+  white-space: nowrap;
+  border-radius: 0;
+  transition: background 0.15s, color 0.15s;
+  position: relative;
+}
+.sb-item:hover { background: rgba(255,255,255,0.07); color: #fff; }
+.sb-item.active {
+  background: rgba(46,134,193,0.22);
+  color: #fff;
+  border-left: 3px solid #2e86c1;
+}
+.sb-item.active .sb-icon { color: #2e86c1; }
+.sb-icon { font-size: 18px; flex-shrink: 0; width: 24px; text-align: center; }
+.sb-label { opacity: 1; transition: opacity 0.2s; }
+#sidebar.collapsed .sb-label { opacity: 0; width: 0; overflow: hidden; }
+#sidebar.collapsed .sb-item { padding: 11px 0; justify-content: center; }
+
+/* Sidebar divider */
+.sb-divider { height: 1px; background: rgba(255,255,255,0.07); margin: 6px 12px; }
+
+/* Sidebar section label */
+.sb-section-label {
+  font-size: 10px; font-weight: 700; letter-spacing: 1.2px;
+  color: #5a7a9a; text-transform: uppercase;
+  padding: 12px 16px 4px;
+  white-space: nowrap;
+  transition: opacity 0.2s;
+}
+#sidebar.collapsed .sb-section-label { opacity: 0; }
+
+/* Sidebar footer */
+#sb-footer {
+  padding: 12px 10px;
+  border-top: 1px solid rgba(255,255,255,0.08);
+}
+#sb-logout {
+  display: flex; align-items: center; gap: 10px;
+  width: 100%; padding: 10px 12px;
+  background: rgba(231,76,60,0.15);
+  border: 1px solid rgba(231,76,60,0.3);
+  border-radius: 8px; color: #e74c3c;
+  font-size: 13px; font-weight: 700;
+  cursor: pointer; white-space: nowrap;
+  transition: background 0.15s;
+}
+#sb-logout:hover { background: rgba(231,76,60,0.28); }
+#sidebar.collapsed #sb-logout { justify-content: center; padding: 10px; }
+#sidebar.collapsed #sb-logout-label { display: none; }
+
+/* ── Main Content Area ── */
+#main-content {
+  margin-left: 240px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  transition: margin-left 0.25s cubic-bezier(.4,0,.2,1);
+  background: #f0f4f8;
+}
+body.sb-collapsed #main-content { margin-left: 56px; }
+
+/* ── Top Header Bar ── */
+#top-header {
+  background: #fff;
+  border-bottom: 1px solid #e0e8f0;
+  padding: 12px 24px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  position: sticky; top: 0; z-index: 100;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+}
+#page-title {
+  font-size: 18px; font-weight: 700;
+  color: #1a2b3c; margin: 0;
+  flex-shrink: 0;
+}
+#search-wrapper {
+  flex: 1;
+  position: relative;
+  max-width: 480px;
+}
+#search-wrapper::before {
+  content: '🔍';
+  position: absolute; left: 12px; top: 50%;
+  transform: translateY(-50%);
+  font-size: 14px; pointer-events: none;
+  color: #888;
+}
+#employeeNumber {
+  font-family: 'Calibri', sans-serif;
+  font-size: 15px;
+  padding: 9px 14px 9px 36px;
+  border: 1.5px solid #d0dce8;
+  border-radius: 8px;
+  width: 100%;
+  height: 40px;
+  background: #f7fafd;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+#employeeNumber:focus { border-color: #2e86c1; outline: none; box-shadow: 0 0 0 3px rgba(46,134,193,0.12); background: #fff; }
+#header-actions { display: flex; gap: 8px; align-items: center; margin-left: auto; }
+
+/* Header action buttons */
+.hdr-btn {
+  height: 36px; padding: 0 16px;
+  font-family: 'Calibri', sans-serif;
+  font-size: 13px; font-weight: 700;
+  border: none; border-radius: 8px;
+  cursor: pointer; white-space: nowrap;
+  display: flex; align-items: center; gap: 6px;
+  transition: filter 0.15s, transform 0.1s;
+}
+.hdr-btn:hover { filter: brightness(1.1); }
+.hdr-btn:active { transform: scale(0.97); }
+#searchButton  { background: #2e86c1; color: #fff; }
+#printButton   { background: #f9e400; color: #1a1a1a; }
+#clearButton   { background: #e74c3c; color: #fff; }
+#dataFormButton { background: #117a65; color: #fff; display: none; }
+#darkModeToggle { background: #2c3e50; color: #fff; }
+
+/* ── Page Body ── */
+#page-body {
+  padding: 24px;
+  flex: 1;
+}
+
+/* ── App Shell (legacy wrapper — keep for inner panels) ── */
 @media screen {
   #app-shell {
     width: 100%;
-    max-width: 940px;
-    margin: 28px auto 40px;
-    padding: 0 16px;
+    max-width: 100%;
+    margin: 0;
+    padding: 0;
     box-sizing: border-box;
   }
 }
 
-/* ── Top Bar ── */
-#top-bar {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: 22px;
-  gap: 20px;
-}
-#top-bar-left {
-  display: flex;
-  flex-direction: column;
-  flex: 1;
-  min-width: 0;
-}
-#top-bar-left h1 {
-  font-size: 26px;
-  color: #1a5276;
-  margin: 0 0 10px 0;
-  font-weight: 700;
-  letter-spacing: 0.3px;
-  line-height: 1.2;
-}
-#input-row {
-  width: 100%;
-  margin-bottom: 8px;
-}
-#employeeNumber {
-  font-family: 'Arial Black', sans-serif;
-  font-size: 18px;
-  padding: 10px 14px;
-  border: 2px solid #aaa;
-  border-radius: 6px;
-  width: 100%;
-  height: 46px;
-  box-sizing: border-box;
-}
-#btn-row {
-  display: flex;
-  gap: 10px;
-  width: 100%;
-}
-#btn-row button {
-  flex: 1;
-  height: 46px;
-  font-family: 'Calibri', sans-serif;
-  font-size: 17px;
-  font-weight: bold;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
+/* ── Card area ── */
+#card-area {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.07);
   padding: 0;
-  white-space: nowrap;
-}
-#searchButton { background: #2e86c1; color: #fff; }
-#searchButton:hover { background: #1a5276; }
-#deepSearchButton { background: #6c3483; color: #fff; }
-#deepSearchButton:hover { background: #512e5f; }
-#printButton  { background: #f9e400; color: #111; }
-#printButton:hover  { background: #e5d200; }
-#clearButton  { background: #e74c3c; color: #fff; }
-#clearButton:hover  { background: #c0392b; }
-
-/* ── Logo ──
-   Total left height = h1(~32px) + margin(10) + input(46) + margin(8) + buttons(46) = 142px */
-#top-bar-right {
-  flex-shrink: 0;
-  height: 142px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-#top-bar-right img {
-  height: 142px;
-  width: auto;
-  display: block;
-  object-fit: contain;
-}
-
-/* ── Add/Update Button ── */
-#dataFormButton { background: #117a65; color: #fff; }
-#dataFormButton:hover { background: #0e6655; }
-
-/* ── Inline Tab Row ── */
-#tab-row {
-  display: flex;
-  width: 100%;
-  margin-top: 8px;
-  border-radius: 6px;
   overflow: hidden;
-  border: 2px solid #1a5276;
 }
-.inline-tab {
-  flex: 1;
-  height: 40px;
-  font-family: 'Calibri', sans-serif;
+#card-area:empty, #card-area p {
+  padding: 40px;
+  text-align: center;
+  color: #aab;
   font-size: 15px;
-  font-weight: 700;
-  border: none;
-  cursor: pointer;
-  color: #fff;
-  opacity: 0.72;
-  transition: opacity 0.15s, filter 0.15s;
 }
-.inline-tab:hover { opacity: 1; filter: brightness(1.12); }
-.inline-tab.active { opacity: 1; box-shadow: inset 0 -3px 0 rgba(255,255,255,0.55); }
 
-/* Per-tab colors */
-#itab-dashboard   { background: #1a5276; }   /* deep navy */
-#itab-deepsearch  { background: #6c3483; }   /* rich purple */
-#itab-lists       { background: #117a65; }   /* forest green */
+/* Logout button — hide old one */
+#logoutButton { display: none !important; }
+
+/* ── Old top-bar hidden ── */
+#top-bar { display: none !important; }
+#tab-row-old { display: none !important; }
+
+/* ── New Tab Row (inside sidebar) ── */
+#tab-row {
+  display: none; /* shown via JS as sidebar items */
+}
 
 /* ── Inline Search Panel ── */
 #inline-search-panel {
   background: #fff;
-  border-radius: 0 0 10px 10px;
-  box-shadow: 0 3px 18px rgba(0,0,0,0.10);
-  padding: 18px 20px 20px;
-  margin-top: 0;
+  border-radius: 12px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+  padding: 20px 24px 24px;
+  margin-bottom: 20px;
   width: 100%;
   box-sizing: border-box;
-  margin-bottom: 16px;
 }
 .ipane { width: 100%; }
-#isl-ds-row { display: flex; gap: 10px; margin-bottom: 14px; }
-#isl-ds-input {
-  flex: 1; padding: 9px 14px; font-size: 15px;
-  border: 2px solid #aaa; border-radius: 6px;
-}
-#isl-deep-input {
-  flex: 1; padding: 9px 14px; font-size: 15px;
-  border: 2px solid #aaa; border-radius: 6px;
-  font-family: 'Calibri', sans-serif;
-}
-#isl-deep-input:focus { border-color: #2e86c1; outline: none; }
-#isl-ds-row button {
-  padding: 9px 22px; font-size: 15px; font-weight: bold;
-  background: #2e86c1; color: #fff; border: none;
-  border-radius: 6px; cursor: pointer;
-}
-#isl-ds-row button:hover { background: #1a5276; }
-#isl-quick-btns { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 4px; }
-#isl-quick-btns button {
-  padding: 7px 14px; font-size: 13px; font-weight: 600;
-  border: 1px solid #d5e8f5; border-radius: 5px;
-  background: #eaf2fb; color: #1a5276; cursor: pointer;
-}
-#isl-quick-btns button:hover { background: #2e86c1; color: #fff; }
-#isl-filter-grid { display: flex; flex-direction: column; gap: 8px; }
-#isl-col-picks { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px 10px; margin-bottom: 4px; }
-#isl-col-picks label { font-size: 13px; color: #333; cursor: pointer; display: flex; align-items: center; gap: 5px; white-space: nowrap; }
-#isl-filter-actions { display: flex; gap: 12px; margin-top: 14px; }
-#isl-filter-actions button {
-  padding: 9px 22px; font-size: 14px; font-weight: bold;
-  border: none; border-radius: 6px; cursor: pointer;
-}
-#isl-run-btn { background: #1a5276; color: #fff; }
-#isl-run-btn:hover { background: #154360; }
-#isl-filter-actions button:last-child { background: #e5e7e9; color: #333; }
-#isl-ds-result, #isl-list-result { margin-top: 14px; }
-.sl-col-ctrl {
-  font-size: 12px; font-weight: 600; padding: 3px 10px;
-  border: 1px solid #d5e8f5; border-radius: 4px;
-  background: #fff; color: #1a5276; cursor: pointer; margin-left: 6px;
-}
-.sl-col-ctrl:hover { background: #d5e8f5; }
-#isl-count-badge {
-  font-size: 13px; font-weight: 700; color: #117a65;
-  margin-left: 14px; vertical-align: middle;
-}
-@media screen { #inline-search-panel { width: 100%; } }
-@media print { #inline-search-panel, #tab-row { display: none !important; } }
 
 /* ── Data Form Modal ── */
 #df-overlay {
@@ -325,7 +406,7 @@ html, body { margin: 0; padding: 0; font-family: 'Calibri', sans-serif; backgrou
 @media print { #df-overlay { display: none !important; } }
 #logoutButton {
   position: fixed;
-  top: 20px;
+  top: 36px;
   right: 18px;
   z-index: 999;
   height: 36px;
@@ -346,7 +427,7 @@ html, body { margin: 0; padding: 0; font-family: 'Calibri', sans-serif; backgrou
 /* ── Dark Mode Toggle ── */
 #darkModeToggle {
   position: fixed;
-  top: 66px;
+  top: 82px;
   right: 18px;
   z-index: 999;
   height: 30px;
@@ -932,47 +1013,118 @@ body.dark-mode #top-bar-right img { filter: brightness(0.75) !important; }
 <!-- ── Password Overlay ── -->
 <div id="pw-overlay">
   <div id="pw-box">
-    <img src="nour_energy_logo.png" alt="Nour Energy" onerror="this.style.display='none'">
+    <img src="https://nour292.github.io/Nourdata/nour_energy_logo.png" alt="Nour Energy" onerror="this.style.display='none'">
     <h2>Nour Energy Data</h2>
     <p>Enter your password to access</p>
     <input type="password" id="pw-input" placeholder="Employee Number" autocomplete="off">
-    <button id="pw-submit" onclick="checkPassword();" >Login</button>
+    <button id="pw-submit" onclick="checkPassword();">Login</button>
     <div id="pw-error"></div>
   </div>
 </div>
 
-<button id="logoutButton" onclick="logout()">⏻ Logout</button>
-<button id="darkModeToggle" onclick="toggleDarkMode()">🌙 Dark</button>
+<!-- ── Sidebar Toggle Button ── -->
+<button id="sb-toggle" onclick="toggleSidebar()" title="Toggle Sidebar">&#9776;</button>
 
-<div id="app-shell">
+<!-- ── Layout ── -->
+<div id="layout">
 
-  <!-- Top Bar -->
-  <div id="top-bar">
-    <div id="top-bar-left">
-      <h1>Nour Energy Data</h1>
-      <div id="input-row">
+  <!-- SIDEBAR -->
+  <aside id="sidebar">
+    <div id="sb-header">
+      <img src="https://nour292.github.io/Nourdata/nour_energy_logo.png" alt="Logo" id="sb-logo">
+      <div id="sb-title">Nour Energy<small>HR Data System</small></div>
+    </div>
+
+    <nav id="sb-nav">
+      <div class="sb-section-label">Main</div>
+
+      <button class="sb-item active" id="snav-search" onclick="sidebarNav('search')">
+        <span class="sb-icon">🔎</span>
+        <span class="sb-label">Employee Search</span>
+      </button>
+
+      <button class="sb-item" id="snav-dashboard" onclick="sidebarNav('dashboard')" style="display:none;">
+        <span class="sb-icon">📊</span>
+        <span class="sb-label">Dashboard</span>
+      </button>
+
+      <button class="sb-item" id="snav-deepsearch" onclick="sidebarNav('deepsearch')" style="display:none;">
+        <span class="sb-icon">🔍</span>
+        <span class="sb-label">Deep Search</span>
+      </button>
+
+      <button class="sb-item" id="snav-lists" onclick="sidebarNav('lists')" style="display:none;">
+        <span class="sb-icon">📋</span>
+        <span class="sb-label">Smart Lists</span>
+      </button>
+
+      <div class="sb-divider"></div>
+      <div class="sb-section-label">Actions</div>
+
+      <button class="sb-item" id="snav-add" onclick="openDataForm()" style="display:none;">
+        <span class="sb-icon">➕</span>
+        <span class="sb-label">Add / Update</span>
+      </button>
+
+      <button class="sb-item" onclick="printCard()">
+        <span class="sb-icon">🖨</span>
+        <span class="sb-label">Print Card</span>
+      </button>
+
+      <button class="sb-item" onclick="toggleDarkMode()" id="sb-dark-btn">
+        <span class="sb-icon">🌙</span>
+        <span class="sb-label">Dark Mode</span>
+      </button>
+    </nav>
+
+    <div id="sb-footer">
+      <button id="sb-logout" onclick="logout()">
+        <span>⏻</span>
+        <span id="sb-logout-label">Logout</span>
+      </button>
+    </div>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <div id="main-content">
+
+    <!-- Top Header -->
+    <div id="top-header">
+      <h1 id="page-title">Employee Search</h1>
+      <div id="search-wrapper">
         <input type="text" id="employeeNumber" placeholder="Employee Number or ID No">
       </div>
-      <div id="btn-row">
-        <button id="searchButton" onclick="searchEmployee()">Search</button>
-        <button id="printButton" onclick="printCard()">Print</button>
-        <button id="clearButton" onclick="clearCard()">Clear Data</button>
-        <button id="dataFormButton" onclick="openDataForm()" style="display:none;">➕ Add / Update</button>
-      </div>
-      <!-- Tab row — below buttons, admin only -->
-      <div id="tab-row" style="display:none;">
-        <button class="inline-tab active" id="itab-dashboard" onclick="switchToTab('dashboard')">📊 Dashboard</button>
-        <button class="inline-tab" id="itab-deepsearch" onclick="switchToTab('deepsearch')">🔍 Deep Search</button>
-        <button class="inline-tab" id="itab-lists" onclick="switchToTab('lists')">📋 Smart Lists</button>
+      <div id="header-actions">
+        <button class="hdr-btn" id="searchButton" onclick="searchEmployee()">Search</button>
+        <button class="hdr-btn" id="clearButton" onclick="clearCard()">✕ Clear</button>
+        <button class="hdr-btn" id="dataFormButton" onclick="openDataForm()">➕ Add / Update</button>
       </div>
     </div>
-    <div id="top-bar-right">
-      <img src="nour_energy_logo.png" alt="Nour Energy Logo">
-    </div>
-  </div>
 
-  <!-- Inline Search Panel -->
-  <div id="inline-search-panel" style="display:none;">
+    <!-- Page Body -->
+    <div id="page-body">
+      <div id="app-shell">
+
+        <!-- Hidden legacy elements kept for JS compatibility -->
+        <div id="top-bar" style="display:none!important;">
+          <div id="top-bar-left">
+            <div id="input-row"></div>
+            <div id="btn-row">
+              <button id="printButton" onclick="printCard()" style="display:none;"></button>
+            </div>
+            <div id="tab-row" style="display:none;">
+              <button class="inline-tab active" id="itab-dashboard" onclick="switchToTab('dashboard')">📊 Dashboard</button>
+              <button class="inline-tab" id="itab-deepsearch" onclick="switchToTab('deepsearch')">🔍 Deep Search</button>
+              <button class="inline-tab" id="itab-lists" onclick="switchToTab('lists')">📋 Smart Lists</button>
+            </div>
+          </div>
+          <div id="top-bar-right"></div>
+        </div>
+        <button id="logoutButton" style="display:none!important;"></button>
+        <button id="darkModeToggle" style="display:none!important;"></button>
+
+        <!-- Inline Search Panel -->
+        <div id="inline-search-panel" style="display:none;">
 
     <!-- ── Dashboard Pane ── -->
     <div id="ipane-dashboard" class="ipane">
@@ -1215,11 +1367,15 @@ function unlockApp() {
   document.getElementById('pw-overlay').style.display = 'none';
   document.getElementById('pw-input').value = '';
   document.getElementById('pw-error').textContent = '';
-  document.getElementById('logoutButton').style.display = 'block';
-  document.getElementById('darkModeToggle').style.display = 'block';
   const isAdmin = currentAccessLevel === 'admin';
-  document.getElementById('dataFormButton').style.display = isAdmin ? 'block' : 'none';
-  document.getElementById('tab-row').style.display        = isAdmin ? 'flex'  : 'none';
+
+  // Show/hide admin-only sidebar items
+  ['snav-dashboard','snav-deepsearch','snav-lists','snav-add'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.style.display = isAdmin ? '' : 'none';
+  });
+  document.getElementById('dataFormButton').style.display = isAdmin ? '' : 'none';
+  document.getElementById('tab-row').style.display = 'none';
   document.getElementById('inline-search-panel').style.display = 'none';
   document.getElementById('employeeNumber').focus();
   // Save session with timestamp (1 hour expiry)
@@ -1231,7 +1387,7 @@ function unlockApp() {
     logout();
   }, 60 * 60 * 1000);
   // Auto-open dashboard for admin
-  if (isAdmin) switchToTab('dashboard');
+  if (isAdmin) sidebarNav('dashboard');
 }
 
 /* ─── Dark Mode ─── */
@@ -1249,12 +1405,20 @@ function logout() {
   clearCard();
   sessionStorage.removeItem('nd_access');
   sessionStorage.removeItem('nd_login_time');
-  document.getElementById('logoutButton').style.display   = 'none';
-  document.getElementById('darkModeToggle').style.display = 'none';
   document.body.classList.remove('dark-mode');
   document.getElementById('dataFormButton').style.display = 'none';
-  document.getElementById('tab-row').style.display        = 'none';
+  document.getElementById('tab-row').style.display = 'none';
   document.getElementById('inline-search-panel').style.display = 'none';
+  // Hide admin sidebar items
+  ['snav-dashboard','snav-deepsearch','snav-lists','snav-add'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.style.display = 'none';
+  });
+  // Reset active nav to search
+  document.querySelectorAll('.sb-item').forEach(b => b.classList.remove('active'));
+  const s = document.getElementById('snav-search');
+  if (s) s.classList.add('active');
+  document.getElementById('page-title').textContent = 'Employee Search';
   inlineCurrentTab = 'deep';
   document.getElementById('pw-overlay').style.display = 'flex';
   document.getElementById('pw-input').focus();
@@ -1352,7 +1516,7 @@ function deepSearch() {
 
     // Header: logo left + title
     html += `<div class="ds-header">
-      <img src="nour_energy_logo.png" alt="Logo" onerror="this.style.display='none'">
+      <img src="https://nour292.github.io/Nourdata/nour_energy_logo.png" alt="Logo" onerror="this.style.display='none'">
       <span>Deep Search — "<em>${escHtml(query)}</em>" &nbsp;·&nbsp; ${results.length} record${results.length !== 1 ? 's' : ''} found</span>
     </div>`;
 
@@ -1443,7 +1607,7 @@ function deepSearchInline() {
 
     let html = `<div class="ds-wrap">`;
     html += `<div class="ds-header">
-      <img src="nour_energy_logo.png" alt="Logo" onerror="this.style.display='none'">
+      <img src="https://nour292.github.io/Nourdata/nour_energy_logo.png" alt="Logo" onerror="this.style.display='none'">
       <span>Deep Search — "<em>${escHtml(query)}</em>" &nbsp;·&nbsp; ${results.length} record${results.length !== 1 ? 's' : ''} found</span>
       <button onclick="printDeepSearch()" style="margin-left:auto;padding:5px 14px;background:#6c3483;color:#fff;border:none;border-radius:5px;font-size:13px;font-weight:700;cursor:pointer;">🖨 Print</button>
     </div>`;
@@ -1634,7 +1798,7 @@ function renderCard(cells, accessLevel) {
   /* ── Header ── */
   let html = `<div class="card">`;
   html += `<div class="card-hdr">
-    <img src="nour_energy_logo.png" alt="Logo" onerror="this.style.display='none'">
+    <img src="https://nour292.github.io/Nourdata/nour_energy_logo.png" alt="Logo" onerror="this.style.display='none'">
     <div class="card-hdr-text">
       <p class="emp-name">${rtlWrap(v(name))}${isEnded ? `<span class="job-ended-badge">JOB ENDED</span>` : ''}</p>
       <p class="emp-num">${v(empNum)}</p>
@@ -1811,7 +1975,7 @@ function searchEmployee() {
   <div id="df-modal">
 
     <div id="df-header">
-      <img src="nour_energy_logo.png" alt="Logo" onerror="this.style.display='none'">
+      <img src="https://nour292.github.io/Nourdata/nour_energy_logo.png" alt="Logo" onerror="this.style.display='none'">
       <span>Employee Data Form</span>
       <button id="df-close" onclick="closeDataForm()">✕</button>
     </div>
@@ -2120,7 +2284,7 @@ async function submitForm() {
   <div id="sl-modal">
 
     <div id="sl-header">
-      <img src="nour_energy_logo.png" alt="Logo" onerror="this.style.display='none'">
+      <img src="https://nour292.github.io/Nourdata/nour_energy_logo.png" alt="Logo" onerror="this.style.display='none'">
       <span>Search & Lists</span>
       <button id="sl-close" onclick="closeSearchPanel()">✕</button>
     </div>
@@ -2370,7 +2534,7 @@ function buildResultTable(rows, extraCols, title) {
 
   let html = `<div class="ds-wrap">`;
   html += `<div class="ds-header">
-    <img src="nour_energy_logo.png" alt="Logo" onerror="this.style.display='none'">
+    <img src="https://nour292.github.io/Nourdata/nour_energy_logo.png" alt="Logo" onerror="this.style.display='none'">
     <span>${title} &nbsp;·&nbsp; ${rows.length} record${rows.length !== 1 ? 's' : ''}</span>
   </div>`;
   html += `<table class="ds-tbl"><thead><tr>
@@ -2420,7 +2584,7 @@ function runDeepSearch() {
 
     let html = `<div class="ds-wrap">`;
     html += `<div class="ds-header">
-      <img src="nour_energy_logo.png" alt="Logo" onerror="this.style.display='none'">
+      <img src="https://nour292.github.io/Nourdata/nour_energy_logo.png" alt="Logo" onerror="this.style.display='none'">
       <span>Deep Search — "<em>${escHtml(query)}</em>" &nbsp;·&nbsp; ${results.length} record${results.length !== 1 ? 's' : ''}</span>
     </div>`;
     html += `<table class="ds-tbl"><thead><tr>`;
@@ -2909,7 +3073,7 @@ function runInlineDeepSearch() {
     results.forEach(({ matchedCols }) => matchedCols.forEach(col => { if (!DS_FIXED_IDX.has(col.idx)) extraColKeys.add(col.key); }));
     const extraCols = DS_ALL_COLS.filter(c => extraColKeys.has(c.key));
     let html = `<div class="ds-wrap"><div class="ds-header">
-      <img src="nour_energy_logo.png" alt="Logo" onerror="this.style.display='none'">
+      <img src="https://nour292.github.io/Nourdata/nour_energy_logo.png" alt="Logo" onerror="this.style.display='none'">
       <span>Deep Search — "<em>${escHtml(query)}</em>" · ${results.length} record${results.length!==1?'s':''}</span>
     </div><table class="ds-tbl"><thead><tr>`;
     DS_FIXED.forEach(c => { html += `<th>${c.label}</th>`; });
@@ -3043,6 +3207,47 @@ function printInlineResult(pane) {
   win.document.close(); win.focus();
   setTimeout(()=>{ win.print(); }, 400);
 }
+
+/* ── Sidebar Navigation ── */
+function toggleSidebar() {
+  document.body.classList.toggle('sb-collapsed');
+  const sb = document.getElementById('sidebar');
+  sb.classList.toggle('collapsed');
+  const btn = document.getElementById('sb-toggle');
+  btn.innerHTML = sb.classList.contains('collapsed') ? '&#9776;' : '&#10005;';
+}
+
+function sidebarNav(section) {
+  // Update active state
+  document.querySelectorAll('.sb-item').forEach(b => b.classList.remove('active'));
+  const btn = document.getElementById('snav-' + section);
+  if (btn) btn.classList.add('active');
+
+  // Update page title
+  const titles = { search: 'Employee Search', dashboard: 'Dashboard', deepsearch: 'Deep Search', lists: 'Smart Lists' };
+  document.getElementById('page-title').textContent = titles[section] || 'Nour Energy Data';
+
+  // Show/hide search bar
+  const searchWrapper = document.getElementById('search-wrapper');
+  const headerActions = document.getElementById('header-actions');
+  if (section === 'search' || section === 'deepsearch') {
+    searchWrapper.style.display = '';
+    headerActions.style.display = '';
+  } else {
+    searchWrapper.style.display = 'none';
+    headerActions.style.display = 'none';
+  }
+
+  // Route to correct panel
+  if (section === 'search') {
+    document.getElementById('inline-search-panel').style.display = 'none';
+  } else {
+    switchToTab(section === 'dashboard' ? 'dashboard' : section === 'deepsearch' ? 'deepsearch' : 'lists');
+  }
+}
+
 </script>
+<!-- Close: app-shell / page-body / main-content / layout -->
+</div></div></div></div>
 </body>
 </html>
