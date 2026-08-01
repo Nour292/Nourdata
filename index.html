@@ -571,6 +571,17 @@ body.dark-mode #top-bar-right img { filter: brightness(0.75) !important; }
   }
 }
 @media print {
+  /* Hide everything except the card */
+  #sidebar, #sb-toggle, #top-header, #pw-overlay,
+  #inline-search-panel, #tab-row,
+  .no-print, #sb-footer { display: none !important; }
+
+  /* Reset layout for print */
+  #layout { display: block !important; }
+  #main-content { margin-left: 0 !important; }
+  #page-body { padding: 0 !important; }
+  #app-shell { max-width: 100% !important; margin: 0 !important; padding: 0 !important; }
+
   .card {
     width: 100% !important;
     background: #fff !important;
@@ -598,28 +609,35 @@ body.dark-mode #top-bar-right img { filter: brightness(0.75) !important; }
 .card-hdr {
   display: flex;
   align-items: center;
-  gap: 18px;
-  margin-bottom: 18px;
+  gap: 20px;
+  margin-bottom: 6px;
   padding-bottom: 12px;
   border-bottom: 2px solid #d5e8f5;
 }
 .card-hdr img {
-  height: 90px;
+  height: 80px;
   width: auto;
+  flex-shrink: 0;
+}
+.card-hdr-text {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 .card-hdr-text .emp-name {
   font-family: 'Calibri', sans-serif;
-  font-size: 24px;
-  font-weight: 600;
+  font-size: 26px;
+  font-weight: 700;
   color: #1a5276;
   margin: 0;
   line-height: 1.2;
 }
 .card-hdr-text .emp-num {
-  font-size: 18px;
+  font-size: 16px;
   font-weight: 700;
-  color: #555;
+  color: #666;
   margin: 4px 0 0 0;
+  letter-spacing: 0.5px;
 }
 
 /* ── Section Headers ── */
@@ -629,7 +647,7 @@ body.dark-mode #top-bar-right img { filter: brightness(0.75) !important; }
   font-size: 13.5px;
   font-weight: 700;
   padding: 5px 10px;
-  margin: 14px 0 0 0;
+  margin: 4px 0 0 0;
   letter-spacing: 0.4px;
   border-radius: 3px 3px 0 0;
   print-color-adjust: exact;
