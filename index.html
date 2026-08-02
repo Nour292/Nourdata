@@ -3122,8 +3122,7 @@ document.addEventListener('DOMContentLoaded', function() {
   const topInput = document.getElementById('employeeNumber');
   if (topInput) topInput.addEventListener('keyup', e => {
     if (e.key === 'Enter') {
-      const activeTab = document.querySelector('.inline-tab.active');
-      if (activeTab && activeTab.id === 'itab-deepsearch') {
+      if (document.body.classList.contains('view-deepsearch')) {
         deepSearchInline();
       } else {
         searchEmployee();
@@ -3341,8 +3340,12 @@ function sidebarNav(section) {
   // Route to correct panel
   if (section === 'search') {
     document.getElementById('inline-search-panel').style.display = 'none';
+    setTimeout(() => document.getElementById('employeeNumber').focus(), 50);
+  } else if (section === 'deepsearch') {
+    switchToTab('deepsearch');
+    setTimeout(() => document.getElementById('employeeNumber').focus(), 50);
   } else {
-    switchToTab(section === 'dashboard' ? 'dashboard' : section === 'deepsearch' ? 'deepsearch' : 'lists');
+    switchToTab(section === 'dashboard' ? 'dashboard' : 'lists');
   }
 }
 
