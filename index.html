@@ -907,6 +907,12 @@ body.dark-mode #top-bar-right img { filter: brightness(0.75) !important; }
   font-size: 15px;
   padding: 60px 0;
 }
+body.view-dashboard #card-area,
+body.view-deepsearch #card-area,
+body.view-lists #card-area { display: none !important; }
+body.view-dashboard #card-area:empty::after,
+body.view-deepsearch #card-area:empty::after,
+body.view-lists #card-area:empty::after { display: none !important; }
 
 @media print {
   @page { margin: 15mm; size: A4; }
@@ -3302,6 +3308,10 @@ function toggleSidebar() {
 }
 
 function sidebarNav(section) {
+  // Update body class for card-area visibility
+  document.body.classList.remove('view-dashboard','view-deepsearch','view-lists','view-search');
+  document.body.classList.add('view-' + section);
+
   // Update active state
   document.querySelectorAll('.sb-item').forEach(b => b.classList.remove('active'));
   const btn = document.getElementById('snav-' + section);
