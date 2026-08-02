@@ -1364,7 +1364,7 @@ body.view-lists #card-area:empty::after { display: none !important; }
 <script>
 /* ─── Column index map — Google Sheet Row 1 headers ─── */
 const COL = {
-  empNum:        0,   // Employee Number
+  empNum:        0,   // Emp
   name:          1,   // Names
   mobile:        2,   // Mobile Number
   nationality:   3,   // Nationality
@@ -1372,43 +1372,40 @@ const COL = {
   location:      5,   // Location
   actualLocation:6,   // Actual Location
   joiningDate:   7,   // Joining Date
-  serviceDays:   8,   // Service Days
-  serviceCont:   9,   // Service Y,M,D
-  dob:           10,  // DOB
-  days:          11,  // Days
-  age:           12,  // Age Y,M,D
-  total:         13,  // Total
-  basic:         14,  // Basic
-  food:          15,  // Food
-  other:         16,  // Other
-  trPct:         17,  // Tr-10 %
-  otherTrasp:    18,  // Other Trasp
-  housing25:     19,  // Housing 25%
-  housing:       20,  // Housing
-  transpStatus:  21,  // Trasp Status
-  medical:       22,  // Medical
-  contract:      23,  // Contract
-  annualLeave:   24,  // Annual Leave
-  tickets:       25,  // Tickets
-  qiwaStart:     26,  // Qiwa Starting
-  qiwaEnd:       27,  // Qiwa Ending
-  status:        28,  // Status
-  dutyHours:     29,  // Duty Hours
-  idNo:          30,  // Id No
-  idProfession:  31,  // Id Profession
-  idExpHijri:    32,  // Id Exp - Hijri
-  idExpGreg:     33,  // Id Exp - Gregorian
-  idRemDays:     34,  // ID - Remaining Days
-  ppNumber:      35,  // PP number
-  issuePlace:    36,  // Issue Place
-  issueDate:     37,  // Issue date
-  ppExpiry:      38,  // Expiry date
-  ppRemDays:     39,  // PP-Remaining Days
-  jobEnded:      40,  // Job Ended
-  serviceEndDays:41,  // Total Service Days
-  serviceEnded:  42,  // Total Service Y,M,D
-  iban:          43,  // IBAN
-  email:         44,  // EMAIL
+  serviceCont:   8,   // Service Y,M,D
+  dob:           9,   // DOB
+  age:           10,  // Age Y,M,D
+  basic:         11,  // Basic
+  food:          12,  // Food
+  other:         13,  // Other
+  trPct:         14,  // Tr-10 %
+  otherTrasp:    15,  // Other Trasp
+  housing25:     16,  // Housing 25%
+  total:         17,  // Total
+  housing:       18,  // Housing
+  transpStatus:  19,  // Trasp Status
+  medical:       20,  // Medical
+  contract:      21,  // Contract
+  annualLeave:   22,  // Annual Leave
+  tickets:       23,  // Tickets
+  qiwaStart:     24,  // Qiwa Starting
+  qiwaEnd:       25,  // Qiwa Ending
+  status:        26,  // Status
+  dutyHours:     27,  // Duty Hours
+  idNo:          28,  // Id No
+  idProfession:  29,  // Id Profession
+  idExpHijri:    30,  // Id Exp - Hijri
+  idExpGreg:     31,  // Id Exp - Gregorian
+  idRemDays:     32,  // ID - Remaining Days
+  ppNumber:      33,  // PP number
+  issuePlace:    34,  // Issue Place
+  issueDate:     35,  // Issue date
+  ppExpiry:      36,  // Expiry date
+  ppRemDays:     37,  // PP-Remaining Days
+  jobEnded:      38,  // Job Ended
+  serviceEnded:  39,  // Total Service Y,M,D
+  iban:          40,  // IBAN
+  email:         41,  // EMAIL
 };
 
 /* ─── Google Sheets Config ─── */
@@ -1537,34 +1534,34 @@ const DS_ALL_COLS = [
   { key: 'jobTitle',     label: 'Job Title',          idx: 4  },
   { key: 'location',     label: 'Location',           idx: 5  },
   { key: 'joiningDate',  label: 'Joining Date',       idx: 7  },
-  { key: 'serviceCont',  label: 'Service',            idx: 9  },
-  { key: 'dob',          label: 'Date of Birth',      idx: 10 },
-  { key: 'age',          label: 'Age',                idx: 12 },
-  { key: 'total',        label: 'Total Salary',       idx: 13 },
-  { key: 'basic',        label: 'Basic Salary',       idx: 14 },
-  { key: 'food',         label: 'Food Allowance',     idx: 15 },
-  { key: 'other',        label: 'Other',              idx: 16 },
-  { key: 'trPct',        label: 'Transport 10%',      idx: 17 },
-  { key: 'otherTrasp',   label: 'Other Transport',    idx: 18 },
-  { key: 'housing25',    label: 'Housing 25%',        idx: 19 },
-  { key: 'housing',      label: 'Housing',            idx: 20 },
-  { key: 'medical',      label: 'Medical',            idx: 22 },
-  { key: 'contract',     label: 'Contract',           idx: 23 },
-  { key: 'annualLeave',  label: 'Annual Leave',       idx: 24 },
-  { key: 'tickets',      label: 'Tickets',            idx: 25 },
-  { key: 'qiwaStart',    label: 'Qiwa Start',         idx: 26 },
-  { key: 'qiwaEnd',      label: 'Qiwa Ending',        idx: 27 },
-  { key: 'status',      label: 'Status',           idx: 28 },
-  { key: 'idNo',         label: 'ID No',              idx: 30 },
-  { key: 'idProfession', label: 'ID Profession',      idx: 31 },
-  { key: 'idExpGreg',    label: 'ID Expiry',          idx: 33 },
-  { key: 'idRemDays',    label: 'ID Remaining Days',  idx: 34 },
-  { key: 'ppNumber',     label: 'Passport No',        idx: 35 },
-  { key: 'ppExpiry',     label: 'Passport Expiry',    idx: 38 },
-  { key: 'jobEnded',     label: 'Job Ended',          idx: 40 },
-  { key: 'status',      label: 'Status',           idx: 28 },
-  { key: 'serviceEnded', label: 'Service Ended',      idx: 42 },
-  { key: 'iban',         label: 'IBAN',               idx: 43 },
+  { key: 'serviceCont',  label: 'Service',            idx: 8  },
+  { key: 'dob',          label: 'Date of Birth',      idx: 9  },
+  { key: 'age',          label: 'Age',                idx: 10 },
+  { key: 'basic',        label: 'Basic Salary',       idx: 11 },
+  { key: 'food',         label: 'Food Allowance',     idx: 12 },
+  { key: 'other',        label: 'Other',              idx: 13 },
+  { key: 'trPct',        label: 'Transport 10%',      idx: 14 },
+  { key: 'otherTrasp',   label: 'Other Transport',    idx: 15 },
+  { key: 'housing25',    label: 'Housing 25%',        idx: 16 },
+  { key: 'total',        label: 'Total Salary',       idx: 17 },
+  { key: 'housing',      label: 'Housing',            idx: 18 },
+  { key: 'transpStatus', label: 'Trasp Status',       idx: 19 },
+  { key: 'medical',      label: 'Medical',            idx: 20 },
+  { key: 'contract',     label: 'Contract',           idx: 21 },
+  { key: 'annualLeave',  label: 'Annual Leave',       idx: 22 },
+  { key: 'tickets',      label: 'Tickets',            idx: 23 },
+  { key: 'qiwaStart',    label: 'Qiwa Start',         idx: 24 },
+  { key: 'qiwaEnd',      label: 'Qiwa Ending',        idx: 25 },
+  { key: 'status',       label: 'Status',             idx: 26 },
+  { key: 'idNo',         label: 'ID No',              idx: 28 },
+  { key: 'idProfession', label: 'ID Profession',      idx: 29 },
+  { key: 'idExpGreg',    label: 'ID Expiry',          idx: 31 },
+  { key: 'idRemDays',    label: 'ID Remaining Days',  idx: 32 },
+  { key: 'ppNumber',     label: 'Passport No',        idx: 33 },
+  { key: 'ppExpiry',     label: 'Passport Expiry',    idx: 36 },
+  { key: 'jobEnded',     label: 'Job Ended',          idx: 38 },
+  { key: 'serviceEnded', label: 'Service Ended',      idx: 39 },
+  { key: 'iban',         label: 'IBAN',               idx: 40 },
 ];
 
 // Fixed columns always shown (if match is one of these, no extra column added)
