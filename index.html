@@ -42,12 +42,12 @@ html, body { margin: 0; padding: 0; font-family: 'Calibri', sans-serif; backgrou
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 16px 14px 14px;
+  padding: 14px 12px;
   border-bottom: 1px solid rgba(255,255,255,0.08);
-  min-height: 64px;
+  min-height: 60px;
 }
 #sb-logo {
-  width: 34px; height: 34px;
+  width: 32px; height: 32px;
   border-radius: 8px;
   object-fit: contain;
   flex-shrink: 0;
@@ -55,30 +55,28 @@ html, body { margin: 0; padding: 0; font-family: 'Calibri', sans-serif; backgrou
   padding: 2px;
 }
 #sb-title {
-  font-size: 14px; font-weight: 700;
+  font-size: 13px; font-weight: 700;
   color: #fff; white-space: nowrap;
   opacity: 1; transition: opacity 0.2s;
-  line-height: 1.3;
+  line-height: 1.3; flex: 1;
 }
-#sb-title small { display: block; font-size: 11px; font-weight: 400; color: #8fa8c0; }
-#sidebar.collapsed #sb-title { opacity: 0; pointer-events: none; width: 0; }
+#sb-title small { display: block; font-size: 10px; font-weight: 400; color: #8fa8c0; }
+#sidebar.collapsed #sb-title { opacity: 0; pointer-events: none; width: 0; flex: 0; }
+#sidebar.collapsed #sb-toggle { margin-left: 0; }
 
 /* Toggle button */
 #sb-toggle {
-  position: fixed;
-  top: 18px;
-  left: 204px;
-  width: 28px; height: 28px;
-  background: #2e86c1;
-  border: none; border-radius: 50%;
-  color: #fff; font-size: 13px;
-  cursor: pointer; z-index: 300;
+  width: 32px; height: 32px;
+  background: rgba(255,255,255,0.12);
+  border: none; border-radius: 6px;
+  color: #fff; font-size: 16px;
+  cursor: pointer;
   display: flex; align-items: center; justify-content: center;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
-  transition: left 0.25s cubic-bezier(.4,0,.2,1);
+  flex-shrink: 0;
+  transition: background 0.15s;
+  margin-left: auto;
 }
-#sidebar.collapsed ~ #sb-toggle,
-body.sb-collapsed #sb-toggle { left: 42px; }
+#sb-toggle:hover { background: rgba(255,255,255,0.22); }
 
 /* Sidebar nav items */
 #sb-nav {
@@ -117,9 +115,9 @@ body.sb-collapsed #sb-toggle { left: 42px; }
 /* Sidebar divider */
 .sb-divider { height: 1px; background: rgba(255,255,255,0.07); margin: 6px 12px; }
 
-/* Sidebar section label */
+/* ── Sidebar section label ── */
 .sb-section-label {
-  font-size: 10px; font-weight: 700; letter-spacing: 1.2px;
+  font-size: 11px; font-weight: 700; letter-spacing: 1.2px;
   color: #5a7a9a; text-transform: uppercase;
   padding: 12px 16px 4px;
   white-space: nowrap;
@@ -177,7 +175,7 @@ body.sb-collapsed #main-content { margin-left: 56px; }
 #search-wrapper {
   flex: 1;
   position: relative;
-  max-width: 480px;
+  max-width: 640px;
 }
 #search-wrapper::before {
   content: '🔍';
@@ -220,7 +218,7 @@ body.sb-collapsed #main-content { margin-left: 56px; }
 
 /* ── Page Body ── */
 #page-body {
-  padding: 24px;
+  padding: 16px 20px 24px 20px;
   flex: 1;
 }
 
@@ -566,7 +564,7 @@ body.dark-mode #top-bar-right img { filter: brightness(0.75) !important; }
     background: #fff;
     border-radius: 10px;
     box-shadow: 0 3px 18px rgba(0,0,0,0.13);
-    padding: 22px 26px 18px;
+    padding: 10px 26px 18px;
     margin: 0 auto;
   }
 }
@@ -606,53 +604,101 @@ body.dark-mode #top-bar-right img { filter: brightness(0.75) !important; }
 }
 
 /* ── Card Header ── */
-.card-hdr {
-  display: flex !important;
-  flex-direction: column !important;
-  align-items: flex-start !important;
-  gap: 0 !important;
-  margin-bottom: 0 !important;
-  padding: 10px 0 10px 0 !important;
-  border-bottom: 2px solid #d5e8f5 !important;
+/* ══ CARD HEADER — SCREEN ══ */
+@media screen {
+  .card-hdr {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0;
+    margin-bottom: 0;
+    padding: 10px 0 8px 0;
+    border-bottom: 2px solid #d5e8f5;
+  }
+  .card-hdr img {
+    height: 80px;
+    width: auto;
+    display: block;
+    margin-bottom: 6px;
+  }
+  .card-hdr-text {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    align-items: flex-start;
+  }
+  .card-hdr-text .emp-name {
+    font-family: 'Calibri', sans-serif;
+    font-size: 20px;
+    font-weight: 700;
+    color: #1a5276;
+    margin: 0; padding: 0;
+    line-height: 1.3;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .card-hdr-text .emp-num {
+    font-size: 13px;
+    font-weight: 600;
+    color: #666;
+    margin: 0; padding: 0;
+    line-height: 1.4;
+  }
+  .job-ended-inline {
+    display: inline;
+    color: #c0392b;
+    font-size: 16px;
+    font-weight: 700;
+  }
 }
-.card-hdr img {
-  height: 80px !important;
-  width: auto !important;
-  display: block !important;
-  margin-bottom: 6px !important;
-}
-.card-hdr-text {
-  display: flex !important;
-  flex-direction: column !important;
-  gap: 0 !important;
-  align-items: flex-start !important;
-}
-.card-hdr-text .emp-name {
-  font-family: 'Calibri', sans-serif !important;
-  font-size: 20px !important;
-  font-weight: 700 !important;
-  color: #1a5276 !important;
-  margin: 0 !important;
-  padding: 0 !important;
-  line-height: 1.3 !important;
-  display: flex !important;
-  flex-direction: row !important;
-  align-items: center !important;
-  gap: 10px !important;
-}
-.card-hdr-text .emp-num {
-  font-size: 13px !important;
-  font-weight: 600 !important;
-  color: #666 !important;
-  margin: 0 !important;
-  padding: 0 !important;
-  line-height: 1.4 !important;
-}
-.job-ended-inline {
-  display: inline !important;
-  color: #c0392b !important;
-  font-size: 16px !important;
-  font-weight: 700 !important;
+/* ══ CARD HEADER — PRINT ══ */
+@media print {
+  .card-hdr {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0;
+    margin-bottom: 0;
+    padding: 6px 0 6px 0;
+    border-bottom: 2px solid #d5e8f5;
+  }
+  .card-hdr img {
+    height: 60px;
+    width: auto;
+    display: block;
+    margin-bottom: 4px;
+  }
+  .card-hdr-text {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    align-items: flex-start;
+  }
+  .card-hdr-text .emp-name {
+    font-family: 'Calibri', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    color: #1a5276;
+    margin: 0; padding: 0;
+    line-height: 1.3;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .card-hdr-text .emp-num {
+    font-size: 11px;
+    font-weight: 600;
+    color: #666;
+    margin: 0; padding: 0;
+    line-height: 1.4;
+  }
+  .job-ended-inline {
+    display: inline;
+    color: #c0392b;
+    font-size: 13px;
+    font-weight: 700;
+  }
 }
 
 /* ── Section Headers ── */
@@ -851,14 +897,11 @@ body.dark-mode #top-bar-right img { filter: brightness(0.75) !important; }
 }
 
 @media print {
-  @page { margin: 10mm; size: A4; }
+  @page { margin: 15mm; size: A4; }
   html, body { margin: 0 !important; padding: 0 !important; background: #fff !important; width: 100% !important; }
   #app-shell { width: 100% !important; max-width: 100% !important; margin: 0 !important; padding: 0 !important; }
   #card-area { width: 100% !important; margin: 0 !important; padding: 0 !important; }
   #top-bar, #pw-overlay, #logoutButton, .no-print { display: none !important; }
-  .card-hdr img { height: 60px !important; }
-  .card-hdr-text .emp-name { font-size: 16px !important; }
-  .card-hdr-text .emp-num { font-size: 12px !important; }
   .sec-hdr { margin: 8px 0 0 0; font-size: 12px; padding: 4px 8px; print-color-adjust: exact; -webkit-print-color-adjust: exact; }
   .dtbl { width: 100% !important; }
   .dtbl td, .dtbl th { font-size: 11.5px; padding: 3px 8px; }
@@ -953,7 +996,9 @@ body.dark-mode #top-bar-right img { filter: brightness(0.75) !important; }
   font-family: 'Calibri', sans-serif; min-width: 130px;
 }
 .sl-filter-row input:focus, .sl-filter-row select:focus { border-color: #2e86c1; outline: none; }
-#sl-col-picks { display: grid; grid-template-columns: repeat(8, 1fr); gap: 8px 10px; }
+#isl-col-picks { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 8px 10px; margin-bottom: 4px; }
+#isl-col-picks label { font-size: 13px; color: #333; cursor: pointer; display: flex; align-items: center; gap: 5px; white-space: nowrap; }
+#sl-col-picks { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 8px 10px; }
 #sl-col-picks label { font-size: 13px; color: #333; cursor: pointer; display: flex; align-items: center; gap: 5px; white-space: nowrap; }
 #sl-filter-actions { display: flex; gap: 12px; margin-top: 14px; }
 #sl-filter-actions button {
@@ -1051,14 +1096,11 @@ body.dark-mode #top-bar-right img { filter: brightness(0.75) !important; }
     <img src="https://nour292.github.io/Nourdata/nour_energy_logo.png" alt="Nour Energy" onerror="this.style.display='none'">
     <h2>Nour Energy Data</h2>
     <p>Enter your password to access</p>
-    <input type="password" id="pw-input" placeholder="Employee Number" autocomplete="off">
+    <input type="password" id="pw-input" placeholder="Enter password" autocomplete="off">
     <button id="pw-submit" onclick="checkPassword();">Login</button>
     <div id="pw-error"></div>
   </div>
 </div>
-
-<!-- ── Sidebar Toggle Button ── -->
-<button id="sb-toggle" onclick="toggleSidebar()" title="Toggle Sidebar">&#9776;</button>
 
 <!-- ── Layout ── -->
 <div id="layout">
@@ -1068,6 +1110,7 @@ body.dark-mode #top-bar-right img { filter: brightness(0.75) !important; }
     <div id="sb-header">
       <img src="https://nour292.github.io/Nourdata/nour_energy_logo.png" alt="Logo" id="sb-logo">
       <div id="sb-title">Nour Energy<small>HR Data System</small></div>
+      <button id="sb-toggle" onclick="toggleSidebar()" title="Toggle Sidebar">&#9776;</button>
     </div>
 
     <nav id="sb-nav">
