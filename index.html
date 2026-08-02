@@ -2148,7 +2148,6 @@ function searchEmployee() {
         <div class="df-field"><label>Transport 10%</label><input type="text" id="f-trPct"></div>
         <div class="df-field"><label>Other Transport</label><input type="text" id="f-otherTrasp"></div>
         <div class="df-field"><label>Housing</label><input type="text" id="f-housing"></div>
-        <div class="df-field"><label>Total Salary</label><input type="text" id="f-total"></div>
         <div class="df-field"><label>Transport Status</label><input type="text" id="f-transpStatus"></div>
       </div>
 
@@ -2187,45 +2186,45 @@ let dfCurrentTab = 'add';
 let dfEditRowIdx = -1;
 
 const FORM_FIELDS = [
-  { id:'f-empNum',       idx: 0  },
-  { id:'f-name',         idx: 1  },
-  { id:'f-mobile',       idx: 2  },
-  { id:'f-nationality',  idx: 3  },
-  { id:'f-jobTitle',     idx: 4  },
-  { id:'f-location',     idx: 5  },
-  { id:'f-joiningDate',  idx: 7  },
-  { id:'f-dob',          idx: 10 },
-  { id:'f-total',        idx: 13 },
-  { id:'f-basic',        idx: 14 },
-  { id:'f-food',         idx: 15 },
-  { id:'f-other',        idx: 16 },
-  { id:'f-trPct',        idx: 17 },
-  { id:'f-otherTrasp',   idx: 18 },
-  { id:'f-housing25',    idx: 19 },
-  { id:'f-housing',      idx: 20 },
-  { id:'f-transpStatus', idx: 21 },
-  { id:'f-medical',      idx: 22 },
-  { id:'f-contract',     idx: 23 },
-  { id:'f-annualLeave',  idx: 24 },
-  { id:'f-tickets',      idx: 25 },
-  { id:'f-qiwaStart',    idx: 26 },
-  { id:'f-qiwaEnd',      idx: 27 },
-  { id:'f-status',       idx: 28 },
-  { id:'f-dutyHours',    idx: 29 },
-  { id:'f-idNo',         idx: 30 },
-  { id:'f-idProfession', idx: 31 },
-  { id:'f-idExpHijri',   idx: 32 },
-  { id:'f-idExpGreg',    idx: 33 },
-  { id:'f-idRemDays',    idx: 34 },
-  { id:'f-ppNumber',     idx: 35 },
-  { id:'f-issuePlace',   idx: 36 },
-  { id:'f-issueDate',    idx: 37 },
-  { id:'f-ppExpiry',     idx: 38 },
-  { id:'f-jobEnded',     idx: 40 },
-  { id:'f-status',idx: 41 },
-  { id:'f-serviceEnded', idx: 42 },
-  { id:'f-iban',         idx: 43 },
-  { id:'f-email',        idx: 44 },
+  { id:'f-empNum',       idx: 0  },  // A  - Emp
+  { id:'f-name',         idx: 1  },  // B  - Names
+  { id:'f-mobile',       idx: 2  },  // C  - Mobile Number
+  { id:'f-nationality',  idx: 3  },  // D  - Nationality
+  { id:'f-jobTitle',     idx: 4  },  // E  - Job Title
+  { id:'f-location',     idx: 5  },  // F  - Location
+  { id:'f-joiningDate',  idx: 7  },  // H  - Joining Date
+  { id:'f-dob',          idx: 9  },  // J  - DOB
+  { id:'f-basic',        idx: 11 },  // L  - Basic
+  { id:'f-food',         idx: 12 },  // M  - Food
+  { id:'f-other',        idx: 13 },  // N  - Other
+  { id:'f-trPct',        idx: 14 },  // O  - Tr-10 %
+  { id:'f-otherTrasp',   idx: 15 },  // P  - Other Trasp
+  { id:'f-housing25',    idx: 16 },  // Q  - Housing 25%
+  // R (idx 17) = Total — auto-calculated by sheet formula, skip
+  { id:'f-housing',      idx: 18 },  // S  - Housing
+  { id:'f-transpStatus', idx: 19 },  // T  - Trasp Status
+  { id:'f-medical',      idx: 20 },  // U  - Medical
+  { id:'f-contract',     idx: 21 },  // V  - Contract
+  { id:'f-annualLeave',  idx: 22 },  // W  - Annual Leave
+  { id:'f-tickets',      idx: 23 },  // X  - Tickets
+  { id:'f-qiwaStart',    idx: 24 },  // Y  - Qiwa Starting
+  { id:'f-qiwaEnd',      idx: 25 },  // Z  - Qiwa Ending
+  { id:'f-status',       idx: 26 },  // AA - Status
+  { id:'f-dutyHours',    idx: 27 },  // AB - Duty Hours
+  { id:'f-idNo',         idx: 28 },  // AC - Id No
+  { id:'f-idProfession', idx: 29 },  // AD - Id Profession
+  { id:'f-idExpHijri',   idx: 30 },  // AE - Id Exp - Hijri
+  { id:'f-idExpGreg',    idx: 31 },  // AF - Id Exp - Gregorian
+  { id:'f-idRemDays',    idx: 32 },  // AG - ID Remaining Days
+  { id:'f-ppNumber',     idx: 33 },  // AH - PP number
+  { id:'f-issuePlace',   idx: 34 },  // AI - Issue Place
+  { id:'f-issueDate',    idx: 35 },  // AJ - Issue date
+  { id:'f-ppExpiry',     idx: 36 },  // AK - Expiry date
+  // AL (idx 37) = PP-Remaining Days — auto-calculated, skip
+  { id:'f-jobEnded',     idx: 38 },  // AM - Job Ended
+  // AN (idx 39) = Total Service Y,M,D — auto-calculated, skip
+  { id:'f-iban',         idx: 40 },  // AO - IBAN
+  { id:'f-email',        idx: 41 },  // AP - EMAIL
 ];
 
 function openDataForm() {
