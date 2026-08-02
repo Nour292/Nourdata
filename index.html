@@ -608,23 +608,23 @@ body.dark-mode #top-bar-right img { filter: brightness(0.75) !important; }
 /* ── Card Header ── */
 .card-hdr {
   display: flex;
-  align-items: center;
-  gap: 16px;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0;
   margin-bottom: 0;
   padding: 16px 0 10px 0;
   border-bottom: 2px solid #d5e8f5;
 }
 .card-hdr img {
-  height: 72px;
+  height: 144px;
   width: auto;
-  flex-shrink: 0;
   display: block;
+  margin-bottom: 24px;
 }
 .card-hdr-text {
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  gap: 4px;
+  gap: 6px;
 }
 .card-hdr-text .emp-name {
   font-family: 'Calibri', sans-serif;
@@ -691,6 +691,7 @@ body.dark-mode #top-bar-right img { filter: brightness(0.75) !important; }
   color: #fff !important;
   font-weight: 700 !important;
   font-size: 15px !important;
+  text-align: left !important;
   print-color-adjust: exact;
   -webkit-print-color-adjust: exact;
 }
