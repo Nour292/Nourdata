@@ -608,9 +608,9 @@ body.dark-mode #top-bar-right img { filter: brightness(0.75) !important; }
 /* ── Card Header ── */
 .card-hdr {
   display: flex;
-  flex-direction: row;
-  align-items: center;
-  gap: 20px;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0;
   margin-bottom: 0;
   padding: 12px 0 10px 0;
   border-bottom: 2px solid #d5e8f5;
@@ -619,20 +619,20 @@ body.dark-mode #top-bar-right img { filter: brightness(0.75) !important; }
   height: 100px;
   width: auto;
   display: block;
-  flex-shrink: 0;
+  margin-bottom: 10px;
 }
 .card-hdr-text {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 3px;
 }
 .card-hdr-text .emp-name {
   font-family: 'Calibri', sans-serif;
-  font-size: 24px;
+  font-size: 22px;
   font-weight: 700;
   color: #1a5276;
   margin: 0;
-  line-height: 1.2;
+  line-height: 1.3;
   display: flex;
   align-items: center;
   gap: 10px;
@@ -846,10 +846,10 @@ body.dark-mode #top-bar-right img { filter: brightness(0.75) !important; }
   #app-shell { width: 100% !important; max-width: 100% !important; margin: 0 !important; padding: 0 !important; }
   #card-area { width: 100% !important; margin: 0 !important; padding: 0 !important; }
   #top-bar, #pw-overlay, #logoutButton, .no-print { display: none !important; }
-  .card-hdr { margin-bottom: 10px; padding-bottom: 8px; }
-  .card-hdr img { height: 52px !important; }
-  .card-hdr-text .emp-name { font-size: 20px; }
-  .card-hdr-text .emp-num { font-size: 15px; }
+  .card-hdr { margin-bottom: 8px; padding-bottom: 8px; flex-direction: column; align-items: flex-start; }
+  .card-hdr img { height: 80px !important; margin-bottom: 8px; }
+  .card-hdr-text .emp-name { font-size: 18px; }
+  .card-hdr-text .emp-num { font-size: 13px; }
   .sec-hdr { margin: 8px 0 0 0; font-size: 12px; padding: 4px 8px; print-color-adjust: exact; -webkit-print-color-adjust: exact; }
   .dtbl { width: 100% !important; }
   .dtbl td, .dtbl th { font-size: 11.5px; padding: 3px 8px; }
