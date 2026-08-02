@@ -612,19 +612,19 @@ body.dark-mode #top-bar-right img { filter: brightness(0.75) !important; }
   align-items: flex-start;
   gap: 0;
   margin-bottom: 0;
-  padding: 12px 0 10px 0;
+  padding: 12px 0 8px 0;
   border-bottom: 2px solid #d5e8f5;
 }
 .card-hdr img {
   height: 100px;
   width: auto;
   display: block;
-  margin-bottom: 10px;
+  margin-bottom: 8px;
 }
 .card-hdr-text {
   display: flex;
   flex-direction: column;
-  gap: 3px;
+  gap: 0;
 }
 .card-hdr-text .emp-name {
   font-family: 'Calibri', sans-serif;
@@ -640,8 +640,16 @@ body.dark-mode #top-bar-right img { filter: brightness(0.75) !important; }
 .card-hdr-text .emp-num {
   font-size: 14px;
   font-weight: 600;
-  color: #888;
+  color: #666;
   margin: 0;
+  line-height: 1.4;
+  letter-spacing: 0.3px;
+}
+.job-ended-inline {
+  display: inline-block;
+  color: #c0392b;
+  font-size: 14px;
+  font-weight: 700;
   letter-spacing: 0.3px;
 }
 
@@ -1825,6 +1833,10 @@ function renderCard(cells, accessLevel) {
   let html = `<div class="card">`;
   html += `<div class="card-hdr">
     <img src="https://nour292.github.io/Nourdata/nour_energy_logo.png" alt="Logo" onerror="this.style.display='none'">
+    <div class="card-hdr-text">
+      <p class="emp-name">${rtlWrap(v(name))}${isEnded ? `<span class="job-ended-inline">JOB ENDED</span>` : ''}</p>
+      <p class="emp-num">Emp # ${v(empNum)}</p>
+    </div>
   </div>`;
 
   /* ── Personal & Employment ── */
