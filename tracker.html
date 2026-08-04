@@ -184,6 +184,12 @@ body.dark-mode #inline-search-panel{background:#1e2d3d!important;}
 body.dark-mode .loc-header{border-color:#2a3d50!important;}
 body.dark-mode .loc-title{color:#e0e0e0!important;}
 
+/* ── Date Picker ── */
+.date-wrap { position: relative; display: flex; align-items: center; }
+.date-wrap input { flex: 1; padding-right: 36px !important; }
+.date-wrap input[type="date"] { position: absolute; opacity: 0; width: 36px; height: 36px; right: 0; top: 0; cursor: pointer; z-index: 2; }
+.cal-icon { position: absolute; right: 8px; top: 50%; transform: translateY(-50%); font-size: 16px; cursor: pointer; z-index: 1; pointer-events: none; }
+
 @media print{#sidebar,#top-header,#filter-bar,#stats-bar,.card-footer-bar,#modal-overlay,#status-modal{display:none!important;}#main-content{margin-left:0!important;}.job-card{break-inside:avoid;border:1px solid #ddd;}}
 </style>
 </head>
@@ -333,7 +339,11 @@ body.dark-mode .loc-title{color:#e0e0e0!important;}
         </div>
         <div class="form-field">
           <label>Iqama Expiry</label>
-          <input type="text" id="f-iqama" placeholder="DD-MMM-YY" disabled style="background:#f0f0f0;color:#aaa;cursor:not-allowed;">
+          <div class="date-wrap">
+            <input type="text" id="f-iqama" placeholder="DD-MMM-YY" disabled style="background:#f0f0f0;color:#aaa;cursor:not-allowed;">
+            <span class="cal-icon" style="opacity:0.4;">📅</span>
+            <input type="date" id="f-iqama-picker" onchange="if(!document.getElementById('f-iqama').disabled)setDate('f-iqama',this.value)" title="Pick date" style="right:0;">
+          </div>
         </div>
         <div class="form-field">
           <label>Current Status *</label>
@@ -349,9 +359,13 @@ body.dark-mode .loc-title{color:#e0e0e0!important;}
           <input type="text" id="f-holdreason" placeholder="e.g. No Timesheet, Pending Signature...">
         </div>
         <div class="form-section-hdr">Dates</div>
-        <div class="form-field" id="row-leave"><label>Leave Date</label><input type="text" id="f-leavedate" placeholder="DD-MMM-YY" oninput="calcDays()"></div>
-        <div class="form-field" id="row-return"><label>Expected Return</label><input type="text" id="f-returndate" placeholder="DD-MMM-YY" oninput="calcDays()"></div>
-        <div class="form-field" id="row-actual"><label>Actual Return</label><input type="text" id="f-actualreturn" placeholder="DD-MMM-YY" oninput="calcDays()"></div>
+        <div class="form-field" id="row-leave"><label>Leave Date</label><div class="date-wrap"><input type="text" id="f-leavedate" placeholder="DD-MMM-YY" oninput="calcDays()"><span class="cal-icon">📅</span><input type="date" onchange="setDate('f-leavedate',this.value);calcDays();" title="Pick date"></div></div>
+        <div class="form-field" id="row-return"><label>Expected Return</label><div class="date-wrap"><input type="text" id="f-returndate" placeholder="DD-MMM-YY" oninput="calcDays()"><span class="cal-icon">📅</span><input type="date" onchange="setDate('f-returndate',this.value);calcDays();" title="Pick date"></div></div>
+        <div class="form-field" id="row-actual"><label>Actual Return</label><div class="date-wrap">
+            <input type="text" id="f-actualreturn" placeholder="DD-MMM-YY" oninput="calcDays()">
+            <span class="cal-icon">📅</span>
+            <input type="date" onchange="setDate('f-actualreturn',this.value)" title="Pick date">
+          </div></div>
         <div class="form-field" id="row-days"><label>Days (auto)</label><input type="text" id="f-days" placeholder="Auto-calculated" readonly style="background:#f7fafd;color:#1a5276;font-weight:700;"></div>
         <div class="form-field" id="row-reentry"><label>Reentry Visa</label>
           <select id="f-reentry">
@@ -360,11 +374,27 @@ body.dark-mode .loc-title{color:#e0e0e0!important;}
             <option>120 days</option><option>150 days</option><option>180 days</option>
           </select>
         </div>
-        <div class="form-field" id="row-visaexpiry"><label>Visa Expiry Date</label><input type="text" id="f-visaexpiry" placeholder="DD-MMM-YY"></div>
-        <div class="form-field" id="row-ext"><label>Extension Date</label><input type="text" id="f-extdate" placeholder="DD-MMM-YY"></div>
+        <div class="form-field" id="row-visaexpiry"><label>Visa Expiry Date</label><div class="date-wrap">
+            <input type="text" id="f-visaexpiry" placeholder="DD-MMM-YY" >
+            <span class="cal-icon">📅</span>
+            <input type="date" onchange="setDate('f-visaexpiry',this.value)" title="Pick date">
+          </div></div>
+        <div class="form-field" id="row-ext"><label>Extension Date</label><div class="date-wrap">
+            <input type="text" id="f-extdate" placeholder="DD-MMM-YY" >
+            <span class="cal-icon">📅</span>
+            <input type="date" onchange="setDate('f-extdate',this.value)" title="Pick date">
+          </div></div>
         <div class="form-field" id="row-extdays"><label>Extension Days</label><input type="text" id="f-extdays" placeholder="e.g. 30 days"></div>
-        <div class="form-field" id="row-hstart"><label>Housing Start</label><input type="text" id="f-housingstart" placeholder="DD-MMM-YY"></div>
-        <div class="form-field" id="row-hend"><label>Housing End</label><input type="text" id="f-housingend" placeholder="DD-MMM-YY"></div>
+        <div class="form-field" id="row-hstart"><label>Housing Start</label><div class="date-wrap">
+            <input type="text" id="f-housingstart" placeholder="DD-MMM-YY" >
+            <span class="cal-icon">📅</span>
+            <input type="date" onchange="setDate('f-housingstart',this.value)" title="Pick date">
+          </div></div>
+        <div class="form-field" id="row-hend"><label>Housing End</label><div class="date-wrap">
+            <input type="text" id="f-housingend" placeholder="DD-MMM-YY" >
+            <span class="cal-icon">📅</span>
+            <input type="date" onchange="setDate('f-housingend',this.value)" title="Pick date">
+          </div></div>
         <div class="form-section-hdr">Documents</div>
         <div class="form-field"><label>Ticket Submitted</label>
           <select id="f-ticket"><option value="">--</option><option>Yes</option><option>No</option><option>Submitted</option></select>
@@ -792,6 +822,16 @@ if (sessionStorage.getItem('ne_admin_session') === '1') {
 }
 
 // ── Auto-calculate days ──
+function setDate(fieldId, isoVal) {
+  if (!isoVal) return;
+  // Convert YYYY-MM-DD to DD-MMM-YYYY
+  const d = new Date(isoVal + 'T00:00:00');
+  const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const formatted = String(d.getDate()).padStart(2,'0') + '-' + months[d.getMonth()] + '-' + d.getFullYear();
+  const el = document.getElementById(fieldId);
+  if (el) { el.value = formatted; el.dispatchEvent(new Event('input')); }
+}
+
 function parseDate(str) {
   if (!str) return null;
   str = str.trim();
