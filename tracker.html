@@ -348,10 +348,18 @@ body.dark-mode .loc-title{color:#e0e0e0!important;}
           <input type="text" id="f-holdreason" placeholder="e.g. No Timesheet, Pending Signature...">
         </div>
         <div class="form-section-hdr">Dates</div>
-        <div class="form-field" id="row-leave"><label>Leave Date</label><input type="text" id="f-leavedate" placeholder="DD-MMM-YY"></div>
-        <div class="form-field" id="row-return"><label>Expected Return</label><input type="text" id="f-returndate" placeholder="DD-MMM-YY"></div>
+        <div class="form-field" id="row-leave"><label>Leave Date</label><input type="text" id="f-leavedate" placeholder="DD-MMM-YY" oninput="calcDays()"></div>
+        <div class="form-field" id="row-return"><label>Expected Return</label><input type="text" id="f-returndate" placeholder="DD-MMM-YY" oninput="calcDays()"></div>
         <div class="form-field" id="row-actual"><label>Actual Return</label><input type="text" id="f-actualreturn" placeholder="DD-MMM-YY"></div>
-        <div class="form-field" id="row-days"><label>Days</label><input type="text" id="f-days" placeholder="e.g. 091"></div>
+        <div class="form-field" id="row-days"><label>Days (auto)</label><input type="text" id="f-days" placeholder="Auto-calculated" readonly style="background:#f7fafd;color:#1a5276;font-weight:700;"></div>
+        <div class="form-field" id="row-reentry"><label>Reentry Visa</label>
+          <select id="f-reentry">
+            <option value="">-- Select --</option>
+            <option>30 days</option><option>60 days</option><option>90 days</option>
+            <option>120 days</option><option>150 days</option><option>180 days</option>
+          </select>
+        </div>
+        <div class="form-field" id="row-visaexpiry"><label>Visa Expiry Date</label><input type="text" id="f-visaexpiry" placeholder="DD-MMM-YY"></div>
         <div class="form-field" id="row-ext"><label>Extension Date</label><input type="text" id="f-extdate" placeholder="DD-MMM-YY"></div>
         <div class="form-field" id="row-extdays"><label>Extension Days</label><input type="text" id="f-extdays" placeholder="e.g. 30 days"></div>
         <div class="form-field" id="row-hstart"><label>Housing Start</label><input type="text" id="f-housingstart" placeholder="DD-MMM-YY"></div>
@@ -473,6 +481,8 @@ function renderCard(job) {
   if(job.returnDate) body+=fld('Expected Return',job.returnDate);
   if(job.actualReturn) body+=fld('Actual Return',job.actualReturn,'highlight');
   if(job.days) body+=fld('Days',job.days);
+  if(job.reentry) body+=fld('Reentry Visa',job.reentry,'highlight');
+  if(job.visaExpiry) body+=fld('Visa Expiry',job.visaExpiry);
   if(job.extDate) body+=fld('Extension To',job.extDate);
   if(job.extDays) body+=fld('Ext. Days',job.extDays);
   if(job.housingStart) body+=fld('Housing Start',job.housingStart);
@@ -611,6 +621,8 @@ function toggleDateFields() {
   show('row-ext',     isVac);
   show('row-extdays', isVac);
   show('row-hstart',  isHouse);
+  show('row-reentry',   isVac);
+  show('row-visaexpiry',isVac);
   show('row-hend',    isHouse);
   show('hold-reason-row', status === 'On Hold');
 
@@ -636,6 +648,8 @@ function saveJob() {
   const data={
     id:editingJobId||genId(),empNum,empName,location,type,status,
     iqama:document.getElementById('f-iqama').value.trim(),
+    reentry:document.getElementById('f-reentry').value,
+    visaExpiry:document.getElementById('f-visaexpiry').value.trim(),
     holdReason:document.getElementById('f-holdreason').value.trim(),
     leaveDate:document.getElementById('f-leavedate').value.trim(),
     returnDate:document.getElementById('f-returndate').value.trim(),
@@ -737,6 +751,21 @@ if (sessionStorage.getItem('ne_admin_session') === '1') {
 } else {
   document.getElementById('pw-overlay').style.display = 'flex';
   document.getElementById('pw-input').focus();
+}
+
+// ── Auto-calculate days ──
+function calcDays() {
+  const l = document.getElementById('f-leavedate').value.trim();
+  const r = document.getElementById('f-returndate').value.trim();
+  const el = document.getElementById('f-days');
+  if (!l || !r || !el) return;
+  try {
+    const d1 = new Date(l.replace(/-/g, '/'));
+    const d2 = new Date(r.replace(/-/g, '/'));
+    if (isNaN(d1)||isNaN(d2)) { el.value=''; return; }
+    const diff = Math.round((d2 - d1) / 86400000);
+    el.value = diff >= 0 ? diff + ' Days' : '';
+  } catch(e) { el.value = ''; }
 }
 
 // ── Google Sheet config for employee lookup ──
