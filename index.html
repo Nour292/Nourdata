@@ -2374,8 +2374,8 @@ async function submitForm() {
 
       // Update only specific columns — preserve existing row (including formulas)
       const existingRow = [...rows[dfEditRowIdx]];
-      Object.entries(colUpdates).forEach(([idx, val]) => { existingRow[idx] = val; });
-      const sheetRow = dfEditRowIdx + 1;
+      Object.entries(colUpdates).forEach(([idx, val]) => { existingRow[Number(idx)] = val; });
+      const sheetRow = dfEditRowIdx + 1; // rows[0]=header → employee at dfEditRowIdx is sheet row dfEditRowIdx+1
 
       await fetch(GS_WRITE, {
         method: 'POST', mode: 'no-cors',
