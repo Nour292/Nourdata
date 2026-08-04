@@ -5,11 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Nour Energy — Job Tracker</title>
 <style>
-/* ── Reset ── */
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-html,body{font-family:'Calibri',sans-serif;background:#f0f4f8;min-height:100vh;direction:ltr;}
-
-/* ── Layout ── */
+html,body{font-family:'Calibri',sans-serif;background:#f0f4f8;min-height:100vh;}
 #layout{display:flex;min-height:100vh;}
 
 /* ── Sidebar ── */
@@ -25,28 +22,34 @@ html,body{font-family:'Calibri',sans-serif;background:#f0f4f8;min-height:100vh;d
 #sb-toggle{width:30px;height:30px;background:rgba(255,255,255,0.1);border:none;border-radius:6px;color:#fff;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-left:auto;}
 #sb-toggle:hover{background:rgba(255,255,255,0.2);}
 #sidebar.collapsed #sb-toggle{margin-left:0;width:36px;height:36px;}
-#sb-nav{flex:1;padding:8px 0;overflow-y:auto;}
-.sb-item{display:flex;align-items:center;gap:12px;padding:10px 16px;cursor:pointer;color:#b8cfe0;font-size:13px;font-weight:600;border:none;background:none;width:100%;text-align:left;white-space:nowrap;transition:background 0.15s,color 0.15s;}
+#sb-nav{flex:1;padding:4px 0;overflow-y:auto;}
+
+/* ── Groups ── */
+.sb-group{border-bottom:1px solid rgba(255,255,255,0.06);}
+.sb-group-hdr{display:flex;align-items:center;gap:10px;width:100%;padding:11px 16px;background:none;border:none;color:#8fa8c0;font-size:13px;font-weight:700;cursor:pointer;text-align:left;white-space:nowrap;transition:background 0.15s,color 0.15s;}
+.sb-group-hdr:hover{background:rgba(255,255,255,0.05);color:#fff;}
+.sb-group-hdr.active-group{color:#fff;}
+.sb-arrow{margin-left:auto;font-size:11px;}
+.sb-group-items{background:rgba(0,0,0,0.15);}
+.sb-item{display:flex;align-items:center;gap:12px;padding:9px 16px 9px 32px;cursor:pointer;color:#b8cfe0;font-size:13px;font-weight:600;border:none;background:none;width:100%;text-align:left;white-space:nowrap;transition:background 0.15s,color 0.15s;}
 .sb-item:hover{background:rgba(255,255,255,0.07);color:#fff;}
 .sb-item.active{background:rgba(46,134,193,0.22);color:#fff;border-left:3px solid #2e86c1;}
-.sb-icon{font-size:17px;flex-shrink:0;width:22px;text-align:center;}
+.sb-icon{font-size:16px;flex-shrink:0;width:20px;text-align:center;}
 .sb-label{transition:opacity 0.2s;}
 #sidebar.collapsed .sb-label{opacity:0;width:0;overflow:hidden;}
-#sidebar.collapsed .sb-item{padding:10px 0;justify-content:center;}
-.sb-divider{height:1px;background:rgba(255,255,255,0.07);margin:4px 12px;}
-.sb-section-label{font-size:11px;font-weight:700;letter-spacing:1px;color:#5a7a9a;text-transform:uppercase;padding:10px 16px 3px;white-space:nowrap;}
-#sidebar.collapsed .sb-section-label{opacity:0;}
+#sidebar.collapsed .sb-item{padding:9px 0;justify-content:center;}
+#sidebar.collapsed .sb-group-hdr{padding:11px 0;justify-content:center;}
+#sidebar.collapsed .sb-group-items{display:none!important;}
+#sidebar.collapsed .sb-arrow{display:none;}
 #sb-footer{padding:10px;border-top:1px solid rgba(255,255,255,0.08);}
-#sb-back{display:flex;align-items:center;gap:10px;width:100%;padding:9px 12px;background:rgba(46,134,193,0.15);border:1px solid rgba(46,134,193,0.3);border-radius:7px;color:#5dade2;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap;}
-#sb-back:hover{background:rgba(46,134,193,0.28);}
-#sidebar.collapsed #sb-back{justify-content:center;padding:9px;}
-#sidebar.collapsed #sb-back-label{display:none;}
+#sb-logout{display:flex;align-items:center;gap:10px;width:100%;padding:9px 12px;background:rgba(231,76,60,0.15);border:1px solid rgba(231,76,60,0.3);border-radius:7px;color:#e74c3c;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap;}
+#sb-logout:hover{background:rgba(231,76,60,0.28);}
+#sidebar.collapsed #sb-logout{justify-content:center;padding:9px;}
+#sidebar.collapsed #sb-logout-label{display:none;}
 
 /* ── Main ── */
 #main-content{margin-left:220px;flex:1;display:flex;flex-direction:column;min-height:100vh;transition:margin-left 0.25s;background:#f0f4f8;}
 body.sb-collapsed #main-content{margin-left:52px;}
-
-/* ── Top Header ── */
 #top-header{background:#fff;border-bottom:1px solid #e0e8f0;padding:12px 24px;display:flex;align-items:center;gap:16px;position:sticky;top:0;z-index:100;box-shadow:0 1px 4px rgba(0,0,0,0.06);}
 #page-title{font-size:18px;font-weight:700;color:#1a2b3c;}
 #header-actions{display:flex;gap:8px;margin-left:auto;}
@@ -55,84 +58,64 @@ body.sb-collapsed #main-content{margin-left:52px;}
 .btn-add{background:#2e86c1;color:#fff;}
 .btn-filter{background:#f0f4f8;color:#1a2b3c;border:1.5px solid #d0dce8;}
 .btn-print{background:#117a65;color:#fff;}
-
-/* ── Page Body ── */
 #page-body{padding:20px 24px;flex:1;}
 
-/* ── Stats Bar ── */
+/* ── Stats ── */
 #stats-bar{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:20px;}
 .stat-card{background:#fff;border-radius:10px;padding:14px 16px;box-shadow:0 1px 6px rgba(0,0,0,0.07);border-left:4px solid #ccc;}
-.stat-card.active{border-left-color:#2e86c1;}
-.stat-card.hold{border-left-color:#e74c3c;}
-.stat-card.accounts{border-left-color:#e67e22;}
-.stat-card.admin{border-left-color:#8e44ad;}
-.stat-card.done{border-left-color:#27ae60;}
+.stat-card.s-active{border-left-color:#2e86c1;}.stat-card.s-hold{border-left-color:#e74c3c;}
+.stat-card.s-accounts{border-left-color:#e67e22;}.stat-card.s-admin{border-left-color:#8e44ad;}
+.stat-card.s-done{border-left-color:#27ae60;}
 .stat-num{font-size:26px;font-weight:700;color:#1a2b3c;line-height:1;}
 .stat-label{font-size:11px;color:#888;margin-top:3px;font-weight:600;}
 
-/* ── Filter Bar ── */
+/* ── Filter ── */
 #filter-bar{background:#fff;border-radius:10px;padding:12px 16px;margin-bottom:16px;display:flex;gap:12px;align-items:center;flex-wrap:wrap;box-shadow:0 1px 6px rgba(0,0,0,0.06);}
 #filter-bar select,#filter-bar input{padding:7px 10px;font-size:13px;border:1.5px solid #d0dce8;border-radius:7px;font-family:'Calibri',sans-serif;background:#f7fafd;}
-#filter-bar select:focus,#filter-bar input:focus{border-color:#2e86c1;outline:none;}
 #filter-search{flex:1;min-width:180px;}
 .filter-label{font-size:12px;font-weight:700;color:#5a7a9a;white-space:nowrap;}
 
-/* ── Location Group ── */
+/* ── Location groups ── */
 .loc-group{margin-bottom:24px;}
 .loc-header{display:flex;align-items:center;gap:10px;margin-bottom:12px;padding-bottom:8px;border-bottom:2px solid #d0dce8;}
 .loc-title{font-size:16px;font-weight:700;color:#1a2b3c;}
 .loc-count{background:#e8f0fe;color:#2e86c1;font-size:12px;font-weight:700;padding:2px 8px;border-radius:20px;}
-.loc-icon{font-size:18px;}
-.cards-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:14px;}
+.cards-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(310px,1fr));gap:14px;}
 
-/* ── Job Card ── */
-.job-card{background:#fff;border-radius:12px;box-shadow:0 2px 10px rgba(0,0,0,0.07);overflow:hidden;transition:transform 0.15s,box-shadow 0.15s;cursor:pointer;}
+/* ── Cards ── */
+.job-card{background:#fff;border-radius:12px;box-shadow:0 2px 10px rgba(0,0,0,0.07);overflow:hidden;transition:transform 0.15s,box-shadow 0.15s;}
 .job-card:hover{transform:translateY(-2px);box-shadow:0 4px 16px rgba(0,0,0,0.12);}
 .card-top{padding:12px 14px 10px;border-bottom:1px solid #f0f4f8;}
 .card-emp{display:flex;align-items:center;gap:8px;margin-bottom:6px;}
 .emp-badge{background:#1a2b3c;color:#fff;font-size:11px;font-weight:700;padding:2px 7px;border-radius:4px;}
 .emp-name{font-size:14px;font-weight:700;color:#1a2b3c;}
-.card-type-row{display:flex;align-items:center;gap:8px;}
+.card-type-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
 .job-type-badge{font-size:11px;font-weight:700;padding:3px 9px;border-radius:20px;white-space:nowrap;}
-.type-vacation{background:#dbeafe;color:#1d4ed8;}
-.type-resignation{background:#fee2e2;color:#b91c1c;}
-.type-termination{background:#fce7f3;color:#9d174d;}
-.type-encashment{background:#fef3c7;color:#92400e;}
-.type-housing{background:#d1fae5;color:#065f46;}
-.type-visitvisa{background:#ede9fe;color:#5b21b6;}
-.type-paf{background:#e0f2fe;color:#075985;}
-.type-resignrejoin{background:#ffedd5;color:#9a3412;}
+.type-vacation{background:#dbeafe;color:#1d4ed8;}.type-resignation{background:#fee2e2;color:#b91c1c;}
+.type-termination{background:#fce7f3;color:#9d174d;}.type-encashment{background:#fef3c7;color:#92400e;}
+.type-housing{background:#d1fae5;color:#065f46;}.type-visitvisa{background:#ede9fe;color:#5b21b6;}
+.type-paf{background:#e0f2fe;color:#075985;}.type-resignrejoin{background:#ffedd5;color:#9a3412;}
 .type-emailrequest{background:#f3f4f6;color:#374151;}
-.status-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+.status-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;display:inline-block;}
 .status-text{font-size:11px;font-weight:700;}
-.s-inprogress{color:#e67e22;}
-.s-inprogress .status-dot{background:#e67e22;}
-.s-hold{color:#e74c3c;}
-.s-hold .status-dot{background:#e74c3c;}
-.s-done{color:#27ae60;}
-.s-done .status-dot{background:#27ae60;}
+.s-inprogress .status-dot{background:#e67e22;}.s-inprogress{color:#e67e22;}
+.s-hold .status-dot{background:#e74c3c;}.s-hold{color:#e74c3c;}
+.s-done .status-dot{background:#27ae60;}.s-done{color:#27ae60;}
 .card-body{padding:10px 14px;}
 .card-field{display:flex;justify-content:space-between;align-items:center;padding:3px 0;font-size:12px;border-bottom:1px solid #f8f9fa;}
 .card-field:last-child{border-bottom:none;}
-.field-label{color:#888;font-weight:600;}
-.field-value{color:#1a2b3c;font-weight:600;text-align:right;}
-.field-value.highlight{color:#e67e22;font-weight:700;}
-.field-value.red{color:#e74c3c;font-weight:700;}
+.field-label{color:#888;font-weight:600;}.field-value{color:#1a2b3c;font-weight:600;text-align:right;}
+.field-value.highlight{color:#e67e22;font-weight:700;}.field-value.red{color:#e74c3c;font-weight:700;}
 .card-footer-bar{display:flex;gap:6px;padding:8px 14px;background:#f8fafc;border-top:1px solid #f0f4f8;}
 .card-action-btn{flex:1;padding:6px 0;font-size:12px;font-weight:700;border:none;border-radius:6px;cursor:pointer;transition:filter 0.15s;}
 .card-action-btn:hover{filter:brightness(0.92);}
-.btn-update-status{background:#2e86c1;color:#fff;}
-.btn-view{background:#f0f4f8;color:#1a2b3c;}
-.btn-complete{background:#27ae60;color:#fff;}
+.btn-update-status{background:#2e86c1;color:#fff;}.btn-complete{background:#27ae60;color:#fff;}
+.btn-edit{background:#f0f4f8;color:#1a2b3c;}
 .hold-reason{font-size:11px;color:#e74c3c;font-weight:700;padding:4px 14px;background:#fff5f5;border-top:1px solid #fecaca;}
-
-/* ── Empty State ── */
 .empty-state{text-align:center;padding:60px 20px;color:#aab;}
-.empty-state-icon{font-size:48px;margin-bottom:12px;}
-.empty-state h3{font-size:16px;font-weight:700;color:#888;margin-bottom:6px;}
-.empty-state p{font-size:13px;}
+.empty-icon{font-size:48px;margin-bottom:12px;}
 
-/* ── Modal ── */
+/* ── Modals ── */
 #modal-overlay{display:none;position:fixed;inset:0;background:rgba(10,25,40,0.6);z-index:500;align-items:center;justify-content:center;}
 #modal-overlay.open{display:flex;}
 #modal-box{background:#fff;border-radius:14px;width:640px;max-width:95vw;max-height:90vh;overflow-y:auto;box-shadow:0 8px 40px rgba(0,0,0,0.25);}
@@ -148,14 +131,12 @@ body.sb-collapsed #main-content{margin-left:52px;}
 .form-field input,.form-field select,.form-field textarea{padding:8px 10px;font-size:13px;border:1.5px solid #d0dce8;border-radius:7px;font-family:'Calibri',sans-serif;background:#f7fafd;}
 .form-field input:focus,.form-field select:focus,.form-field textarea:focus{border-color:#2e86c1;outline:none;background:#fff;}
 .form-field textarea{resize:vertical;min-height:60px;}
-.form-section-hdr{grid-column:1/-1;font-size:13px;font-weight:700;color:#fff;background:#1a5276;padding:6px 10px;border-radius:5px;margin-top:6px;}
+.form-section-hdr{grid-column:1/-1;font-size:13px;font-weight:700;color:#fff;background:#1a5276;padding:6px 10px;border-radius:5px;margin-top:4px;}
 #modal-footer{padding:14px 20px;border-top:1px solid #e8eef5;display:flex;gap:10px;justify-content:flex-end;position:sticky;bottom:0;background:#fff;}
 .modal-btn{padding:9px 22px;font-size:13px;font-weight:700;border:none;border-radius:8px;cursor:pointer;}
-.modal-btn-save{background:#2e86c1;color:#fff;}
-.modal-btn-cancel{background:#f0f4f8;color:#1a2b3c;}
+.modal-btn-save{background:#2e86c1;color:#fff;}.modal-btn-cancel{background:#f0f4f8;color:#1a2b3c;}
 .modal-btn-complete{background:#27ae60;color:#fff;}
 
-/* ── Status Update Modal ── */
 #status-modal{display:none;position:fixed;inset:0;background:rgba(10,25,40,0.6);z-index:600;align-items:center;justify-content:center;}
 #status-modal.open{display:flex;}
 #status-box{background:#fff;border-radius:14px;width:420px;max-width:95vw;box-shadow:0 8px 40px rgba(0,0,0,0.25);overflow:hidden;}
@@ -167,74 +148,63 @@ body.sb-collapsed #main-content{margin-left:52px;}
 .status-option{display:flex;align-items:center;gap:10px;padding:10px 12px;border:1.5px solid #e0e8f0;border-radius:8px;cursor:pointer;transition:all 0.15s;font-size:13px;font-weight:600;}
 .status-option:hover{border-color:#2e86c1;background:#f0f8ff;}
 .status-option.selected{border-color:#2e86c1;background:#dbeafe;}
-.status-option input[type=radio]{accent-color:#2e86c1;}
 #hold-reason-field{display:none;margin-top:8px;}
 #hold-reason-field textarea{width:100%;padding:8px;font-size:13px;border:1.5px solid #d0dce8;border-radius:7px;font-family:'Calibri',sans-serif;resize:vertical;min-height:60px;}
 #status-footer{padding:12px 18px;border-top:1px solid #e8eef5;display:flex;gap:8px;justify-content:flex-end;}
 
-/* ── Completed Jobs View ── */
-#completed-section{margin-top:24px;display:none;}
-#completed-toggle{background:none;border:1.5px solid #d0dce8;border-radius:8px;padding:8px 16px;font-size:13px;font-weight:700;color:#888;cursor:pointer;display:flex;align-items:center;gap:8px;}
-#completed-toggle:hover{background:#f0f4f8;}
-
-/* ── Print ── */
-@media print{
-  #sidebar,#top-header,#filter-bar,#stats-bar,#header-actions,#modal-overlay,#status-modal,.card-footer-bar,.card-action-btn,#completed-toggle{display:none!important;}
-  #main-content{margin-left:0!important;}
-  .job-card{break-inside:avoid;box-shadow:none;border:1px solid #ddd;}
-}
-
-/* ── Responsive ── */
-@media(max-width:768px){
-  #stats-bar{grid-template-columns:repeat(3,1fr);}
-  .cards-grid{grid-template-columns:1fr;}
-  #main-content{margin-left:52px;}
-  #sidebar{width:52px;min-width:52px;}
-  #sidebar .sb-label,#sidebar #sb-title,#sidebar .sb-section-label{opacity:0;width:0;overflow:hidden;}
-  #sidebar .sb-item{padding:10px 0;justify-content:center;}
-}
+@media print{#sidebar,#top-header,#filter-bar,#stats-bar,.card-footer-bar,#modal-overlay,#status-modal{display:none!important;}#main-content{margin-left:0!important;}.job-card{break-inside:avoid;border:1px solid #ddd;}}
 </style>
 </head>
 <body>
 
-<!-- ── Sidebar ── -->
+<div id="layout">
+
+<!-- ── Unified Sidebar ── -->
 <aside id="sidebar">
   <div id="sb-header">
     <img src="https://nour292.github.io/Nourdata/nour_energy_logo.png" alt="Logo" id="sb-logo">
-    <div id="sb-title">Nour Energy<small>Job Tracker</small></div>
+    <div id="sb-title">Nour Energy<small>HR System</small></div>
     <button id="sb-toggle" onclick="toggleSidebar()">&#9776;</button>
   </div>
   <nav id="sb-nav">
-    <div class="sb-section-label">Views</div>
-    <button class="sb-item active" onclick="setView('active')">
-      <span class="sb-icon">📋</span><span class="sb-label">Active Jobs</span>
-    </button>
-    <button class="sb-item" onclick="setView('completed')">
-      <span class="sb-icon">✅</span><span class="sb-label">Completed</span>
-    </button>
-    <div class="sb-divider"></div>
-    <div class="sb-section-label">Locations</div>
-    <button class="sb-item" onclick="filterLocation('All')">
-      <span class="sb-icon">🌐</span><span class="sb-label">All Locations</span>
-    </button>
-    <button class="sb-item" onclick="filterLocation('Dammam')">
-      <span class="sb-icon">📍</span><span class="sb-label">Dammam</span>
-    </button>
-    <button class="sb-item" onclick="filterLocation('Jeddah')">
-      <span class="sb-icon">📍</span><span class="sb-label">Jeddah</span>
-    </button>
-    <button class="sb-item" onclick="filterLocation('Riyadh')">
-      <span class="sb-icon">📍</span><span class="sb-label">Riyadh</span>
-    </button>
-    <div class="sb-divider"></div>
-    <div class="sb-section-label">Actions</div>
-    <button class="sb-item" onclick="openAddModal()">
-      <span class="sb-icon">➕</span><span class="sb-label">Add New Job</span>
-    </button>
+
+    <!-- Employee Data -->
+    <div class="sb-group">
+      <button class="sb-group-hdr" onclick="toggleGroup('grp-emp')">
+        <span class="sb-icon">👤</span>
+        <span class="sb-label">Employee Data</span>
+        <span class="sb-arrow" id="arrow-grp-emp">▸</span>
+      </button>
+      <div class="sb-group-items" id="grp-emp" style="display:none;">
+        <button class="sb-item" onclick="window.location.href='index.html'"><span class="sb-icon">🔎</span><span class="sb-label">Employee Search</span></button>
+        <button class="sb-item" onclick="window.location.href='index.html'"><span class="sb-icon">📊</span><span class="sb-label">Dashboard</span></button>
+        <button class="sb-item" onclick="window.location.href='index.html'"><span class="sb-icon">🔍</span><span class="sb-label">Deep Search</span></button>
+        <button class="sb-item" onclick="window.location.href='index.html'"><span class="sb-icon">📋</span><span class="sb-label">Smart Lists</span></button>
+      </div>
+    </div>
+
+    <!-- Job Tracker -->
+    <div class="sb-group">
+      <button class="sb-group-hdr active-group" onclick="toggleGroup('grp-tracker')">
+        <span class="sb-icon">📌</span>
+        <span class="sb-label">Job Tracker</span>
+        <span class="sb-arrow" id="arrow-grp-tracker">▾</span>
+      </button>
+      <div class="sb-group-items" id="grp-tracker">
+        <button class="sb-item active" id="sb-active" onclick="setView('active')"><span class="sb-icon">📋</span><span class="sb-label">Active Jobs</span></button>
+        <button class="sb-item" id="sb-completed" onclick="setView('completed')"><span class="sb-icon">✅</span><span class="sb-label">Completed</span></button>
+        <button class="sb-item" onclick="filterLocation('All')"><span class="sb-icon">🌐</span><span class="sb-label">All Locations</span></button>
+        <button class="sb-item" onclick="filterLocation('Dammam')"><span class="sb-icon">📍</span><span class="sb-label">Dammam</span></button>
+        <button class="sb-item" onclick="filterLocation('Jeddah')"><span class="sb-icon">📍</span><span class="sb-label">Jeddah</span></button>
+        <button class="sb-item" onclick="filterLocation('Riyadh')"><span class="sb-icon">📍</span><span class="sb-label">Riyadh</span></button>
+        <button class="sb-item" onclick="openAddModal()"><span class="sb-icon">➕</span><span class="sb-label">Add New Job</span></button>
+      </div>
+    </div>
+
   </nav>
   <div id="sb-footer">
-    <button id="sb-back" onclick="window.location.href='https://nour292.github.io/Nourdata/'">
-      <span>⬅</span><span id="sb-back-label">Back to HR App</span>
+    <button id="sb-logout" onclick="if(confirm('Logout?'))window.location.href='index.html'">
+      <span>⏻</span><span id="sb-logout-label">Logout</span>
     </button>
   </div>
 </aside>
@@ -249,50 +219,34 @@ body.sb-collapsed #main-content{margin-left:52px;}
       <button class="hdr-btn btn-print" onclick="window.print()">🖨 Print</button>
     </div>
   </div>
-
   <div id="page-body">
-    <!-- Stats -->
     <div id="stats-bar">
-      <div class="stat-card active"><div class="stat-num" id="stat-active">0</div><div class="stat-label">Active Jobs</div></div>
-      <div class="stat-card hold"><div class="stat-num" id="stat-hold">0</div><div class="stat-label">On Hold</div></div>
-      <div class="stat-card accounts"><div class="stat-num" id="stat-accounts">0</div><div class="stat-label">With Accounts</div></div>
-      <div class="stat-card admin"><div class="stat-num" id="stat-admin">0</div><div class="stat-label">With Admin</div></div>
-      <div class="stat-card done"><div class="stat-num" id="stat-done">0</div><div class="stat-label">Done This Month</div></div>
+      <div class="stat-card s-active"><div class="stat-num" id="stat-active">0</div><div class="stat-label">Active Jobs</div></div>
+      <div class="stat-card s-hold"><div class="stat-num" id="stat-hold">0</div><div class="stat-label">On Hold</div></div>
+      <div class="stat-card s-accounts"><div class="stat-num" id="stat-accounts">0</div><div class="stat-label">With Accounts</div></div>
+      <div class="stat-card s-admin"><div class="stat-num" id="stat-admin">0</div><div class="stat-label">With Admin</div></div>
+      <div class="stat-card s-done"><div class="stat-num" id="stat-done">0</div><div class="stat-label">Done This Month</div></div>
     </div>
-
-    <!-- Filter Bar -->
     <div id="filter-bar" style="display:none;">
       <span class="filter-label">Filter:</span>
-      <input type="text" id="filter-search" placeholder="Search name or emp#..." oninput="applyFilters()">
-      <select id="filter-type" onchange="applyFilters()">
+      <input type="text" id="filter-search" placeholder="Search name or emp#..." oninput="renderJobs()">
+      <select id="filter-type" onchange="renderJobs()">
         <option value="">All Types</option>
-        <option>Vacation</option>
-        <option>Resignation</option>
-        <option>Termination</option>
-        <option>Encashment</option>
-        <option>Housing</option>
-        <option>Visit Visa</option>
-        <option>PAF</option>
-        <option>Resign & Rejoin</option>
-        <option>Email Request</option>
+        <option>Vacation</option><option>Resignation</option><option>Termination</option>
+        <option>Encashment</option><option>Housing</option><option>Visit Visa</option>
+        <option>PAF</option><option>Resign & Rejoin</option><option>Email Request</option>
       </select>
-      <select id="filter-status" onchange="applyFilters()">
+      <select id="filter-status" onchange="renderJobs()">
         <option value="">All Statuses</option>
-        <option>With Admin</option>
-        <option>Clearance - Fleet</option>
-        <option>Clearance - Warehouse</option>
-        <option>With Accounts</option>
-        <option>Computation - Signing</option>
-        <option>Visa Processing</option>
-        <option>With IT</option>
-        <option>On Hold</option>
+        <option>With Admin</option><option>Clearance - Fleet</option><option>Clearance - Warehouse</option>
+        <option>With Accounts</option><option>Computation - Signing</option>
+        <option>Visa Processing</option><option>With IT</option><option>On Hold</option>
       </select>
-      <button class="hdr-btn btn-filter" onclick="clearFilters()">✕ Clear</button>
+      <button class="hdr-btn btn-filter" onclick="document.getElementById('filter-search').value='';document.getElementById('filter-type').value='';document.getElementById('filter-status').value='';renderJobs();">✕ Clear</button>
     </div>
-
-    <!-- Jobs List -->
     <div id="jobs-container"></div>
   </div>
+</div>
 </div>
 
 <!-- ── Add/Edit Modal ── -->
@@ -305,120 +259,49 @@ body.sb-collapsed #main-content{margin-left:52px;}
     <div id="modal-body">
       <div class="form-grid">
         <div class="form-section-hdr">Employee Information</div>
-        <div class="form-field">
-          <label>Employee Number *</label>
-          <input type="text" id="f-empnum" placeholder="e.g. 4209">
+        <div class="form-field"><label>Employee Number *</label><input type="text" id="f-empnum" placeholder="e.g. 4209"></div>
+        <div class="form-field"><label>Employee Name *</label><input type="text" id="f-empname" placeholder="Full name"></div>
+        <div class="form-field"><label>Location *</label>
+          <select id="f-location"><option value="">-- Select --</option><option>Dammam</option><option>Jeddah</option><option>Riyadh</option></select>
         </div>
-        <div class="form-field">
-          <label>Employee Name *</label>
-          <input type="text" id="f-empname" placeholder="Full name">
-        </div>
-        <div class="form-field">
-          <label>Location *</label>
-          <select id="f-location">
-            <option value="">-- Select --</option>
-            <option>Dammam</option>
-            <option>Jeddah</option>
-            <option>Riyadh</option>
-          </select>
-        </div>
-        <div class="form-field">
-          <label>Iqama Expiry</label>
-          <input type="text" id="f-iqama" placeholder="DD-MMM-YY">
-        </div>
-
+        <div class="form-field"><label>Iqama Expiry</label><input type="text" id="f-iqama" placeholder="DD-MMM-YY"></div>
         <div class="form-section-hdr">Job Details</div>
-        <div class="form-field">
-          <label>Job Type *</label>
+        <div class="form-field"><label>Job Type *</label>
           <select id="f-type" onchange="toggleDateFields()">
             <option value="">-- Select --</option>
-            <option>Vacation</option>
-            <option>Resignation</option>
-            <option>Termination</option>
-            <option>Encashment</option>
-            <option>Housing</option>
-            <option>Visit Visa</option>
-            <option>PAF</option>
-            <option>Resign & Rejoin</option>
-            <option>Email Request</option>
+            <option>Vacation</option><option>Resignation</option><option>Termination</option>
+            <option>Encashment</option><option>Housing</option><option>Visit Visa</option>
+            <option>PAF</option><option>Resign & Rejoin</option><option>Email Request</option>
           </select>
         </div>
-        <div class="form-field">
-          <label>Current Status *</label>
-          <select id="f-status">
+        <div class="form-field"><label>Current Status *</label>
+          <select id="f-status" onchange="toggleDateFields()">
             <option value="">-- Select --</option>
-            <option>With Admin</option>
-            <option>Clearance - Fleet</option>
-            <option>Clearance - Warehouse</option>
-            <option>With Accounts</option>
-            <option>Computation - Signing</option>
-            <option>Visa Processing</option>
-            <option>With IT</option>
-            <option>On Hold</option>
+            <option>With Admin</option><option>Clearance - Fleet</option><option>Clearance - Warehouse</option>
+            <option>With Accounts</option><option>Computation - Signing</option>
+            <option>Visa Processing</option><option>With IT</option><option>On Hold</option>
           </select>
         </div>
         <div class="form-field full" id="hold-reason-row" style="display:none;">
-          <label>Hold Reason</label>
-          <input type="text" id="f-holdreason" placeholder="e.g. No Timesheet, Pending Signature...">
+          <label>Hold Reason</label><input type="text" id="f-holdreason" placeholder="e.g. No Timesheet, Pending Signature...">
         </div>
-
-        <div class="form-section-hdr" id="dates-section">Dates</div>
-        <div class="form-field" id="row-leave-date">
-          <label>Leave Date</label>
-          <input type="text" id="f-leavedate" placeholder="DD-MMM-YY">
+        <div class="form-section-hdr">Dates</div>
+        <div class="form-field" id="row-leave"><label>Leave Date</label><input type="text" id="f-leavedate" placeholder="DD-MMM-YY"></div>
+        <div class="form-field" id="row-return"><label>Expected Return</label><input type="text" id="f-returndate" placeholder="DD-MMM-YY"></div>
+        <div class="form-field" id="row-actual"><label>Actual Return</label><input type="text" id="f-actualreturn" placeholder="DD-MMM-YY"></div>
+        <div class="form-field" id="row-days"><label>Days</label><input type="text" id="f-days" placeholder="e.g. 091"></div>
+        <div class="form-field" id="row-ext"><label>Extension Date</label><input type="text" id="f-extdate" placeholder="DD-MMM-YY"></div>
+        <div class="form-field" id="row-extdays"><label>Extension Days</label><input type="text" id="f-extdays" placeholder="e.g. 30 days"></div>
+        <div class="form-field" id="row-hstart"><label>Housing Start</label><input type="text" id="f-housingstart" placeholder="DD-MMM-YY"></div>
+        <div class="form-field" id="row-hend"><label>Housing End</label><input type="text" id="f-housingend" placeholder="DD-MMM-YY"></div>
+        <div class="form-section-hdr">Documents</div>
+        <div class="form-field"><label>Ticket Submitted</label>
+          <select id="f-ticket"><option value="">--</option><option>Yes</option><option>No</option><option>Submitted</option></select>
         </div>
-        <div class="form-field" id="row-return-date">
-          <label>Expected Return</label>
-          <input type="text" id="f-returndate" placeholder="DD-MMM-YY">
+        <div class="form-field"><label>Return Ticket</label>
+          <select id="f-returnticket"><option value="">--</option><option>Yes</option><option>No</option></select>
         </div>
-        <div class="form-field" id="row-actual-return">
-          <label>Actual Return</label>
-          <input type="text" id="f-actualreturn" placeholder="DD-MMM-YY">
-        </div>
-        <div class="form-field" id="row-days">
-          <label>Days</label>
-          <input type="text" id="f-days" placeholder="e.g. 091 Days">
-        </div>
-        <div class="form-field" id="row-ext-date">
-          <label>Extension Date</label>
-          <input type="text" id="f-extdate" placeholder="DD-MMM-YY">
-        </div>
-        <div class="form-field" id="row-ext-days">
-          <label>Extension Days</label>
-          <input type="text" id="f-extdays" placeholder="e.g. 30 days">
-        </div>
-        <div class="form-field" id="row-housing-start">
-          <label>Housing Start</label>
-          <input type="text" id="f-housingstart" placeholder="DD-MMM-YY">
-        </div>
-        <div class="form-field" id="row-housing-end">
-          <label>Housing End</label>
-          <input type="text" id="f-housingend" placeholder="DD-MMM-YY">
-        </div>
-
-        <div class="form-section-hdr">Ticket & Documents</div>
-        <div class="form-field">
-          <label>Ticket Submitted</label>
-          <select id="f-ticket">
-            <option value="">--</option>
-            <option>Yes</option>
-            <option>No</option>
-            <option>Submitted</option>
-          </select>
-        </div>
-        <div class="form-field">
-          <label>Return Ticket</label>
-          <select id="f-returnticket">
-            <option value="">--</option>
-            <option>Yes</option>
-            <option>No</option>
-          </select>
-        </div>
-
-        <div class="form-field full">
-          <label>Notes</label>
-          <textarea id="f-notes" placeholder="Any additional notes..."></textarea>
-        </div>
+        <div class="form-field full"><label>Notes</label><textarea id="f-notes" placeholder="Any additional notes..."></textarea></div>
       </div>
     </div>
     <div id="modal-footer">
@@ -428,7 +311,7 @@ body.sb-collapsed #main-content{margin-left:52px;}
   </div>
 </div>
 
-<!-- ── Status Update Modal ── -->
+<!-- ── Status Modal ── -->
 <div id="status-modal">
   <div id="status-box">
     <div id="status-header">
@@ -440,458 +323,305 @@ body.sb-collapsed #main-content{margin-left:52px;}
       <div class="status-options" id="status-options-list"></div>
       <div id="hold-reason-field">
         <label style="font-size:12px;font-weight:700;color:#e74c3c;">Hold Reason *</label>
-        <textarea id="hold-reason-input" placeholder="Explain why it's on hold..."></textarea>
+        <textarea id="hold-reason-input" placeholder="Explain why on hold..."></textarea>
       </div>
     </div>
     <div id="status-footer">
       <button class="modal-btn modal-btn-cancel" onclick="closeStatusModal()">Cancel</button>
-      <button class="modal-btn modal-btn-complete" onclick="markComplete()">✅ Mark as Done & Closed</button>
-      <button class="modal-btn modal-btn-save" onclick="saveStatus()">Update Status</button>
+      <button class="modal-btn modal-btn-complete" onclick="markComplete()">✅ Done & Closed</button>
+      <button class="modal-btn modal-btn-save" onclick="saveStatus()">Update</button>
     </div>
   </div>
 </div>
 
 <script>
-// ── Storage key ──
 const STORE_KEY = 'ne_tracker_jobs';
+let jobs = [], editingJobId = null, statusJobId = null;
+let currentLocationFilter = 'All', currentView = 'active';
 
-// ── Jobs data ──
-let jobs = [];
-let editingJobId = null;
-let statusJobId = null;
-let currentLocationFilter = 'All';
-let currentView = 'active';
+function loadJobs() { try { jobs = JSON.parse(localStorage.getItem(STORE_KEY)||'[]'); } catch(e){ jobs=[]; } }
+function saveJobs() { localStorage.setItem(STORE_KEY, JSON.stringify(jobs)); }
+function genId() { return 'j'+Date.now()+Math.random().toString(36).slice(2,6); }
 
-// ── Load from localStorage ──
-function loadJobs() {
-  try { jobs = JSON.parse(localStorage.getItem(STORE_KEY) || '[]'); } catch(e) { jobs = []; }
-}
-
-function saveJobs() {
-  localStorage.setItem(STORE_KEY, JSON.stringify(jobs));
-}
-
-// ── ID generator ──
-function genId() { return 'j' + Date.now() + Math.random().toString(36).slice(2,6); }
-
-// ── Sidebar ──
 function toggleSidebar() {
   document.body.classList.toggle('sb-collapsed');
   document.getElementById('sidebar').classList.toggle('collapsed');
 }
 
-function filterLocation(loc) {
-  currentLocationFilter = loc;
-  document.querySelectorAll('#sb-nav .sb-item').forEach(b => b.classList.remove('active'));
-  renderJobs();
+function toggleGroup(id) {
+  const el = document.getElementById(id);
+  const arrow = document.getElementById('arrow-'+id);
+  const open = el.style.display !== 'none';
+  el.style.display = open ? 'none' : 'block';
+  if (arrow) arrow.textContent = open ? '▸' : '▾';
+  if (el.previousElementSibling) el.previousElementSibling.classList.toggle('active-group', !open);
+}
+
+function toggleFilterBar() {
+  const fb = document.getElementById('filter-bar');
+  fb.style.display = fb.style.display==='none' ? 'flex' : 'none';
 }
 
 function setView(v) {
   currentView = v;
-  document.getElementById('page-title').textContent = v === 'active' ? '📋 Active Jobs' : '✅ Completed Jobs';
-  document.querySelectorAll('#sb-nav .sb-item').forEach((b,i) => { if(i===0&&v==='active'||i===1&&v==='completed') b.classList.add('active'); else b.classList.remove('active'); });
+  document.getElementById('page-title').textContent = v==='active' ? '📋 Active Jobs' : '✅ Completed Jobs';
+  document.getElementById('sb-active').classList.toggle('active', v==='active');
+  document.getElementById('sb-completed').classList.toggle('active', v==='completed');
   renderJobs();
 }
 
-// ── Filter bar ──
-function toggleFilterBar() {
-  const fb = document.getElementById('filter-bar');
-  fb.style.display = fb.style.display === 'none' ? 'flex' : 'none';
-}
-
-function applyFilters() { renderJobs(); }
-
-function clearFilters() {
-  document.getElementById('filter-search').value = '';
-  document.getElementById('filter-type').value = '';
-  document.getElementById('filter-status').value = '';
+function filterLocation(loc) {
+  currentLocationFilter = loc;
   renderJobs();
 }
 
-// ── Status helpers ──
 const STATUS_LIST = [
-  { val:'With Admin',            icon:'🏢', cls:'s-inprogress' },
-  { val:'Clearance - Fleet',     icon:'🚗', cls:'s-inprogress' },
-  { val:'Clearance - Warehouse', icon:'📦', cls:'s-inprogress' },
-  { val:'With Accounts',         icon:'💰', cls:'s-inprogress' },
-  { val:'Computation - Signing', icon:'✍️', cls:'s-inprogress' },
-  { val:'Visa Processing',       icon:'🛂', cls:'s-inprogress' },
-  { val:'With IT',               icon:'💻', cls:'s-inprogress' },
-  { val:'On Hold',               icon:'🔴', cls:'s-hold'       },
+  {val:'With Admin',icon:'🏢'},{val:'Clearance - Fleet',icon:'🚗'},
+  {val:'Clearance - Warehouse',icon:'📦'},{val:'With Accounts',icon:'💰'},
+  {val:'Computation - Signing',icon:'✍️'},{val:'Visa Processing',icon:'🛂'},
+  {val:'With IT',icon:'💻'},{val:'On Hold',icon:'🔴'},
 ];
 
-function statusClass(job) {
-  if (job.status === 'On Hold') return 's-hold';
-  if (job.status === 'Done & Closed') return 's-done';
+function statusCls(job) {
+  if (job.status==='On Hold') return 's-hold';
+  if (job.status==='Done & Closed') return 's-done';
   return 's-inprogress';
 }
 
 function statusIcon(job) {
-  const s = STATUS_LIST.find(x => x.val === job.status);
+  const s = STATUS_LIST.find(x=>x.val===job.status);
   return s ? s.icon : '📋';
 }
 
-function typeClass(type) {
-  const map = {
-    'Vacation':'type-vacation','Resignation':'type-resignation','Termination':'type-termination',
+function typeCls(type) {
+  const map={'Vacation':'type-vacation','Resignation':'type-resignation','Termination':'type-termination',
     'Encashment':'type-encashment','Housing':'type-housing','Visit Visa':'type-visitvisa',
-    'PAF':'type-paf','Resign & Rejoin':'type-resignrejoin','Email Request':'type-emailrequest'
-  };
-  return map[type] || 'type-paf';
+    'PAF':'type-paf','Resign & Rejoin':'type-resignrejoin','Email Request':'type-emailrequest'};
+  return map[type]||'type-paf';
 }
 
-// ── Days calculation ──
-function calcDaysAway(leaveDate, returnDate) {
-  if (!leaveDate || !returnDate) return null;
-  try {
-    const d1 = new Date(leaveDate.replace(/-/g,'/'));
-    const d2 = new Date(returnDate.replace(/-/g,'/'));
-    const diff = Math.round((d2 - d1) / 86400000);
-    return diff;
-  } catch(e) { return null; }
+function fld(label,val,cls='') {
+  return `<div class="card-field"><span class="field-label">${label}</span><span class="field-value ${cls}">${val}</span></div>`;
 }
 
-function daysFromNow(dateStr) {
-  if (!dateStr) return null;
-  try {
-    const d = new Date(dateStr.replace(/-/g,'/'));
-    const today = new Date();
-    today.setHours(0,0,0,0);
-    return Math.round((d - today) / 86400000);
-  } catch(e) { return null; }
-}
-
-// ── Render stats ──
-function renderStats() {
-  const active = jobs.filter(j => j.status !== 'Done & Closed').length;
-  const hold   = jobs.filter(j => j.status === 'On Hold').length;
-  const acc    = jobs.filter(j => j.status === 'With Accounts').length;
-  const adm    = jobs.filter(j => j.status === 'With Admin').length;
-  const now    = new Date();
-  const done   = jobs.filter(j => {
-    if (j.status !== 'Done & Closed' || !j.closedAt) return false;
-    const d = new Date(j.closedAt);
-    return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
-  }).length;
-  document.getElementById('stat-active').textContent = active;
-  document.getElementById('stat-hold').textContent = hold;
-  document.getElementById('stat-accounts').textContent = acc;
-  document.getElementById('stat-admin').textContent = adm;
-  document.getElementById('stat-done').textContent = done;
-}
-
-// ── Render one card ──
 function renderCard(job) {
-  const sc = statusClass(job);
-  const si = statusIcon(job);
-  const tc = typeClass(job.type);
+  const sc=statusCls(job), si=statusIcon(job), tc=typeCls(job.type);
+  let body='';
+  if(job.leaveDate) body+=fld('Leave Date',job.leaveDate);
+  if(job.returnDate) body+=fld('Expected Return',job.returnDate);
+  if(job.actualReturn) body+=fld('Actual Return',job.actualReturn,'highlight');
+  if(job.days) body+=fld('Days',job.days);
+  if(job.extDate) body+=fld('Extension To',job.extDate);
+  if(job.extDays) body+=fld('Ext. Days',job.extDays);
+  if(job.housingStart) body+=fld('Housing Start',job.housingStart);
+  if(job.housingEnd) body+=fld('Housing End',job.housingEnd);
+  if(job.ticket) body+=fld('Ticket',job.ticket);
+  if(job.returnTicket) body+=fld('Return Ticket',job.returnTicket);
+  if(job.iqama) body+=fld('Iqama Expiry',job.iqama);
+  if(job.notes) body+=fld('Notes',job.notes);
+  if(!body) body='<div style="color:#bbb;font-size:12px;text-align:center;padding:8px 0;">No details added</div>';
 
-  let fieldsHtml = '';
-  if (job.leaveDate)    fieldsHtml += field('Leave Date', job.leaveDate);
-  if (job.returnDate)   fieldsHtml += field('Expected Return', job.returnDate);
-  if (job.actualReturn) fieldsHtml += field('Actual Return', job.actualReturn, 'highlight');
-  if (job.days)         fieldsHtml += field('Days', job.days);
-  if (job.extDate)      fieldsHtml += field('Extension To', job.extDate);
-  if (job.extDays)      fieldsHtml += field('Extension Days', job.extDays);
-  if (job.housingStart) fieldsHtml += field('Housing Start', job.housingStart);
-  if (job.housingEnd)   fieldsHtml += field('Housing End', job.housingEnd);
-  if (job.ticket)       fieldsHtml += field('Ticket', job.ticket);
-  if (job.returnTicket) fieldsHtml += field('Return Ticket', job.returnTicket);
-  if (job.iqama)        fieldsHtml += field('Iqama Expiry', job.iqama);
-  if (job.notes)        fieldsHtml += field('Notes', job.notes);
-
-  const holdHtml = job.status === 'On Hold' && job.holdReason
-    ? `<div class="hold-reason">⚠️ ${job.holdReason}</div>` : '';
-
-  const footerHtml = job.status !== 'Done & Closed'
+  const holdHtml = job.status==='On Hold'&&job.holdReason ? `<div class="hold-reason">⚠️ ${job.holdReason}</div>` : '';
+  const footer = job.status!=='Done & Closed'
     ? `<div class="card-footer-bar">
-        <button class="card-action-btn btn-view" onclick="openEditModal('${job.id}')">✏️ Edit</button>
+        <button class="card-action-btn btn-edit" onclick="openEditModal('${job.id}')">✏️ Edit</button>
         <button class="card-action-btn btn-update-status" onclick="openStatusModal('${job.id}')">🔄 Status</button>
         <button class="card-action-btn btn-complete" onclick="quickComplete('${job.id}')">✅ Done</button>
        </div>`
     : `<div class="card-footer-bar">
-        <button class="card-action-btn btn-view" onclick="openEditModal('${job.id}')">👁 View</button>
+        <button class="card-action-btn btn-edit" onclick="openEditModal('${job.id}')">👁 View</button>
         <button class="card-action-btn" style="background:#e74c3c;color:#fff;flex:1;" onclick="deleteJob('${job.id}')">🗑 Delete</button>
        </div>`;
 
-  return `<div class="job-card" id="card-${job.id}">
+  return `<div class="job-card">
     <div class="card-top">
-      <div class="card-emp">
-        <span class="emp-badge">${job.empNum}</span>
-        <span class="emp-name">${job.empName}</span>
-      </div>
+      <div class="card-emp"><span class="emp-badge">${job.empNum}</span><span class="emp-name">${job.empName}</span></div>
       <div class="card-type-row">
         <span class="job-type-badge ${tc}">${job.type}</span>
         <span class="status-dot ${sc}"></span>
         <span class="status-text ${sc}">${si} ${job.status}</span>
       </div>
     </div>
-    <div class="card-body">${fieldsHtml || '<div style="color:#bbb;font-size:12px;text-align:center;padding:8px 0;">No date details</div>'}</div>
-    ${holdHtml}
-    ${footerHtml}
+    <div class="card-body">${body}</div>
+    ${holdHtml}${footer}
   </div>`;
 }
 
-function field(label, value, cls='') {
-  return `<div class="card-field"><span class="field-label">${label}</span><span class="field-value ${cls}">${value}</span></div>`;
+function renderStats() {
+  const now = new Date();
+  document.getElementById('stat-active').textContent = jobs.filter(j=>j.status!=='Done & Closed').length;
+  document.getElementById('stat-hold').textContent   = jobs.filter(j=>j.status==='On Hold').length;
+  document.getElementById('stat-accounts').textContent = jobs.filter(j=>j.status==='With Accounts').length;
+  document.getElementById('stat-admin').textContent  = jobs.filter(j=>j.status==='With Admin').length;
+  document.getElementById('stat-done').textContent   = jobs.filter(j=>{
+    if(j.status!=='Done & Closed'||!j.closedAt) return false;
+    const d=new Date(j.closedAt);
+    return d.getMonth()===now.getMonth()&&d.getFullYear()===now.getFullYear();
+  }).length;
 }
 
-// ── Render all jobs ──
 function renderJobs() {
   renderStats();
   const container = document.getElementById('jobs-container');
+  const search = (document.getElementById('filter-search')?.value||'').toLowerCase();
+  const typeF  = document.getElementById('filter-type')?.value||'';
+  const statusF= document.getElementById('filter-status')?.value||'';
 
-  const search = (document.getElementById('filter-search')?.value || '').toLowerCase();
-  const typeF  = document.getElementById('filter-type')?.value || '';
-  const statusF= document.getElementById('filter-status')?.value || '';
-
-  let filtered = jobs.filter(j => {
-    if (currentView === 'active' && j.status === 'Done & Closed') return false;
-    if (currentView === 'completed' && j.status !== 'Done & Closed') return false;
-    if (currentLocationFilter !== 'All' && j.location !== currentLocationFilter) return false;
-    if (search && !j.empName.toLowerCase().includes(search) && !j.empNum.includes(search)) return false;
-    if (typeF && j.type !== typeF) return false;
-    if (statusF && j.status !== statusF) return false;
+  let filtered = jobs.filter(j=>{
+    if(currentView==='active'&&j.status==='Done & Closed') return false;
+    if(currentView==='completed'&&j.status!=='Done & Closed') return false;
+    if(currentLocationFilter!=='All'&&j.location!==currentLocationFilter) return false;
+    if(search&&!j.empName.toLowerCase().includes(search)&&!j.empNum.includes(search)) return false;
+    if(typeF&&j.type!==typeF) return false;
+    if(statusF&&j.status!==statusF) return false;
     return true;
   });
 
-  if (filtered.length === 0) {
-    container.innerHTML = `<div class="empty-state"><div class="empty-state-icon">📭</div><h3>No jobs found</h3><p>${currentView==='active'?'Add a new job using the ➕ button above.':'No completed jobs yet.'}</p></div>`;
+  if(filtered.length===0){
+    container.innerHTML=`<div class="empty-state"><div class="empty-icon">📭</div><p style="font-size:15px;font-weight:700;color:#888;margin-bottom:6px;">No jobs found</p><p style="font-size:13px;color:#aab;">${currentView==='active'?'Add a new job using ➕ Add Job above.':'No completed jobs yet.'}</p></div>`;
     return;
   }
 
-  const locations = ['Dammam','Jeddah','Riyadh'];
-  const icons = { Dammam:'🏭', Jeddah:'🌊', Riyadh:'🏙' };
-  let html = '';
-
-  locations.forEach(loc => {
-    const locJobs = filtered.filter(j => j.location === loc);
-    if (locJobs.length === 0) return;
-    html += `<div class="loc-group">
-      <div class="loc-header">
-        <span class="loc-icon">${icons[loc]}</span>
-        <span class="loc-title">${loc}</span>
-        <span class="loc-count">${locJobs.length} job${locJobs.length!==1?'s':''}</span>
-      </div>
-      <div class="cards-grid">${locJobs.map(renderCard).join('')}</div>
-    </div>`;
+  const locs=['Dammam','Jeddah','Riyadh'];
+  const icons={Dammam:'🏭',Jeddah:'🌊',Riyadh:'🏙'};
+  let html='';
+  locs.forEach(loc=>{
+    const lj=filtered.filter(j=>j.location===loc);
+    if(!lj.length) return;
+    html+=`<div class="loc-group"><div class="loc-header"><span style="font-size:18px;">${icons[loc]}</span><span class="loc-title">${loc}</span><span class="loc-count">${lj.length} job${lj.length!==1?'s':''}</span></div><div class="cards-grid">${lj.map(renderCard).join('')}</div></div>`;
   });
-
-  // Jobs with unknown location
-  const otherJobs = filtered.filter(j => !locations.includes(j.location));
-  if (otherJobs.length > 0) {
-    html += `<div class="loc-group">
-      <div class="loc-header"><span class="loc-icon">📍</span><span class="loc-title">Other</span><span class="loc-count">${otherJobs.length}</span></div>
-      <div class="cards-grid">${otherJobs.map(renderCard).join('')}</div>
-    </div>`;
-  }
-
-  container.innerHTML = html;
+  const other=filtered.filter(j=>!locs.includes(j.location));
+  if(other.length) html+=`<div class="loc-group"><div class="loc-header"><span style="font-size:18px;">📍</span><span class="loc-title">Other</span><span class="loc-count">${other.length}</span></div><div class="cards-grid">${other.map(renderCard).join('')}</div></div>`;
+  container.innerHTML=html;
 }
 
-// ── Add/Edit Modal ──
 function openAddModal() {
-  editingJobId = null;
-  document.getElementById('modal-title').textContent = 'Add New Job';
-  clearForm();
+  editingJobId=null;
+  document.getElementById('modal-title').textContent='Add New Job';
+  ['f-empnum','f-empname','f-iqama','f-leavedate','f-returndate','f-actualreturn','f-days','f-extdate','f-extdays','f-housingstart','f-housingend','f-notes','f-holdreason'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});
+  ['f-location','f-type','f-status','f-ticket','f-returnticket'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});
   toggleDateFields();
   document.getElementById('modal-overlay').classList.add('open');
 }
 
 function openEditModal(id) {
-  editingJobId = id;
-  const job = jobs.find(j => j.id === id);
-  if (!job) return;
-  document.getElementById('modal-title').textContent = `Edit Job — ${job.empName}`;
-  document.getElementById('f-empnum').value    = job.empNum || '';
-  document.getElementById('f-empname').value   = job.empName || '';
-  document.getElementById('f-location').value  = job.location || '';
-  document.getElementById('f-iqama').value     = job.iqama || '';
-  document.getElementById('f-type').value      = job.type || '';
-  document.getElementById('f-status').value    = job.status || '';
-  document.getElementById('f-holdreason').value= job.holdReason || '';
-  document.getElementById('f-leavedate').value = job.leaveDate || '';
-  document.getElementById('f-returndate').value= job.returnDate || '';
-  document.getElementById('f-actualreturn').value= job.actualReturn || '';
-  document.getElementById('f-days').value      = job.days || '';
-  document.getElementById('f-extdate').value   = job.extDate || '';
-  document.getElementById('f-extdays').value   = job.extDays || '';
-  document.getElementById('f-housingstart').value= job.housingStart || '';
-  document.getElementById('f-housingend').value= job.housingEnd || '';
-  document.getElementById('f-ticket').value    = job.ticket || '';
-  document.getElementById('f-returnticket').value= job.returnTicket || '';
-  document.getElementById('f-notes').value     = job.notes || '';
+  editingJobId=id;
+  const j=jobs.find(x=>x.id===id); if(!j) return;
+  document.getElementById('modal-title').textContent=`Edit — ${j.empName}`;
+  document.getElementById('f-empnum').value=j.empNum||'';
+  document.getElementById('f-empname').value=j.empName||'';
+  document.getElementById('f-location').value=j.location||'';
+  document.getElementById('f-iqama').value=j.iqama||'';
+  document.getElementById('f-type').value=j.type||'';
+  document.getElementById('f-status').value=j.status||'';
+  document.getElementById('f-holdreason').value=j.holdReason||'';
+  document.getElementById('f-leavedate').value=j.leaveDate||'';
+  document.getElementById('f-returndate').value=j.returnDate||'';
+  document.getElementById('f-actualreturn').value=j.actualReturn||'';
+  document.getElementById('f-days').value=j.days||'';
+  document.getElementById('f-extdate').value=j.extDate||'';
+  document.getElementById('f-extdays').value=j.extDays||'';
+  document.getElementById('f-housingstart').value=j.housingStart||'';
+  document.getElementById('f-housingend').value=j.housingEnd||'';
+  document.getElementById('f-ticket').value=j.ticket||'';
+  document.getElementById('f-returnticket').value=j.returnTicket||'';
+  document.getElementById('f-notes').value=j.notes||'';
   toggleDateFields();
   document.getElementById('modal-overlay').classList.add('open');
 }
 
-function closeModal() {
-  document.getElementById('modal-overlay').classList.remove('open');
-  editingJobId = null;
-}
-
-function clearForm() {
-  ['f-empnum','f-empname','f-iqama','f-leavedate','f-returndate','f-actualreturn',
-   'f-days','f-extdate','f-extdays','f-housingstart','f-housingend','f-notes','f-holdreason'].forEach(id => {
-    const el = document.getElementById(id);
-    if (el) el.value = '';
-  });
-  ['f-location','f-type','f-status','f-ticket','f-returnticket'].forEach(id => {
-    const el = document.getElementById(id);
-    if (el) el.value = '';
-  });
-}
+function closeModal() { document.getElementById('modal-overlay').classList.remove('open'); editingJobId=null; }
 
 function toggleDateFields() {
-  const type = document.getElementById('f-type').value;
-  const status = document.getElementById('f-status').value;
-
-  const show = (id, visible) => {
-    const el = document.getElementById(id);
-    if (el) el.style.display = visible ? '' : 'none';
-  };
-
-  const isVacation   = type === 'Vacation' || type === 'Resign & Rejoin';
-  const isHousing    = type === 'Housing';
-  const hasLeave     = ['Vacation','Resignation','Termination','Resign & Rejoin'].includes(type);
-
-  show('row-leave-date',   hasLeave || isVacation);
-  show('row-return-date',  isVacation);
-  show('row-actual-return',isVacation);
-  show('row-days',         isVacation || hasLeave);
-  show('row-ext-date',     isVacation);
-  show('row-ext-days',     isVacation);
-  show('row-housing-start',isHousing);
-  show('row-housing-end',  isHousing);
-
-  const holdRow = document.getElementById('hold-reason-row');
-  if (holdRow) holdRow.style.display = status === 'On Hold' ? '' : 'none';
+  const type=document.getElementById('f-type').value;
+  const status=document.getElementById('f-status').value;
+  const show=(id,v)=>{const e=document.getElementById(id);if(e)e.style.display=v?'':'none';};
+  const isVac=['Vacation','Resign & Rejoin'].includes(type);
+  const hasLeave=['Vacation','Resignation','Termination','Resign & Rejoin'].includes(type);
+  const isHouse=type==='Housing';
+  show('row-leave',hasLeave||isVac); show('row-return',isVac);
+  show('row-actual',isVac); show('row-days',isVac||hasLeave);
+  show('row-ext',isVac); show('row-extdays',isVac);
+  show('row-hstart',isHouse); show('row-hend',isHouse);
+  show('hold-reason-row',status==='On Hold');
 }
-
-document.getElementById('f-status').addEventListener('change', toggleDateFields);
 
 function saveJob() {
-  const empNum  = document.getElementById('f-empnum').value.trim();
-  const empName = document.getElementById('f-empname').value.trim();
-  const location= document.getElementById('f-location').value;
-  const type    = document.getElementById('f-type').value;
-  const status  = document.getElementById('f-status').value;
-
-  if (!empNum || !empName || !location || !type || !status) {
-    alert('Please fill all required fields (Emp#, Name, Location, Type, Status).');
-    return;
-  }
-
-  const jobData = {
-    id:           editingJobId || genId(),
-    empNum, empName, location, type, status,
-    iqama:        document.getElementById('f-iqama').value.trim(),
-    holdReason:   document.getElementById('f-holdreason').value.trim(),
-    leaveDate:    document.getElementById('f-leavedate').value.trim(),
-    returnDate:   document.getElementById('f-returndate').value.trim(),
-    actualReturn: document.getElementById('f-actualreturn').value.trim(),
-    days:         document.getElementById('f-days').value.trim(),
-    extDate:      document.getElementById('f-extdate').value.trim(),
-    extDays:      document.getElementById('f-extdays').value.trim(),
-    housingStart: document.getElementById('f-housingstart').value.trim(),
-    housingEnd:   document.getElementById('f-housingend').value.trim(),
-    ticket:       document.getElementById('f-ticket').value,
-    returnTicket: document.getElementById('f-returnticket').value,
-    notes:        document.getElementById('f-notes').value.trim(),
-    createdAt:    editingJobId ? (jobs.find(j=>j.id===editingJobId)?.createdAt || new Date().toISOString()) : new Date().toISOString(),
-    updatedAt:    new Date().toISOString(),
+  const empNum=document.getElementById('f-empnum').value.trim();
+  const empName=document.getElementById('f-empname').value.trim();
+  const location=document.getElementById('f-location').value;
+  const type=document.getElementById('f-type').value;
+  const status=document.getElementById('f-status').value;
+  if(!empNum||!empName||!location||!type||!status){alert('Please fill all required fields.');return;}
+  const data={
+    id:editingJobId||genId(),empNum,empName,location,type,status,
+    iqama:document.getElementById('f-iqama').value.trim(),
+    holdReason:document.getElementById('f-holdreason').value.trim(),
+    leaveDate:document.getElementById('f-leavedate').value.trim(),
+    returnDate:document.getElementById('f-returndate').value.trim(),
+    actualReturn:document.getElementById('f-actualreturn').value.trim(),
+    days:document.getElementById('f-days').value.trim(),
+    extDate:document.getElementById('f-extdate').value.trim(),
+    extDays:document.getElementById('f-extdays').value.trim(),
+    housingStart:document.getElementById('f-housingstart').value.trim(),
+    housingEnd:document.getElementById('f-housingend').value.trim(),
+    ticket:document.getElementById('f-ticket').value,
+    returnTicket:document.getElementById('f-returnticket').value,
+    notes:document.getElementById('f-notes').value.trim(),
+    createdAt:editingJobId?(jobs.find(j=>j.id===editingJobId)?.createdAt||new Date().toISOString()):new Date().toISOString(),
+    updatedAt:new Date().toISOString(),
   };
-
-  if (editingJobId) {
-    const idx = jobs.findIndex(j => j.id === editingJobId);
-    if (idx !== -1) jobs[idx] = jobData;
-  } else {
-    jobs.unshift(jobData);
-  }
-
-  saveJobs();
-  closeModal();
-  renderJobs();
+  if(editingJobId){const i=jobs.findIndex(j=>j.id===editingJobId);if(i!==-1)jobs[i]=data;}
+  else jobs.unshift(data);
+  saveJobs(); closeModal(); renderJobs();
 }
 
-// ── Status Modal ──
 function openStatusModal(id) {
-  statusJobId = id;
-  const job = jobs.find(j => j.id === id);
-  if (!job) return;
-
-  document.getElementById('status-emp-info').textContent = `${job.empNum} — ${job.empName} | ${job.type}`;
-
-  const list = document.getElementById('status-options-list');
-  list.innerHTML = STATUS_LIST.map(s => `
-    <label class="status-option ${job.status===s.val?'selected':''}">
-      <input type="radio" name="new-status" value="${s.val}" ${job.status===s.val?'checked':''} onchange="onStatusChange('${s.val}')">
+  statusJobId=id;
+  const j=jobs.find(x=>x.id===id); if(!j) return;
+  document.getElementById('status-emp-info').textContent=`${j.empNum} — ${j.empName} | ${j.type}`;
+  document.getElementById('status-options-list').innerHTML=STATUS_LIST.map(s=>`
+    <label class="status-option ${j.status===s.val?'selected':''}">
+      <input type="radio" name="new-status" value="${s.val}" ${j.status===s.val?'checked':''} onchange="onStatusChange('${s.val}')">
       ${s.icon} ${s.val}
     </label>`).join('');
-
-  document.getElementById('hold-reason-field').style.display = job.status === 'On Hold' ? 'block' : 'none';
-  document.getElementById('hold-reason-input').value = job.holdReason || '';
+  document.getElementById('hold-reason-field').style.display=j.status==='On Hold'?'block':'none';
+  document.getElementById('hold-reason-input').value=j.holdReason||'';
   document.getElementById('status-modal').classList.add('open');
 }
 
 function onStatusChange(val) {
-  document.getElementById('hold-reason-field').style.display = val === 'On Hold' ? 'block' : 'none';
-  document.querySelectorAll('.status-option').forEach(el => {
-    el.classList.toggle('selected', el.querySelector('input').value === val);
-  });
+  document.getElementById('hold-reason-field').style.display=val==='On Hold'?'block':'none';
+  document.querySelectorAll('.status-option').forEach(el=>el.classList.toggle('selected',el.querySelector('input').value===val));
 }
 
-function closeStatusModal() {
-  document.getElementById('status-modal').classList.remove('open');
-  statusJobId = null;
-}
+function closeStatusModal() { document.getElementById('status-modal').classList.remove('open'); statusJobId=null; }
 
 function saveStatus() {
-  const selected = document.querySelector('input[name="new-status"]:checked');
-  if (!selected) { alert('Please select a status.'); return; }
-
-  const job = jobs.find(j => j.id === statusJobId);
-  if (!job) return;
-
-  job.status = selected.value;
-  if (selected.value === 'On Hold') {
-    job.holdReason = document.getElementById('hold-reason-input').value.trim();
-  } else {
-    job.holdReason = '';
-  }
-  job.updatedAt = new Date().toISOString();
-
-  saveJobs();
-  closeStatusModal();
-  renderJobs();
+  const sel=document.querySelector('input[name="new-status"]:checked');
+  if(!sel){alert('Select a status.');return;}
+  const j=jobs.find(x=>x.id===statusJobId); if(!j) return;
+  j.status=sel.value;
+  j.holdReason=sel.value==='On Hold'?document.getElementById('hold-reason-input').value.trim():'';
+  j.updatedAt=new Date().toISOString();
+  saveJobs(); closeStatusModal(); renderJobs();
 }
 
 function quickComplete(id) {
-  if (!confirm('Mark this job as Done & Closed?')) return;
-  const job = jobs.find(j => j.id === id);
-  if (!job) return;
-  job.status = 'Done & Closed';
-  job.closedAt = new Date().toISOString();
-  job.updatedAt = new Date().toISOString();
-  saveJobs();
-  renderJobs();
+  if(!confirm('Mark as Done & Closed?')) return;
+  const j=jobs.find(x=>x.id===id); if(!j) return;
+  j.status='Done & Closed'; j.closedAt=new Date().toISOString(); j.updatedAt=new Date().toISOString();
+  saveJobs(); renderJobs();
 }
 
-function markComplete() {
-  quickComplete(statusJobId);
-  closeStatusModal();
-}
+function markComplete() { quickComplete(statusJobId); closeStatusModal(); }
 
 function deleteJob(id) {
-  if (!confirm('Permanently delete this job record?')) return;
-  jobs = jobs.filter(j => j.id !== id);
-  saveJobs();
-  renderJobs();
+  if(!confirm('Permanently delete this record?')) return;
+  jobs=jobs.filter(j=>j.id!==id); saveJobs(); renderJobs();
 }
 
-// ── Init ──
-loadJobs();
-renderJobs();
+loadJobs(); renderJobs();
 </script>
 </body>
 </html>
