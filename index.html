@@ -2344,13 +2344,24 @@ async function submitForm() {
   try {
     const rows = await loadSheetRows();
 
+    // Build only non-formula columns to send
+    const colUpdates = {}; // { colIndex: value }
+    FORM_FIELDS.forEach(f => {
+      if (FORMULA_COLS.has(f.idx)) return;
+      const el = document.getElementById(f.id);
+      if (el) colUpdates[f.idx] = el.value.trim();
+    });
+
     if (dfCurrentTab === 'add') {
       const exists = rows.slice(1).some(r => (r[COL.empNum]||'').trim() === empNum);
       if (exists) { dfStatusMsg(`Employee ${empNum} already exists. Use Update tab.`, 'err'); document.getElementById('df-submit-btn').disabled = false; return; }
-      const newRow = formToRow(null);
+
+      // Build full new row but leave formula cols empty (sheet will calculate)
+      const newRow = new Array(42).fill('');
+      Object.entries(colUpdates).forEach(([idx, val]) => { newRow[idx] = val; });
+
       await fetch(GS_WRITE, {
-        method: 'POST',
-        mode: 'no-cors',
+        method: 'POST', mode: 'no-cors',
         body: JSON.stringify({ action: 'add', row: newRow })
       });
       rows.push(newRow);
@@ -2360,14 +2371,17 @@ async function submitForm() {
 
     } else {
       if (dfEditRowIdx === -1) { dfStatusMsg('Load an employee first.', 'err'); document.getElementById('df-submit-btn').disabled = false; return; }
-      const updatedRow = formToRow(rows[dfEditRowIdx]);
-      const sheetRow   = dfEditRowIdx + 1;
+
+      // Update only specific columns — preserve existing row (including formulas)
+      const existingRow = [...rows[dfEditRowIdx]];
+      Object.entries(colUpdates).forEach(([idx, val]) => { existingRow[idx] = val; });
+      const sheetRow = dfEditRowIdx + 1;
+
       await fetch(GS_WRITE, {
-        method: 'POST',
-        mode: 'no-cors',
-        body: JSON.stringify({ action: 'update', row: updatedRow, rowNum: sheetRow })
+        method: 'POST', mode: 'no-cors',
+        body: JSON.stringify({ action: 'update', row: existingRow, rowNum: sheetRow, skipCols: [...FORMULA_COLS] })
       });
-      rows[dfEditRowIdx] = updatedRow;
+      rows[dfEditRowIdx] = existingRow;
       csvRows = rows;
       dfStatusMsg('✅ Employee updated in Google Sheets!', 'ok');
     }
