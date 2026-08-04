@@ -291,6 +291,7 @@ body.dark-mode .loc-title{color:#e0e0e0!important;}
       </select>
       <button class="hdr-btn btn-filter" onclick="document.getElementById('filter-search').value='';document.getElementById('filter-type').value='';document.getElementById('filter-status').value='';renderJobs();">✕ Clear</button>
     </div>
+    <div id="loading-indicator" style="display:none;text-align:center;padding:40px;color:#888;font-size:15px;">⏳ Loading jobs from Google Sheets...</div>
     <div id="jobs-container"></div>
   </div>
 </div>
@@ -405,13 +406,52 @@ body.dark-mode .loc-title{color:#e0e0e0!important;}
 </div>
 
 <script>
-const STORE_KEY = 'ne_tracker_jobs';
+const GS_WRITE_URL = 'https://script.google.com/macros/s/AKfycbzGXoDV-fdif6qiP_wFjmoULC0pXoRDVsH1P_-LptWEAIwYC3NBzDo-aWwOr4OXoaVuxQ/exec';
 let jobs = [], editingJobId = null, statusJobId = null;
 let currentLocationFilter = 'All', currentView = 'active';
+let isSaving = false;
 
-function loadJobs() { try { jobs = JSON.parse(localStorage.getItem(STORE_KEY)||'[]'); } catch(e){ jobs=[]; } }
-function saveJobs() { localStorage.setItem(STORE_KEY, JSON.stringify(jobs)); }
 function genId() { return 'j'+Date.now()+Math.random().toString(36).slice(2,6); }
+
+async function loadJobs() {
+  try {
+    showLoading(true);
+    const res = await fetch(GS_WRITE_URL, {
+      method: 'POST', mode: 'no-cors',
+      body: JSON.stringify({ action: 'loadJobs' })
+    });
+    // no-cors returns opaque — use GET workaround via URL params
+    // Instead use a GET request with action param via script URL
+    const getUrl = GS_WRITE_URL + '?action=loadJobs';
+    const r2 = await fetch(getUrl);
+    const data = await r2.json();
+    jobs = data.jobs || [];
+  } catch(e) {
+    console.error('Load error:', e);
+    // Fallback to localStorage
+    try { jobs = JSON.parse(localStorage.getItem('ne_tracker_jobs')||'[]'); } catch(e2){ jobs=[]; }
+  }
+  showLoading(false);
+}
+
+async function saveJobs() {
+  if (isSaving) return;
+  isSaving = true;
+  // Save to localStorage immediately as backup
+  localStorage.setItem('ne_tracker_jobs', JSON.stringify(jobs));
+  try {
+    await fetch(GS_WRITE_URL, {
+      method: 'POST', mode: 'no-cors',
+      body: JSON.stringify({ action: 'saveJobs', jobs: jobs })
+    });
+  } catch(e) { console.error('Save error:', e); }
+  isSaving = false;
+}
+
+function showLoading(show) {
+  const el = document.getElementById('loading-indicator');
+  if (el) el.style.display = show ? 'block' : 'none';
+}
 
 function toggleSidebar() {
   document.body.classList.toggle('sb-collapsed');
@@ -730,8 +770,7 @@ async function checkPassword() {
     sessionStorage.setItem('ne_admin_session', '1');
     document.getElementById('pw-overlay').style.display = 'none';
     document.getElementById('layout').style.display = 'flex';
-    loadJobs();
-    setView('active');
+    loadJobs().then(() => { setView('active'); renderJobs(); });
     return;
   }
   document.getElementById('pw-error').textContent = 'Access denied. Invalid password.';
@@ -746,8 +785,7 @@ document.getElementById('pw-input').addEventListener('keyup', e => { if (e.key =
 if (sessionStorage.getItem('ne_admin_session') === '1') {
   document.getElementById('pw-overlay').style.display = 'none';
   document.getElementById('layout').style.display = 'flex';
-  loadJobs();
-  setView('active');
+  loadJobs().then(() => { setView('active'); renderJobs(); });
 } else {
   document.getElementById('pw-overlay').style.display = 'flex';
   document.getElementById('pw-input').focus();
