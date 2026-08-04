@@ -1513,6 +1513,9 @@ function unlockApp() {
   document.getElementById('dataFormButton').style.display = 'none';
   document.getElementById('tab-row').style.display = 'none';
   document.getElementById('inline-search-panel').style.display = 'none';
+  // Hide Job Tracker group entirely for employee
+  const trackerGroup = document.getElementById('grp-tracker');
+  if (trackerGroup) trackerGroup.closest('.sb-group').style.display = 'none';
   document.getElementById('employeeNumber').focus();
   setTimeout(() => {
     alert('Your session has expired. Please log in again.');
