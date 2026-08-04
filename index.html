@@ -121,15 +121,24 @@ html, body { margin: 0; padding: 0; font-family: 'Calibri', sans-serif; backgrou
 /* Sidebar divider */
 .sb-divider { height: 1px; background: rgba(255,255,255,0.07); margin: 6px 12px; }
 
-/* ── Sidebar section label ── */
-.sb-section-label {
-  font-size: 11px; font-weight: 700; letter-spacing: 1.2px;
-  color: #5a7a9a; text-transform: uppercase;
-  padding: 12px 16px 4px;
-  white-space: nowrap;
-  transition: opacity 0.2s;
+/* ── Sidebar Groups ── */
+.sb-group { border-bottom: 1px solid rgba(255,255,255,0.06); }
+.sb-group-hdr {
+  display: flex; align-items: center; gap: 10px;
+  width: 100%; padding: 11px 16px;
+  background: none; border: none;
+  color: #8fa8c0; font-size: 13px; font-weight: 700;
+  cursor: pointer; text-align: left; white-space: nowrap;
+  transition: background 0.15s, color 0.15s;
 }
-#sidebar.collapsed .sb-section-label { opacity: 0; }
+.sb-group-hdr:hover { background: rgba(255,255,255,0.05); color: #fff; }
+.sb-group-hdr.active-group { color: #fff; }
+.sb-arrow { margin-left: auto; font-size: 11px; transition: transform 0.2s; }
+.sb-group-items { background: rgba(0,0,0,0.15); }
+.sb-item.sb-sub { padding-left: 32px; font-size: 13px; font-weight: 600; }
+#sidebar.collapsed .sb-group-hdr { padding: 11px 0; justify-content: center; }
+#sidebar.collapsed .sb-group-items { display: none !important; }
+#sidebar.collapsed .sb-arrow { display: none; }
 
 /* Sidebar footer */
 #sb-footer {
@@ -1136,54 +1145,68 @@ body.view-lists #card-area:empty::after { display: none !important; }
   <aside id="sidebar">
     <div id="sb-header">
       <img src="https://nour292.github.io/Nourdata/nour_energy_logo.png" alt="Logo" id="sb-logo">
-      <div id="sb-title">Nour Energy<small>HR Data System</small></div>
+      <div id="sb-title">Nour Energy<small>HR System</small></div>
       <button id="sb-toggle" onclick="toggleSidebar()" title="Toggle Sidebar">&#9776;</button>
     </div>
 
     <nav id="sb-nav">
-      <div class="sb-section-label">Main</div>
 
-      <button class="sb-item active" id="snav-search" onclick="sidebarNav('search')">
-        <span class="sb-icon">🔎</span>
-        <span class="sb-label">Employee Search</span>
-      </button>
+      <!-- ── Employee Data Group ── -->
+      <div class="sb-group">
+        <button class="sb-group-hdr active-group" onclick="toggleGroup('grp-emp')">
+          <span class="sb-icon">👤</span>
+          <span class="sb-label">Employee Data</span>
+          <span class="sb-arrow" id="arrow-grp-emp">▾</span>
+        </button>
+        <div class="sb-group-items" id="grp-emp">
+          <button class="sb-item sb-sub active" id="snav-search" onclick="sidebarNav('search')">
+            <span class="sb-icon">🔎</span><span class="sb-label">Employee Search</span>
+          </button>
+          <button class="sb-item sb-sub" id="snav-dashboard" onclick="sidebarNav('dashboard')" style="display:none;">
+            <span class="sb-icon">📊</span><span class="sb-label">Dashboard</span>
+          </button>
+          <button class="sb-item sb-sub" id="snav-deepsearch" onclick="sidebarNav('deepsearch')" style="display:none;">
+            <span class="sb-icon">🔍</span><span class="sb-label">Deep Search</span>
+          </button>
+          <button class="sb-item sb-sub" id="snav-lists" onclick="sidebarNav('lists')" style="display:none;">
+            <span class="sb-icon">📋</span><span class="sb-label">Smart Lists</span>
+          </button>
+          <button class="sb-item sb-sub" id="snav-add" onclick="openDataForm()" style="display:none;">
+            <span class="sb-icon">➕</span><span class="sb-label">Add / Update</span>
+          </button>
+          <button class="sb-item sb-sub" onclick="printCard()">
+            <span class="sb-icon">🖨</span><span class="sb-label">Print Card</span>
+          </button>
+        </div>
+      </div>
 
-      <button class="sb-item" id="snav-dashboard" onclick="sidebarNav('dashboard')" style="display:none;">
-        <span class="sb-icon">📊</span>
-        <span class="sb-label">Dashboard</span>
-      </button>
+      <!-- ── Job Tracker Group ── -->
+      <div class="sb-group">
+        <button class="sb-group-hdr" onclick="toggleGroup('grp-tracker')">
+          <span class="sb-icon">📋</span>
+          <span class="sb-label">Job Tracker</span>
+          <span class="sb-arrow" id="arrow-grp-tracker">▸</span>
+        </button>
+        <div class="sb-group-items" id="grp-tracker" style="display:none;">
+          <button class="sb-item sb-sub" onclick="window.location.href='tracker.html'">
+            <span class="sb-icon">📌</span><span class="sb-label">Active Jobs</span>
+          </button>
+          <button class="sb-item sb-sub" onclick="window.location.href='tracker.html'">
+            <span class="sb-icon">✅</span><span class="sb-label">Completed</span>
+          </button>
+          <button class="sb-item sb-sub" onclick="window.location.href='tracker.html'">
+            <span class="sb-icon">➕</span><span class="sb-label">Add New Job</span>
+          </button>
+        </div>
+      </div>
 
-      <button class="sb-item" id="snav-deepsearch" onclick="sidebarNav('deepsearch')" style="display:none;">
-        <span class="sb-icon">🔍</span>
-        <span class="sb-label">Deep Search</span>
-      </button>
-
-      <button class="sb-item" id="snav-lists" onclick="sidebarNav('lists')" style="display:none;">
-        <span class="sb-icon">📋</span>
-        <span class="sb-label">Smart Lists</span>
-      </button>
-
-      <div class="sb-divider"></div>
-      <div class="sb-section-label">Actions</div>
-
-      <button class="sb-item" id="snav-add" onclick="openDataForm()" style="display:none;">
-        <span class="sb-icon">➕</span>
-        <span class="sb-label">Add / Update</span>
-      </button>
-
-      <button class="sb-item" onclick="printCard()">
-        <span class="sb-icon">🖨</span>
-        <span class="sb-label">Print Card</span>
-      </button>
-
-      <button class="sb-item" onclick="toggleDarkMode()" id="sb-dark-btn">
-        <span class="sb-icon">🌙</span>
-        <span class="sb-label">Dark Mode</span>
-      </button>
     </nav>
 
     <div id="sb-footer">
-      <button id="sb-logout" onclick="logout()">
+      <button class="sb-item" onclick="toggleDarkMode()" id="sb-dark-footer" style="padding:10px 16px;color:#8fa8c0;font-size:13px;font-weight:700;border-bottom:1px solid rgba(255,255,255,0.06);">
+        <span class="sb-icon">🌙</span><span class="sb-label">Dark Mode</span>
+      </button>
+      <button id="sb-logout" onclick="logout()" style="margin-top:6px;">
         <span>⏻</span>
         <span id="sb-logout-label">Logout</span>
       </button>
@@ -3324,6 +3347,18 @@ function printInlineResult(pane) {
 }
 
 /* ── Sidebar Navigation ── */
+function toggleGroup(id) {
+  const items = document.getElementById(id);
+  const arrow = document.getElementById('arrow-' + id);
+  if (!items) return;
+  const open = items.style.display !== 'none';
+  items.style.display = open ? 'none' : 'block';
+  if (arrow) arrow.textContent = open ? '▸' : '▾';
+  // update header class
+  const hdr = items.previousElementSibling;
+  if (hdr) hdr.classList.toggle('active-group', !open);
+}
+
 function toggleSidebar() {
   document.body.classList.toggle('sb-collapsed');
   const sb = document.getElementById('sidebar');
