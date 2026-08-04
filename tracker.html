@@ -792,15 +792,43 @@ if (sessionStorage.getItem('ne_admin_session') === '1') {
 }
 
 // ── Auto-calculate days ──
+function parseDate(str) {
+  if (!str) return null;
+  str = str.trim();
+  // Try DD-MMM-YYYY or DD-MMM-YY
+  const mths = {jan:0,feb:1,mar:2,apr:3,may:4,jun:5,jul:6,aug:7,sep:8,oct:9,nov:10,dec:11};
+  const m1 = str.match(/^(\d{1,2})[\/\-]([A-Za-z]+)[\/\-](\d{2,4})$/);
+  if (m1) {
+    const mo = mths[m1[2].toLowerCase().slice(0,3)];
+    if (mo !== undefined) {
+      let yr = parseInt(m1[3]);
+      if (yr < 100) yr += 2000;
+      return new Date(yr, mo, parseInt(m1[1]));
+    }
+  }
+  // Try DD-MM-YYYY or DD/MM/YYYY
+  const m2 = str.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{2,4})$/);
+  if (m2) {
+    let yr = parseInt(m2[3]);
+    if (yr < 100) yr += 2000;
+    return new Date(yr, parseInt(m2[2])-1, parseInt(m2[1]));
+  }
+  // Try YYYY-MM-DD
+  const m3 = str.match(/^(\d{4})[\/\-](\d{1,2})[\/\-](\d{1,2})$/);
+  if (m3) return new Date(parseInt(m3[1]), parseInt(m3[2])-1, parseInt(m3[3]));
+  return new Date(str);
+}
+
 function calcDays() {
   const l = document.getElementById('f-leavedate').value.trim();
   const r = document.getElementById('f-returndate').value.trim();
   const el = document.getElementById('f-days');
-  if (!l || !r || !el) return;
+  if (!el) return;
+  if (!l || !r) { el.value = ''; return; }
   try {
-    const d1 = new Date(l.replace(/-/g, '/'));
-    const d2 = new Date(r.replace(/-/g, '/'));
-    if (isNaN(d1)||isNaN(d2)) { el.value=''; return; }
+    const d1 = parseDate(l);
+    const d2 = parseDate(r);
+    if (!d1||!d2||isNaN(d1)||isNaN(d2)) { el.value = ''; return; }
     const diff = Math.round((d2 - d1) / 86400000);
     el.value = diff >= 0 ? diff + ' Days' : '';
   } catch(e) { el.value = ''; }
