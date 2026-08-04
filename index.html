@@ -2312,11 +2312,18 @@ function loadEmployeeForEdit() {
       .catch(() => { document.getElementById('df-load-msg').textContent = 'Failed to load data.'; });
   }
 }
+// Columns calculated by Google Sheet formulas — never overwrite
+const FORMULA_COLS = new Set([8, 10, 17, 32, 37, 39]);
+
 function formToRow(existingRow) {
-  const maxCol = 45;
+  const maxCol = 42;
   const row = existingRow ? [...existingRow] : new Array(maxCol).fill('');
   while (row.length < maxCol) row.push('');
-  FORM_FIELDS.forEach(f => { const el = document.getElementById(f.id); if (el) row[f.idx] = el.value.trim(); });
+  FORM_FIELDS.forEach(f => {
+    if (FORMULA_COLS.has(f.idx)) return; // skip formula columns
+    const el = document.getElementById(f.id);
+    if (el) row[f.idx] = el.value.trim();
+  });
   return row;
 }
 function csvCell(val) {
