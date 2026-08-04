@@ -1494,34 +1494,33 @@ function unlockApp() {
   document.getElementById('pw-error').textContent = '';
   const isAdmin = currentAccessLevel === 'admin';
 
-  // Admin → go to tracker.html
-  if (isAdmin) {
-    sessionStorage.setItem('ne_admin_session', '1');
-    sessionStorage.setItem('nd_access', 'admin');
-    sessionStorage.setItem('nd_login_time', Date.now().toString());
-    window.location.href = 'tracker.html';
-    return;
-  }
-
-  // Employee → stay on index.html
-  sessionStorage.setItem('nd_access', 'employee');
+  // Set session
+  sessionStorage.setItem('nd_access', currentAccessLevel);
   sessionStorage.setItem('nd_login_time', Date.now().toString());
+  if (isAdmin) sessionStorage.setItem('ne_admin_session', '1');
+
+  // Show/hide admin-only sidebar items
   ['snav-dashboard','snav-deepsearch','snav-lists','snav-add'].forEach(id => {
     const el = document.getElementById(id);
-    if (el) el.style.display = 'none';
+    if (el) el.style.display = isAdmin ? '' : 'none';
   });
-  document.getElementById('dataFormButton').style.display = 'none';
+  document.getElementById('dataFormButton').style.display = isAdmin ? '' : 'none';
   document.getElementById('tab-row').style.display = 'none';
   document.getElementById('inline-search-panel').style.display = 'none';
-  // Hide Job Tracker group entirely for employee
+
+  // Hide Job Tracker group for employee
   const trackerGroup = document.getElementById('grp-tracker');
-  if (trackerGroup) trackerGroup.closest('.sb-group').style.display = 'none';
+  if (trackerGroup) trackerGroup.closest('.sb-group').style.display = isAdmin ? '' : 'none';
+
   document.getElementById('employeeNumber').focus();
   setTimeout(() => {
     alert('Your session has expired. Please log in again.');
     logout();
   }, 60 * 60 * 1000);
-  sidebarNav('search');
+
+  // Admin opens dashboard, employee opens search
+  if (isAdmin) sidebarNav('dashboard');
+  else sidebarNav('search');
 }
 
 /* ─── Dark Mode ─── */
