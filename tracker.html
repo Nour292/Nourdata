@@ -351,7 +351,7 @@ body.dark-mode .loc-title{color:#e0e0e0!important;}
         <div class="form-section-hdr">Dates</div>
         <div class="form-field" id="row-leave"><label>Leave Date</label><input type="text" id="f-leavedate" placeholder="DD-MMM-YY" oninput="calcDays()"></div>
         <div class="form-field" id="row-return"><label>Expected Return</label><input type="text" id="f-returndate" placeholder="DD-MMM-YY" oninput="calcDays()"></div>
-        <div class="form-field" id="row-actual"><label>Actual Return</label><input type="text" id="f-actualreturn" placeholder="DD-MMM-YY"></div>
+        <div class="form-field" id="row-actual"><label>Actual Return</label><input type="text" id="f-actualreturn" placeholder="DD-MMM-YY" oninput="calcDays()"></div>
         <div class="form-field" id="row-days"><label>Days (auto)</label><input type="text" id="f-days" placeholder="Auto-calculated" readonly style="background:#f7fafd;color:#1a5276;font-weight:700;"></div>
         <div class="form-field" id="row-reentry"><label>Reentry Visa</label>
           <select id="f-reentry">
@@ -820,14 +820,18 @@ function parseDate(str) {
 }
 
 function calcDays() {
-  const l = document.getElementById('f-leavedate').value.trim();
-  const r = document.getElementById('f-returndate').value.trim();
+  const l  = document.getElementById('f-leavedate').value.trim();
+  const r  = document.getElementById('f-returndate').value.trim();
+  const ar = document.getElementById('f-actualreturn').value.trim();
   const el = document.getElementById('f-days');
   if (!el) return;
-  if (!l || !r) { el.value = ''; return; }
+  if (!l) { el.value = ''; return; }
+  // Use Actual Return if filled, else Expected Return
+  const end = ar || r;
+  if (!end) { el.value = ''; return; }
   try {
     const d1 = parseDate(l);
-    const d2 = parseDate(r);
+    const d2 = parseDate(end);
     if (!d1||!d2||isNaN(d1)||isNaN(d2)) { el.value = ''; return; }
     const diff = Math.round((d2 - d1) / 86400000);
     el.value = diff >= 0 ? diff + ' Days' : '';
