@@ -1139,7 +1139,7 @@ body.view-lists #card-area:empty::after { display: none !important; }
 </div>
 
 <!-- ── Layout ── -->
-<div id="layout">
+<div id="layout" style="display:none;">
 
   <!-- SIDEBAR -->
   <aside id="sidebar">
@@ -1488,35 +1488,46 @@ async function checkPassword() {
   document.getElementById('pw-input').focus();
 }
 
-function unlockApp() {
+function unlockApp(skipRedirect) {
   document.getElementById('pw-overlay').style.display = 'none';
   document.getElementById('pw-input').value = '';
   document.getElementById('pw-error').textContent = '';
   const isAdmin = currentAccessLevel === 'admin';
 
-  // Set session
   sessionStorage.setItem('nd_access', currentAccessLevel);
   sessionStorage.setItem('nd_login_time', Date.now().toString());
+
   if (isAdmin) {
     sessionStorage.setItem('ne_admin_session', '1');
-    // Admin → go to tracker.html
-    window.location.href = 'tracker.html';
-    return;
+    // Fresh login → go to tracker. Returning from tracker → stay here.
+    if (!skipRedirect) {
+      window.location.href = 'tracker.html';
+      return;
+    }
   }
 
-  // Employee → stay on index.html, hide admin items
+  // Show layout
+  document.getElementById('layout').style.display = 'flex';
+
+  // Show/hide admin items
   ['snav-dashboard','snav-deepsearch','snav-lists','snav-add'].forEach(id => {
     const el = document.getElementById(id);
-    if (el) el.style.display = 'none';
+    if (el) el.style.display = isAdmin ? 'flex' : 'none';
   });
-  document.getElementById('dataFormButton').style.display = 'none';
+  document.getElementById('dataFormButton').style.display = isAdmin ? '' : 'none';
   document.getElementById('tab-row').style.display = 'none';
   document.getElementById('inline-search-panel').style.display = 'none';
   const trackerGroup = document.getElementById('grp-tracker');
-  if (trackerGroup) trackerGroup.closest('.sb-group').style.display = 'none';
+  if (trackerGroup) trackerGroup.closest('.sb-group').style.display = isAdmin ? '' : 'none';
+  // Force Employee Data group open
+  const grpEmp = document.getElementById('grp-emp');
+  if (grpEmp) { grpEmp.style.display = 'block'; const h = grpEmp.previousElementSibling; if(h) h.classList.add('active-group'); }
+  const arrowEmp = document.getElementById('arrow-grp-emp');
+  if (arrowEmp) arrowEmp.textContent = '▾';
   document.getElementById('employeeNumber').focus();
   setTimeout(() => { alert('Your session has expired. Please log in again.'); logout(); }, 60 * 60 * 1000);
-  sidebarNav('search');
+  if (isAdmin) sidebarNav('dashboard');
+  else sidebarNav('search');
 }
 
 /* ─── Dark Mode ─── */
@@ -3149,23 +3160,7 @@ document.addEventListener('DOMContentLoaded', function() {
   const savedTime   = parseInt(sessionStorage.getItem('nd_login_time') || '0');
   if (savedAccess && savedAccess !== 'none' && (Date.now() - savedTime) < SESSION_MS) {
     currentAccessLevel = savedAccess;
-    const isAdmin = savedAccess === 'admin';
-
-    // Restore UI without redirecting (admin already on index.html by choice)
-    document.getElementById('pw-overlay').style.display = 'none';
-    ['snav-dashboard','snav-deepsearch','snav-lists','snav-add'].forEach(id => {
-      const el = document.getElementById(id);
-      if (el) el.style.display = isAdmin ? '' : 'none';
-    });
-    document.getElementById('dataFormButton').style.display = isAdmin ? '' : 'none';
-    document.getElementById('tab-row').style.display = 'none';
-    document.getElementById('inline-search-panel').style.display = 'none';
-    const trackerGroup = document.getElementById('grp-tracker');
-    if (trackerGroup) trackerGroup.closest('.sb-group').style.display = isAdmin ? '' : 'none';
-    document.getElementById('employeeNumber').focus();
-    if (isAdmin) sidebarNav('dashboard');
-    else sidebarNav('search');
-
+    unlockApp(true); // skipRedirect — admin already chose to be on index.html
     const remaining = SESSION_MS - (Date.now() - savedTime);
     setTimeout(() => { alert('Your session has expired. Please log in again.'); logout(); }, remaining);
   } else {
