@@ -304,12 +304,12 @@ body.dark-mode .loc-title{color:#e0e0e0!important;}
       <button id="modal-close" onclick="closeModal()">✕</button>
     </div>
     <div id="modal-body">
-      <div class="form-grid">
+      <div class="form-grid" style="grid-template-columns:1fr 1fr 1fr;">
         <div class="form-section-hdr">Employee Information</div>
         <div class="form-field">
           <label>Employee Number *</label>
           <div style="position:relative;">
-            <input type="text" id="f-empnum" placeholder="e.g. 4209" oninput="lookupEmployee(this.value)">
+            <input type="text" id="f-empnum" placeholder="e.g. 4209" oninput="lookupEmployee(this.value)" onchange="lookupEmployee(this.value)">
             <span id="emp-lookup-spinner" style="display:none;position:absolute;right:10px;top:50%;transform:translateY(-50%);font-size:12px;color:#888;">⏳</span>
           </div>
         </div>
@@ -332,7 +332,7 @@ body.dark-mode .loc-title{color:#e0e0e0!important;}
         </div>
         <div class="form-field">
           <label>Iqama Expiry</label>
-          <input type="text" id="f-iqama" placeholder="DD-MMM-YY" disabled style="background:#f0f0f0;color:#aaa;">
+          <input type="text" id="f-iqama" placeholder="DD-MMM-YY" disabled style="background:#f0f0f0;color:#aaa;cursor:not-allowed;">
         </div>
         <div class="form-field">
           <label>Current Status *</label>
@@ -595,17 +595,35 @@ function openEditModal(id) {
 function closeModal() { document.getElementById('modal-overlay').classList.remove('open'); editingJobId=null; }
 
 function toggleDateFields() {
-  const type=document.getElementById('f-type').value;
-  const status=document.getElementById('f-status').value;
-  const show=(id,v)=>{const e=document.getElementById(id);if(e)e.style.display=v?'':'none';};
-  const isVac=['Vacation','Resign & Rejoin'].includes(type);
-  const hasLeave=['Vacation','Resignation','Termination','Resign & Rejoin'].includes(type);
-  const isHouse=type==='Housing';
-  show('row-leave',hasLeave||isVac); show('row-return',isVac);
-  show('row-actual',isVac); show('row-days',isVac||hasLeave);
-  show('row-ext',isVac); show('row-extdays',isVac);
-  show('row-hstart',isHouse); show('row-hend',isHouse);
-  show('hold-reason-row',status==='On Hold');
+  const type   = document.getElementById('f-type').value;
+  const status = document.getElementById('f-status').value;
+  const show   = (id, v) => { const e = document.getElementById(id); if(e) e.style.display = v ? '' : 'none'; };
+
+  const isVac   = type === 'Vacation';
+  const isHouse = type === 'Housing';
+  const isRR    = type === 'Resign & Rejoin';
+
+  // Date fields
+  show('row-leave',   isVac || isRR || ['Resignation','Termination'].includes(type));
+  show('row-return',  isVac);
+  show('row-actual',  isVac);
+  show('row-days',    isVac || ['Resignation','Termination'].includes(type));
+  show('row-ext',     isVac);
+  show('row-extdays', isVac);
+  show('row-hstart',  isHouse);
+  show('row-hend',    isHouse);
+  show('hold-reason-row', status === 'On Hold');
+
+  // Iqama — only enabled for Vacation, Resignation, Termination
+  const iqamaEl = document.getElementById('f-iqama');
+  const needsIqama = ['Vacation','Resignation','Termination'].includes(type);
+  if (iqamaEl) {
+    iqamaEl.disabled = !needsIqama;
+    iqamaEl.style.background  = needsIqama ? '' : '#f0f0f0';
+    iqamaEl.style.color       = needsIqama ? '' : '#aaa';
+    iqamaEl.style.cursor      = needsIqama ? '' : 'not-allowed';
+    if (!needsIqama) iqamaEl.value = '';
+  }
 }
 
 function saveJob() {
@@ -720,6 +738,52 @@ if (sessionStorage.getItem('ne_admin_session') === '1') {
   document.getElementById('pw-overlay').style.display = 'flex';
   document.getElementById('pw-input').focus();
 }
+
+// ── Google Sheet config for employee lookup ──
+const GS_ID  = '16QYl00ATXVIlQKkqRxdAIdU6J3u7lDfg0PIoJfaDBpo';
+const GS_KEY = 'AIzaSyBfjtlvDvGxmS1OcqFVGNMMadqza1ofCrI';
+const GS_TAB = 'Master File';
+let sheetRows = null;
+
+async function loadSheetData() {
+  if (sheetRows) return sheetRows;
+  const url = `https://sheets.googleapis.com/v4/spreadsheets/${GS_ID}/values/${encodeURIComponent(GS_TAB)}?key=${GS_KEY}`;
+  const res = await fetch(url);
+  const data = await res.json();
+  sheetRows = data.values || [];
+  return sheetRows;
+}
+
+let lookupTimer = null;
+function lookupEmployee(val) {
+  clearTimeout(lookupTimer);
+  const emp = val.trim();
+  if (!emp) return;
+  lookupTimer = setTimeout(async () => {
+    const spinner = document.getElementById('emp-lookup-spinner');
+    if (spinner) spinner.style.display = 'inline';
+    try {
+      const rows = await loadSheetData();
+      const found = rows.slice(1).find(r => (r[0]||'').toString().trim() === emp);
+      if (found) {
+        document.getElementById('f-empname').value = found[1] || '';
+        const loc = (found[5] || '').trim();
+        const locSel = document.getElementById('f-location');
+        if (locSel) {
+          if (loc.toLowerCase().includes('dammam')) locSel.value = 'Dammam';
+          else if (loc.toLowerCase().includes('jeddah')) locSel.value = 'Jeddah';
+          else if (loc.toLowerCase().includes('riyadh')) locSel.value = 'Riyadh';
+        }
+        const iqamaEl = document.getElementById('f-iqama');
+        if (iqamaEl && !iqamaEl.disabled) iqamaEl.value = found[31] || '';
+      } else {
+        document.getElementById('f-empname').value = '';
+      }
+    } catch(e) { console.error('Lookup error:', e); }
+    if (spinner) spinner.style.display = 'none';
+  }, 700);
+}
+
 </script>
 </body>
 </html>
