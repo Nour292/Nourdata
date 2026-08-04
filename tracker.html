@@ -152,10 +152,35 @@ body.sb-collapsed #main-content{margin-left:52px;}
 #hold-reason-field textarea{width:100%;padding:8px;font-size:13px;border:1.5px solid #d0dce8;border-radius:7px;font-family:'Calibri',sans-serif;resize:vertical;min-height:60px;}
 #status-footer{padding:12px 18px;border-top:1px solid #e8eef5;display:flex;gap:8px;justify-content:flex-end;}
 
+/* ── Password overlay ── */
+#pw-overlay{display:flex;position:fixed;inset:0;background:linear-gradient(135deg,#1a2b3c 0%,#2e4057 100%);z-index:9999;align-items:center;justify-content:center;}
+#pw-box{background:#fff;border-radius:16px;padding:36px 40px;width:360px;text-align:center;box-shadow:0 8px 40px rgba(0,0,0,0.35);}
+#pw-box img{height:70px;margin-bottom:14px;}
+#pw-box h2{font-size:20px;font-weight:700;color:#1a2b3c;margin-bottom:6px;}
+#pw-box p{font-size:13px;color:#888;margin-bottom:20px;}
+#pw-box input{width:100%;padding:11px 14px;font-size:15px;border:2px solid #d0dce8;border-radius:8px;margin-bottom:12px;font-family:Calibri,sans-serif;text-align:center;letter-spacing:2px;}
+#pw-box input:focus{border-color:#2e86c1;outline:none;}
+#pw-box button{width:100%;padding:12px;background:#2e86c1;color:#fff;font-size:15px;font-weight:700;border:none;border-radius:8px;cursor:pointer;}
+#pw-box button:hover{background:#1a5276;}
+#pw-error{color:#e74c3c;font-size:13px;margin-top:10px;font-weight:600;min-height:20px;}
+#layout{display:none;}
+
 @media print{#sidebar,#top-header,#filter-bar,#stats-bar,.card-footer-bar,#modal-overlay,#status-modal{display:none!important;}#main-content{margin-left:0!important;}.job-card{break-inside:avoid;border:1px solid #ddd;}}
 </style>
 </head>
 <body>
+
+<!-- ── Password Overlay ── -->
+<div id="pw-overlay">
+  <div id="pw-box">
+    <img src="https://nour292.github.io/Nourdata/nour_energy_logo.png" alt="Nour Energy" onerror="this.style.display='none'">
+    <h2>Nour Energy</h2>
+    <p>Job Tracker — Admin Access Only</p>
+    <input type="password" id="pw-input" placeholder="Enter admin password" autocomplete="off">
+    <button id="pw-submit" onclick="checkPassword()">Login</button>
+    <div id="pw-error"></div>
+  </div>
+</div>
 
 <div id="layout">
 
@@ -203,7 +228,7 @@ body.sb-collapsed #main-content{margin-left:52px;}
 
   </nav>
   <div id="sb-footer">
-    <button id="sb-logout" onclick="if(confirm('Logout?'))window.location.href='index.html'">
+    <button id="sb-logout" onclick="if(confirm('Logout?')){document.getElementById('layout').style.display='none';document.getElementById('pw-overlay').style.display='flex';document.getElementById('pw-input').value='';document.getElementById('pw-error').textContent='';}" >
       <span>⏻</span><span id="sb-logout-label">Logout</span>
     </button>
   </div>
@@ -621,7 +646,35 @@ function deleteJob(id) {
   jobs=jobs.filter(j=>j.id!==id); saveJobs(); renderJobs();
 }
 
-loadJobs(); renderJobs();
+const PW_ADMIN = '2d8f693a554950343de320b8789f03563e1291bde42cdab4658cae4be8654f1b';
+
+async function hashPassword(str) {
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
+  return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,'0')).join('');
+}
+
+async function checkPassword() {
+  const entered = document.getElementById('pw-input').value.trim();
+  if (!entered) { document.getElementById('pw-error').textContent = 'Please enter your password.'; return; }
+  const hashed = await hashPassword(entered);
+  if (hashed === PW_ADMIN) {
+    document.getElementById('pw-overlay').style.display = 'none';
+    document.getElementById('layout').style.display = 'flex';
+    loadJobs();
+    setView('active');
+    return;
+  }
+  document.getElementById('pw-error').textContent = 'Access denied. Invalid password.';
+  document.getElementById('pw-input').value = '';
+  document.getElementById('pw-input').focus();
+}
+
+// Enter key on password
+document.getElementById('pw-input').addEventListener('keyup', e => { if (e.key === 'Enter') checkPassword(); });
+
+// Init — show login, hide app
+document.getElementById('pw-overlay').style.display = 'flex';
+document.getElementById('pw-input').focus();
 </script>
 </body>
 </html>
