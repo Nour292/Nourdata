@@ -165,6 +165,25 @@ body.sb-collapsed #main-content{margin-left:52px;}
 #pw-error{color:#e74c3c;font-size:13px;margin-top:10px;font-weight:600;min-height:20px;}
 #layout{display:none;}
 
+body.dark-mode{background:#1a1a2e!important;}
+body.dark-mode #sidebar{background:#0f1923!important;}
+body.dark-mode #top-header{background:#1e2d3d!important;border-color:#2a3d50!important;}
+body.dark-mode #main-content{background:#1a1a2e!important;}
+body.dark-mode .job-card{background:#1e2d3d!important;color:#e0e0e0!important;}
+body.dark-mode .card-top{border-color:#2a3d50!important;}
+body.dark-mode .emp-name{color:#e0e0e0!important;}
+body.dark-mode .card-body{background:#1e2d3d!important;}
+body.dark-mode .card-field{border-color:#2a3d50!important;}
+body.dark-mode .field-label{color:#8fa8c0!important;}
+body.dark-mode .field-value{color:#e0e0e0!important;}
+body.dark-mode .card-footer-bar{background:#162330!important;border-color:#2a3d50!important;}
+body.dark-mode .stat-card{background:#1e2d3d!important;color:#e0e0e0!important;}
+body.dark-mode .stat-num{color:#e0e0e0!important;}
+body.dark-mode #filter-bar{background:#1e2d3d!important;}
+body.dark-mode #inline-search-panel{background:#1e2d3d!important;}
+body.dark-mode .loc-header{border-color:#2a3d50!important;}
+body.dark-mode .loc-title{color:#e0e0e0!important;}
+
 @media print{#sidebar,#top-header,#filter-bar,#stats-bar,.card-footer-bar,#modal-overlay,#status-modal{display:none!important;}#main-content{margin-left:0!important;}.job-card{break-inside:avoid;border:1px solid #ddd;}}
 </style>
 </head>
@@ -228,6 +247,9 @@ body.sb-collapsed #main-content{margin-left:52px;}
 
   </nav>
   <div id="sb-footer">
+    <button onclick="toggleDarkMode()" style="display:flex;align-items:center;gap:10px;width:100%;padding:9px 12px;background:none;border:none;border-bottom:1px solid rgba(255,255,255,0.08);color:#8fa8c0;font-size:13px;font-weight:700;cursor:pointer;margin-bottom:6px;white-space:nowrap;">
+      <span>🌙</span><span class="sb-label">Dark Mode</span>
+    </button>
     <button id="sb-logout" onclick="if(confirm('Logout?')){document.getElementById('layout').style.display='none';document.getElementById('pw-overlay').style.display='flex';document.getElementById('pw-input').value='';document.getElementById('pw-error').textContent='';}" >
       <span>⏻</span><span id="sb-logout-label">Logout</span>
     </button>
