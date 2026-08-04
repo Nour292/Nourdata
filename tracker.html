@@ -185,10 +185,11 @@ body.dark-mode .loc-header{border-color:#2a3d50!important;}
 body.dark-mode .loc-title{color:#e0e0e0!important;}
 
 /* ── Date Picker ── */
-.date-wrap { position: relative; display: flex; align-items: center; }
-.date-wrap input { flex: 1; padding-right: 36px !important; }
-.date-wrap input[type="date"] { position: absolute; opacity: 0; width: 36px; height: 36px; right: 0; top: 0; cursor: pointer; z-index: 2; }
-.cal-icon { position: absolute; right: 8px; top: 50%; transform: translateY(-50%); font-size: 16px; cursor: pointer; z-index: 1; pointer-events: none; }
+.date-wrap { position: relative; display: flex; align-items: center; gap: 6px; }
+.date-wrap input[type="text"] { flex: 1; }
+.cal-btn { background: #e8f0fe; border: 1.5px solid #d0dce8; border-radius: 6px; padding: 7px 9px; font-size: 15px; cursor: pointer; flex-shrink: 0; line-height: 1; display: flex; align-items: center; justify-content: center; transition: background 0.15s; }
+.cal-btn:hover { background: #2e86c1; }
+.cal-btn input[type="date"] { position: absolute; opacity: 0; width: 0; height: 0; pointer-events: none; }
 
 @media print{#sidebar,#top-header,#filter-bar,#stats-bar,.card-footer-bar,#modal-overlay,#status-modal{display:none!important;}#main-content{margin-left:0!important;}.job-card{break-inside:avoid;border:1px solid #ddd;}}
 </style>
@@ -341,8 +342,7 @@ body.dark-mode .loc-title{color:#e0e0e0!important;}
           <label>Iqama Expiry</label>
           <div class="date-wrap">
             <input type="text" id="f-iqama" placeholder="DD-MMM-YY" disabled style="background:#f0f0f0;color:#aaa;cursor:not-allowed;">
-            <span class="cal-icon" style="opacity:0.4;">📅</span>
-            <input type="date" id="f-iqama-picker" onchange="if(!document.getElementById('f-iqama').disabled)setDate('f-iqama',this.value)" title="Pick date" style="right:0;">
+            <button type="button" class="cal-btn" onclick="if(!document.getElementById('f-iqama').disabled)this.querySelector('input[type=date]').showPicker()" style="opacity:0.6;">📅<input type="date" onchange="if(!document.getElementById('f-iqama').disabled)setDate('f-iqama',this.value)" style="position:absolute;opacity:0;width:0;height:0;pointer-events:none;"></button>
           </div>
         </div>
         <div class="form-field">
@@ -359,12 +359,11 @@ body.dark-mode .loc-title{color:#e0e0e0!important;}
           <input type="text" id="f-holdreason" placeholder="e.g. No Timesheet, Pending Signature...">
         </div>
         <div class="form-section-hdr">Dates</div>
-        <div class="form-field" id="row-leave"><label>Leave Date</label><div class="date-wrap"><input type="text" id="f-leavedate" placeholder="DD-MMM-YY" oninput="calcDays()"><span class="cal-icon">📅</span><input type="date" onchange="setDate('f-leavedate',this.value);calcDays();" title="Pick date"></div></div>
-        <div class="form-field" id="row-return"><label>Expected Return</label><div class="date-wrap"><input type="text" id="f-returndate" placeholder="DD-MMM-YY" oninput="calcDays()"><span class="cal-icon">📅</span><input type="date" onchange="setDate('f-returndate',this.value);calcDays();" title="Pick date"></div></div>
+        <div class="form-field" id="row-leave"><label>Leave Date</label><div class="date-wrap"><input type="text" id="f-leavedate" placeholder="DD-MMM-YY" oninput="calcDays()"><button type="button" class="cal-btn" onclick="this.querySelector('input[type=date]').showPicker()">📅<input type="date" onchange="setDate('f-leavedate',this.value);calcDays();" style="position:absolute;opacity:0;width:0;height:0;pointer-events:none;"></button></div></div>
+        <div class="form-field" id="row-return"><label>Expected Return</label><div class="date-wrap"><input type="text" id="f-returndate" placeholder="DD-MMM-YY" oninput="calcDays()"><button type="button" class="cal-btn" onclick="this.querySelector('input[type=date]').showPicker()">📅<input type="date" onchange="setDate('f-returndate',this.value);calcDays();" style="position:absolute;opacity:0;width:0;height:0;pointer-events:none;"></button></div></div>
         <div class="form-field" id="row-actual"><label>Actual Return</label><div class="date-wrap">
             <input type="text" id="f-actualreturn" placeholder="DD-MMM-YY" oninput="calcDays()">
-            <span class="cal-icon">📅</span>
-            <input type="date" onchange="setDate('f-actualreturn',this.value)" title="Pick date">
+            <button type="button" class="cal-btn" onclick="this.querySelector('input[type=date]').showPicker()">📅<input type="date" onchange="setDate('f-actualreturn',this.value)" style="position:absolute;opacity:0;width:0;height:0;pointer-events:none;"></button>
           </div></div>
         <div class="form-field" id="row-days"><label>Days (auto)</label><input type="text" id="f-days" placeholder="Auto-calculated" readonly style="background:#f7fafd;color:#1a5276;font-weight:700;"></div>
         <div class="form-field" id="row-reentry"><label>Reentry Visa</label>
@@ -376,24 +375,20 @@ body.dark-mode .loc-title{color:#e0e0e0!important;}
         </div>
         <div class="form-field" id="row-visaexpiry"><label>Visa Expiry Date</label><div class="date-wrap">
             <input type="text" id="f-visaexpiry" placeholder="DD-MMM-YY" >
-            <span class="cal-icon">📅</span>
-            <input type="date" onchange="setDate('f-visaexpiry',this.value)" title="Pick date">
+            <button type="button" class="cal-btn" onclick="this.querySelector('input[type=date]').showPicker()">📅<input type="date" onchange="setDate('f-visaexpiry',this.value)" style="position:absolute;opacity:0;width:0;height:0;pointer-events:none;"></button>
           </div></div>
         <div class="form-field" id="row-ext"><label>Extension Date</label><div class="date-wrap">
             <input type="text" id="f-extdate" placeholder="DD-MMM-YY" >
-            <span class="cal-icon">📅</span>
-            <input type="date" onchange="setDate('f-extdate',this.value)" title="Pick date">
+            <button type="button" class="cal-btn" onclick="this.querySelector('input[type=date]').showPicker()">📅<input type="date" onchange="setDate('f-extdate',this.value)" style="position:absolute;opacity:0;width:0;height:0;pointer-events:none;"></button>
           </div></div>
         <div class="form-field" id="row-extdays"><label>Extension Days</label><input type="text" id="f-extdays" placeholder="e.g. 30 days"></div>
         <div class="form-field" id="row-hstart"><label>Housing Start</label><div class="date-wrap">
             <input type="text" id="f-housingstart" placeholder="DD-MMM-YY" >
-            <span class="cal-icon">📅</span>
-            <input type="date" onchange="setDate('f-housingstart',this.value)" title="Pick date">
+            <button type="button" class="cal-btn" onclick="this.querySelector('input[type=date]').showPicker()">📅<input type="date" onchange="setDate('f-housingstart',this.value)" style="position:absolute;opacity:0;width:0;height:0;pointer-events:none;"></button>
           </div></div>
         <div class="form-field" id="row-hend"><label>Housing End</label><div class="date-wrap">
             <input type="text" id="f-housingend" placeholder="DD-MMM-YY" >
-            <span class="cal-icon">📅</span>
-            <input type="date" onchange="setDate('f-housingend',this.value)" title="Pick date">
+            <button type="button" class="cal-btn" onclick="this.querySelector('input[type=date]').showPicker()">📅<input type="date" onchange="setDate('f-housingend',this.value)" style="position:absolute;opacity:0;width:0;height:0;pointer-events:none;"></button>
           </div></div>
         <div class="form-section-hdr">Documents</div>
         <div class="form-field"><label>Ticket Submitted</label>
