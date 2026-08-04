@@ -411,7 +411,7 @@ let jobs = [], editingJobId = null, statusJobId = null;
 let currentLocationFilter = 'All', currentView = 'active';
 let isSaving = false;
 
-function genId() { return 'j'+Date.now()+Math.random().toString(36).slice(2,6); }
+function genId() { return 'J' + Date.now(); }
 
 async function loadJobs() {
   try {
@@ -702,8 +702,8 @@ function saveJob() {
     ticket:document.getElementById('f-ticket').value,
     returnTicket:document.getElementById('f-returnticket').value,
     notes:document.getElementById('f-notes').value.trim(),
-    createdAt:editingJobId?(jobs.find(j=>j.id===editingJobId)?.createdAt||new Date().toISOString()):new Date().toISOString(),
-    updatedAt:new Date().toISOString(),
+    createdAt:editingJobId?(jobs.find(j=>j.id===editingJobId)?.createdAt||new Date().toLocaleDateString('en-GB')):new Date().toLocaleDateString('en-GB'),
+    updatedAt:new Date().toLocaleDateString('en-GB'),
   };
   if(editingJobId){const i=jobs.findIndex(j=>j.id===editingJobId);if(i!==-1)jobs[i]=data;}
   else jobs.unshift(data);
