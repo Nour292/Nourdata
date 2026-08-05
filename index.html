@@ -1413,7 +1413,6 @@ body.view-lists #card-area:empty::after { display: none !important; }
         <button id="isl-run-btn" onclick="runInlineCombinedFilter()">▶ Generate List</button>
         <button onclick="resetInlineFilter()">↺ Reset</button>
         <span id="isl-count-badge"></span>
-        <button onclick="printInlineResult('list')" style="margin-left:auto;padding:9px 22px;font-size:14px;font-weight:bold;background:#117a65;color:#fff;border:none;border-radius:6px;cursor:pointer;">🖨 Print</button>
       </div>
 
       <div id="isl-list-result"></div>
@@ -1554,6 +1553,7 @@ function unlockApp(skipRedirect) {
     if (el) el.style.display = isAdmin ? 'flex' : 'none';
   });
   document.getElementById('dataFormButton').style.display = isAdmin ? '' : 'none';
+  document.getElementById('filterButton').style.display    = isAdmin ? '' : 'none';
   document.getElementById('tab-row').style.display = 'none';
   document.getElementById('inline-search-panel').style.display = 'none';
   const trackerGroup = document.getElementById('grp-tracker');
@@ -1806,7 +1806,6 @@ function deepSearchInline() {
     html += `<div class="ds-header">
       <img src="https://nour292.github.io/Nourdata/nour_energy_logo.png" alt="Logo" onerror="this.style.display='none'">
       <span>Deep Search — "<em>${escHtml(query)}</em>" &nbsp;·&nbsp; ${results.length} record${results.length !== 1 ? 's' : ''} found</span>
-      <button onclick="printDeepSearch()" style="margin-left:auto;padding:5px 14px;background:#6c3483;color:#fff;border:none;border-radius:5px;font-size:13px;font-weight:700;cursor:pointer;">🖨 Print</button>
     </div>`;
 
     html += `<table class="ds-tbl"><thead><tr>`;
@@ -3216,6 +3215,7 @@ document.addEventListener('DOMContentLoaded', function() {
   const savedTime   = parseInt(sessionStorage.getItem('nd_login_time') || '0');
   if (savedAccess && savedAccess !== 'none' && (Date.now() - savedTime) < SESSION_MS) {
     currentAccessLevel = savedAccess;
+    document.getElementById('filterButton').style.display = (savedAccess === 'admin') ? '' : 'none';
     unlockApp(true); // skipRedirect — admin already chose to be on index.html
     const remaining = SESSION_MS - (Date.now() - savedTime);
     setTimeout(() => { alert('Your session has expired. Please log in again.'); logout(); }, remaining);
@@ -3527,7 +3527,7 @@ function sidebarNav(section) {
     searchButton.style.display    = '';
     clearButton.style.display     = '';
     dataFormButton.style.display  = 'none';
-    filterButton.style.display    = '';
+    filterButton.style.display    = currentAccessLevel === 'admin' ? '' : 'none';
     printCardButton.style.display = '';
     printCardButton.textContent   = '🖨 Print';
     printCardButton.onclick       = printCard;
@@ -3537,7 +3537,7 @@ function sidebarNav(section) {
     searchButton.style.display    = '';
     clearButton.style.display     = '';
     dataFormButton.style.display  = '';
-    filterButton.style.display    = '';
+    filterButton.style.display    = currentAccessLevel === 'admin' ? '' : 'none';
     filterButton.textContent      = '🔍 Filter';
     printCardButton.style.display = '';
     printCardButton.textContent   = '🖨 Print';
@@ -3551,7 +3551,7 @@ function sidebarNav(section) {
     searchButton.style.display    = 'none';
     clearButton.style.display     = 'none';
     dataFormButton.style.display  = 'none';
-    filterButton.style.display    = '';
+    filterButton.style.display    = currentAccessLevel === 'admin' ? '' : 'none';
     printCardButton.style.display = '';
   } else {
     searchWrapper.style.display   = 'none';
