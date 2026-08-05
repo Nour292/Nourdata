@@ -294,7 +294,8 @@ body.dark-mode .loc-title{color:#e0e0e0!important;}
         <option value="">All Statuses</option>
         <option>With Admin</option><option>Clearance - Fleet</option><option>Clearance - Warehouse</option>
         <option>With Accounts</option><option>Computation - Signing</option>
-        <option>Visa Processing</option><option>With IT</option><option>On Hold</option>
+        <option>Visa Processing</option><option>Submit to IT</option>
+        <option>Submitted to Admin</option><option>On Hold</option>
       </select>
       <button class="hdr-btn btn-filter" onclick="document.getElementById('filter-search').value='';document.getElementById('filter-type').value='';document.getElementById('filter-status').value='';renderJobs();">✕ Clear</button>
     </div>
@@ -351,7 +352,8 @@ body.dark-mode .loc-title{color:#e0e0e0!important;}
             <option value="">-- Select --</option>
             <option>With Admin</option><option>Clearance - Fleet</option><option>Clearance - Warehouse</option>
             <option>With Accounts</option><option>Computation - Signing</option>
-            <option>Visa Processing</option><option>With IT</option><option>On Hold</option>
+            <option>Visa Processing</option><option>Submit to IT</option>
+            <option>Submitted to Admin</option><option>On Hold</option>
           </select>
         </div>
         <div class="form-field full" id="hold-reason-row" style="display:none;">
@@ -359,11 +361,23 @@ body.dark-mode .loc-title{color:#e0e0e0!important;}
           <input type="text" id="f-holdreason" placeholder="e.g. No Timesheet, Pending Signature...">
         </div>
         <div class="form-section-hdr">Dates</div>
-        <div class="form-field" id="row-leave"><label>Leave Date</label><div class="date-wrap"><input type="text" id="f-leavedate" placeholder="DD-MMM-YY" oninput="calcDays()"><button type="button" class="cal-btn" onclick="this.querySelector('input[type=date]').showPicker()">📅<input type="date" onchange="setDate('f-leavedate',this.value);calcDays();" style="position:absolute;opacity:0;width:0;height:0;pointer-events:none;"></button></div></div>
-        <div class="form-field" id="row-return"><label>Expected Return</label><div class="date-wrap"><input type="text" id="f-returndate" placeholder="DD-MMM-YY" oninput="calcDays()"><button type="button" class="cal-btn" onclick="this.querySelector('input[type=date]').showPicker()">📅<input type="date" onchange="setDate('f-returndate',this.value);calcDays();" style="position:absolute;opacity:0;width:0;height:0;pointer-events:none;"></button></div></div>
-        <div class="form-field" id="row-actual"><label>Actual Return</label><div class="date-wrap">
+        <div class="form-field" id="row-leave"><label>Start Vacation Date</label><div class="date-wrap"><input type="text" id="f-leavedate" placeholder="DD-MMM-YY" oninput="calcDays()"><button type="button" class="cal-btn" onclick="this.querySelector('input[type=date]').showPicker()">📅<input type="date" onchange="setDate('f-leavedate',this.value);calcDays();" style="position:absolute;opacity:0;width:0;height:0;pointer-events:none;"></button></div></div>
+        <div class="form-field" id="row-return"><label>Vacation End Date</label><div class="date-wrap"><input type="text" id="f-returndate" placeholder="DD-MMM-YY" oninput="calcDays()"><button type="button" class="cal-btn" onclick="this.querySelector('input[type=date]').showPicker()">📅<input type="date" onchange="setDate('f-returndate',this.value);calcDays();" style="position:absolute;opacity:0;width:0;height:0;pointer-events:none;"></button></div></div>
+        <div class="form-field" id="row-actual"><label>Arrival Date</label><div class="date-wrap">
             <input type="text" id="f-actualreturn" placeholder="DD-MMM-YY" oninput="calcDays()">
-            <button type="button" class="cal-btn" onclick="this.querySelector('input[type=date]').showPicker()">📅<input type="date" onchange="setDate('f-actualreturn',this.value)" style="position:absolute;opacity:0;width:0;height:0;pointer-events:none;"></button>
+            <button type="button" class="cal-btn" onclick="this.querySelector('input[type=date]').showPicker()">📅<input type="date" onchange="setDate('f-actualreturn',this.value);calcDays();" style="position:absolute;opacity:0;width:0;height:0;pointer-events:none;"></button>
+          </div></div>
+        <div class="form-field" id="row-depticket"><label>Departure Date (Ticket)</label><div class="date-wrap">
+            <input type="text" id="f-depticket" placeholder="DD-MMM-YY">
+            <button type="button" class="cal-btn" onclick="this.querySelector('input[type=date]').showPicker()">📅<input type="date" onchange="setDate('f-depticket',this.value)" style="position:absolute;opacity:0;width:0;height:0;pointer-events:none;"></button>
+          </div></div>
+        <div class="form-field" id="row-arrticket"><label>Arrival Date (Ticket)</label><div class="date-wrap">
+            <input type="text" id="f-arrticket" placeholder="DD-MMM-YY">
+            <button type="button" class="cal-btn" onclick="this.querySelector('input[type=date]').showPicker()">📅<input type="date" onchange="setDate('f-arrticket',this.value)" style="position:absolute;opacity:0;width:0;height:0;pointer-events:none;"></button>
+          </div></div>
+        <div class="form-field" id="row-lastday"><label>Last Working Day</label><div class="date-wrap">
+            <input type="text" id="f-lastday" placeholder="DD-MMM-YY">
+            <button type="button" class="cal-btn" onclick="this.querySelector('input[type=date]').showPicker()">📅<input type="date" onchange="setDate('f-lastday',this.value)" style="position:absolute;opacity:0;width:0;height:0;pointer-events:none;"></button>
           </div></div>
         <div class="form-field" id="row-days"><label>Days (auto)</label><input type="text" id="f-days" placeholder="Auto-calculated" readonly style="background:#f7fafd;color:#1a5276;font-weight:700;"></div>
         <div class="form-field" id="row-reentry"><label>Reentry Visa</label>
@@ -374,28 +388,29 @@ body.dark-mode .loc-title{color:#e0e0e0!important;}
           </select>
         </div>
         <div class="form-field" id="row-visaexpiry"><label>Visa Expiry Date</label><div class="date-wrap">
-            <input type="text" id="f-visaexpiry" placeholder="DD-MMM-YY" >
+            <input type="text" id="f-visaexpiry" placeholder="DD-MMM-YY" oninput="checkVisaExpiryAlert()">
             <button type="button" class="cal-btn" onclick="this.querySelector('input[type=date]').showPicker()">📅<input type="date" onchange="setDate('f-visaexpiry',this.value)" style="position:absolute;opacity:0;width:0;height:0;pointer-events:none;"></button>
           </div></div>
+        <div id="visa-alert" style="display:none;grid-column:1/-1;background:#fff3cd;border:1px solid #ffc107;border-radius:7px;padding:8px 12px;font-size:12px;font-weight:700;color:#856404;"></div>
         <div class="form-field" id="row-ext"><label>Extension Date</label><div class="date-wrap">
-            <input type="text" id="f-extdate" placeholder="DD-MMM-YY" >
+            <input type="text" id="f-extdate" placeholder="DD-MMM-YY">
             <button type="button" class="cal-btn" onclick="this.querySelector('input[type=date]').showPicker()">📅<input type="date" onchange="setDate('f-extdate',this.value)" style="position:absolute;opacity:0;width:0;height:0;pointer-events:none;"></button>
           </div></div>
         <div class="form-field" id="row-extdays"><label>Extension Days</label><input type="text" id="f-extdays" placeholder="e.g. 30 days"></div>
         <div class="form-field" id="row-hstart"><label>Housing Start</label><div class="date-wrap">
-            <input type="text" id="f-housingstart" placeholder="DD-MMM-YY" >
+            <input type="text" id="f-housingstart" placeholder="DD-MMM-YY">
             <button type="button" class="cal-btn" onclick="this.querySelector('input[type=date]').showPicker()">📅<input type="date" onchange="setDate('f-housingstart',this.value)" style="position:absolute;opacity:0;width:0;height:0;pointer-events:none;"></button>
           </div></div>
         <div class="form-field" id="row-hend"><label>Housing End</label><div class="date-wrap">
-            <input type="text" id="f-housingend" placeholder="DD-MMM-YY" >
+            <input type="text" id="f-housingend" placeholder="DD-MMM-YY">
             <button type="button" class="cal-btn" onclick="this.querySelector('input[type=date]').showPicker()">📅<input type="date" onchange="setDate('f-housingend',this.value)" style="position:absolute;opacity:0;width:0;height:0;pointer-events:none;"></button>
           </div></div>
         <div class="form-section-hdr">Documents</div>
-        <div class="form-field"><label>Ticket Submitted</label>
+        <div class="form-field" id="row-ticket-doc"><label>Ticket Submitted</label>
           <select id="f-ticket"><option value="">--</option><option>Yes</option><option>No</option><option>Submitted</option></select>
         </div>
-        <div class="form-field"><label>Return Ticket</label>
-          <select id="f-returnticket"><option value="">--</option><option>Yes</option><option>No</option></select>
+        <div class="form-field" id="row-encash-type" style="display:none;"><label>Type of Encashment</label>
+          <select id="f-encashtype"><option value="">-- Select --</option><option>Ticket Encashment</option><option>Ticket and Annual Leave Encashment</option></select>
         </div>
         <div class="form-field full"><label>Notes</label><textarea id="f-notes" placeholder="Any additional notes..."></textarea></div>
       </div>
@@ -514,7 +529,8 @@ const STATUS_LIST = [
   {val:'With Admin',icon:'🏢'},{val:'Clearance - Fleet',icon:'🚗'},
   {val:'Clearance - Warehouse',icon:'📦'},{val:'With Accounts',icon:'💰'},
   {val:'Computation - Signing',icon:'✍️'},{val:'Visa Processing',icon:'🛂'},
-  {val:'With IT',icon:'💻'},{val:'On Hold',icon:'🔴'},
+  {val:'Submit to IT',icon:'💻'},{val:'Submitted to Admin',icon:'📋'},
+  {val:'On Hold',icon:'🔴'},
 ];
 
 function statusCls(job) {
@@ -546,6 +562,10 @@ function renderCard(job) {
   if(job.returnDate) body+=fld('Expected Return',job.returnDate);
   if(job.actualReturn) body+=fld('Actual Return',job.actualReturn,'highlight');
   if(job.days) body+=fld('Days',job.days);
+  if(job.depTicket) body+=fld('Departure Ticket',job.depTicket);
+  if(job.arrTicket) body+=fld('Arrival Ticket',job.arrTicket);
+  if(job.lastDay) body+=fld('Last Working Day',job.lastDay,'red');
+  if(job.encashType) body+=fld('Encashment Type',job.encashType,'highlight');
   if(job.reentry) body+=fld('Reentry Visa',job.reentry,'highlight');
   if(job.visaExpiry) body+=fld('Visa Expiry',job.visaExpiry);
   if(job.extDate) body+=fld('Extension To',job.extDate);
@@ -674,32 +694,64 @@ function toggleDateFields() {
   const status = document.getElementById('f-status').value;
   const show   = (id, v) => { const e = document.getElementById(id); if(e) e.style.display = v ? '' : 'none'; };
 
-  const isVac   = type === 'Vacation';
-  const isHouse = type === 'Housing';
-  const isRR    = type === 'Resign & Rejoin';
+  const isVac       = type === 'Vacation';
+  const isHouse     = type === 'Housing';
+  const isEncash    = type === 'Encashment';
+  const isRR        = type === 'Resign & Rejoin';
+  const isResignGrp = ['Resignation','Termination','Resign & Rejoin'].includes(type);
 
   // Date fields
-  show('row-leave',   isVac || isRR || ['Resignation','Termination'].includes(type));
-  show('row-return',  isVac);
-  show('row-actual',  isVac);
-  show('row-days',    isVac || ['Resignation','Termination'].includes(type));
-  show('row-ext',     isVac);
-  show('row-extdays', isVac);
-  show('row-hstart',  isHouse);
-  show('row-reentry',   isVac);
+  show('row-leave',     isVac || (isResignGrp && !isHouse));
+  show('row-return',    isVac);
+  show('row-actual',    isVac);
+  show('row-depticket', isVac);
+  show('row-arrticket', isVac);
+  show('row-lastday',   isResignGrp);
+  show('row-days',      isVac || isResignGrp);
+  show('row-ext',       isVac);
+  show('row-extdays',   isVac);
+  show('row-reentry',   isVac && !isEncash);
   show('row-visaexpiry',isVac);
-  show('row-hend',    isHouse);
+  show('row-hstart',    isHouse);
+  show('row-hend',      isHouse);
   show('hold-reason-row', status === 'On Hold');
 
-  // Iqama — only enabled for Vacation, Resignation, Termination
+  // Documents
+  show('row-ticket-doc',  !isEncash);
+  show('row-encash-type',  isEncash);
+
+  // Iqama
   const iqamaEl = document.getElementById('f-iqama');
   const needsIqama = ['Vacation','Resignation','Termination'].includes(type);
   if (iqamaEl) {
     iqamaEl.disabled = !needsIqama;
-    iqamaEl.style.background  = needsIqama ? '' : '#f0f0f0';
-    iqamaEl.style.color       = needsIqama ? '' : '#aaa';
-    iqamaEl.style.cursor      = needsIqama ? '' : 'not-allowed';
+    iqamaEl.style.background = needsIqama ? '' : '#f0f0f0';
+    iqamaEl.style.color      = needsIqama ? '' : '#aaa';
+    iqamaEl.style.cursor     = needsIqama ? '' : 'not-allowed';
     if (!needsIqama) iqamaEl.value = '';
+  }
+
+  // Visa expiry alert
+  checkVisaExpiryAlert();
+}
+
+function checkVisaExpiryAlert() {
+  const visaExp = document.getElementById('f-visaexpiry')?.value?.trim();
+  const arrival = document.getElementById('f-actualreturn')?.value?.trim();
+  if (!visaExp || arrival) return; // No alert if no visa date or arrival already filled
+  const exp = parseDate(visaExp);
+  if (!exp || isNaN(exp)) return;
+  const daysLeft = Math.round((exp - new Date()) / 86400000);
+  const alertEl = document.getElementById('visa-alert');
+  if (!alertEl) return;
+  if (daysLeft >= 0 && daysLeft <= 7) {
+    alertEl.style.display = 'block';
+    alertEl.textContent = '⚠️ Visa expires in ' + daysLeft + ' day(s) and no Arrival Date filled!';
+  } else if (daysLeft < 0) {
+    alertEl.style.display = 'block';
+    alertEl.textContent = '🔴 Visa EXPIRED ' + Math.abs(daysLeft) + ' day(s) ago and no Arrival Date!';
+  } else {
+    alertEl.style.display = 'none';
   }
 }
 
@@ -715,6 +767,10 @@ function saveJob() {
     iqama:document.getElementById('f-iqama').value.trim(),
     reentry:document.getElementById('f-reentry').value,
     visaExpiry:document.getElementById('f-visaexpiry').value.trim(),
+    depTicket:document.getElementById('f-depticket').value.trim(),
+    arrTicket:document.getElementById('f-arrticket').value.trim(),
+    lastDay:document.getElementById('f-lastday').value.trim(),
+    encashType:document.getElementById('f-encashtype').value,
     holdReason:document.getElementById('f-holdreason').value.trim(),
     leaveDate:document.getElementById('f-leavedate').value.trim(),
     returnDate:document.getElementById('f-returndate').value.trim(),
@@ -762,14 +818,14 @@ function saveStatus() {
   const j=jobs.find(x=>x.id===statusJobId); if(!j) return;
   j.status=sel.value;
   j.holdReason=sel.value==='On Hold'?document.getElementById('hold-reason-input').value.trim():'';
-  j.updatedAt=new Date().toISOString();
+  j.updatedAt=new Date().toLocaleDateString('en-GB');
   saveJobs(); closeStatusModal(); renderJobs();
 }
 
 function quickComplete(id) {
   if(!confirm('Mark as Done & Closed?')) return;
   const j=jobs.find(x=>x.id===id); if(!j) return;
-  j.status='Done & Closed'; j.closedAt=new Date().toISOString(); j.updatedAt=new Date().toISOString();
+  j.status='Done & Closed'; j.closedAt=new Date().toISOString(); j.updatedAt=new Date().toLocaleDateString('en-GB');
   saveJobs(); renderJobs();
 }
 
