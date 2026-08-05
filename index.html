@@ -1265,6 +1265,43 @@ body.view-lists #card-area:empty::after { display: none !important; }
 
     <!-- Deep Search pane -->
     <div id="ipane-deepsearch" class="ipane" style="display:none;">
+
+      <!-- Deep Search Filter Bar -->
+      <div id="ds-filter-bar" style="display:none;background:#f0f6fb;border:1px solid #c8d8e8;border-radius:8px;padding:14px 18px;margin-bottom:14px;">
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px 16px;align-items:center;">
+          <div style="display:flex;align-items:center;gap:8px;">
+            <label style="font-size:12px;font-weight:700;color:#1a3a52;white-space:nowrap;width:80px;flex-shrink:0;">Nationality</label>
+            <select id="dsf-nationality" style="flex:1;padding:6px 10px;font-size:13px;border:1px solid #c8d8e8;border-radius:5px;">
+              <option value="">— All —</option>
+            </select>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <label style="font-size:12px;font-weight:700;color:#1a3a52;white-space:nowrap;width:80px;flex-shrink:0;">Location</label>
+            <select id="dsf-location" style="flex:1;padding:6px 10px;font-size:13px;border:1px solid #c8d8e8;border-radius:5px;">
+              <option value="">— All —</option>
+            </select>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <label style="font-size:12px;font-weight:700;color:#1a3a52;white-space:nowrap;width:80px;flex-shrink:0;">Status</label>
+            <select id="dsf-status" style="flex:1;padding:6px 10px;font-size:13px;border:1px solid #c8d8e8;border-radius:5px;">
+              <option value="">— All —</option>
+            </select>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <label style="font-size:12px;font-weight:700;color:#1a3a52;white-space:nowrap;width:80px;flex-shrink:0;">Job Ended</label>
+            <select id="dsf-ended" style="flex:1;padding:6px 10px;font-size:13px;border:1px solid #c8d8e8;border-radius:5px;">
+              <option value="no">Active only</option>
+              <option value="yes">Include ended</option>
+              <option value="only">Only ended</option>
+            </select>
+          </div>
+        </div>
+        <div style="margin-top:10px;display:flex;gap:10px;">
+          <button onclick="deepSearchInline()" style="padding:7px 20px;background:#2e86c1;color:#fff;border:none;border-radius:5px;font-size:13px;font-weight:700;cursor:pointer;">▶ Apply Filter</button>
+          <button onclick="resetDsFilter()" style="padding:7px 16px;background:#e5e7e9;color:#333;border:none;border-radius:5px;font-size:13px;cursor:pointer;">↺ Reset</button>
+        </div>
+      </div>
+
       <div id="ds-result-area">
         <p style="text-align:center;color:#888;padding:30px 0;">Type in the search box above and click <strong>🔍 Deep Search</strong> to search all employee data.</p>
       </div>
@@ -1723,12 +1760,25 @@ function deepSearchInline() {
 
   area.innerHTML = '<p style="text-align:center;color:#888;padding:30px 0;">Searching…</p>';
 
+  // Read active filter values
+  const dsfNat    = (document.getElementById('dsf-nationality')?.value || '').trim().toLowerCase();
+  const dsfLoc    = (document.getElementById('dsf-location')?.value    || '').trim().toLowerCase();
+  const dsfSta    = (document.getElementById('dsf-status')?.value      || '').trim().toLowerCase();
+  const dsfEnded  = (document.getElementById('dsf-ended')?.value       || 'no');
+
   const doSearch = (rows) => {
     const results = [];
     rows.slice(1).forEach(r => {
-      // Exclude job-ended employees
+      // Job-ended filter
       const jobEndedVal = (r[COL.jobEnded] || '').trim();
-      if (jobEndedVal !== '' && jobEndedVal !== '—') return;
+      const isEnded = jobEndedVal !== '' && jobEndedVal !== '—';
+      if (dsfEnded === 'no'   &&  isEnded) return;
+      if (dsfEnded === 'only' && !isEnded) return;
+
+      // Dropdown filters
+      if (dsfNat && !(r[COL.nationality] || '').toLowerCase().includes(dsfNat)) return;
+      if (dsfLoc && !(r[COL.location]    || '').toLowerCase().includes(dsfLoc)) return;
+      if (dsfSta && !(r[COL.status]      || '').toLowerCase().includes(dsfSta)) return;
 
       const matchedCols = [];
       DS_ALL_COLS.forEach(col => {
@@ -3388,22 +3438,64 @@ function toggleSidebar() {
 }
 
 function toggleFilterPanel() {
-  // From Employee Search: navigate to Smart Lists which has the full filter panel
-  // From Smart Lists: toggle the filter grid visibility
   const currentSection = document.body.className.match(/view-(\w+)/)?.[1];
-  if (currentSection === 'lists') {
+  const btn = document.getElementById('filterButton');
+
+  if (currentSection === 'deepsearch') {
+    const bar = document.getElementById('ds-filter-bar');
+    if (!bar) return;
+    const isHidden = bar.style.display === 'none';
+    bar.style.display = isHidden ? '' : 'none';
+    if (btn) btn.textContent = isHidden ? '✕ Close Filter' : '🔍 Filter';
+    // Populate dropdowns on first open
+    if (isHidden) populateDsFilterDropdowns();
+
+  } else if (currentSection === 'lists') {
     const grid = document.getElementById('isl-filter-grid');
     const actions = document.getElementById('isl-filter-actions');
     if (grid) {
       const isHidden = grid.style.display === 'none';
       grid.style.display = isHidden ? '' : 'none';
       if (actions) actions.style.display = isHidden ? '' : 'none';
-      const btn = document.getElementById('filterButton');
       if (btn) btn.textContent = isHidden ? '✕ Close Filter' : '🔍 Filter';
     }
+
   } else {
     sidebarNav('lists');
   }
+}
+
+function populateDsFilterDropdowns() {
+  if (!csvRows || csvRows.length < 2) {
+    loadSheetRows().then(rows => { csvRows = rows; _fillDsDropdowns(rows); }).catch(() => {});
+  } else {
+    _fillDsDropdowns(csvRows);
+  }
+}
+
+function _fillDsDropdowns(rows) {
+  const nat = new Set(), loc = new Set(), sta = new Set();
+  rows.slice(1).forEach(r => {
+    if (r[COL.nationality]) nat.add(r[COL.nationality].trim());
+    if (r[COL.location])    loc.add(r[COL.location].trim());
+    if (r[COL.status])      sta.add(r[COL.status].trim());
+  });
+  const fill = (id, vals) => {
+    const el = document.getElementById(id);
+    if (!el || el.options.length > 1) return;
+    [...vals].sort().forEach(v => { const o = document.createElement('option'); o.value = o.textContent = v; el.appendChild(o); });
+  };
+  fill('dsf-nationality', nat);
+  fill('dsf-location', loc);
+  fill('dsf-status', sta);
+}
+
+function resetDsFilter() {
+  ['dsf-nationality','dsf-location','dsf-status'].forEach(id => {
+    const el = document.getElementById(id); if (el) el.value = '';
+  });
+  const ended = document.getElementById('dsf-ended');
+  if (ended) ended.value = 'no';
 }
 
 function sidebarNav(section) {
@@ -3437,14 +3529,22 @@ function sidebarNav(section) {
     dataFormButton.style.display  = 'none';
     filterButton.style.display    = '';
     printCardButton.style.display = '';
+    printCardButton.textContent   = '🖨 Print';
+    printCardButton.onclick       = printCard;
   } else if (section === 'deepsearch') {
     searchWrapper.style.display   = '';
     headerActions.style.display   = '';
     searchButton.style.display    = '';
     clearButton.style.display     = '';
     dataFormButton.style.display  = '';
-    filterButton.style.display    = 'none';
-    printCardButton.style.display = 'none';
+    filterButton.style.display    = '';
+    filterButton.textContent      = '🔍 Filter';
+    printCardButton.style.display = '';
+    printCardButton.textContent   = '🖨 Print';
+    printCardButton.onclick       = () => printInlineResult('ds');
+    // Reset filter bar label when switching away and back
+    const dsBar = document.getElementById('ds-filter-bar');
+    if (dsBar) dsBar.style.display = 'none';
   } else if (section === 'lists') {
     searchWrapper.style.display   = 'none';
     headerActions.style.display   = '';
