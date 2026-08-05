@@ -3407,13 +3407,46 @@ function resetInlineFilter() {
 
 function printInlineResult(pane) {
   const el = document.getElementById(pane==='ds'?'ds-result-area':'isl-list-result');
-  if (!el||!el.innerHTML.trim()) return;
-  const win = window.open('','_blank','width=900,height=700');
-  win.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Nour Energy Report</title>
-  <style>body{font-family:Calibri,sans-serif;margin:10mm}.ds-header{display:flex;align-items:center;gap:14px;margin-bottom:12px;padding-bottom:8px;border-bottom:2px solid #d5e8f5}.ds-header img{height:52px}.ds-header span{font-size:15px;font-weight:700;color:#1a5276}table{width:100%;border-collapse:collapse;font-size:12px}th{background:#1a5276;color:#fff;padding:6px 8px;text-align:left;-webkit-print-color-adjust:exact;print-color-adjust:exact}td{border:1px solid #c8d8e8;padding:5px 8px}tr:nth-child(even) td{background:#f7fbff}.card-footer{margin-top:12px;text-align:right;font-size:10px;color:#888}.ds-count{font-size:11px;color:#888;margin-top:6px;text-align:right}</style>
-  </head><body>${el.innerHTML}</body></html>`);
-  win.document.close(); win.focus();
-  setTimeout(()=>{ win.print(); }, 400);
+  if (!el) return;
+
+  // Find the actual result wrapper — ignore empty/placeholder state
+  const wrap = el.querySelector('.ds-wrap');
+  if (!wrap) { alert('No results to print. Please run a search or filter first.'); return; }
+
+  // Clone and strip all onclick handlers so the print window has no broken references
+  const clone = wrap.cloneNode(true);
+  clone.querySelectorAll('[onclick]').forEach(el => el.removeAttribute('onclick'));
+  clone.querySelectorAll('button').forEach(b => b.remove()); // remove any leftover buttons
+
+  const win = window.open('', '_blank', 'width=1000,height=750');
+  win.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8">
+  <title>Nour Energy Report</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: Calibri, sans-serif; font-size: 12px; padding: 10mm; }
+    .ds-header { display:flex; align-items:center; gap:14px; margin-bottom:14px; padding-bottom:10px; border-bottom:2px solid #d5e8f5; }
+    .ds-header img { height:52px; width:auto; }
+    .ds-header span { font-size:15px; font-weight:700; color:#1a5276; }
+    table { width:100%; border-collapse:collapse; font-size:12px; }
+    th { background:#1a5276; color:#fff; padding:6px 8px; text-align:left; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+    td { border:1px solid #c8d8e8; padding:5px 8px; }
+    tr:nth-child(even) td { background:#f7fbff; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+    .ds-match { background:#fef9e7 !important; font-weight:700; }
+    .ds-count { font-size:11px; color:#888; margin-top:8px; text-align:right; }
+    .card-footer { margin-top:10px; text-align:right; font-size:10px; color:#888; }
+    tr { cursor:default; }
+  </style>
+  </head><body>${clone.outerHTML}</body></html>`);
+  win.document.close();
+  // Wait for logo image to load before printing
+  const img = win.document.querySelector('img');
+  if (img && !img.complete) {
+    img.onload  = () => { win.focus(); win.print(); };
+    img.onerror = () => { win.focus(); win.print(); };
+    setTimeout(() => { win.focus(); win.print(); }, 1500); // fallback
+  } else {
+    setTimeout(() => { win.focus(); win.print(); }, 400);
+  }
 }
 
 /* ── Sidebar Navigation ── */
@@ -3553,6 +3586,8 @@ function sidebarNav(section) {
     dataFormButton.style.display  = 'none';
     filterButton.style.display    = currentAccessLevel === 'admin' ? '' : 'none';
     printCardButton.style.display = '';
+    printCardButton.textContent   = '🖨 Print';
+    printCardButton.onclick       = () => printInlineResult('list');
   } else {
     searchWrapper.style.display   = 'none';
     headerActions.style.display   = 'none';
