@@ -553,6 +553,20 @@ function typeCls(type) {
   return map[type]||'type-paf';
 }
 
+function fmtDisplay(v) {
+  if (!v) return '';
+  // Already formatted DD-MMM-YYYY or DD/MM/YYYY
+  if (/^\d{2}[-\/][A-Za-z\d]/.test(v)) return v;
+  // ISO string
+  try {
+    const d = new Date(v);
+    if (!isNaN(d) && d.getFullYear() > 1970) {
+      const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+      return ('0'+d.getDate()).slice(-2)+'-'+months[d.getMonth()]+'-'+d.getFullYear();
+    }
+  } catch(e) {}
+  return v;
+}
 function fld(label,val,cls='') {
   return `<div class="card-field"><span class="field-label">${label}</span><span class="field-value ${cls}">${val}</span></div>`;
 }
@@ -560,23 +574,23 @@ function fld(label,val,cls='') {
 function renderCard(job) {
   const sc=statusCls(job), si=statusIcon(job), tc=typeCls(job.type);
   let body='';
-  if(job.leaveDate) body+=fld('Leave Date',job.leaveDate);
-  if(job.returnDate) body+=fld('Expected Return',job.returnDate);
-  if(job.actualReturn) body+=fld('Actual Return',job.actualReturn,'highlight');
+  if(job.leaveDate) body+=fld('Start Vacation Date',fmtDisplay(job.leaveDate));
+  if(job.returnDate) body+=fld('Vacation End Date',fmtDisplay(job.returnDate));
+  if(job.actualReturn) body+=fld('Arrival Date',fmtDisplay(job.actualReturn),'highlight');
   if(job.days) body+=fld('Days',job.days);
-  if(job.depTicket) body+=fld('Departure Ticket',job.depTicket);
-  if(job.arrTicket) body+=fld('Arrival Ticket',job.arrTicket);
-  if(job.lastDay) body+=fld('Last Working Day',job.lastDay,'red');
+  if(job.depTicket) body+=fld('Departure Ticket',fmtDisplay(job.depTicket));
+  if(job.arrTicket) body+=fld('Arrival Ticket',fmtDisplay(job.arrTicket));
+  if(job.lastDay) body+=fld('Last Working Day',fmtDisplay(job.lastDay),'red');
   if(job.encashType) body+=fld('Encashment Type',job.encashType,'highlight');
   if(job.reentry) body+=fld('Reentry Visa',job.reentry,'highlight');
-  if(job.visaExpiry) body+=fld('Visa Expiry',job.visaExpiry);
-  if(job.extDate) body+=fld('Extension To',job.extDate);
+  if(job.visaExpiry) body+=fld('Visa Expiry',fmtDisplay(job.visaExpiry));
+  if(job.extDate) body+=fld('Extension To',fmtDisplay(job.extDate));
   if(job.extDays) body+=fld('Ext. Days',job.extDays);
-  if(job.housingStart) body+=fld('Housing Start',job.housingStart);
-  if(job.housingEnd) body+=fld('Housing End',job.housingEnd);
+  if(job.housingStart) body+=fld('Housing Start',fmtDisplay(job.housingStart));
+  if(job.housingEnd) body+=fld('Housing End',fmtDisplay(job.housingEnd));
   if(job.ticket) body+=fld('Ticket',job.ticket);
   if(job.returnTicket) body+=fld('Return Ticket',job.returnTicket);
-  if(job.iqama) body+=fld('Iqama Expiry',job.iqama);
+  if(job.iqama) body+=fld('Iqama Expiry',fmtDisplay(job.iqama));
   if(job.notes) body+=fld('Notes',job.notes);
   if(!body) body='<div style="color:#bbb;font-size:12px;text-align:center;padding:8px 0;">No details added</div>';
 
