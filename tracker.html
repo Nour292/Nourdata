@@ -409,9 +409,6 @@ body.dark-mode .loc-title{color:#e0e0e0!important;}
             <button type="button" class="cal-btn" onclick="this.querySelector('input[type=date]').showPicker()">📅<input type="date" onchange="setDate('f-housingend',this.value)" style="position:absolute;opacity:0;width:0;height:0;pointer-events:none;"></button>
           </div></div>
         <div class="form-section-hdr">Documents</div>
-        <div class="form-field" id="row-ticket-doc"><label>Ticket Submitted</label>
-          <select id="f-ticket"><option value="">--</option><option>Yes</option><option>No</option><option>Submitted</option></select>
-        </div>
         <div class="form-field" id="row-encash-type" style="display:none;"><label>Type of Encashment</label>
           <select id="f-encashtype"><option value="">-- Select --</option><option>Ticket Encashment</option><option>Ticket and Annual Leave Encashment</option></select>
         </div>
@@ -589,6 +586,7 @@ function renderCard(job) {
         <button class="card-action-btn btn-edit" onclick="openEditModal('${job.id}')">✏️ Edit</button>
         <button class="card-action-btn btn-update-status" onclick="openStatusModal('${job.id}')">🔄 Status</button>
         <button class="card-action-btn btn-complete" onclick="quickComplete('${job.id}')">✅ Done</button>
+        <button class="card-action-btn" style="background:#e74c3c;color:#fff;" onclick="deleteJob('${job.id}')">🗑</button>
        </div>`
     : `<div class="card-footer-bar">
         <button class="card-action-btn btn-edit" onclick="openEditModal('${job.id}')">👁 View</button>
@@ -772,10 +770,11 @@ function saveJob() {
   const status=document.getElementById('f-status').value;
   if(!empNum||!empName||!location||!type||!status){alert('Please fill all required fields.');return;}
   const g = id => { const e=document.getElementById(id); return e ? (e.tagName==='SELECT'?e.value:e.value.trim()) : ''; };
+  const isVac = type === 'Vacation';
   const data={
     id:editingJobId||genId(),empNum,empName,location,type,status,
-    iqama:g('f-iqama'), reentry:g('f-reentry'), visaExpiry:g('f-visaexpiry'),
-    depTicket:g('f-depticket'), arrTicket:g('f-arrticket'),
+    iqama:g('f-iqama'), reentry:isVac?g('f-reentry'):'', visaExpiry:isVac?g('f-visaexpiry'):'',
+    depTicket:isVac?g('f-depticket'):'', arrTicket:isVac?g('f-arrticket'):'',
     lastDay:g('f-lastday'), encashType:g('f-encashtype'),
     holdReason:g('f-holdreason'),
     leaveDate:g('f-leavedate'), returnDate:g('f-returndate'),
