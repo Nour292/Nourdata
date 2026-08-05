@@ -323,7 +323,7 @@ body.dark-mode .loc-title{color:#e0e0e0!important;}
         <div class="form-field">
           <label>Employee Number *</label>
           <div style="position:relative;">
-            <input type="text" id="f-empnum" placeholder="e.g. 4209" oninput="lookupEmployee(this.value)" onchange="lookupEmployee(this.value)">
+            <input type="text" id="f-empnum" placeholder="e.g. 4209" oninput="lookupEmployee(this.value)">
             <span id="emp-lookup-spinner" style="display:none;position:absolute;right:10px;top:50%;transform:translateY(-50%);font-size:12px;color:#888;">⏳</span>
           </div>
         </div>
@@ -411,6 +411,9 @@ body.dark-mode .loc-title{color:#e0e0e0!important;}
             <button type="button" class="cal-btn" onclick="this.querySelector('input[type=date]').showPicker()">📅<input type="date" onchange="setDate('f-housingend',this.value)" style="position:absolute;opacity:0;width:0;height:0;pointer-events:none;"></button>
           </div></div>
         <div class="form-section-hdr">Documents</div>
+        <div class="form-field" id="row-ticket-doc"><label>Ticket</label>
+          <input type="text" id="f-ticket" placeholder="e.g. One-way / Return">
+        </div>
         <div class="form-field" id="row-encash-type" style="display:none;"><label>Type of Encashment</label>
           <select id="f-encashtype"><option value="">-- Select --</option><option>Ticket Encashment</option><option>Ticket and Annual Leave Encashment</option></select>
         </div>
@@ -458,12 +461,6 @@ function genId() { return 'J' + Date.now(); }
 async function loadJobs() {
   try {
     showLoading(true);
-    const res = await fetch(GS_WRITE_URL, {
-      method: 'POST', mode: 'no-cors',
-      body: JSON.stringify({ action: 'loadJobs' })
-    });
-    // no-cors returns opaque — use GET workaround via URL params
-    // Instead use a GET request with action param via script URL
     const getUrl = GS_WRITE_URL + '?action=loadJobs';
     const r2 = await fetch(getUrl);
     const data = await r2.json();
@@ -591,7 +588,6 @@ function renderCard(job) {
   if(job.housingStart) body+=fld('Housing Start',fmtDisplay(job.housingStart));
   if(job.housingEnd) body+=fld('Housing End',fmtDisplay(job.housingEnd));
   if(job.ticket) body+=fld('Ticket',job.ticket);
-  if(job.returnTicket) body+=fld('Return Ticket',job.returnTicket);
   if(job.iqama) body+=fld('Iqama Expiry',fmtDisplay(job.iqama));
   if(job.notes) body+=fld('Notes',job.notes);
   if(!body) body='<div style="color:#bbb;font-size:12px;text-align:center;padding:8px 0;">No details added</div>';
@@ -674,8 +670,8 @@ function renderJobs() {
 function openAddModal() {
   editingJobId=null;
   document.getElementById('modal-title').textContent='Add New Job';
-  ['f-empnum','f-empname','f-iqama','f-leavedate','f-returndate','f-actualreturn','f-days','f-extdate','f-extdays','f-housingstart','f-housingend','f-notes','f-holdreason','f-depticket','f-arrticket','f-lastday'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});
-  ['f-location','f-type','f-status','f-ticket','f-reentry','f-encashtype'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});
+  ['f-empnum','f-empname','f-iqama','f-leavedate','f-returndate','f-actualreturn','f-days','f-extdate','f-extdays','f-housingstart','f-housingend','f-notes','f-holdreason','f-depticket','f-arrticket','f-lastday','f-ticket','f-visaexpiry'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});
+  ['f-location','f-type','f-status','f-reentry','f-encashtype'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});
   toggleDateFields();
   document.getElementById('modal-overlay').classList.add('open');
 }
@@ -699,7 +695,7 @@ function openEditModal(id) {
   document.getElementById('f-extdays').value=j.extDays||'';
   document.getElementById('f-housingstart').value=j.housingStart||'';
   document.getElementById('f-housingend').value=j.housingEnd||'';
-  document.getElementById('f-ticket').value=j.ticket||'';
+  const f_tkt=document.getElementById('f-ticket'); if(f_tkt) f_tkt.value=j.ticket||'';
   document.getElementById('f-reentry').value=j.reentry||'';
   const f_enc=document.getElementById('f-encashtype'); if(f_enc) f_enc.value=j.encashType||'';
   const f_dep=document.getElementById('f-depticket'); if(f_dep) f_dep.value=j.depTicket||'';
