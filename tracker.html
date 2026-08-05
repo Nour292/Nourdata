@@ -655,8 +655,8 @@ function renderJobs() {
 function openAddModal() {
   editingJobId=null;
   document.getElementById('modal-title').textContent='Add New Job';
-  ['f-empnum','f-empname','f-iqama','f-leavedate','f-returndate','f-actualreturn','f-days','f-extdate','f-extdays','f-housingstart','f-housingend','f-notes','f-holdreason'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});
-  ['f-location','f-type','f-status','f-ticket','f-returnticket'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});
+  ['f-empnum','f-empname','f-iqama','f-leavedate','f-returndate','f-actualreturn','f-days','f-extdate','f-extdays','f-housingstart','f-housingend','f-notes','f-holdreason','f-depticket','f-arrticket','f-lastday'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});
+  ['f-location','f-type','f-status','f-ticket','f-reentry','f-encashtype'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});
   toggleDateFields();
   document.getElementById('modal-overlay').classList.add('open');
 }
@@ -681,7 +681,11 @@ function openEditModal(id) {
   document.getElementById('f-housingstart').value=j.housingStart||'';
   document.getElementById('f-housingend').value=j.housingEnd||'';
   document.getElementById('f-ticket').value=j.ticket||'';
-  document.getElementById('f-returnticket').value=j.returnTicket||'';
+  document.getElementById('f-reentry').value=j.reentry||'';
+  const f_enc=document.getElementById('f-encashtype'); if(f_enc) f_enc.value=j.encashType||'';
+  const f_dep=document.getElementById('f-depticket'); if(f_dep) f_dep.value=j.depTicket||'';
+  const f_arr=document.getElementById('f-arrticket'); if(f_arr) f_arr.value=j.arrTicket||'';
+  const f_ld=document.getElementById('f-lastday'); if(f_ld) f_ld.value=j.lastDay||'';
   document.getElementById('f-notes').value=j.notes||'';
   toggleDateFields();
   document.getElementById('modal-overlay').classList.add('open');
