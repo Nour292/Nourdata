@@ -74,20 +74,14 @@ body.sb-collapsed #main-content{margin-left:52px;}
 .stat-label{font-size:11px;color:#888;margin-top:3px;font-weight:600;}
 
 /* ── Smart Search Bar ── */
-#smart-search-bar{background:#fff;border-radius:12px;padding:14px 18px;margin-bottom:18px;box-shadow:0 1px 8px rgba(0,0,0,0.08);border:1px solid #e0e8f0;}
-#ssb-input-wrap{display:flex;align-items:center;gap:8px;margin-bottom:12px;}
+#smart-search-bar{background:#fff;border-radius:12px;padding:12px 16px;margin-bottom:18px;box-shadow:0 1px 8px rgba(0,0,0,0.08);border:1px solid #e0e8f0;display:flex;align-items:center;gap:10px;}
 #ssb-icon{font-size:16px;color:#5a7a9a;flex-shrink:0;}
-#filter-search{flex:1;border:1.5px solid #d0dce8;border-radius:8px;padding:9px 14px;font-size:14px;font-family:'Calibri',sans-serif;background:#f7fafd;outline:none;transition:border-color 0.2s;}
-#filter-search:focus{border-color:#2e86c1;background:#fff;}
-#ssb-clear-btn{background:none;border:none;color:#aaa;font-size:16px;cursor:pointer;padding:4px 8px;border-radius:6px;display:none;line-height:1;transition:color 0.15s;}
-#ssb-clear-btn:hover{color:#e74c3c;}
-#ssb-chips{display:flex;flex-wrap:wrap;align-items:center;gap:6px;}
-.ssb-chip-label{font-size:11px;font-weight:700;color:#5a7a9a;text-transform:uppercase;letter-spacing:0.5px;padding:0 4px;}
-.ssb-chip-sep{width:1px;height:20px;background:#d0dce8;margin:0 4px;}
-.ssb-chip{border:1.5px solid #d0dce8;background:#f7fafd;color:#34495e;border-radius:20px;padding:4px 12px;font-size:12px;font-weight:600;font-family:'Calibri',sans-serif;cursor:pointer;transition:all 0.15s;white-space:nowrap;}
-.ssb-chip:hover{border-color:#2e86c1;color:#2e86c1;background:#eaf4fb;}
-.ssb-chip.active{background:#2e86c1;color:#fff;border-color:#2e86c1;}
-.ssb-chip[data-filter="status"].active{background:#8e44ad;border-color:#8e44ad;}
+#filter-search{flex:1;min-width:0;border:1.5px solid #d0dce8;border-radius:8px;padding:9px 14px;font-size:14px;font-family:'Calibri',sans-serif;background:#f7fafd;outline:none;transition:border-color 0.2s,box-shadow 0.2s;}
+#filter-search:focus{border-color:#2e86c1;background:#fff;box-shadow:0 0 0 3px rgba(46,134,193,0.12);}
+#filter-type{border:1.5px solid #d0dce8;border-radius:8px;padding:9px 12px;font-size:13px;font-family:'Calibri',sans-serif;background:#f7fafd;color:#1a2b3c;outline:none;cursor:pointer;flex-shrink:0;transition:border-color 0.2s;}
+#filter-type:focus{border-color:#2e86c1;}
+#ssb-clear-btn{display:none;align-items:center;gap:5px;padding:8px 14px;border:1.5px solid #e0e8f0;border-radius:8px;background:#fff;color:#888;font-size:13px;font-weight:600;font-family:'Calibri',sans-serif;cursor:pointer;white-space:nowrap;transition:all 0.15s;flex-shrink:0;}
+#ssb-clear-btn:hover{border-color:#e74c3c;color:#e74c3c;background:#fff8f8;}
 
 /* ── Location groups ── */
 .loc-group{margin-bottom:24px;}
@@ -193,7 +187,7 @@ body.dark-mode .field-value{color:#e0e0e0!important;}
 body.dark-mode .card-footer-bar{background:#162330!important;border-color:#2a3d50!important;}
 body.dark-mode .stat-card{background:#1e2d3d!important;color:#e0e0e0!important;}
 body.dark-mode .stat-num{color:#e0e0e0!important;}
-body.dark-mode #smart-search-bar{background:#1e2d3d!important;border-color:#2a3f54!important;}body.dark-mode #filter-search{background:#162330!important;border-color:#2a3f54!important;color:#c8d8e8!important;}body.dark-mode .ssb-chip{background:#162330!important;border-color:#2a3f54!important;color:#c8d8e8!important;}body.dark-mode .ssb-chip:hover{border-color:#2e86c1!important;color:#5dade2!important;}body.dark-mode .ssb-chip.active{background:#2e86c1!important;color:#fff!important;}body.dark-mode .ssb-chip[data-filter="status"].active{background:#8e44ad!important;}
+body.dark-mode #smart-search-bar{background:#1e2d3d!important;border-color:#2a3f54!important;}body.dark-mode #filter-search,body.dark-mode #filter-type{background:#162330!important;border-color:#2a3f54!important;color:#c8d8e8!important;}body.dark-mode #ssb-clear-btn{background:#1e2d3d!important;border-color:#2a3f54!important;color:#8fa8c0!important;}body.dark-mode #ssb-clear-btn:hover{border-color:#e74c3c!important;color:#e74c3c!important;}
 body.dark-mode #inline-search-panel{background:#1e2d3d!important;}
 body.dark-mode .loc-header{border-color:#2a3d50!important;}
 body.dark-mode .loc-title{color:#e0e0e0!important;}
@@ -296,34 +290,21 @@ body.dark-mode .loc-title{color:#e0e0e0!important;}
     </div>
     <!-- ── Smart Search Bar ── -->
     <div id="smart-search-bar">
-      <div id="ssb-input-wrap">
-        <span id="ssb-icon">🔍</span>
-        <input type="text" id="filter-search" placeholder="Search name or employee number…" oninput="renderJobs(); updateSearchClear()" autocomplete="off" spellcheck="false">
-        <button id="ssb-clear-btn" onclick="clearSmartSearch()" title="Clear search">✕</button>
-      </div>
-      <div id="ssb-chips">
-        <span class="ssb-chip-label">Type:</span>
-        <button class="ssb-chip" data-filter="type" data-value="Vacation"      onclick="toggleChip(this)">🏖 Vacation</button>
-        <button class="ssb-chip" data-filter="type" data-value="Resignation"   onclick="toggleChip(this)">📝 Resignation</button>
-        <button class="ssb-chip" data-filter="type" data-value="Termination"   onclick="toggleChip(this)">🚫 Termination</button>
-        <button class="ssb-chip" data-filter="type" data-value="Resign & Rejoin" onclick="toggleChip(this)">🔄 Resign & Rejoin</button>
-        <button class="ssb-chip" data-filter="type" data-value="Encashment"    onclick="toggleChip(this)">💰 Encashment</button>
-        <button class="ssb-chip" data-filter="type" data-value="Housing"       onclick="toggleChip(this)">🏠 Housing</button>
-        <button class="ssb-chip" data-filter="type" data-value="Visit Visa"    onclick="toggleChip(this)">✈️ Visit Visa</button>
-        <button class="ssb-chip" data-filter="type" data-value="PAF"           onclick="toggleChip(this)">📋 PAF</button>
-        <button class="ssb-chip" data-filter="type" data-value="Email Request" onclick="toggleChip(this)">📧 Email Request</button>
-        <span class="ssb-chip-sep"></span>
-        <span class="ssb-chip-label">Status:</span>
-        <button class="ssb-chip" data-filter="status" data-value="With Admin"             onclick="toggleChip(this)">🏢 With Admin</button>
-        <button class="ssb-chip" data-filter="status" data-value="With Accounts"          onclick="toggleChip(this)">💼 With Accounts</button>
-        <button class="ssb-chip" data-filter="status" data-value="On Hold"                onclick="toggleChip(this)">⏸ On Hold</button>
-        <button class="ssb-chip" data-filter="status" data-value="Visa Processing"        onclick="toggleChip(this)">🛂 Visa Processing</button>
-        <button class="ssb-chip" data-filter="status" data-value="Clearance - Fleet"      onclick="toggleChip(this)">🚗 Clearance - Fleet</button>
-        <button class="ssb-chip" data-filter="status" data-value="Clearance - Warehouse"  onclick="toggleChip(this)">🏭 Clearance - Warehouse</button>
-        <button class="ssb-chip" data-filter="status" data-value="Computation - Signing"  onclick="toggleChip(this)">✍️ Computation</button>
-        <button class="ssb-chip" data-filter="status" data-value="Submit to IT"           onclick="toggleChip(this)">💻 Submit to IT</button>
-        <button class="ssb-chip" data-filter="status" data-value="Submitted to Admin"     onclick="toggleChip(this)">📨 Submitted to Admin</button>
-      </div>
+      <span id="ssb-icon">🔍</span>
+      <input type="text" id="filter-search" placeholder="Search by name or employee number…" oninput="onSearchInput()" autocomplete="off" spellcheck="false">
+      <select id="filter-type" onchange="onSearchInput()">
+        <option value="">All Types</option>
+        <option>Vacation</option>
+        <option>Resignation</option>
+        <option>Termination</option>
+        <option>Resign &amp; Rejoin</option>
+        <option>Encashment</option>
+        <option>Housing</option>
+        <option>Visit Visa</option>
+        <option>PAF</option>
+        <option>Email Request</option>
+      </select>
+      <button id="ssb-clear-btn" onclick="clearSmartSearch()" title="Clear">✕ Clear</button>
     </div>
     <div id="loading-indicator" style="display:none;text-align:center;padding:40px;color:#888;font-size:15px;">⏳ Loading jobs from Google Sheets...</div>
     <div id="jobs-container"></div>
@@ -529,37 +510,24 @@ function toggleGroup(id) {
   if (el.previousElementSibling) el.previousElementSibling.classList.toggle('active-group', !open);
 }
 
-// ── Smart Search chip logic ──
-let activeChips = { type: '', status: '' };
-
-function toggleChip(btn) {
-  const filter = btn.dataset.filter; // 'type' or 'status'
-  const value  = btn.dataset.value;
-  const already = activeChips[filter] === value;
-
-  // Deactivate all chips of same filter group
-  document.querySelectorAll(`.ssb-chip[data-filter="${filter}"]`).forEach(c => c.classList.remove('active'));
-
-  if (already) {
-    activeChips[filter] = ''; // toggle off
-  } else {
-    activeChips[filter] = value;
-    btn.classList.add('active');
-  }
+// ── Smart Search logic ──
+function onSearchInput() {
+  updateClearBtn();
   renderJobs();
 }
 
 function clearSmartSearch() {
   document.getElementById('filter-search').value = '';
-  document.querySelectorAll('.ssb-chip').forEach(c => c.classList.remove('active'));
-  activeChips = { type: '', status: '' };
-  updateSearchClear();
+  document.getElementById('filter-type').value   = '';
+  updateClearBtn();
   renderJobs();
 }
 
-function updateSearchClear() {
-  const val = document.getElementById('filter-search').value;
-  document.getElementById('ssb-clear-btn').style.display = val ? 'block' : 'none';
+function updateClearBtn() {
+  const hasSearch = document.getElementById('filter-search').value !== '';
+  const hasType   = document.getElementById('filter-type').value   !== '';
+  const btn = document.getElementById('ssb-clear-btn');
+  btn.style.display = (hasSearch || hasType) ? 'flex' : 'none';
 }
 
 function setView(v) {
@@ -718,9 +686,9 @@ function sortJobsForDisplay(arr) {
 function renderJobs() {
   renderStats();
   const container = document.getElementById('jobs-container');
-  const search  = (document.getElementById('filter-search')?.value||'').toLowerCase();
-  const typeF   = activeChips.type   || '';
-  const statusF = activeChips.status || '';
+  const search  = (document.getElementById('filter-search')?.value||'').trim().toLowerCase();
+  const typeF   = (document.getElementById('filter-type')?.value||'');
+  const statusF = '';
 
   let filtered = jobs.filter(j=>{
     if(currentView==='active'&&j.status==='Done & Closed') return false;
