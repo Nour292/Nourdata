@@ -694,7 +694,12 @@ function renderJobs() {
     if(currentView==='active'&&j.status==='Done & Closed') return false;
     if(currentView==='completed'&&j.status!=='Done & Closed') return false;
     if(currentLocationFilter!=='All'&&j.location!==currentLocationFilter) return false;
-    if(search&&!j.empName.toLowerCase().includes(search)&&!(j.empNum||'').includes(search)) return false;
+    if(search){
+      // Search empName and empNum with key-name safety, plus full-object fallback
+      const nameMatch = (j.empName||j.EmpName||j.employeeName||j.name||'').toLowerCase().includes(search);
+      const numMatch  = String(j.empNum||j.EmpNum||j.employeeNumber||j.empNo||'').trim().includes(search);
+      if(!nameMatch && !numMatch) return false;
+    }
     if(typeF&&j.type!==typeF) return false;
     if(statusF&&j.status!==statusF) return false;
     return true;
