@@ -428,8 +428,15 @@ body.sb-collapsed #main-content { margin-left: 56px; }
 .cal-btn:hover { background: #2e86c1; }
 .cal-btn input[type="date"] { position: absolute; opacity: 0; width: 0; height: 0; pointer-events: none; }
 
+/* ── Smart List filter actions bar ── */
+#isl-filter-actions { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin: 14px 0 10px; }
+#isl-run-btn { background: #1a5276; color: #fff; border: none; border-radius: 6px; padding: 8px 18px; font-size: 13px; font-weight: 700; cursor: pointer; font-family: 'Calibri', sans-serif; }
+#isl-run-btn:hover { background: #154360; }
+#isl-filter-actions .isl-reset-btn { background: #e5e7e9; color: #333; border: none; border-radius: 6px; padding: 8px 16px; font-size: 13px; font-weight: 700; cursor: pointer; font-family: 'Calibri', sans-serif; }
+#isl-filter-actions .isl-reset-btn:hover { background: #ccc; }
+#isl-count-badge { font-size: 13px; color: #888; font-weight: 600; margin-left: 4px; }
 /* ── Excel Export button ── */
-#isl-export-btn { background: #1d7a3a; color: #fff; border: none; border-radius: 6px; padding: 7px 16px; font-size: 13px; font-weight: 700; cursor: pointer; font-family: 'Calibri', sans-serif; }
+#isl-export-btn { background: #1d7a3a; color: #fff; border: none; border-radius: 6px; padding: 8px 16px; font-size: 13px; font-weight: 700; cursor: pointer; font-family: 'Calibri', sans-serif; }
 #isl-export-btn:hover { background: #155d2c; }
 
 /* ── Dark Mode Styles ── */
@@ -1132,7 +1139,7 @@ body.view-lists #card-area:empty::after { display: none !important; }
 
       <!-- ── Employee Data Group ── -->
       <div class="sb-group">
-        <button class="sb-group-hdr active-group" onclick="openEmpGroupNav()">
+        <button class="sb-group-hdr active-group" id="btn-grp-emp" onclick="toggleEmpGroup()">
           <span class="sb-icon">👤</span>
           <span class="sb-label">Employee Data</span>
           <span class="sb-arrow" id="arrow-grp-emp">▾</span>
@@ -1388,7 +1395,7 @@ body.view-lists #card-area:empty::after { display: none !important; }
 
       <div id="isl-filter-actions">
         <button id="isl-run-btn" onclick="runInlineCombinedFilter()">▶ Generate List</button>
-        <button onclick="resetInlineFilter()">↺ Reset</button>
+        <button class="isl-reset-btn" onclick="resetInlineFilter()">↺ Reset</button>
         <button id="isl-export-btn" onclick="exportSmartListExcel()">📊 Export Excel</button>
         <span id="isl-count-badge"></span>
       </div>
@@ -3151,15 +3158,22 @@ function runInlineDeepSearch() {
   deepSearchInline();
 }
 
-/* ── Open Employee Data group and navigate to Search ── */
-function openEmpGroupNav() {
-  const el = document.getElementById('grp-emp');
+/* ── Toggle Employee Data group (open/close) ── */
+function toggleEmpGroup() {
+  const el    = document.getElementById('grp-emp');
   const arrow = document.getElementById('arrow-grp-emp');
-  if (el) el.style.display = 'block';
-  if (arrow) arrow.textContent = '▾';
-  const hdr = el ? el.previousElementSibling : null;
-  if (hdr) hdr.classList.add('active-group');
-  sidebarNav('search');
+  const hdr   = document.getElementById('btn-grp-emp');
+  const isOpen = el && el.style.display !== 'none';
+  if (isOpen) {
+    if (el)    el.style.display = 'none';
+    if (arrow) arrow.textContent = '▸';
+    if (hdr)   hdr.classList.remove('active-group');
+  } else {
+    if (el)    el.style.display = 'block';
+    if (arrow) arrow.textContent = '▾';
+    if (hdr)   hdr.classList.add('active-group');
+    sidebarNav('search');
+  }
 }
 
 /* ── Date picker → DD/MM/YYYY format ── */
@@ -3171,7 +3185,7 @@ function setDateFieldDMY(inp, el) {
   inp.value = ''; // reset hidden date input so same date can be re-picked
 }
 
-/* ── Export Smart List to Excel (styled XLS) ── */
+/* ── Export Smart List to Excel (Office SpreadsheetML — no format warning) ── */
 function exportSmartListExcel() {
   const result = document.getElementById('isl-list-result');
   const wrap = result ? result.querySelector('.ds-wrap') : null;
@@ -3179,53 +3193,84 @@ function exportSmartListExcel() {
   const table = wrap.querySelector('table');
   if (!table) { alert('No table found to export.'); return; }
 
-  const tableClone = table.cloneNode(true);
-  tableClone.querySelectorAll('[onclick]').forEach(el => el.removeAttribute('onclick'));
-  tableClone.querySelectorAll('tr').forEach(tr => tr.style.cursor = 'default');
+  const esc = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 
-  const headerEl = wrap.querySelector('.ds-header span');
-  const title = headerEl ? headerEl.textContent.trim() : 'Smart List';
-  const dateStr = new Date().toLocaleDateString('en-GB', {day:'2-digit',month:'short',year:'numeric'});
+  // Extract headers
+  const headers = [];
+  const hRow = table.querySelector('thead tr');
+  if (hRow) hRow.querySelectorAll('th').forEach(th => headers.push(th.textContent.trim()));
 
-  const html = `<html xmlns:o="urn:schemas-microsoft-com:office:office"
-    xmlns:x="urn:schemas-microsoft-com:office:excel"
-    xmlns="http://www.w3.org/TR/REC-html40">
-<head><meta charset="UTF-8">
-<!--[if gte mso 9]><xml>
-  <x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet>
-    <x:Name>Smart List</x:Name>
-    <x:WorksheetOptions>
-      <x:Print>
-        <x:PaperSizeIndex>9</x:PaperSizeIndex>
-        <x:Orientation>Landscape</x:Orientation>
-        <x:FitToPage/>
-        <x:Scale>85</x:Scale>
-      </x:Print>
-      <x:PageSetup>
-        <x:Layout x:CenterHorizontal="1"/>
-        <x:PageMargins x:Bottom="0.7" x:Left="0.6" x:Right="0.6" x:Top="0.7"/>
-      </x:PageSetup>
-    </x:WorksheetOptions>
-  </x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook>
-</xml><![endif]-->
-<style>
-  body { font-family: Calibri, Arial, sans-serif; font-size: 11pt; }
-  h2 { font-size: 13pt; font-weight: 700; color: #1a5276; margin-bottom: 8px; }
-  table { border-collapse: collapse; width: 100%; }
-  th { background-color: #1a5276 !important; color: #ffffff !important; font-size: 11pt; font-weight: 700; padding: 6px 10px; border: 1px solid #1a5276; mso-number-format:"\\@"; }
-  td { font-size: 10.5pt; padding: 5px 9px; border: 1px solid #c8d8e8; vertical-align: middle; }
-  tr:nth-child(even) td { background-color: #eef5fc !important; mso-background-source: auto; }
-  .ds-match { background-color: #fff3cd !important; font-weight: 700; }
-  p.footer { font-size: 9pt; color: #888; text-align: right; margin-top: 8px; border-top: 1px solid #ddd; padding-top: 4px; }
-</style>
-</head>
-<body>
-<h2>${title}</h2>
-${tableClone.outerHTML}
-<p class="footer">Exported: ${dateStr} &nbsp;·&nbsp; Nour Energy HR System</p>
-</body></html>`;
+  // Extract data rows
+  const dataRows = [];
+  const tbody = table.querySelector('tbody');
+  if (tbody) {
+    tbody.querySelectorAll('tr').forEach((tr, idx) => {
+      const cells = [];
+      tr.querySelectorAll('td').forEach(td => cells.push(td.textContent.trim()));
+      dataRows.push({ cells, even: idx % 2 === 1 });
+    });
+  }
 
-  const blob = new Blob([html], { type: 'application/vnd.ms-excel;charset=utf-8' });
+  // Build SpreadsheetML XML rows
+  let rowsXml = '';
+  // Header row
+  rowsXml += '<Row ss:StyleID="sHdr">\n';
+  headers.forEach(h => { rowsXml += ` <Cell><Data ss:Type="String">${esc(h)}</Data></Cell>\n`; });
+  rowsXml += '</Row>\n';
+  // Data rows
+  dataRows.forEach(({cells, even}) => {
+    rowsXml += `<Row ss:StyleID="${even ? 'sEven' : 'sOdd'}">\n`;
+    cells.forEach(c => {
+      const isNum = c !== '' && !isNaN(c) && !/[\/\-]/.test(c);
+      rowsXml += ` <Cell><Data ss:Type="${isNum ? 'Number' : 'String'}">${isNum ? c : esc(c)}</Data></Cell>\n`;
+    });
+    rowsXml += '</Row>\n';
+  });
+
+  const xml = `<?xml version="1.0" encoding="UTF-8"?>
+<?mso-application progid="Excel.Sheet"?>
+<Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet"
+ xmlns:o="urn:schemas-microsoft-com:office:office"
+ xmlns:x="urn:schemas-microsoft-com:office:excel"
+ xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet">
+<Styles>
+ <Style ss:ID="Default"><Alignment ss:Vertical="Center"/><Font ss:FontName="Calibri" ss:Size="11"/></Style>
+ <Style ss:ID="sHdr">
+  <Alignment ss:Vertical="Center" ss:WrapText="0"/>
+  <Font ss:FontName="Calibri" ss:Size="11" ss:Bold="1" ss:Color="#FFFFFF"/>
+  <Interior ss:Color="#1A5276" ss:Pattern="Solid"/>
+  <Borders><Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#0F3050"/></Borders>
+ </Style>
+ <Style ss:ID="sOdd">
+  <Alignment ss:Vertical="Center"/>
+  <Font ss:FontName="Calibri" ss:Size="11"/>
+  <Interior ss:Color="#FFFFFF" ss:Pattern="Solid"/>
+  <Borders><Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#C8D8E8"/></Borders>
+ </Style>
+ <Style ss:ID="sEven">
+  <Alignment ss:Vertical="Center"/>
+  <Font ss:FontName="Calibri" ss:Size="11"/>
+  <Interior ss:Color="#EEF5FC" ss:Pattern="Solid"/>
+  <Borders><Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#C8D8E8"/></Borders>
+ </Style>
+</Styles>
+<Worksheet ss:Name="Smart List">
+ <WorksheetOptions xmlns="urn:schemas-microsoft-com:office:excel">
+  <PageSetup>
+   <Layout x:Orientation="Portrait" x:CenterHorizontal="1"/>
+   <PageMargins x:Bottom="0.7" x:Left="0.6" x:Right="0.6" x:Top="0.7"/>
+  </PageSetup>
+  <Print>
+   <PaperSizeIndex>9</PaperSizeIndex>
+   <FitToPage/>
+  </Print>
+ </WorksheetOptions>
+ <Table ss:DefaultColumnWidth="72">
+${rowsXml} </Table>
+</Worksheet>
+</Workbook>`;
+
+  const blob = new Blob([xml], { type: 'application/vnd.ms-excel;charset=utf-8' });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;

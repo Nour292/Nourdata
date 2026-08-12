@@ -80,8 +80,20 @@ body.sb-collapsed #main-content{margin-left:52px;}
 #filter-search:focus{border-color:#2e86c1;background:#fff;box-shadow:0 0 0 3px rgba(46,134,193,0.12);}
 #filter-type{border:1.5px solid #d0dce8;border-radius:8px;padding:9px 12px;font-size:13px;font-family:'Calibri',sans-serif;background:#f7fafd;color:#1a2b3c;outline:none;cursor:pointer;flex-shrink:0;transition:border-color 0.2s;}
 #filter-type:focus{border-color:#2e86c1;}
+#filter-location{border:1.5px solid #d0dce8;border-radius:8px;padding:9px 12px;font-size:13px;font-family:'Calibri',sans-serif;background:#f7fafd;color:#1a2b3c;outline:none;cursor:pointer;flex-shrink:0;transition:border-color 0.2s;}
+#filter-location:focus{border-color:#2e86c1;}
 #ssb-clear-btn{display:none;align-items:center;gap:5px;padding:8px 14px;border:1.5px solid #e0e8f0;border-radius:8px;background:#fff;color:#888;font-size:13px;font-weight:600;font-family:'Calibri',sans-serif;cursor:pointer;white-space:nowrap;transition:all 0.15s;flex-shrink:0;}
 #ssb-clear-btn:hover{border-color:#e74c3c;color:#e74c3c;background:#fff8f8;}
+
+/* ── All Jobs table view ── */
+#all-jobs-table-wrap{overflow-x:auto;}
+#all-jobs-table-wrap table{width:100%;border-collapse:collapse;font-size:13px;}
+#all-jobs-table-wrap th{background:#1a2b3c;color:#fff;padding:8px 12px;font-weight:700;text-align:left;white-space:nowrap;}
+#all-jobs-table-wrap td{padding:7px 12px;border-bottom:1px solid #e8f0f8;vertical-align:middle;}
+#all-jobs-table-wrap tr:nth-child(even) td{background:#f4f8fc;}
+#all-jobs-table-wrap tr:hover td{background:#e8f3fd;}
+.tbl-badge{font-size:11px;font-weight:700;padding:2px 8px;border-radius:12px;white-space:nowrap;}
+.tbl-done{background:#d1fae5;color:#065f46;}.tbl-hold{background:#fee2e2;color:#b91c1c;}.tbl-inprog{background:#fef3c7;color:#92400e;}
 
 /* ── Location groups ── */
 .loc-group{margin-bottom:24px;}
@@ -252,10 +264,15 @@ body.dark-mode .loc-title{color:#e0e0e0!important;}
       <div class="sb-group-items" id="grp-tracker">
         <button class="sb-item active" id="sb-active" onclick="setView('active')"><span class="sb-icon">📋</span><span class="sb-label">Active Jobs</span></button>
         <button class="sb-item" id="sb-completed" onclick="setView('completed')"><span class="sb-icon">✅</span><span class="sb-label">Completed</span></button>
-        <button class="sb-item" onclick="filterLocation('All')"><span class="sb-icon">🌐</span><span class="sb-label">All Locations</span></button>
-        <button class="sb-item" onclick="filterLocation('Dammam')"><span class="sb-icon">📍</span><span class="sb-label">Dammam</span></button>
-        <button class="sb-item" onclick="filterLocation('Jeddah')"><span class="sb-icon">📍</span><span class="sb-label">Jeddah</span></button>
-        <button class="sb-item" onclick="filterLocation('Riyadh')"><span class="sb-icon">📍</span><span class="sb-label">Riyadh</span></button>
+        <button class="sb-item" id="sb-alljobs" onclick="setView('all')"><span class="sb-icon">📊</span><span class="sb-label">List of All Jobs</span></button>
+        <button class="sb-item" id="sb-loc-all" onclick="filterLocation('All')">
+          <span class="sb-icon">🌐</span><span class="sb-label">All Locations</span>
+        </button>
+        <div style="background:rgba(0,0,0,0.12);">
+          <button class="sb-item" id="sb-loc-dam" onclick="filterLocation('Dammam')" style="padding-left:40px;"><span class="sb-icon">🏭</span><span class="sb-label">Dammam</span></button>
+          <button class="sb-item" id="sb-loc-jed" onclick="filterLocation('Jeddah')" style="padding-left:40px;"><span class="sb-icon">🌊</span><span class="sb-label">Jeddah</span></button>
+          <button class="sb-item" id="sb-loc-riy" onclick="filterLocation('Riyadh')" style="padding-left:40px;"><span class="sb-icon">🏙</span><span class="sb-label">Riyadh</span></button>
+        </div>
         <button class="sb-item" onclick="openAddModal()"><span class="sb-icon">➕</span><span class="sb-label">Add New Job</span></button>
       </div>
     </div>
@@ -292,6 +309,12 @@ body.dark-mode .loc-title{color:#e0e0e0!important;}
     <div id="smart-search-bar">
       <span id="ssb-icon">🔍</span>
       <input type="text" id="filter-search" placeholder="Search by name or employee number…" oninput="onSearchInput()" autocomplete="off" spellcheck="false">
+      <select id="filter-location" onchange="onLocationDropdown()">
+        <option value="">All Locations</option>
+        <option>Dammam</option>
+        <option>Jeddah</option>
+        <option>Riyadh</option>
+      </select>
       <select id="filter-type" onchange="onSearchInput()">
         <option value="">All Types</option>
         <option>Vacation</option>
@@ -524,30 +547,105 @@ function onSearchInput() {
 }
 
 function clearSmartSearch() {
-  document.getElementById('filter-search').value = '';
-  document.getElementById('filter-type').value   = '';
+  document.getElementById('filter-search').value   = '';
+  document.getElementById('filter-type').value     = '';
+  document.getElementById('filter-location').value = '';
   updateClearBtn();
-  renderJobs();
+  filterLocation('All');
 }
 
 function updateClearBtn() {
-  const hasSearch = document.getElementById('filter-search').value !== '';
-  const hasType   = document.getElementById('filter-type').value   !== '';
+  const hasSearch = document.getElementById('filter-search').value   !== '';
+  const hasType   = document.getElementById('filter-type').value     !== '';
+  const hasLoc    = document.getElementById('filter-location').value !== '';
   const btn = document.getElementById('ssb-clear-btn');
-  btn.style.display = (hasSearch || hasType) ? 'flex' : 'none';
+  btn.style.display = (hasSearch || hasType || hasLoc) ? 'flex' : 'none';
+}
+
+function onLocationDropdown() {
+  const loc = document.getElementById('filter-location').value || 'All';
+  filterLocation(loc);
 }
 
 function setView(v) {
   currentView = v;
-  document.getElementById('page-title').textContent = v==='active' ? '📋 Active Jobs' : '✅ Completed Jobs';
+  const titles = { active: '📋 Active Jobs', completed: '✅ Completed Jobs', all: '📊 All Jobs' };
+  document.getElementById('page-title').textContent = titles[v] || '📋 Active Jobs';
   document.getElementById('sb-active').classList.toggle('active', v==='active');
   document.getElementById('sb-completed').classList.toggle('active', v==='completed');
+  document.getElementById('sb-alljobs').classList.toggle('active', v==='all');
+  if (v === 'all') { renderAllJobsTable(); return; }
+  document.getElementById('jobs-container').innerHTML = '';
   renderJobs();
 }
 
 function filterLocation(loc) {
   currentLocationFilter = loc;
-  renderJobs();
+  // Highlight active sidebar city button
+  const locMap = {All:'sb-loc-all', Dammam:'sb-loc-dam', Jeddah:'sb-loc-jed', Riyadh:'sb-loc-riy'};
+  Object.entries(locMap).forEach(([l, id]) => {
+    const el = document.getElementById(id);
+    if (el) el.classList.toggle('active', l === loc);
+  });
+  // Sync the location dropdown
+  const dd = document.getElementById('filter-location');
+  if (dd) dd.value = loc === 'All' ? '' : loc;
+  updateClearBtn();
+  if (currentView === 'all') renderAllJobsTable();
+  else renderJobs();
+}
+
+function renderAllJobsTable() {
+  const container = document.getElementById('jobs-container');
+  const search  = (document.getElementById('filter-search')?.value||'').trim().toLowerCase();
+  const typeF   = (document.getElementById('filter-type')?.value||'');
+  const locF    = currentLocationFilter;
+
+  let filtered = jobs.filter(j => {
+    if (locF !== 'All' && j.location !== locF) return false;
+    if (search) {
+      const nm = (j.empName||'').toLowerCase().includes(search);
+      const nu = String(j.empNum||'').includes(search);
+      if (!nm && !nu) return false;
+    }
+    if (typeF && j.type !== typeF) return false;
+    return true;
+  }).slice().sort((a,b) => {
+    const da = new Date(a.createdAt||0), db = new Date(b.createdAt||0);
+    return db - da;
+  });
+
+  if (!filtered.length) {
+    container.innerHTML = '<div class="empty-state"><div class="empty-icon">📭</div><p style="font-size:15px;font-weight:700;color:#888;">No jobs found</p></div>';
+    return;
+  }
+
+  const statusBadge = (s) => {
+    if (s === 'Done & Closed') return `<span class="tbl-badge tbl-done">Done</span>`;
+    if (s === 'On Hold')       return `<span class="tbl-badge tbl-hold">On Hold</span>`;
+    return `<span class="tbl-badge tbl-inprog">${escHtml(s)}</span>`;
+  };
+
+  const esc = escHtml;
+  let rows = filtered.map(j => `<tr>
+    <td><span class="emp-badge">${esc(j.empNum||'')}</span></td>
+    <td style="font-weight:600;">${esc(j.empName||'')}</td>
+    <td>${esc(j.location||'')}</td>
+    <td>${esc(j.type||'')}</td>
+    <td>${statusBadge(j.status||'')}</td>
+    <td style="color:#888;font-size:12px;">${esc(j.createdAt||'—')}</td>
+    <td><button class="card-action-btn btn-edit" style="padding:4px 10px;font-size:12px;" onclick="openEditModal('${j.id}')">✏️</button></td>
+  </tr>`).join('');
+
+  container.innerHTML = `<div id="all-jobs-table-wrap">
+    <table>
+      <thead><tr>
+        <th>Emp No</th><th>Name</th><th>Location</th><th>Type</th><th>Status</th><th>Created</th><th></th>
+      </tr></thead>
+      <tbody>${rows}</tbody>
+    </table>
+    <p style="font-size:12px;color:#888;margin-top:8px;">${filtered.length} job${filtered.length!==1?'s':''} total</p>
+  </div>`;
 }
 
 const STATUS_LIST = [
@@ -615,6 +713,7 @@ function renderCard(job) {
   if(job.iqama) body+=fld('Iqama Expiry',fmtDisplay(job.iqama));
   if(job.notes) body+=fld('Notes',job.notes);
   if(!body) body='<div style="color:#bbb;font-size:12px;text-align:center;padding:8px 0;">No details added</div>';
+  if(job.createdAt) body+=`<div class="card-field" style="border-top:1px dashed #e0e8f0;margin-top:4px;"><span class="field-label" style="color:#aaa;">Created</span><span class="field-value" style="color:#aaa;font-size:11px;">${escHtml(String(job.createdAt))}</span></div>`;
 
   const holdHtml = job.status==='On Hold'&&job.holdReason ? `<div class="hold-reason">⚠️ ${escHtml(job.holdReason)}</div>` : '';
   const footer = job.status!=='Done & Closed'
