@@ -458,6 +458,10 @@ let jobs = [], editingJobId = null, statusJobId = null;
 let currentLocationFilter = 'All', currentView = 'active';
 let isSaving = false;
 
+function escHtml(str) {
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+
 function genId() { return 'J' + Date.now(); }
 
 async function loadJobs() {
@@ -478,17 +482,20 @@ async function loadJobs() {
 async function saveJobs() {
   if (isSaving) return;
   isSaving = true;
-  localStorage.setItem('ne_tracker_jobs', JSON.stringify(jobs));
   try {
-    const formData = new FormData();
-    formData.append('payload', JSON.stringify({ action: 'saveJobs', jobs: jobs }));
-    await fetch(GS_WRITE_URL, {
-      method: 'POST',
-      mode: 'no-cors',
-      body: formData
-    });
-  } catch(e) { console.error('Save error:', e); }
-  isSaving = false;
+    localStorage.setItem('ne_tracker_jobs', JSON.stringify(jobs));
+    try {
+      const formData = new FormData();
+      formData.append('payload', JSON.stringify({ action: 'saveJobs', jobs: jobs }));
+      await fetch(GS_WRITE_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        body: formData
+      });
+    } catch(e) { console.error('Save error:', e); }
+  } finally {
+    isSaving = false;
+  }
 }
 
 function showLoading(show) {
@@ -584,7 +591,7 @@ function fmtDisplay(v) {
   return v;
 }
 function fld(label,val,cls='') {
-  return `<div class="card-field"><span class="field-label">${label}</span><span class="field-value ${cls}">${val}</span></div>`;
+  return `<div class="card-field"><span class="field-label">${label}</span><span class="field-value ${cls}">${escHtml(String(val))}</span></div>`;
 }
 
 function renderCard(job) {
@@ -609,7 +616,7 @@ function renderCard(job) {
   if(job.notes) body+=fld('Notes',job.notes);
   if(!body) body='<div style="color:#bbb;font-size:12px;text-align:center;padding:8px 0;">No details added</div>';
 
-  const holdHtml = job.status==='On Hold'&&job.holdReason ? `<div class="hold-reason">⚠️ ${job.holdReason}</div>` : '';
+  const holdHtml = job.status==='On Hold'&&job.holdReason ? `<div class="hold-reason">⚠️ ${escHtml(job.holdReason)}</div>` : '';
   const footer = job.status!=='Done & Closed'
     ? `<div class="card-footer-bar">
         <button class="card-action-btn btn-edit" onclick="openEditModal('${job.id}')">✏️ Edit</button>
@@ -624,11 +631,11 @@ function renderCard(job) {
 
   return `<div class="job-card">
     <div class="card-top">
-      <div class="card-emp"><span class="emp-badge">${job.empNum}</span><span class="emp-name">${job.empName}</span></div>
+      <div class="card-emp"><span class="emp-badge">${escHtml(job.empNum)}</span><span class="emp-name">${escHtml(job.empName)}</span></div>
       <div class="card-type-row">
-        <span class="job-type-badge ${tc}">${job.type}</span>
+        <span class="job-type-badge ${tc}">${escHtml(job.type)}</span>
         <span class="status-dot ${sc}"></span>
-        <span class="status-text ${sc}">${si} ${job.status}</span>
+        <span class="status-text ${sc}">${si} ${escHtml(job.status)}</span>
       </div>
     </div>
     <div class="card-body">${body}</div>
@@ -1006,6 +1013,7 @@ async function loadSheetData() {
   if (sheetRows) return sheetRows;
   const url = `https://sheets.googleapis.com/v4/spreadsheets/${GS_ID}/values/${encodeURIComponent(GS_TAB)}?key=${GS_KEY}`;
   const res = await fetch(url);
+  if (!res.ok) throw new Error(`Sheets API error: ${res.status}`);
   const data = await res.json();
   sheetRows = data.values || [];
   return sheetRows;
