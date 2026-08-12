@@ -204,12 +204,12 @@ body.sb-collapsed #main-content { margin-left: 56px; }
 }
 #employeeNumber {
   font-family: 'Calibri', sans-serif;
-  font-size: 15px;
+  font-size: 18px;
   padding: 9px 14px 9px 36px;
   border: 1.5px solid #d0dce8;
   border-radius: 8px;
   width: 100%;
-  height: 40px;
+  height: 46px;
   background: #f7fafd;
   transition: border-color 0.15s, box-shadow 0.15s;
 }
@@ -421,8 +421,23 @@ body.sb-collapsed #main-content { margin-left: 56px; }
 #df-actions button:last-child:hover { background: #ccd; }
 @media print { #df-overlay { display: none !important; } }
 
+/* ── Date Picker (Add/Update form) ── */
+.date-wrap { position: relative; display: flex; align-items: center; gap: 5px; }
+.date-wrap input[type="text"] { flex: 1; }
+.cal-btn { background: #e8f0fe; border: 1.5px solid #d0dce8; border-radius: 6px; padding: 6px 8px; font-size: 15px; cursor: pointer; flex-shrink: 0; line-height: 1; display: flex; align-items: center; justify-content: center; transition: background 0.15s; }
+.cal-btn:hover { background: #2e86c1; }
+.cal-btn input[type="date"] { position: absolute; opacity: 0; width: 0; height: 0; pointer-events: none; }
+
+/* ── Excel Export button ── */
+#isl-export-btn { background: #1d7a3a; color: #fff; border: none; border-radius: 6px; padding: 7px 16px; font-size: 13px; font-weight: 700; cursor: pointer; font-family: 'Calibri', sans-serif; }
+#isl-export-btn:hover { background: #155d2c; }
+
 /* ── Dark Mode Styles ── */
 body.dark-mode { background: #1a1a2e !important; color: #e0e0e0 !important; }
+body.dark-mode #main-content { background: #1a1a2e !important; }
+body.dark-mode #page-body { background: #1a1a2e !important; }
+body.dark-mode #top-header { background: #1e2d3d !important; border-color: #2a3d50 !important; color: #e0e0e0 !important; }
+body.dark-mode #page-title { color: #e0e0e0 !important; }
 body.dark-mode #app-shell { color: #e0e0e0; }
 body.dark-mode #top-bar-left h1 { color: #7fb3d3; }
 
@@ -1117,7 +1132,7 @@ body.view-lists #card-area:empty::after { display: none !important; }
 
       <!-- ── Employee Data Group ── -->
       <div class="sb-group">
-        <button class="sb-group-hdr active-group" onclick="toggleGroup('grp-emp')">
+        <button class="sb-group-hdr active-group" onclick="openEmpGroupNav()">
           <span class="sb-icon">👤</span>
           <span class="sb-label">Employee Data</span>
           <span class="sb-arrow" id="arrow-grp-emp">▾</span>
@@ -1374,6 +1389,7 @@ body.view-lists #card-area:empty::after { display: none !important; }
       <div id="isl-filter-actions">
         <button id="isl-run-btn" onclick="runInlineCombinedFilter()">▶ Generate List</button>
         <button onclick="resetInlineFilter()">↺ Reset</button>
+        <button id="isl-export-btn" onclick="exportSmartListExcel()">📊 Export Excel</button>
         <span id="isl-count-badge"></span>
       </div>
 
@@ -1520,14 +1536,17 @@ function unlockApp(skipRedirect) {
   document.getElementById('inline-search-panel').style.display = 'none';
   const trackerGroup = document.getElementById('grp-tracker');
   if (trackerGroup) trackerGroup.closest('.sb-group').style.display = isAdmin ? '' : 'none';
-  // Force Employee Data group open
+  // Both sidebar groups start collapsed — user expands what they need
   const grpEmp = document.getElementById('grp-emp');
-  if (grpEmp) { grpEmp.style.display = 'block'; const h = grpEmp.previousElementSibling; if(h) h.classList.add('active-group'); }
+  if (grpEmp) { grpEmp.style.display = 'none'; const h = grpEmp.previousElementSibling; if(h) h.classList.remove('active-group'); }
   const arrowEmp = document.getElementById('arrow-grp-emp');
-  if (arrowEmp) arrowEmp.textContent = '▾';
+  if (arrowEmp) arrowEmp.textContent = '▸';
+  const grpTrk = document.getElementById('grp-tracker');
+  if (grpTrk) { grpTrk.style.display = 'none'; const h = grpTrk.previousElementSibling; if(h) h.classList.remove('active-group'); }
+  const arrowTrk = document.getElementById('arrow-grp-tracker');
+  if (arrowTrk) arrowTrk.textContent = '▸';
   document.getElementById('employeeNumber').focus();
-  if (isAdmin) sidebarNav('dashboard');
-  else sidebarNav('search');
+  sidebarNav('search');
 }
 
 /* ─── Dark Mode ─── */
@@ -1773,6 +1792,8 @@ function clearCard() {
   document.getElementById('card-area').innerHTML = '';
   document.getElementById('employeeNumber').value = '';
   document.getElementById('employeeNumber').focus();
+  const dsArea = document.getElementById('ds-result-area');
+  if (dsArea) dsArea.innerHTML = '<p style="text-align:center;color:#888;padding:30px 0;">Type in the search box above and click <strong>🔍 Deep Search</strong> to search all employee data.</p>';
 }
 
 /* ─── Enter key ─── */
@@ -2056,8 +2077,8 @@ function searchEmployee() {
         <div class="df-field"><label>Location</label>
           <select id="f-location"><option value="">— Select —</option></select>
         </div>
-        <div class="df-field"><label>Joining Date</label><input type="text" id="f-joiningDate" placeholder="DD/MM/YYYY"></div>
-        <div class="df-field"><label>Date of Birth</label><input type="text" id="f-dob" placeholder="DD/MM/YYYY"></div>
+        <div class="df-field"><label>Joining Date</label><div class="date-wrap"><input type="text" id="f-joiningDate" placeholder="DD/MM/YYYY"><button type="button" class="cal-btn" title="Pick date">📅<input type="date" onchange="setDateFieldDMY(this,document.getElementById('f-joiningDate'))"></button></div></div>
+        <div class="df-field"><label>Date of Birth</label><div class="date-wrap"><input type="text" id="f-dob" placeholder="DD/MM/YYYY"><button type="button" class="cal-btn" title="Pick date">📅<input type="date" onchange="setDateFieldDMY(this,document.getElementById('f-dob'))"></button></div></div>
         <div class="df-field"><label>Status</label>
           <select id="f-status"><option value="">—</option><option>Single</option><option>Married</option></select>
         </div>
@@ -2090,7 +2111,7 @@ function searchEmployee() {
         </div>
         <div class="df-field"><label>Email</label><input type="text" id="f-email"></div>
         <div class="df-field"><label>IBAN</label><input type="text" id="f-iban"></div>
-        <div class="df-field"><label>Job Ended</label><input type="text" id="f-jobEnded" placeholder="DD/MM/YYYY or leave blank"></div>
+        <div class="df-field"><label>Job Ended</label><div class="date-wrap"><input type="text" id="f-jobEnded" placeholder="DD/MM/YYYY or leave blank"><button type="button" class="cal-btn" title="Pick date">📅<input type="date" onchange="setDateFieldDMY(this,document.getElementById('f-jobEnded'))"></button></div></div>
       </div>
 
       <div class="df-section-hdr">Salary (SAR)</div>
@@ -2110,14 +2131,14 @@ function searchEmployee() {
         <div class="df-field"><label>ID No</label><input type="text" id="f-idNo"></div>
         <div class="df-field"><label>ID Profession</label><input type="text" id="f-idProfession"></div>
         <div class="df-field"><label>ID Exp (Hijri)</label><input type="text" id="f-idExpHijri"></div>
-        <div class="df-field"><label>ID Exp (Gregorian)</label><input type="text" id="f-idExpGreg"></div>
+        <div class="df-field"><label>ID Exp (Gregorian)</label><div class="date-wrap"><input type="text" id="f-idExpGreg" placeholder="DD/MM/YYYY"><button type="button" class="cal-btn" title="Pick date">📅<input type="date" onchange="setDateFieldDMY(this,document.getElementById('f-idExpGreg'))"></button></div></div>
         <div class="df-field"><label>ID Remaining Days</label><input type="text" id="f-idRemDays"></div>
         <div class="df-field"><label>Passport No</label><input type="text" id="f-ppNumber"></div>
         <div class="df-field"><label>Issue Place</label><input type="text" id="f-issuePlace"></div>
-        <div class="df-field"><label>Issue Date</label><input type="text" id="f-issueDate" placeholder="DD/MM/YYYY"></div>
-        <div class="df-field"><label>PP Expiry</label><input type="text" id="f-ppExpiry" placeholder="DD/MM/YYYY"></div>
-        <div class="df-field"><label>Qiwa Start</label><input type="text" id="f-qiwaStart" placeholder="DD/MM/YYYY"></div>
-        <div class="df-field"><label>Qiwa Ending</label><input type="text" id="f-qiwaEnd" placeholder="DD/MM/YYYY"></div>
+        <div class="df-field"><label>Issue Date</label><div class="date-wrap"><input type="text" id="f-issueDate" placeholder="DD/MM/YYYY"><button type="button" class="cal-btn" title="Pick date">📅<input type="date" onchange="setDateFieldDMY(this,document.getElementById('f-issueDate'))"></button></div></div>
+        <div class="df-field"><label>PP Expiry</label><div class="date-wrap"><input type="text" id="f-ppExpiry" placeholder="DD/MM/YYYY"><button type="button" class="cal-btn" title="Pick date">📅<input type="date" onchange="setDateFieldDMY(this,document.getElementById('f-ppExpiry'))"></button></div></div>
+        <div class="df-field"><label>Qiwa Start</label><div class="date-wrap"><input type="text" id="f-qiwaStart" placeholder="DD/MM/YYYY"><button type="button" class="cal-btn" title="Pick date">📅<input type="date" onchange="setDateFieldDMY(this,document.getElementById('f-qiwaStart'))"></button></div></div>
+        <div class="df-field"><label>Qiwa Ending</label><div class="date-wrap"><input type="text" id="f-qiwaEnd" placeholder="DD/MM/YYYY"><button type="button" class="cal-btn" title="Pick date">📅<input type="date" onchange="setDateFieldDMY(this,document.getElementById('f-qiwaEnd'))"></button></div></div>
       </div>
 
       <div id="df-status-msg"></div>
@@ -3088,15 +3109,24 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // Top search box — employee card search OR deep search depending on active tab
   const topInput = document.getElementById('employeeNumber');
-  if (topInput) topInput.addEventListener('keyup', e => {
-    if (e.key === 'Enter') {
-      if (document.body.classList.contains('view-deepsearch')) {
-        deepSearchInline();
-      } else {
-        searchEmployee();
+  if (topInput) {
+    topInput.addEventListener('keyup', e => {
+      if (e.key === 'Enter') {
+        if (document.body.classList.contains('view-deepsearch')) {
+          deepSearchInline();
+        } else {
+          searchEmployee();
+        }
       }
-    }
-  });
+    });
+    // Clear deep search results when search box is emptied
+    topInput.addEventListener('input', () => {
+      if (topInput.value === '' && document.body.classList.contains('view-deepsearch')) {
+        const dsArea = document.getElementById('ds-result-area');
+        if (dsArea) dsArea.innerHTML = '<p style="text-align:center;color:#888;padding:30px 0;">Type in the search box above and click <strong>🔍 Deep Search</strong> to search all employee data.</p>';
+      }
+    });
+  }
 
   // Deep search: Enter key is already handled by the #employeeNumber listener above
   // Inline age filter
@@ -3119,6 +3149,91 @@ function runInlineDeepSearch() {
   const query = (document.getElementById('employeeNumber').value || '').trim().toLowerCase();
   if (!query) { alert('Type something to search.'); return; }
   deepSearchInline();
+}
+
+/* ── Open Employee Data group and navigate to Search ── */
+function openEmpGroupNav() {
+  const el = document.getElementById('grp-emp');
+  const arrow = document.getElementById('arrow-grp-emp');
+  if (el) el.style.display = 'block';
+  if (arrow) arrow.textContent = '▾';
+  const hdr = el ? el.previousElementSibling : null;
+  if (hdr) hdr.classList.add('active-group');
+  sidebarNav('search');
+}
+
+/* ── Date picker → DD/MM/YYYY format ── */
+function setDateFieldDMY(inp, el) {
+  const v = inp.value; // YYYY-MM-DD from native date picker
+  if (!v || !el) return;
+  const [y, m, d] = v.split('-').map(Number);
+  el.value = `${String(d).padStart(2,'0')}/${String(m).padStart(2,'0')}/${y}`;
+  inp.value = ''; // reset hidden date input so same date can be re-picked
+}
+
+/* ── Export Smart List to Excel (styled XLS) ── */
+function exportSmartListExcel() {
+  const result = document.getElementById('isl-list-result');
+  const wrap = result ? result.querySelector('.ds-wrap') : null;
+  if (!wrap) { alert('No list to export.\nRun "Generate List" first.'); return; }
+  const table = wrap.querySelector('table');
+  if (!table) { alert('No table found to export.'); return; }
+
+  const tableClone = table.cloneNode(true);
+  tableClone.querySelectorAll('[onclick]').forEach(el => el.removeAttribute('onclick'));
+  tableClone.querySelectorAll('tr').forEach(tr => tr.style.cursor = 'default');
+
+  const headerEl = wrap.querySelector('.ds-header span');
+  const title = headerEl ? headerEl.textContent.trim() : 'Smart List';
+  const dateStr = new Date().toLocaleDateString('en-GB', {day:'2-digit',month:'short',year:'numeric'});
+
+  const html = `<html xmlns:o="urn:schemas-microsoft-com:office:office"
+    xmlns:x="urn:schemas-microsoft-com:office:excel"
+    xmlns="http://www.w3.org/TR/REC-html40">
+<head><meta charset="UTF-8">
+<!--[if gte mso 9]><xml>
+  <x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet>
+    <x:Name>Smart List</x:Name>
+    <x:WorksheetOptions>
+      <x:Print>
+        <x:PaperSizeIndex>9</x:PaperSizeIndex>
+        <x:Orientation>Landscape</x:Orientation>
+        <x:FitToPage/>
+        <x:Scale>85</x:Scale>
+      </x:Print>
+      <x:PageSetup>
+        <x:Layout x:CenterHorizontal="1"/>
+        <x:PageMargins x:Bottom="0.7" x:Left="0.6" x:Right="0.6" x:Top="0.7"/>
+      </x:PageSetup>
+    </x:WorksheetOptions>
+  </x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook>
+</xml><![endif]-->
+<style>
+  body { font-family: Calibri, Arial, sans-serif; font-size: 11pt; }
+  h2 { font-size: 13pt; font-weight: 700; color: #1a5276; margin-bottom: 8px; }
+  table { border-collapse: collapse; width: 100%; }
+  th { background-color: #1a5276 !important; color: #ffffff !important; font-size: 11pt; font-weight: 700; padding: 6px 10px; border: 1px solid #1a5276; mso-number-format:"\\@"; }
+  td { font-size: 10.5pt; padding: 5px 9px; border: 1px solid #c8d8e8; vertical-align: middle; }
+  tr:nth-child(even) td { background-color: #eef5fc !important; mso-background-source: auto; }
+  .ds-match { background-color: #fff3cd !important; font-weight: 700; }
+  p.footer { font-size: 9pt; color: #888; text-align: right; margin-top: 8px; border-top: 1px solid #ddd; padding-top: 4px; }
+</style>
+</head>
+<body>
+<h2>${title}</h2>
+${tableClone.outerHTML}
+<p class="footer">Exported: ${dateStr} &nbsp;·&nbsp; Nour Energy HR System</p>
+</body></html>`;
+
+  const blob = new Blob([html], { type: 'application/vnd.ms-excel;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `NourEnergy_SmartList_${new Date().toISOString().slice(0,10)}.xls`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
 
 function runInlineQuickList(type) {
