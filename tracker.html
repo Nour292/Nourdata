@@ -575,6 +575,7 @@ function doLogout() {
   document.getElementById('pw-input').value = '';
   document.getElementById('pw-error').textContent = '';
   sessionStorage.removeItem('ne_admin_session');
+  sessionStorage.removeItem('ne_emp_session');
 }
 
 function genId() { return 'J' + Date.now(); }
@@ -1199,7 +1200,7 @@ async function checkPassword() {
   }
   if (hashed === PW_EMP_1) {
     trackerIsAdmin = false;
-    sessionStorage.setItem('ne_admin_session', '0');
+    sessionStorage.setItem('ne_emp_session', '1');
     document.getElementById('pw-overlay').style.display = 'none';
     document.getElementById('layout').style.display = 'flex';
     loadJobs().then(() => { setView('active'); renderJobs(); });
@@ -1239,7 +1240,7 @@ document.addEventListener('keydown', e => {
     document.getElementById('pw-overlay').style.display = 'none';
     document.getElementById('layout').style.display = 'flex';
     loadJobs().then(() => { setView('active'); renderJobs(); });
-  } else if (adminSess === '0' || ndAccess === 'employee') {
+  } else if (sessionStorage.getItem('ne_emp_session') === '1' || ndAccess === 'employee') {
     trackerIsAdmin = false;
     document.getElementById('pw-overlay').style.display = 'none';
     document.getElementById('layout').style.display = 'flex';
