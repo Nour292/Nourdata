@@ -642,9 +642,9 @@ body.dark-mode #top-bar-right img { filter: brightness(0.75) !important; }
     align-items: center;
   }
   .card-hdr-text .emp-num {
-    font-size: 13px;
-    font-weight: 600;
-    color: #666;
+    font-size: 17px;
+    font-weight: 700;
+    color: #1a5276;
     margin: 0;
     padding: 0;
     line-height: 1.4;
@@ -696,9 +696,9 @@ body.dark-mode #top-bar-right img { filter: brightness(0.75) !important; }
     align-items: center;
   }
   .card-hdr-text .emp-num {
-    font-size: 11px;
-    font-weight: 600;
-    color: #666;
+    font-size: 15px;
+    font-weight: 700;
+    color: #1a5276;
     margin: 0;
     padding: 0;
     line-height: 1.4;
@@ -919,20 +919,22 @@ body.view-deepsearch #card-area:empty::after,
 body.view-lists #card-area:empty::after { display: none !important; }
 
 @media print {
-  @page { margin: 15mm; size: A4; }
+  @page { margin: 10mm; size: A4; }
   html, body { margin: 0 !important; padding: 0 !important; background: #fff !important; width: 100% !important; }
   #app-shell { width: 100% !important; max-width: 100% !important; margin: 0 !important; padding: 0 !important; }
-  #card-area { width: 100% !important; margin: 0 !important; padding: 0 !important; }
+  #main-content { width: 100% !important; }
+  #page-body  { width: 100% !important; }
+  #card-area  { width: 100% !important; margin: 0 !important; padding: 0 !important; }
   #top-bar, #pw-overlay, #logoutButton, .no-print { display: none !important; }
-  .sec-hdr { margin: 8px 0 0 0; font-size: 12px; padding: 4px 8px; print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+  .sec-hdr { margin: 10px 0 0 0; font-size: 13px; padding: 5px 10px; print-color-adjust: exact; -webkit-print-color-adjust: exact; }
   .dtbl { width: 100% !important; }
-  .dtbl td, .dtbl th { font-size: 11.5px; padding: 3px 8px; }
+  .dtbl td, .dtbl th { font-size: 13px; padding: 5px 10px; }
   .lbl-cell { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
   .job-ended-cell { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
   .salary-total-row td { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
-  .alerts-block { font-size: 11.5px; padding: 6px 10px; }
-  .verdict-line { font-size: 12px; padding: 3px 8px; print-color-adjust: exact; -webkit-print-color-adjust: exact; }
-  .card-footer { font-size: 10px; margin-top: 10px; text-align: right; width: 100%; box-sizing: border-box; }
+  .alerts-block { font-size: 13px; padding: 8px 12px; }
+  .verdict-line { font-size: 13px; padding: 5px 10px; print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+  .card-footer { font-size: 11px; margin-top: 12px; text-align: right; width: 100%; box-sizing: border-box; }
 }
 
 /* ── Search & Lists Modal ── */
@@ -1109,6 +1111,7 @@ body.view-lists #card-area:empty::after { display: none !important; }
 @media print { #ipane-dashboard .dash-print-bar { display:none !important; } }
 
 </style>
+<script src="https://cdn.jsdelivr.net/npm/exceljs@4.3.0/dist/exceljs.min.js"></script>
 </head>
 <body>
 
@@ -1789,7 +1792,8 @@ function loadCardByEmpNum(empNum) {
 function printCard() {
   const card = document.querySelector('.card');
   const empNumEl = card ? card.querySelector('.emp-num') : null;
-  const empNum = empNumEl ? empNumEl.textContent.trim() : 'Employee';
+  const rawText  = empNumEl ? empNumEl.textContent.trim() : 'Employee';
+  const empNum   = rawText.replace(/^Emp\s*#\s*/i, '').trim() || rawText;
   const prevTitle = document.title;
   document.title = `${empNum} - Employee card`;
   window.print();
@@ -3185,15 +3189,18 @@ function setDateFieldDMY(inp, el) {
   inp.value = ''; // reset hidden date input so same date can be re-picked
 }
 
-/* ── Export Smart List to Excel (Office SpreadsheetML — no format warning) ── */
-function exportSmartListExcel() {
+/* ── Export Smart List to Excel (ExcelJS — genuine XLSX, no format warning) ── */
+async function exportSmartListExcel() {
   const result = document.getElementById('isl-list-result');
-  const wrap = result ? result.querySelector('.ds-wrap') : null;
+  const wrap   = result ? result.querySelector('.ds-wrap') : null;
   if (!wrap) { alert('No list to export.\nRun "Generate List" first.'); return; }
   const table = wrap.querySelector('table');
   if (!table) { alert('No table found to export.'); return; }
 
-  const esc = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  if (typeof ExcelJS === 'undefined') {
+    alert('Excel library not loaded yet. Please wait a moment and try again.');
+    return;
+  }
 
   // Extract headers
   const headers = [];
@@ -3204,77 +3211,66 @@ function exportSmartListExcel() {
   const dataRows = [];
   const tbody = table.querySelector('tbody');
   if (tbody) {
-    tbody.querySelectorAll('tr').forEach((tr, idx) => {
+    tbody.querySelectorAll('tr').forEach(tr => {
       const cells = [];
       tr.querySelectorAll('td').forEach(td => cells.push(td.textContent.trim()));
-      dataRows.push({ cells, even: idx % 2 === 1 });
+      dataRows.push(cells);
     });
   }
 
-  // Build SpreadsheetML XML rows
-  let rowsXml = '';
-  // Header row
-  rowsXml += '<Row ss:StyleID="sHdr">\n';
-  headers.forEach(h => { rowsXml += ` <Cell><Data ss:Type="String">${esc(h)}</Data></Cell>\n`; });
-  rowsXml += '</Row>\n';
-  // Data rows
-  dataRows.forEach(({cells, even}) => {
-    rowsXml += `<Row ss:StyleID="${even ? 'sEven' : 'sOdd'}">\n`;
-    cells.forEach(c => {
-      const isNum = c !== '' && !isNaN(c) && !/[\/\-]/.test(c);
-      rowsXml += ` <Cell><Data ss:Type="${isNum ? 'Number' : 'String'}">${isNum ? c : esc(c)}</Data></Cell>\n`;
-    });
-    rowsXml += '</Row>\n';
+  const wb = new ExcelJS.Workbook();
+  wb.creator = 'NourEnergy';
+  const ws = wb.addWorksheet('Smart List', {
+    pageSetup: { paperSize: 9, orientation: 'portrait', fitToPage: true, fitToWidth: 1, fitToHeight: 0,
+                 margins: { left: 0.6, right: 0.6, top: 0.7, bottom: 0.7, header: 0.3, footer: 0.3 } }
   });
 
-  const xml = `<?xml version="1.0" encoding="UTF-8"?>
-<?mso-application progid="Excel.Sheet"?>
-<Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet"
- xmlns:o="urn:schemas-microsoft-com:office:office"
- xmlns:x="urn:schemas-microsoft-com:office:excel"
- xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet">
-<Styles>
- <Style ss:ID="Default"><Alignment ss:Vertical="Center"/><Font ss:FontName="Calibri" ss:Size="11"/></Style>
- <Style ss:ID="sHdr">
-  <Alignment ss:Vertical="Center" ss:WrapText="0"/>
-  <Font ss:FontName="Calibri" ss:Size="11" ss:Bold="1" ss:Color="#FFFFFF"/>
-  <Interior ss:Color="#1A5276" ss:Pattern="Solid"/>
-  <Borders><Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#0F3050"/></Borders>
- </Style>
- <Style ss:ID="sOdd">
-  <Alignment ss:Vertical="Center"/>
-  <Font ss:FontName="Calibri" ss:Size="11"/>
-  <Interior ss:Color="#FFFFFF" ss:Pattern="Solid"/>
-  <Borders><Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#C8D8E8"/></Borders>
- </Style>
- <Style ss:ID="sEven">
-  <Alignment ss:Vertical="Center"/>
-  <Font ss:FontName="Calibri" ss:Size="11"/>
-  <Interior ss:Color="#EEF5FC" ss:Pattern="Solid"/>
-  <Borders><Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#C8D8E8"/></Borders>
- </Style>
-</Styles>
-<Worksheet ss:Name="Smart List">
- <WorksheetOptions xmlns="urn:schemas-microsoft-com:office:excel">
-  <PageSetup>
-   <Layout x:Orientation="Portrait" x:CenterHorizontal="1"/>
-   <PageMargins x:Bottom="0.7" x:Left="0.6" x:Right="0.6" x:Top="0.7"/>
-  </PageSetup>
-  <Print>
-   <PaperSizeIndex>9</PaperSizeIndex>
-   <FitToPage/>
-  </Print>
- </WorksheetOptions>
- <Table ss:DefaultColumnWidth="72">
-${rowsXml} </Table>
-</Worksheet>
-</Workbook>`;
+  const HDR_FILL = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF1A5276' } };
+  const EVEN_FILL = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFEEF5FC' } };
+  const THIN_BORDER = {
+    bottom: { style: 'thin', color: { argb: 'FFC8D8E8' } }
+  };
 
-  const blob = new Blob([xml], { type: 'application/vnd.ms-excel;charset=utf-8' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = `NourEnergy_SmartList_${new Date().toISOString().slice(0,10)}.xls`;
+  // Header row
+  const hdrRow = ws.addRow(headers);
+  hdrRow.eachCell(cell => {
+    cell.font       = { name: 'Calibri', size: 11, bold: true, color: { argb: 'FFFFFFFF' } };
+    cell.fill       = HDR_FILL;
+    cell.alignment  = { vertical: 'middle', wrapText: false };
+    cell.border     = { bottom: { style: 'medium', color: { argb: 'FF0F3050' } } };
+  });
+  hdrRow.height = 18;
+
+  // Data rows
+  dataRows.forEach((cells, idx) => {
+    const row = ws.addRow(cells.map(c => {
+      const n = parseFloat(c);
+      return (c !== '' && !isNaN(n) && !/[\/\-]/.test(c)) ? n : c;
+    }));
+    row.eachCell({ includeEmpty: true }, cell => {
+      cell.font      = { name: 'Calibri', size: 11 };
+      cell.alignment = { vertical: 'middle' };
+      cell.border    = THIN_BORDER;
+      if (idx % 2 === 1) cell.fill = EVEN_FILL;
+    });
+    row.height = 16;
+  });
+
+  // Auto-width columns (cap at 40)
+  ws.columns.forEach((col, i) => {
+    const maxLen = Math.max(
+      (headers[i] || '').length,
+      ...dataRows.map(r => String(r[i] || '').length)
+    );
+    col.width = Math.min(Math.max(maxLen + 2, 10), 40);
+  });
+
+  const buf  = await wb.xlsx.writeBuffer();
+  const blob = new Blob([buf], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href     = url;
+  a.download = `NourEnergy_SmartList_${new Date().toISOString().slice(0,10)}.xlsx`;
   document.body.appendChild(a);
   a.click();
   document.body.removeChild(a);
