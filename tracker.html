@@ -245,11 +245,18 @@ body.dark-mode #confirm-msg{color:#e0e0e0!important;}
 #mobile-menu-btn:hover{background:#f0f4f8;}
 #pw-box #pw-forgot{background:none!important;color:#888!important;font-size:12px;cursor:pointer;text-decoration:underline;margin-top:6px;display:inline-block!important;width:auto!important;padding:4px 0!important;border:none!important;}
 #pw-box #pw-forgot:hover{color:#2e86c1!important;background:none!important;}
-#pw-reset-panel{display:none;text-align:left;margin-top:12px;border-top:1px solid #e0e8f0;padding-top:12px;}
-#pw-reset-panel input{width:100%;padding:9px 12px;font-size:14px;border:1.5px solid #d0dce8;border-radius:7px;margin-bottom:8px;font-family:Calibri,sans-serif;box-sizing:border-box;}
-#pw-reset-panel .btn-reset{width:100%;padding:10px;background:#27ae60;color:#fff;font-size:14px;font-weight:700;border:none;border-radius:7px;cursor:pointer;}
-#pw-reset-panel .btn-reset:hover{background:#1e8449;}
-#pw-reset-msg{font-size:12px;margin-top:6px;font-weight:600;}
+#reset-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:10000;align-items:center;justify-content:center;}
+#reset-modal.open{display:flex;}
+#reset-modal-box{background:#fff;border-radius:14px;padding:28px 28px 24px;width:340px;max-width:calc(100vw - 40px);box-shadow:0 8px 40px rgba(0,0,0,0.4);position:relative;}
+#reset-modal-box h3{font-size:16px;font-weight:700;color:#1a2b3c;margin-bottom:6px;}
+#reset-modal-box p{font-size:12px;color:#666;margin-bottom:14px;}
+#reset-modal-box input{width:100%;padding:10px 12px;font-size:14px;border:1.5px solid #d0dce8;border-radius:7px;margin-bottom:8px;font-family:Calibri,sans-serif;box-sizing:border-box;text-align:left;letter-spacing:0;}
+#reset-modal-box input:focus{border-color:#2e86c1;outline:none;}
+#reset-modal-close{position:absolute;top:14px;right:14px;background:none;border:none;font-size:20px;cursor:pointer;color:#aaa;line-height:1;padding:0;width:auto;}
+#reset-modal-close:hover{color:#1a2b3c;}
+.btn-reset-modal{width:100%;padding:11px;background:#27ae60;color:#fff;font-size:14px;font-weight:700;border:none;border-radius:8px;cursor:pointer;margin-top:4px;}
+.btn-reset-modal:hover{background:#1e8449;}
+#pw-reset-msg{font-size:12px;margin-top:8px;font-weight:600;min-height:16px;}
 /* ── Mobile ── */
 @media (max-width: 640px) {
   #sidebar{transform:translateX(-220px);transition:transform 0.25s,width 0.25s;}
@@ -285,14 +292,20 @@ body.dark-mode #confirm-msg{color:#e0e0e0!important;}
     <button id="pw-submit" onclick="checkPassword()">Login</button>
     <div id="pw-error"></div>
     <button id="pw-forgot" onclick="toggleResetPanel()">Forgot password?</button>
-    <div id="pw-reset-panel">
-      <p style="font-size:12px;color:#666;margin-bottom:8px;">Enter the recovery code, then set a new admin password.</p>
-      <input type="text" id="reset-code" placeholder="Recovery code" autocomplete="off">
-      <input type="password" id="reset-pw1" placeholder="New admin password" autocomplete="off">
-      <input type="password" id="reset-pw2" placeholder="Confirm new password" autocomplete="off">
-      <button class="btn-reset" onclick="doResetPassword()">Set Admin Password</button>
-      <div id="pw-reset-msg"></div>
-    </div>
+  </div>
+</div>
+
+<!-- ── Password Reset Modal ── -->
+<div id="reset-modal">
+  <div id="reset-modal-box">
+    <button id="reset-modal-close" onclick="closeResetModal()" aria-label="Close">&#10005;</button>
+    <h3>Reset Admin Password</h3>
+    <p>Enter the recovery code, then choose a new admin password.</p>
+    <input type="text" id="reset-code" placeholder="Recovery code" autocomplete="off">
+    <input type="password" id="reset-pw1" placeholder="New admin password" autocomplete="off">
+    <input type="password" id="reset-pw2" placeholder="Confirm new password" autocomplete="off">
+    <button class="btn-reset-modal" onclick="doResetPassword()">Set Admin Password</button>
+    <div id="pw-reset-msg"></div>
   </div>
 </div>
 
@@ -1241,8 +1254,16 @@ async function checkPassword() {
 }
 
 function toggleResetPanel() {
-  const panel = document.getElementById('pw-reset-panel');
-  panel.style.display = panel.style.display === 'block' ? 'none' : 'block';
+  document.getElementById('reset-code').value = '';
+  document.getElementById('reset-pw1').value  = '';
+  document.getElementById('reset-pw2').value  = '';
+  document.getElementById('pw-reset-msg').textContent = '';
+  document.getElementById('reset-modal').classList.add('open');
+  setTimeout(() => document.getElementById('reset-code').focus(), 100);
+}
+
+function closeResetModal() {
+  document.getElementById('reset-modal').classList.remove('open');
 }
 
 async function doResetPassword() {
@@ -1262,7 +1283,7 @@ async function doResetPassword() {
   document.getElementById('reset-code').value = '';
   document.getElementById('reset-pw1').value  = '';
   document.getElementById('reset-pw2').value  = '';
-  setTimeout(() => { document.getElementById('pw-reset-panel').style.display = 'none'; document.getElementById('pw-input').focus(); }, 2500);
+  setTimeout(() => { closeResetModal(); document.getElementById('pw-input').focus(); }, 2500);
 }
 
 window.setAdminPassword = async function(pw) {
@@ -1285,6 +1306,7 @@ document.getElementById('pw-input').addEventListener('keyup', e => { if (e.key =
 // Escape closes any open modal
 document.addEventListener('keydown', e => {
   if (e.key !== 'Escape') return;
+  if (document.getElementById('reset-modal').classList.contains('open')) { closeResetModal(); return; }
   if (document.getElementById('confirm-overlay').classList.contains('open')) { document.getElementById('confirm-overlay').classList.remove('open'); return; }
   if (document.getElementById('status-modal').classList.contains('open')) { closeStatusModal(); return; }
   if (document.getElementById('modal-overlay').classList.contains('open')) { closeModal(); }
