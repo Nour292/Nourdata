@@ -3242,10 +3242,7 @@ async function exportSmartListExcel() {
   hdrRow.height = 24;
 
   const parseCell = c => {
-    // "48 Years, 7 Months..." → integer 48
-    const ageM = c.match(/^(\d+)\s+[Yy]ear/);
-    if (ageM) return parseInt(ageM[1], 10);
-    // Pure number (no slashes/dashes which indicate dates)
+    // Only treat as number if the whole cell is a pure number (no letters/slashes/dashes)
     const n = parseFloat(c);
     if (c !== '' && !isNaN(n) && !/[\/\-]/.test(c) && String(n) === c.trim()) return n;
     return c;
