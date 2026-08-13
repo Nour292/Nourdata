@@ -684,16 +684,31 @@ function typeCls(type) {
   return map[type]||'type-paf';
 }
 
+function todayFormatted() {
+  const d = new Date();
+  const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  return String(d.getDate()).padStart(2,'0') + '-' + months[d.getMonth()] + '-' + d.getFullYear();
+}
+
 function fmtDisplay(v) {
   if (!v) return '';
-  // Already formatted DD-MMM-YYYY or DD/MM/YYYY
-  if (/^\d{2}[-\/][A-Za-z\d]/.test(v)) return v;
-  // ISO string
+  const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  // Already in DD-MMM-YYYY format (e.g. 09-Aug-2026)
+  if (/^\d{1,2}-[A-Za-z]{3}-\d{4}$/.test(v)) return v;
+  // DD/MM/YYYY or DD-MM-YYYY — treat as day-first (en-GB)
+  const m0 = v.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{2,4})$/);
+  if (m0) {
+    let yr = parseInt(m0[3]);
+    if (yr < 100) yr += 2000;
+    const day = parseInt(m0[1]);
+    const mo  = parseInt(m0[2]) - 1;
+    if (mo >= 0 && mo <= 11) return String(day).padStart(2,'0') + '-' + months[mo] + '-' + yr;
+  }
+  // ISO string or any other parseable format
   try {
     const d = new Date(v);
     if (!isNaN(d) && d.getFullYear() > 1970) {
-      const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-      return ('0'+d.getDate()).slice(-2)+'-'+months[d.getMonth()]+'-'+d.getFullYear();
+      return String(d.getDate()).padStart(2,'0') + '-' + months[d.getMonth()] + '-' + d.getFullYear();
     }
   } catch(e) {}
   return v;
@@ -967,8 +982,8 @@ function saveJob() {
     extDate:g('f-extdate'), extDays:g('f-extdays'),
     housingStart:g('f-housingstart'), housingEnd:g('f-housingend'),
     ticket:g('f-ticket'), notes:g('f-notes'),
-    createdAt:editingJobId?(jobs.find(j=>j.id===editingJobId)?.createdAt||new Date().toLocaleDateString('en-GB')):new Date().toLocaleDateString('en-GB'),
-    updatedAt:new Date().toLocaleDateString('en-GB'),
+    createdAt:editingJobId?(jobs.find(j=>j.id===editingJobId)?.createdAt||todayFormatted()):todayFormatted(),
+    updatedAt:todayFormatted(),
   };
   if(editingJobId){const i=jobs.findIndex(j=>j.id===editingJobId);if(i!==-1)jobs[i]=data;}
   else jobs.unshift(data);
@@ -1002,14 +1017,14 @@ function saveStatus() {
   const j=jobs.find(x=>x.id===statusJobId); if(!j) return;
   j.status=sel.value;
   j.holdReason=sel.value==='On Hold'?document.getElementById('hold-reason-input').value.trim():'';
-  j.updatedAt=new Date().toLocaleDateString('en-GB');
+  j.updatedAt=todayFormatted();
   saveJobs(); closeStatusModal(); renderJobs();
 }
 
 function quickComplete(id) {
   if(!confirm('Mark as Done & Closed?')) return;
   const j=jobs.find(x=>x.id===id); if(!j) return;
-  j.status='Done & Closed'; j.closedAt=new Date().toISOString(); j.updatedAt=new Date().toLocaleDateString('en-GB');
+  j.status='Done & Closed'; j.closedAt=new Date().toISOString(); j.updatedAt=todayFormatted();
   saveJobs(); renderJobs();
 }
 
