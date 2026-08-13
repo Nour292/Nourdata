@@ -271,8 +271,8 @@ body.dark-mode #confirm-msg{color:#e0e0e0!important;}
   <div id="pw-box">
     <img src="https://nour292.github.io/Nourdata/nour_energy_logo.png" alt="Nour Energy" onerror="this.style.display='none'">
     <h2>Nour Energy</h2>
-    <p>Job Tracker — Admin Access Only</p>
-    <input type="password" id="pw-input" placeholder="Enter admin password" autocomplete="off">
+    <p>Job Tracker — Enter your password</p>
+    <input type="password" id="pw-input" placeholder="Enter password" autocomplete="off">
     <button id="pw-submit" onclick="checkPassword()">Login</button>
     <div id="pw-error"></div>
   </div>
@@ -1175,10 +1175,7 @@ const PW_EMP_1 = 'd4e2501734145318e12b209000cf646434ff9d3fae8bc9302dba2d7ce01f30
 let trackerIsAdmin = false;
 
 function applyAccessLevel() {
-  // Hide delete buttons for non-admin
-  document.querySelectorAll('.tracker-delete-btn').forEach(btn => {
-    btn.style.display = trackerIsAdmin ? '' : 'none';
-  });
+  // Both admin and employee have full access — no UI restrictions applied
 }
 
 async function hashPassword(str) {
@@ -1187,26 +1184,34 @@ async function hashPassword(str) {
 }
 
 async function checkPassword() {
+  const errEl = document.getElementById('pw-error');
   const entered = document.getElementById('pw-input').value.trim();
-  if (!entered) { document.getElementById('pw-error').textContent = 'Please enter your password.'; return; }
-  const hashed = await hashPassword(entered);
-  if (hashed === PW_ADMIN) {
-    trackerIsAdmin = true;
-    sessionStorage.setItem('ne_admin_session', '1');
-    document.getElementById('pw-overlay').style.display = 'none';
-    document.getElementById('layout').style.display = 'flex';
-    loadJobs().then(() => { setView('active'); renderJobs(); });
-    return;
+  if (!entered) { errEl.textContent = 'Please enter your password.'; return; }
+  errEl.textContent = '';
+  try {
+    if (!crypto || !crypto.subtle) throw new Error('Secure context required — open via HTTPS.');
+    const hashed = await hashPassword(entered);
+    if (hashed === PW_ADMIN) {
+      trackerIsAdmin = true;
+      sessionStorage.setItem('ne_admin_session', '1');
+      document.getElementById('pw-overlay').style.display = 'none';
+      document.getElementById('layout').style.display = 'flex';
+      loadJobs().then(() => { setView('active'); renderJobs(); });
+      return;
+    }
+    if (hashed === PW_EMP_1) {
+      trackerIsAdmin = false;
+      sessionStorage.setItem('ne_emp_session', '1');
+      document.getElementById('pw-overlay').style.display = 'none';
+      document.getElementById('layout').style.display = 'flex';
+      loadJobs().then(() => { setView('active'); renderJobs(); });
+      return;
+    }
+    errEl.textContent = 'Incorrect password. Please try again.';
+  } catch(e) {
+    errEl.textContent = 'Login error: ' + e.message;
+    console.error('checkPassword error:', e);
   }
-  if (hashed === PW_EMP_1) {
-    trackerIsAdmin = false;
-    sessionStorage.setItem('ne_emp_session', '1');
-    document.getElementById('pw-overlay').style.display = 'none';
-    document.getElementById('layout').style.display = 'flex';
-    loadJobs().then(() => { setView('active'); renderJobs(); });
-    return;
-  }
-  document.getElementById('pw-error').textContent = 'Access denied. Invalid password.';
   document.getElementById('pw-input').value = '';
   document.getElementById('pw-input').focus();
 }
@@ -1240,7 +1245,7 @@ document.addEventListener('keydown', e => {
     document.getElementById('pw-overlay').style.display = 'none';
     document.getElementById('layout').style.display = 'flex';
     loadJobs().then(() => { setView('active'); renderJobs(); });
-  } else if (sessionStorage.getItem('ne_emp_session') === '1' || ndAccess === 'employee') {
+  } else if (sessionStorage.getItem('ne_emp_session') === '1' || (ndAccess && ndAccess !== 'none')) {
     trackerIsAdmin = false;
     document.getElementById('pw-overlay').style.display = 'none';
     document.getElementById('layout').style.display = 'flex';
