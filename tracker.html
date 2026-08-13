@@ -665,25 +665,34 @@ function renderAllJobsTable() {
 
 const STATUS_LIST = [
   {val:'Sent to Admin',icon:'🏢'},
+  {val:'Sent Clearance to Fleet / Store',icon:'🚚'},
   {val:'Sent to Accounts',icon:'💰'},
   {val:'Done the Computation',icon:'✍️'},
   {val:'Visa Processing',icon:'🛂'},
-  {val:'Visa Issued',icon:'🛂✅'},
-  {val:'Sent Clearance to Fleet / Store',icon:'🚚'},
+  {val:'Visa Issued',icon:'✅'},
   {val:'Submit to IT',icon:'💻'},
   {val:'Submitted to Admin',icon:'📋'},
   {val:'Completed',icon:'🎉'},
   {val:'On Hold',icon:'🔴'},
 ];
 
+function getStatuses(job) {
+  if (!job.status) return [];
+  if (Array.isArray(job.status)) return job.status;
+  return [job.status];
+}
+
 function statusCls(job) {
-  if (job.status==='On Hold') return 's-hold';
   if (job.status==='Done & Closed') return 's-done';
+  const statuses = getStatuses(job);
+  if (statuses.includes('On Hold')) return 's-hold';
   return 's-inprogress';
 }
 
 function statusIcon(job) {
-  const s = STATUS_LIST.find(x=>x.val===job.status);
+  const statuses = getStatuses(job);
+  if (!statuses.length) return '📋';
+  const s = STATUS_LIST.find(x=>x.val===statuses[0]);
   return s ? s.icon : '📋';
 }
 
@@ -738,7 +747,15 @@ function fld(label,val,cls='') {
 }
 
 function renderCard(job) {
-  const sc=statusCls(job), si=statusIcon(job), tc=typeCls(job.type);
+  const sc=statusCls(job), tc=typeCls(job.type);
+  const statuses=getStatuses(job);
+  const statusHtml = statuses.length
+    ? statuses.map(sv=>{
+        const sc2=sv==='On Hold'?'s-hold':sv==='Done & Closed'?'s-done':'s-inprogress';
+        const si2=(STATUS_LIST.find(x=>x.val===sv)||{icon:'📋'}).icon;
+        return `<span class="status-dot ${sc2}"></span><span class="status-text ${sc2}">${si2} ${escHtml(sv)}</span>`;
+      }).join(' ')
+    : '';
   let body='';
   if(job.leaveDate) body+=fld('Start Vacation Date',fmtDisplay(job.leaveDate));
   if(job.returnDate) body+=fld('Vacation End Date',fmtDisplay(job.returnDate));
@@ -760,7 +777,7 @@ function renderCard(job) {
   if(!body) body='<div style="color:#bbb;font-size:12px;text-align:center;padding:8px 0;">No details added</div>';
   if(job.createdAt) body+=`<div class="card-field" style="border-top:1px dashed #e0e8f0;margin-top:4px;"><span class="field-label" style="color:#aaa;">Created</span><span class="field-value" style="color:#aaa;font-size:11px;">${fmtDisplay(job.createdAt)}</span></div>`;
 
-  const holdHtml = job.status==='On Hold'&&job.holdReason ? `<div class="hold-reason">⚠️ ${escHtml(job.holdReason)}</div>` : '';
+  const holdHtml = getStatuses(job).includes('On Hold')&&job.holdReason ? `<div class="hold-reason">⚠️ ${escHtml(job.holdReason)}</div>` : '';
   const footer = job.status!=='Done & Closed'
     ? `<div class="card-footer-bar">
         <button class="card-action-btn btn-edit" onclick="openEditModal('${job.id}')">✏️ Edit</button>
@@ -778,8 +795,7 @@ function renderCard(job) {
       <div class="card-emp"><span class="emp-badge">${escHtml(job.empNum)}</span><span class="emp-name">${escHtml(job.empName)}</span></div>
       <div class="card-type-row">
         <span class="job-type-badge ${tc}">${escHtml(job.type)}</span>
-        <span class="status-dot ${sc}"></span>
-        <span class="status-text ${sc}">${si} ${escHtml(job.status)}</span>
+        ${statusHtml}
       </div>
     </div>
     <div class="card-body">${body}</div>
@@ -790,9 +806,9 @@ function renderCard(job) {
 function renderStats() {
   const now = new Date();
   document.getElementById('stat-active').textContent = jobs.filter(j=>j.status!=='Done & Closed').length;
-  document.getElementById('stat-hold').textContent   = jobs.filter(j=>j.status==='On Hold').length;
-  document.getElementById('stat-accounts').textContent = jobs.filter(j=>j.status==='Sent to Accounts').length;
-  document.getElementById('stat-admin').textContent  = jobs.filter(j=>j.status==='Sent to Admin').length;
+  document.getElementById('stat-hold').textContent   = jobs.filter(j=>getStatuses(j).includes('On Hold')).length;
+  document.getElementById('stat-accounts').textContent = jobs.filter(j=>getStatuses(j).includes('Sent to Accounts')).length;
+  document.getElementById('stat-admin').textContent  = jobs.filter(j=>getStatuses(j).includes('Sent to Admin')).length;
   document.getElementById('stat-done').textContent   = jobs.filter(j=>{
     if(j.status!=='Done & Closed'||!j.closedAt) return false;
     const d=new Date(j.closedAt);
@@ -1014,29 +1030,31 @@ function openStatusModal(id) {
   statusJobId=id;
   const j=jobs.find(x=>x.id===id); if(!j) return;
   document.getElementById('status-emp-info').textContent=`${j.empNum} — ${j.empName} | ${j.type}`;
+  const currentStatuses=getStatuses(j);
   document.getElementById('status-options-list').innerHTML=STATUS_LIST.map(s=>`
-    <label class="status-option ${j.status===s.val?'selected':''}">
-      <input type="radio" name="new-status" value="${s.val}" ${j.status===s.val?'checked':''} onchange="onStatusChange('${s.val}')">
+    <label class="status-option ${currentStatuses.includes(s.val)?'selected':''}">
+      <input type="checkbox" name="new-status" value="${s.val}" ${currentStatuses.includes(s.val)?'checked':''} onchange="onStatusChange(this)">
       ${s.icon} ${s.val}
     </label>`).join('');
-  document.getElementById('hold-reason-field').style.display=j.status==='On Hold'?'block':'none';
+  document.getElementById('hold-reason-field').style.display=currentStatuses.includes('On Hold')?'block':'none';
   document.getElementById('hold-reason-input').value=j.holdReason||'';
   document.getElementById('status-modal').classList.add('open');
 }
 
-function onStatusChange(val) {
-  document.getElementById('hold-reason-field').style.display=val==='On Hold'?'block':'none';
-  document.querySelectorAll('.status-option').forEach(el=>el.classList.toggle('selected',el.querySelector('input').value===val));
+function onStatusChange(el) {
+  el.closest('.status-option').classList.toggle('selected', el.checked);
+  const anyOnHold=!!document.querySelector('input[name="new-status"][value="On Hold"]:checked');
+  document.getElementById('hold-reason-field').style.display=anyOnHold?'block':'none';
 }
 
 function closeStatusModal() { document.getElementById('status-modal').classList.remove('open'); statusJobId=null; }
 
 function saveStatus() {
-  const sel=document.querySelector('input[name="new-status"]:checked');
-  if(!sel){alert('Select a status.');return;}
+  const checked=Array.from(document.querySelectorAll('input[name="new-status"]:checked')).map(el=>el.value);
+  if(!checked.length){alert('Select at least one status.');return;}
   const j=jobs.find(x=>x.id===statusJobId); if(!j) return;
-  j.status=sel.value;
-  j.holdReason=sel.value==='On Hold'?document.getElementById('hold-reason-input').value.trim():'';
+  j.status=checked.length===1?checked[0]:checked;
+  j.holdReason=checked.includes('On Hold')?document.getElementById('hold-reason-input').value.trim():'';
   j.updatedAt=todayFormatted();
   saveJobs(); closeStatusModal(); renderJobs();
 }
