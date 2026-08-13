@@ -173,8 +173,8 @@ body.sb-collapsed #main-content{margin-left:52px;}
 #status-footer{padding:12px 18px;border-top:1px solid #e8eef5;display:flex;gap:8px;justify-content:flex-end;}
 
 /* ── Password overlay ── */
-#pw-overlay{display:flex;position:fixed;inset:0;background:linear-gradient(135deg,#1a2b3c 0%,#2e4057 100%);z-index:9999;align-items:center;justify-content:center;}
-#pw-box{background:#fff;border-radius:16px;padding:36px 40px;width:360px;text-align:center;box-shadow:0 8px 40px rgba(0,0,0,0.35);}
+#pw-overlay{display:flex;flex-direction:column;align-items:center;position:fixed;inset:0;background:linear-gradient(135deg,#1a2b3c 0%,#2e4057 100%);z-index:9999;overflow-y:auto;padding:20px 0;}
+#pw-box{background:#fff;border-radius:16px;padding:36px 40px;width:340px;max-width:calc(100% - 40px);text-align:center;box-shadow:0 8px 40px rgba(0,0,0,0.35);margin:auto;}
 #pw-box img{height:70px;margin-bottom:14px;}
 #pw-box h2{font-size:20px;font-weight:700;color:#1a2b3c;margin-bottom:6px;}
 #pw-box p{font-size:13px;color:#888;margin-bottom:20px;}
@@ -243,8 +243,8 @@ body.dark-mode #confirm-msg{color:#e0e0e0!important;}
 
 #mobile-menu-btn{display:none;width:34px;height:34px;background:none;border:1.5px solid #d0dce8;border-radius:6px;font-size:18px;cursor:pointer;align-items:center;justify-content:center;color:#1a2b3c;flex-shrink:0;margin-right:4px;}
 #mobile-menu-btn:hover{background:#f0f4f8;}
-#pw-forgot{background:none;border:none;color:#aaa;font-size:12px;cursor:pointer;text-decoration:underline;margin-top:8px;display:inline-block;}
-#pw-forgot:hover{color:#2e86c1;}
+#pw-box #pw-forgot{background:none!important;color:#888!important;font-size:12px;cursor:pointer;text-decoration:underline;margin-top:6px;display:inline-block!important;width:auto!important;padding:4px 0!important;border:none!important;}
+#pw-box #pw-forgot:hover{color:#2e86c1!important;background:none!important;}
 #pw-reset-panel{display:none;text-align:left;margin-top:12px;border-top:1px solid #e0e8f0;padding-top:12px;}
 #pw-reset-panel input{width:100%;padding:9px 12px;font-size:14px;border:1.5px solid #d0dce8;border-radius:7px;margin-bottom:8px;font-family:Calibri,sans-serif;box-sizing:border-box;}
 #pw-reset-panel .btn-reset{width:100%;padding:10px;background:#27ae60;color:#fff;font-size:14px;font-weight:700;border:none;border-radius:7px;cursor:pointer;}
