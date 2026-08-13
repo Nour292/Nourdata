@@ -241,20 +241,6 @@ body.dark-mode #confirm-msg{color:#e0e0e0!important;}
 #save-toast{position:fixed;bottom:24px;right:24px;padding:10px 20px;border-radius:8px;font-size:13px;font-weight:700;color:#fff;background:#27ae60;z-index:8000;display:none;box-shadow:0 4px 16px rgba(0,0,0,0.2);pointer-events:none;}
 #save-toast.toast-err{background:#e74c3c;}
 
-#mobile-menu-btn{display:none;width:34px;height:34px;background:none;border:1.5px solid #d0dce8;border-radius:6px;font-size:18px;cursor:pointer;align-items:center;justify-content:center;color:#1a2b3c;flex-shrink:0;margin-right:4px;}
-#mobile-menu-btn:hover{background:#f0f4f8;}
-/* ── Mobile ── */
-@media (max-width: 640px) {
-  #sidebar{transform:translateX(-220px);transition:transform 0.25s,width 0.25s;}
-  #sidebar.mobile-open{transform:translateX(0);}
-  #main-content{margin-left:0!important;}
-  body.sb-collapsed #main-content{margin-left:0!important;}
-  #stats-bar{grid-template-columns:1fr 1fr;}
-  .cards-grid{grid-template-columns:1fr;}
-  .form-grid{grid-template-columns:1fr!important;}
-  #top-header{padding:10px 14px;}
-  #mobile-menu-btn{display:flex!important;}
-}
 
 /* ── Date Picker ── */
 .date-wrap { position: relative; display: flex; align-items: center; gap: 6px; }
@@ -343,7 +329,6 @@ body.dark-mode #confirm-msg{color:#e0e0e0!important;}
 <!-- ── Main ── -->
 <div id="main-content">
   <div id="top-header">
-    <button id="mobile-menu-btn" onclick="toggleSidebar()" aria-label="Open menu">&#9776;</button>
     <div id="page-title">📋 Active Jobs</div>
     <div id="header-actions">
       <button class="hdr-btn btn-add" onclick="openAddModal()">➕ Add Job</button>
@@ -573,12 +558,13 @@ function confirmDialog(msg, onOk) {
 }
 
 function doLogout() {
+  trackerIsAdmin = false;
+  localStorage.removeItem('ne_role');
+  localStorage.removeItem('ne_login_time');
   document.getElementById('layout').style.display = 'none';
   document.getElementById('pw-overlay').style.display = 'flex';
   document.getElementById('pw-input').value = '';
   document.getElementById('pw-error').textContent = '';
-  sessionStorage.removeItem('ne_admin_session');
-  sessionStorage.removeItem('ne_emp_session');
 }
 
 function genId() { return 'J' + Date.now(); }
@@ -618,12 +604,8 @@ function showLoading(show) {
 }
 
 function toggleSidebar() {
-  if (window.innerWidth <= 640) {
-    document.getElementById('sidebar').classList.toggle('mobile-open');
-  } else {
-    document.body.classList.toggle('sb-collapsed');
-    document.getElementById('sidebar').classList.toggle('collapsed');
-  }
+  document.body.classList.toggle('sb-collapsed');
+  document.getElementById('sidebar').classList.toggle('collapsed');
 }
 
 function toggleGroup(id) {
@@ -1199,7 +1181,8 @@ async function checkPassword() {
     const hashed = await hashPassword(entered);
     if (hashed === PW_ADMIN) {
       trackerIsAdmin = true;
-      sessionStorage.setItem('ne_admin_session', '1');
+      localStorage.setItem('ne_role', 'admin');
+      localStorage.setItem('ne_login_time', Date.now().toString());
       document.getElementById('pw-overlay').style.display = 'none';
       document.getElementById('layout').style.display = 'flex';
       loadJobs().then(() => { setView('active'); renderJobs(); });
@@ -1207,7 +1190,8 @@ async function checkPassword() {
     }
     if (hashed === PW_EMP_1) {
       trackerIsAdmin = false;
-      sessionStorage.setItem('ne_emp_session', '1');
+      localStorage.setItem('ne_role', 'employee');
+      localStorage.setItem('ne_login_time', Date.now().toString());
       document.getElementById('pw-overlay').style.display = 'none';
       document.getElementById('layout').style.display = 'flex';
       loadJobs().then(() => { setView('active'); renderJobs(); });
@@ -1244,19 +1228,17 @@ document.addEventListener('keydown', e => {
       if (label) label.textContent = 'Light Mode';
     }
   }
-  const ndAccess  = sessionStorage.getItem('nd_access');
-  const adminSess = sessionStorage.getItem('ne_admin_session');
-  if (adminSess === '1') {
-    trackerIsAdmin = true;
-    document.getElementById('pw-overlay').style.display = 'none';
-    document.getElementById('layout').style.display = 'flex';
-    loadJobs().then(() => { setView('active'); renderJobs(); });
-  } else if (sessionStorage.getItem('ne_emp_session') === '1' || (ndAccess && ndAccess !== 'none')) {
-    trackerIsAdmin = false;
+  const role = localStorage.getItem('ne_role');
+  const loginTime = parseInt(localStorage.getItem('ne_login_time') || '0');
+  const SESSION_MS = 60 * 60 * 1000;
+  if (role && (Date.now() - loginTime) < SESSION_MS) {
+    trackerIsAdmin = (role === 'admin');
     document.getElementById('pw-overlay').style.display = 'none';
     document.getElementById('layout').style.display = 'flex';
     loadJobs().then(() => { setView('active'); renderJobs(); });
   } else {
+    localStorage.removeItem('ne_role');
+    localStorage.removeItem('ne_login_time');
     document.getElementById('pw-overlay').style.display = 'flex';
     document.getElementById('pw-input').focus();
   }

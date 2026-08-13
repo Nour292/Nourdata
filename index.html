@@ -1499,24 +1499,27 @@ async function hashPassword(str) {
 }
 
 async function checkPassword() {
+  const errEl = document.getElementById('pw-error');
   const entered = document.getElementById('pw-input').value.trim();
-  if (!entered) { document.getElementById('pw-error').textContent = 'Please enter your password.'; return; }
-
-  const hashed = await hashPassword(entered);
-
-  if (hashed === PW_ADMIN) {
-    currentAccessLevel = 'admin';
-    unlockApp();
-    return;
+  if (!entered) { errEl.textContent = 'Please enter your password.'; return; }
+  errEl.textContent = 'Checking…';
+  try {
+    const hashed = await hashPassword(entered);
+    if (hashed === PW_ADMIN) {
+      currentAccessLevel = 'admin';
+      unlockApp();
+      return;
+    }
+    if (hashed === PW_EMP_1) {
+      currentAccessLevel = 'employee';
+      unlockApp();
+      return;
+    }
+    errEl.textContent = 'Access denied. Invalid password.';
+  } catch(e) {
+    errEl.textContent = 'Login error: ' + e.message;
+    console.error(e);
   }
-
-  if (hashed === PW_EMP_1) {
-    currentAccessLevel = 'employee';
-    unlockApp();
-    return;
-  }
-
-  document.getElementById('pw-error').textContent = 'Access denied. Invalid password.';
   document.getElementById('pw-input').value = '';
   document.getElementById('pw-input').focus();
 }
@@ -1527,11 +1530,10 @@ function unlockApp(skipRedirect) {
   document.getElementById('pw-error').textContent = '';
   const isAdmin = currentAccessLevel === 'admin';
 
-  sessionStorage.setItem('nd_access', currentAccessLevel);
-  sessionStorage.setItem('nd_login_time', Date.now().toString());
+  localStorage.setItem('ne_role', currentAccessLevel);
+  localStorage.setItem('ne_login_time', Date.now().toString());
 
   if (isAdmin) {
-    sessionStorage.setItem('ne_admin_session', '1');
     // Fresh login → go to tracker. Returning from tracker → stay here.
     if (!skipRedirect) {
       window.location.replace('tracker.html');
@@ -1583,9 +1585,8 @@ function logout() {
   currentAccessLevel = 'none';
   csvRows = null;
   clearCard();
-  sessionStorage.removeItem('nd_access');
-  sessionStorage.removeItem('nd_login_time');
-  sessionStorage.removeItem('ne_admin_session');
+  localStorage.removeItem('ne_role');
+  localStorage.removeItem('ne_login_time');
   document.body.classList.remove('dark-mode');
   document.getElementById('dataFormButton').style.display = 'none';
   document.getElementById('filterButton').style.display = 'none';
@@ -3115,18 +3116,17 @@ function populateFilterDropdowns(rows) {
 document.addEventListener('DOMContentLoaded', function() {
   // ── Session restore (survives refresh, expires after 1 hour) ──
   const SESSION_MS = 60 * 60 * 1000;
-  const savedAccess = sessionStorage.getItem('nd_access');
-  const savedTime   = parseInt(sessionStorage.getItem('nd_login_time') || '0');
-  if (savedAccess && savedAccess !== 'none' && (Date.now() - savedTime) < SESSION_MS) {
-    currentAccessLevel = savedAccess;
-    document.getElementById('filterButton').style.display = (savedAccess === 'admin') ? '' : 'none';
-    unlockApp(true); // skipRedirect — admin already chose to be on index.html
+  const role = localStorage.getItem('ne_role');
+  const savedTime = parseInt(localStorage.getItem('ne_login_time') || '0');
+  if (role && (Date.now() - savedTime) < SESSION_MS) {
+    currentAccessLevel = role;
+    document.getElementById('filterButton').style.display = (role === 'admin') ? '' : 'none';
+    unlockApp(true); // skipRedirect — stays on index.html
     const remaining = SESSION_MS - (Date.now() - savedTime);
     setTimeout(() => { logout(); const e = document.getElementById('pw-error'); if (e) e.textContent = 'Session expired. Please log in again.'; }, remaining);
   } else {
-    sessionStorage.removeItem('nd_access');
-    sessionStorage.removeItem('nd_login_time');
-    sessionStorage.removeItem('ne_admin_session');
+    localStorage.removeItem('ne_role');
+    localStorage.removeItem('ne_login_time');
   }
 
   // Auto-focus password box on load (only if not already logged in)
