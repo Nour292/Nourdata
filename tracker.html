@@ -625,7 +625,7 @@ function renderAllJobsTable() {
     if (typeF && j.type !== typeF) return false;
     return true;
   }).slice().sort((a,b) => {
-    const da = new Date(a.createdAt||0), db = new Date(b.createdAt||0);
+    const da = parseDate(a.createdAt)||new Date(0), db = parseDate(b.createdAt)||new Date(0);
     return db - da;
   });
 
@@ -646,7 +646,7 @@ function renderAllJobsTable() {
     <td style="font-weight:600;">${esc(j.empName||'')}</td>
     <td>${esc(j.location||'')}</td>
     <td>${esc(j.type||'')}</td>
-    <td>${statusBadge(j.status||'')}</td>
+    <td>${getStatuses(j).map(sv=>statusBadge(sv)).join(' ')||'—'}</td>
     <td style="color:#888;font-size:12px;">${fmtDisplay(j.createdAt)||'—'}</td>
     <td><button class="card-action-btn btn-edit" style="padding:4px 10px;font-size:12px;" onclick="openEditModal('${j.id}')">✏️</button></td>
   </tr>`).join('');
@@ -909,7 +909,7 @@ function openEditModal(id) {
   document.getElementById('f-location').value=j.location||'';
   document.getElementById('f-iqama').value=j.iqama||'';
   document.getElementById('f-type').value=j.type||'';
-  document.getElementById('f-status').value=j.status||'';
+  document.getElementById('f-status').value=Array.isArray(j.status)?j.status[0]:(j.status||'');
   document.getElementById('f-holdreason').value=j.holdReason||'';
   document.getElementById('f-leavedate').value=j.leaveDate||'';
   document.getElementById('f-returndate').value=j.returnDate||'';
