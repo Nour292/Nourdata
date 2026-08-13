@@ -199,7 +199,7 @@ body.dark-mode .field-value{color:#e0e0e0!important;}
 body.dark-mode .card-footer-bar{background:#162330!important;border-color:#2a3d50!important;}
 body.dark-mode .stat-card{background:#1e2d3d!important;color:#e0e0e0!important;}
 body.dark-mode .stat-num{color:#e0e0e0!important;}
-body.dark-mode #smart-search-bar{background:#1e2d3d!important;border-color:#2a3f54!important;}body.dark-mode #filter-search,body.dark-mode #filter-type{background:#162330!important;border-color:#2a3f54!important;color:#c8d8e8!important;}body.dark-mode #ssb-clear-btn{background:#1e2d3d!important;border-color:#2a3f54!important;color:#8fa8c0!important;}body.dark-mode #ssb-clear-btn:hover{border-color:#e74c3c!important;color:#e74c3c!important;}
+body.dark-mode #smart-search-bar{background:#1e2d3d!important;border-color:#2a3f54!important;}body.dark-mode #filter-search,body.dark-mode #filter-type,body.dark-mode #filter-location{background:#162330!important;border-color:#2a3f54!important;color:#c8d8e8!important;}body.dark-mode #ssb-clear-btn{background:#1e2d3d!important;border-color:#2a3f54!important;color:#8fa8c0!important;}body.dark-mode #ssb-clear-btn:hover{border-color:#e74c3c!important;color:#e74c3c!important;}
 body.dark-mode #inline-search-panel{background:#1e2d3d!important;}
 body.dark-mode .loc-header{border-color:#2a3d50!important;}
 body.dark-mode .loc-title{color:#e0e0e0!important;}
@@ -207,6 +207,52 @@ body.dark-mode #all-jobs-table-wrap td{color:#c8d8e8!important;}
 body.dark-mode #all-jobs-table-wrap tr:nth-child(odd) td{background:#1a2b3c!important;}
 body.dark-mode #all-jobs-table-wrap tr:nth-child(even) td{background:#162330!important;}
 body.dark-mode #all-jobs-table-wrap tr:hover td{background:#1e3a52!important;}
+
+/* ── Dark mode: modals & forms ── */
+body.dark-mode #modal-box{background:#1e2d3d!important;color:#e0e0e0!important;}
+body.dark-mode #modal-header{background:#1e2d3d!important;border-color:#2a3d50!important;}
+body.dark-mode #modal-footer{background:#1e2d3d!important;border-color:#2a3d50!important;}
+body.dark-mode #modal-title{color:#e0e0e0!important;}
+body.dark-mode #modal-body{background:#1e2d3d!important;}
+body.dark-mode .form-field label{color:#8fa8c0!important;}
+body.dark-mode .form-field input,body.dark-mode .form-field select,body.dark-mode .form-field textarea{background:#162330!important;border-color:#2a3f54!important;color:#c8d8e8!important;}
+body.dark-mode .form-field input:disabled{background:#0d1a24!important;color:#4a6a80!important;}
+body.dark-mode .form-section-hdr{background:#0f2032!important;}
+body.dark-mode #status-box{background:#1e2d3d!important;}
+body.dark-mode #status-body{background:#1e2d3d!important;}
+body.dark-mode #status-emp-info{background:#162330!important;color:#c8d8e8!important;}
+body.dark-mode #status-footer{background:#1e2d3d!important;border-color:#2a3d50!important;}
+body.dark-mode .status-option{border-color:#2a3d50!important;color:#c8d8e8!important;}
+body.dark-mode .status-option:hover{background:#1a2b3c!important;border-color:#2e86c1!important;}
+body.dark-mode .status-option.selected{background:#1a3a5c!important;border-color:#2e86c1!important;}
+body.dark-mode #hold-reason-field textarea{background:#162330!important;border-color:#2a3f54!important;color:#c8d8e8!important;}
+body.dark-mode #visa-alert{background:#2a2200!important;border-color:#7a5500!important;color:#ffd060!important;}
+
+/* ── Confirm dialog ── */
+#confirm-overlay{display:none;position:fixed;inset:0;background:rgba(10,25,40,0.65);z-index:9000;align-items:center;justify-content:center;}
+#confirm-overlay.open{display:flex;}
+#confirm-box{background:#fff;border-radius:12px;padding:24px 28px;width:360px;max-width:92vw;box-shadow:0 8px 32px rgba(0,0,0,0.28);}
+#confirm-msg{font-size:15px;font-weight:600;color:#1a2b3c;margin-bottom:18px;line-height:1.5;}
+#confirm-actions{display:flex;gap:10px;justify-content:flex-end;}
+body.dark-mode #confirm-box{background:#1e2d3d!important;}
+body.dark-mode #confirm-msg{color:#e0e0e0!important;}
+
+/* ── Save toast ── */
+#save-toast{position:fixed;bottom:24px;right:24px;padding:10px 20px;border-radius:8px;font-size:13px;font-weight:700;color:#fff;background:#27ae60;z-index:8000;display:none;box-shadow:0 4px 16px rgba(0,0,0,0.2);pointer-events:none;}
+#save-toast.toast-err{background:#e74c3c;}
+
+/* ── Mobile ── */
+@media (max-width: 640px) {
+  #sidebar{transform:translateX(-220px);transition:transform 0.25s,width 0.25s;}
+  #sidebar.mobile-open{transform:translateX(0);}
+  #main-content{margin-left:0!important;}
+  body.sb-collapsed #main-content{margin-left:0!important;}
+  #stats-bar{grid-template-columns:1fr 1fr;}
+  .cards-grid{grid-template-columns:1fr;}
+  .form-grid{grid-template-columns:1fr!important;}
+  #top-header{padding:10px 14px;}
+  #sb-toggle{position:fixed;top:12px;left:12px;z-index:300;}
+}
 
 /* ── Date Picker ── */
 .date-wrap { position: relative; display: flex; align-items: center; gap: 6px; }
@@ -239,7 +285,7 @@ body.dark-mode #all-jobs-table-wrap tr:hover td{background:#1e3a52!important;}
   <div id="sb-header">
     <img src="https://nour292.github.io/Nourdata/nour_energy_logo.png" alt="Logo" id="sb-logo">
     <div id="sb-title">Nour Energy<small>HR System</small></div>
-    <button id="sb-toggle" onclick="toggleSidebar()">&#9776;</button>
+    <button id="sb-toggle" onclick="toggleSidebar()" aria-label="Toggle sidebar">&#9776;</button>
   </div>
   <nav id="sb-nav">
 
@@ -286,7 +332,7 @@ body.dark-mode #all-jobs-table-wrap tr:hover td{background:#1e3a52!important;}
     <button onclick="toggleDarkMode()" style="display:flex;align-items:center;gap:10px;width:100%;padding:9px 12px;background:none;border:none;border-bottom:1px solid rgba(255,255,255,0.08);color:#8fa8c0;font-size:13px;font-weight:700;cursor:pointer;margin-bottom:6px;white-space:nowrap;">
       <span>🌙</span><span class="sb-label">Dark Mode</span>
     </button>
-    <button id="sb-logout" onclick="if(confirm('Logout?')){document.getElementById('layout').style.display='none';document.getElementById('pw-overlay').style.display='flex';document.getElementById('pw-input').value='';document.getElementById('pw-error').textContent='';}" >
+    <button id="sb-logout" onclick="confirmDialog('Logout from Nour Energy HR?', doLogout)">
       <span>⏻</span><span id="sb-logout-label">Logout</span>
     </button>
   </div>
@@ -341,7 +387,7 @@ body.dark-mode #all-jobs-table-wrap tr:hover td{background:#1e3a52!important;}
 
 <!-- ── Add/Edit Modal ── -->
 <div id="modal-overlay">
-  <div id="modal-box">
+  <div id="modal-box" role="dialog" aria-modal="true" aria-labelledby="modal-title">
     <div id="modal-header">
       <div id="modal-title">Add New Job</div>
       <button id="modal-close" onclick="closeModal()">✕</button>
@@ -459,7 +505,7 @@ body.dark-mode #all-jobs-table-wrap tr:hover td{background:#1e3a52!important;}
 
 <!-- ── Status Modal ── -->
 <div id="status-modal">
-  <div id="status-box">
+  <div id="status-box" role="dialog" aria-modal="true" aria-labelledby="status-title">
     <div id="status-header">
       <div id="status-title">Update Status</div>
       <button id="status-close" onclick="closeStatusModal()">✕</button>
@@ -480,14 +526,55 @@ body.dark-mode #all-jobs-table-wrap tr:hover td{background:#1e3a52!important;}
   </div>
 </div>
 
+<!-- ── Custom Confirm Dialog ── -->
+<div id="confirm-overlay">
+  <div id="confirm-box">
+    <div id="confirm-msg"></div>
+    <div id="confirm-actions">
+      <button class="modal-btn modal-btn-cancel" id="confirm-cancel">Cancel</button>
+      <button class="modal-btn modal-btn-save" id="confirm-ok">Confirm</button>
+    </div>
+  </div>
+</div>
+<div id="save-toast"></div>
+
 <script>
 const GS_WRITE_URL = 'https://script.google.com/macros/s/AKfycbzGXoDV-fdif6qiP_wFjmoULC0pXoRDVsH1P_-LptWEAIwYC3NBzDo-aWwOr4OXoaVuxQ/exec';
 let jobs = [], editingJobId = null, statusJobId = null;
 let currentLocationFilter = 'All', currentView = 'active';
-let isSaving = false;
+let saveQueue = Promise.resolve();
 
 function escHtml(str) {
   return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+
+function showToast(msg, type='ok') {
+  const t = document.getElementById('save-toast');
+  if (!t) return;
+  t.textContent = msg;
+  t.className = type === 'err' ? 'toast-err' : '';
+  t.style.display = 'block';
+  clearTimeout(t._timer);
+  t._timer = setTimeout(() => { t.style.display = 'none'; }, 2500);
+}
+
+function confirmDialog(msg, onOk) {
+  const overlay = document.getElementById('confirm-overlay');
+  document.getElementById('confirm-msg').textContent = msg;
+  overlay.classList.add('open');
+  const ok     = document.getElementById('confirm-ok');
+  const cancel = document.getElementById('confirm-cancel');
+  const close  = () => overlay.classList.remove('open');
+  ok.onclick     = () => { close(); onOk(); };
+  cancel.onclick = close;
+}
+
+function doLogout() {
+  document.getElementById('layout').style.display = 'none';
+  document.getElementById('pw-overlay').style.display = 'flex';
+  document.getElementById('pw-input').value = '';
+  document.getElementById('pw-error').textContent = '';
+  sessionStorage.removeItem('ne_admin_session');
 }
 
 function genId() { return 'J' + Date.now(); }
@@ -507,23 +594,18 @@ async function loadJobs() {
   showLoading(false);
 }
 
-async function saveJobs() {
-  if (isSaving) return;
-  isSaving = true;
-  try {
-    localStorage.setItem('ne_tracker_jobs', JSON.stringify(jobs));
+function saveJobs() {
+  const snapshot = JSON.stringify(jobs);
+  saveQueue = saveQueue.then(async () => {
+    localStorage.setItem('ne_tracker_jobs', snapshot);
+    showToast('Saved ✓');
     try {
       const formData = new FormData();
-      formData.append('payload', JSON.stringify({ action: 'saveJobs', jobs: jobs }));
-      await fetch(GS_WRITE_URL, {
-        method: 'POST',
-        mode: 'no-cors',
-        body: formData
-      });
-    } catch(e) { console.error('Save error:', e); }
-  } finally {
-    isSaving = false;
-  }
+      formData.append('payload', JSON.stringify({ action: 'saveJobs', jobs: JSON.parse(snapshot) }));
+      await fetch(GS_WRITE_URL, { method: 'POST', mode: 'no-cors', body: formData });
+    } catch(e) { console.error('Sheets sync error:', e); }
+  });
+  return saveQueue;
 }
 
 function showLoading(show) {
@@ -532,8 +614,12 @@ function showLoading(show) {
 }
 
 function toggleSidebar() {
-  document.body.classList.toggle('sb-collapsed');
-  document.getElementById('sidebar').classList.toggle('collapsed');
+  if (window.innerWidth <= 640) {
+    document.getElementById('sidebar').classList.toggle('mobile-open');
+  } else {
+    document.body.classList.toggle('sb-collapsed');
+    document.getElementById('sidebar').classList.toggle('collapsed');
+  }
 }
 
 function toggleGroup(id) {
@@ -755,7 +841,7 @@ function renderCard(job) {
         const si2=(STATUS_LIST.find(x=>x.val===sv)||{icon:'📋'}).icon;
         return `<span class="status-dot ${sc2}"></span><span class="status-text ${sc2}">${si2} ${escHtml(sv)}</span>`;
       }).join(' ')
-    : '';
+    : '<span class="status-dot" style="background:#ccc"></span><span class="status-text" style="color:#aaa">No Status</span>';
   let body='';
   if(job.leaveDate) body+=fld('Start Vacation Date',fmtDisplay(job.leaveDate));
   if(job.returnDate) body+=fld('Vacation End Date',fmtDisplay(job.returnDate));
@@ -811,8 +897,8 @@ function renderStats() {
   document.getElementById('stat-admin').textContent  = jobs.filter(j=>getStatuses(j).includes('Sent to Admin')).length;
   document.getElementById('stat-done').textContent   = jobs.filter(j=>{
     if(j.status!=='Done & Closed'||!j.closedAt) return false;
-    const d=new Date(j.closedAt);
-    return d.getMonth()===now.getMonth()&&d.getFullYear()===now.getFullYear();
+    const d=parseDate(j.closedAt)||new Date(j.closedAt);
+    return d&&!isNaN(d)&&d.getMonth()===now.getMonth()&&d.getFullYear()===now.getFullYear();
   }).length;
 }
 
@@ -898,6 +984,7 @@ function openAddModal() {
   ['f-location','f-type','f-status','f-reentry','f-encashtype'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});
   toggleDateFields();
   document.getElementById('modal-overlay').classList.add('open');
+  setTimeout(() => { const el = document.getElementById('f-empnum'); if(el) el.focus(); }, 50);
 }
 
 function openEditModal(id) {
@@ -940,11 +1027,10 @@ function toggleDateFields() {
   const isVac       = type === 'Vacation';
   const isHouse     = type === 'Housing';
   const isEncash    = type === 'Encashment';
-  const isRR        = type === 'Resign & Rejoin';
   const isResignGrp = ['Resignation','Termination','Resign & Rejoin'].includes(type);
 
   // Date fields
-  show('row-leave',     isVac || (isResignGrp && !isHouse));
+  show('row-leave',     isVac || isResignGrp);
   show('row-return',    isVac);
   show('row-actual',    isVac);
   show('row-depticket', isVac);
@@ -1007,8 +1093,14 @@ function saveJob() {
   if(!empNum||!empName||!location||!type||!status){alert('Please fill all required fields.');return;}
   const g = id => { const e=document.getElementById(id); return e ? (e.tagName==='SELECT'?e.value:e.value.trim()) : ''; };
   const isVac = type === 'Vacation';
+  // Preserve multi-status array if user didn't deliberately change it
+  let finalStatus = status;
+  if (editingJobId) {
+    const orig = jobs.find(j=>j.id===editingJobId);
+    if (orig && Array.isArray(orig.status) && orig.status[0] === status) finalStatus = orig.status;
+  }
   const data={
-    id:editingJobId||genId(),empNum,empName,location,type,status,
+    id:editingJobId||genId(),empNum,empName,location,type,status:finalStatus,
     iqama:normDate(g('f-iqama')), reentry:isVac?g('f-reentry'):'', visaExpiry:isVac?normDate(g('f-visaexpiry')):'',
     depTicket:isVac?normDate(g('f-depticket')):'', arrTicket:isVac?normDate(g('f-arrticket')):'',
     lastDay:normDate(g('f-lastday')), encashType:g('f-encashtype'),
@@ -1039,6 +1131,7 @@ function openStatusModal(id) {
   document.getElementById('hold-reason-field').style.display=currentStatuses.includes('On Hold')?'block':'none';
   document.getElementById('hold-reason-input').value=j.holdReason||'';
   document.getElementById('status-modal').classList.add('open');
+  setTimeout(() => { const first = document.querySelector('#status-options-list input'); if(first) first.focus(); }, 50);
 }
 
 function onStatusChange(el) {
@@ -1059,18 +1152,20 @@ function saveStatus() {
   saveJobs(); closeStatusModal(); renderJobs();
 }
 
-function quickComplete(id) {
-  if(!confirm('Mark as Done & Closed?')) return;
-  const j=jobs.find(x=>x.id===id); if(!j) return;
-  j.status='Done & Closed'; j.closedAt=new Date().toISOString(); j.updatedAt=todayFormatted();
-  saveJobs(); renderJobs();
+function quickComplete(id, afterDone) {
+  confirmDialog('Mark as Done & Closed?', () => {
+    const j=jobs.find(x=>x.id===id); if(!j) return;
+    j.status='Done & Closed'; j.closedAt=todayFormatted(); j.updatedAt=todayFormatted();
+    saveJobs(); if(afterDone) afterDone(); renderJobs();
+  });
 }
 
-function markComplete() { quickComplete(statusJobId); closeStatusModal(); }
+function markComplete() { quickComplete(statusJobId, closeStatusModal); }
 
 function deleteJob(id) {
-  if(!confirm('Permanently delete this record?')) return;
-  jobs=jobs.filter(j=>j.id!==id); saveJobs(); renderJobs();
+  confirmDialog('Permanently delete this record?', () => {
+    jobs=jobs.filter(j=>j.id!==id); saveJobs(); renderJobs();
+  });
 }
 
 const PW_ADMIN = '2d8f693a554950343de320b8789f03563e1291bde42cdab4658cae4be8654f1b';
@@ -1118,16 +1213,33 @@ async function checkPassword() {
 // Enter key on password
 document.getElementById('pw-input').addEventListener('keyup', e => { if (e.key === 'Enter') checkPassword(); });
 
+// Escape closes any open modal
+document.addEventListener('keydown', e => {
+  if (e.key !== 'Escape') return;
+  if (document.getElementById('confirm-overlay').classList.contains('open')) { document.getElementById('confirm-overlay').classList.remove('open'); return; }
+  if (document.getElementById('status-modal').classList.contains('open')) { closeStatusModal(); return; }
+  if (document.getElementById('modal-overlay').classList.contains('open')) { closeModal(); }
+});
+
 // Init — check session (from index.html login or direct)
 (function initTracker() {
-  const ndAccess    = sessionStorage.getItem('nd_access');
-  const adminSess   = sessionStorage.getItem('ne_admin_session');
+  if (localStorage.getItem('ne_dark_mode') === '1') {
+    document.body.classList.add('dark-mode');
+    const btn = document.querySelector('#sb-footer button:first-child');
+    if (btn) {
+      btn.querySelector('span:first-child').textContent = '☀️';
+      const label = btn.querySelector('.sb-label');
+      if (label) label.textContent = 'Light Mode';
+    }
+  }
+  const ndAccess  = sessionStorage.getItem('nd_access');
+  const adminSess = sessionStorage.getItem('ne_admin_session');
   if (adminSess === '1') {
     trackerIsAdmin = true;
     document.getElementById('pw-overlay').style.display = 'none';
     document.getElementById('layout').style.display = 'flex';
     loadJobs().then(() => { setView('active'); renderJobs(); });
-  } else if (ndAccess === 'employee') {
+  } else if (adminSess === '0' || ndAccess === 'employee') {
     trackerIsAdmin = false;
     document.getElementById('pw-overlay').style.display = 'none';
     document.getElementById('layout').style.display = 'flex';
@@ -1173,7 +1285,7 @@ function parseDate(str) {
   // Try YYYY-MM-DD
   const m3 = str.match(/^(\d{4})[\/\-](\d{1,2})[\/\-](\d{1,2})$/);
   if (m3) return new Date(parseInt(m3[1]), parseInt(m3[2])-1, parseInt(m3[3]));
-  return new Date(str);
+  return null;
 }
 
 function calcDays() {
@@ -1199,15 +1311,16 @@ function calcDays() {
 const GS_ID  = '16QYl00ATXVIlQKkqRxdAIdU6J3u7lDfg0PIoJfaDBpo';
 const GS_KEY = 'AIzaSyBfjtlvDvGxmS1OcqFVGNMMadqza1ofCrI';
 const GS_TAB = 'Master File';
-let sheetRows = null;
+let sheetRows = null, sheetRowsTime = 0;
 
 async function loadSheetData() {
-  if (sheetRows) return sheetRows;
+  if (sheetRows && Date.now() - sheetRowsTime < 300000) return sheetRows;
   const url = `https://sheets.googleapis.com/v4/spreadsheets/${GS_ID}/values/${encodeURIComponent(GS_TAB)}?key=${GS_KEY}`;
   const res = await fetch(url);
   if (!res.ok) throw new Error(`Sheets API error: ${res.status}`);
   const data = await res.json();
   sheetRows = data.values || [];
+  sheetRowsTime = Date.now();
   return sheetRows;
 }
 
@@ -1233,9 +1346,6 @@ function lookupEmployee(val) {
         }
         const iqamaEl = document.getElementById('f-iqama');
         if (iqamaEl && !iqamaEl.disabled) iqamaEl.value = found[31] || '';
-      } else {
-        document.getElementById('f-empname').value = '';
-      }
     } catch(e) { console.error('Lookup error:', e); }
     if (spinner) spinner.style.display = 'none';
   }, 700);
@@ -1244,6 +1354,7 @@ function lookupEmployee(val) {
 
 function toggleDarkMode() {
   const isDark = document.body.classList.toggle('dark-mode');
+  localStorage.setItem('ne_dark_mode', isDark ? '1' : '0');
   const btn = document.querySelector('#sb-footer button:first-child');
   if (btn) {
     btn.querySelector('span:first-child').textContent = isDark ? '☀️' : '🌙';
