@@ -555,6 +555,9 @@ body.dark-mode #top-bar-right img { filter: brightness(0.75) !important; }
 }
 #pw-submit:hover { background: #1a5276; }
 #pw-error { color: #c0392b; font-size: 13px; margin-top: 10px; min-height: 18px; }
+#pw-download-sep { border: none; border-top: 1px solid #e8eef3; margin: 18px 0 14px; }
+#pw-download-btn { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; padding: 10px; font-size: 13px; font-weight: 700; background: #f0f7ff; color: #1a5276; border: 1.5px solid #c8d8e8; border-radius: 6px; cursor: pointer; text-decoration: none; transition: background 0.15s; }
+#pw-download-btn:hover { background: #dceeff; border-color: #2e86c1; }
 
 /* ── Card ── */
 @media screen {
@@ -1124,6 +1127,10 @@ body.view-lists #card-area:empty::after { display: none !important; }
     <input type="password" id="pw-input" placeholder="Enter password" autocomplete="off">
     <button id="pw-submit" onclick="checkPassword();">Login</button>
     <div id="pw-error"></div>
+    <hr id="pw-download-sep">
+    <a id="pw-download-btn" href="https://github.com/Nour292/Nourdata/releases/download/v1.0.1/Nour.Energy.Data.Setup.1.0.0.exe" download>
+      💻 Download Desktop App
+    </a>
   </div>
 </div>
 
