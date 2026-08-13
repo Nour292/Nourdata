@@ -655,6 +655,7 @@ function renderAllJobsTable() {
     </table>
     <p style="font-size:12px;color:#888;margin-top:8px;">${filtered.length} job${filtered.length!==1?'s':''} total</p>
   </div>`;
+  applyAccessLevel();
 }
 
 const STATUS_LIST = [
@@ -730,11 +731,11 @@ function renderCard(job) {
         <button class="card-action-btn btn-edit" onclick="openEditModal('${job.id}')">✏️ Edit</button>
         <button class="card-action-btn btn-update-status" onclick="openStatusModal('${job.id}')">🔄 Status</button>
         <button class="card-action-btn btn-complete" onclick="quickComplete('${job.id}')">✅ Done</button>
-        <button class="card-action-btn" style="background:#e74c3c;color:#fff;" onclick="deleteJob('${job.id}')">🗑</button>
+        <button class="card-action-btn tracker-delete-btn" style="background:#e74c3c;color:#fff;" onclick="deleteJob('${job.id}')">🗑</button>
        </div>`
     : `<div class="card-footer-bar">
         <button class="card-action-btn btn-edit" onclick="openEditModal('${job.id}')">👁 View</button>
-        <button class="card-action-btn" style="background:#e74c3c;color:#fff;flex:1;" onclick="deleteJob('${job.id}')">🗑 Delete</button>
+        <button class="card-action-btn tracker-delete-btn" style="background:#e74c3c;color:#fff;flex:1;" onclick="deleteJob('${job.id}')">🗑 Delete</button>
        </div>`;
 
   return `<div class="job-card">
@@ -836,6 +837,7 @@ function renderJobs() {
   const other = sortJobsForDisplay(filtered.filter(j=>!locs.includes(j.location)));
   if(other.length) html+=`<div class="loc-group"><div class="loc-header"><span style="font-size:18px;">📍</span><span class="loc-title">Other</span><span class="loc-count">${other.length}</span></div><div class="cards-grid">${other.map(renderCard).join('')}</div></div>`;
   container.innerHTML=html;
+  applyAccessLevel();
 }
 
 function openAddModal() {
@@ -1019,6 +1021,16 @@ function deleteJob(id) {
 }
 
 const PW_ADMIN = '2d8f693a554950343de320b8789f03563e1291bde42cdab4658cae4be8654f1b';
+const PW_EMP_1 = 'd4e2501734145318e12b209000cf646434ff9d3fae8bc9302dba2d7ce01f3073';
+
+let trackerIsAdmin = false;
+
+function applyAccessLevel() {
+  // Hide delete buttons for non-admin
+  document.querySelectorAll('.tracker-delete-btn').forEach(btn => {
+    btn.style.display = trackerIsAdmin ? '' : 'none';
+  });
+}
 
 async function hashPassword(str) {
   const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
@@ -1030,7 +1042,16 @@ async function checkPassword() {
   if (!entered) { document.getElementById('pw-error').textContent = 'Please enter your password.'; return; }
   const hashed = await hashPassword(entered);
   if (hashed === PW_ADMIN) {
+    trackerIsAdmin = true;
     sessionStorage.setItem('ne_admin_session', '1');
+    document.getElementById('pw-overlay').style.display = 'none';
+    document.getElementById('layout').style.display = 'flex';
+    loadJobs().then(() => { setView('active'); renderJobs(); });
+    return;
+  }
+  if (hashed === PW_EMP_1) {
+    trackerIsAdmin = false;
+    sessionStorage.setItem('ne_admin_session', '0');
     document.getElementById('pw-overlay').style.display = 'none';
     document.getElementById('layout').style.display = 'flex';
     loadJobs().then(() => { setView('active'); renderJobs(); });
@@ -1044,15 +1065,25 @@ async function checkPassword() {
 // Enter key on password
 document.getElementById('pw-input').addEventListener('keyup', e => { if (e.key === 'Enter') checkPassword(); });
 
-// Init — check session
-if (sessionStorage.getItem('ne_admin_session') === '1') {
-  document.getElementById('pw-overlay').style.display = 'none';
-  document.getElementById('layout').style.display = 'flex';
-  loadJobs().then(() => { setView('active'); renderJobs(); });
-} else {
-  document.getElementById('pw-overlay').style.display = 'flex';
-  document.getElementById('pw-input').focus();
-}
+// Init — check session (from index.html login or direct)
+(function initTracker() {
+  const ndAccess    = sessionStorage.getItem('nd_access');
+  const adminSess   = sessionStorage.getItem('ne_admin_session');
+  if (adminSess === '1') {
+    trackerIsAdmin = true;
+    document.getElementById('pw-overlay').style.display = 'none';
+    document.getElementById('layout').style.display = 'flex';
+    loadJobs().then(() => { setView('active'); renderJobs(); });
+  } else if (ndAccess === 'employee') {
+    trackerIsAdmin = false;
+    document.getElementById('pw-overlay').style.display = 'none';
+    document.getElementById('layout').style.display = 'flex';
+    loadJobs().then(() => { setView('active'); renderJobs(); });
+  } else {
+    document.getElementById('pw-overlay').style.display = 'flex';
+    document.getElementById('pw-input').focus();
+  }
+})();
 
 // ── Auto-calculate days ──
 function setDate(fieldId, isoVal) {

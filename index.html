@@ -1552,7 +1552,7 @@ function unlockApp(skipRedirect) {
   document.getElementById('tab-row').style.display = 'none';
   document.getElementById('inline-search-panel').style.display = 'none';
   const trackerGroup = document.getElementById('grp-tracker');
-  if (trackerGroup) trackerGroup.closest('.sb-group').style.display = isAdmin ? '' : 'none';
+  if (trackerGroup) trackerGroup.closest('.sb-group').style.display = '';
   // Both sidebar groups start collapsed — user expands what they need
   const grpEmp = document.getElementById('grp-emp');
   if (grpEmp) { grpEmp.style.display = 'none'; const h = grpEmp.previousElementSibling; if(h) h.classList.remove('active-group'); }
