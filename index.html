@@ -2576,6 +2576,14 @@ function printPaneResult(pane) {
 
 /* Enter key for deep search + Age filter — init after DOM ready */
 document.addEventListener('DOMContentLoaded', function() {
+  // Hide download button when running inside Electron desktop app
+  if (navigator.userAgent.includes('Electron')) {
+    const btn = document.getElementById('pw-download-btn');
+    const sep = document.getElementById('pw-download-sep');
+    if (btn) btn.style.display = 'none';
+    if (sep) sep.style.display = 'none';
+  }
+
   const dsInput = document.getElementById('sl-ds-input');
   if (dsInput) dsInput.addEventListener('keyup', e => { if (e.key === 'Enter') runDeepSearch(); });
 
