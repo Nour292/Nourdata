@@ -3241,19 +3241,31 @@ async function exportSmartListExcel() {
   });
   hdrRow.height = 24;
 
+  const parseCell = c => {
+    // "48 Years, 7 Months..." → integer 48
+    const ageM = c.match(/^(\d+)\s+[Yy]ear/);
+    if (ageM) return parseInt(ageM[1], 10);
+    // Pure number (no slashes/dashes which indicate dates)
+    const n = parseFloat(c);
+    if (c !== '' && !isNaN(n) && !/[\/\-]/.test(c) && String(n) === c.trim()) return n;
+    return c;
+  };
+
   // Data rows
   dataRows.forEach((cells, idx) => {
-    const row = ws.addRow(cells.map(c => {
-      const n = parseFloat(c);
-      return (c !== '' && !isNaN(n) && !/[\/\-]/.test(c)) ? n : c;
-    }));
+    const row = ws.addRow(cells.map(parseCell));
     row.eachCell({ includeEmpty: true }, cell => {
       cell.font      = { name: 'Calibri', size: 11 };
-      cell.alignment = { vertical: 'middle' };
+      cell.alignment = { vertical: 'middle', horizontal: 'left', indent: 1 };
       cell.border    = THIN_BORDER;
       if (idx % 2 === 1) cell.fill = EVEN_FILL;
     });
     row.height = 22;
+  });
+
+  // Header alignment — left with indent
+  hdrRow.eachCell(cell => {
+    cell.alignment = { vertical: 'middle', horizontal: 'left', indent: 1, wrapText: false };
   });
 
   // Auto-width columns (cap at 40)
