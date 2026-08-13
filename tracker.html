@@ -642,7 +642,7 @@ function renderAllJobsTable() {
     <td>${esc(j.location||'')}</td>
     <td>${esc(j.type||'')}</td>
     <td>${statusBadge(j.status||'')}</td>
-    <td style="color:#888;font-size:12px;">${esc(j.createdAt||'—')}</td>
+    <td style="color:#888;font-size:12px;">${fmtDisplay(j.createdAt)||'—'}</td>
     <td><button class="card-action-btn btn-edit" style="padding:4px 10px;font-size:12px;" onclick="openEditModal('${j.id}')">✏️</button></td>
   </tr>`).join('');
 
@@ -723,7 +723,7 @@ function renderCard(job) {
   if(job.iqama) body+=fld('Iqama Expiry',fmtDisplay(job.iqama));
   if(job.notes) body+=fld('Notes',job.notes);
   if(!body) body='<div style="color:#bbb;font-size:12px;text-align:center;padding:8px 0;">No details added</div>';
-  if(job.createdAt) body+=`<div class="card-field" style="border-top:1px dashed #e0e8f0;margin-top:4px;"><span class="field-label" style="color:#aaa;">Created</span><span class="field-value" style="color:#aaa;font-size:11px;">${escHtml(String(job.createdAt))}</span></div>`;
+  if(job.createdAt) body+=`<div class="card-field" style="border-top:1px dashed #e0e8f0;margin-top:4px;"><span class="field-label" style="color:#aaa;">Created</span><span class="field-value" style="color:#aaa;font-size:11px;">${fmtDisplay(job.createdAt)}</span></div>`;
 
   const holdHtml = job.status==='On Hold'&&job.holdReason ? `<div class="hold-reason">⚠️ ${escHtml(job.holdReason)}</div>` : '';
   const footer = job.status!=='Done & Closed'
