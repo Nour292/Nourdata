@@ -241,6 +241,15 @@ body.dark-mode #confirm-msg{color:#e0e0e0!important;}
 #save-toast{position:fixed;bottom:24px;right:24px;padding:10px 20px;border-radius:8px;font-size:13px;font-weight:700;color:#fff;background:#27ae60;z-index:8000;display:none;box-shadow:0 4px 16px rgba(0,0,0,0.2);pointer-events:none;}
 #save-toast.toast-err{background:#e74c3c;}
 
+#mobile-menu-btn{display:none;width:34px;height:34px;background:none;border:1.5px solid #d0dce8;border-radius:6px;font-size:18px;cursor:pointer;align-items:center;justify-content:center;color:#1a2b3c;flex-shrink:0;margin-right:4px;}
+#mobile-menu-btn:hover{background:#f0f4f8;}
+#pw-forgot{background:none;border:none;color:#aaa;font-size:12px;cursor:pointer;text-decoration:underline;margin-top:8px;display:inline-block;}
+#pw-forgot:hover{color:#2e86c1;}
+#pw-reset-panel{display:none;text-align:left;margin-top:12px;border-top:1px solid #e0e8f0;padding-top:12px;}
+#pw-reset-panel input{width:100%;padding:9px 12px;font-size:14px;border:1.5px solid #d0dce8;border-radius:7px;margin-bottom:8px;font-family:Calibri,sans-serif;box-sizing:border-box;}
+#pw-reset-panel .btn-reset{width:100%;padding:10px;background:#27ae60;color:#fff;font-size:14px;font-weight:700;border:none;border-radius:7px;cursor:pointer;}
+#pw-reset-panel .btn-reset:hover{background:#1e8449;}
+#pw-reset-msg{font-size:12px;margin-top:6px;font-weight:600;}
 /* ── Mobile ── */
 @media (max-width: 640px) {
   #sidebar{transform:translateX(-220px);transition:transform 0.25s,width 0.25s;}
@@ -251,7 +260,7 @@ body.dark-mode #confirm-msg{color:#e0e0e0!important;}
   .cards-grid{grid-template-columns:1fr;}
   .form-grid{grid-template-columns:1fr!important;}
   #top-header{padding:10px 14px;}
-  #sb-toggle{position:fixed;top:12px;left:12px;z-index:300;}
+  #mobile-menu-btn{display:flex!important;}
 }
 
 /* ── Date Picker ── */
@@ -275,6 +284,15 @@ body.dark-mode #confirm-msg{color:#e0e0e0!important;}
     <input type="password" id="pw-input" placeholder="Enter password" autocomplete="off">
     <button id="pw-submit" onclick="checkPassword()">Login</button>
     <div id="pw-error"></div>
+    <button id="pw-forgot" onclick="toggleResetPanel()">Forgot password?</button>
+    <div id="pw-reset-panel">
+      <p style="font-size:12px;color:#666;margin-bottom:8px;">Enter the recovery code, then set a new admin password.</p>
+      <input type="text" id="reset-code" placeholder="Recovery code" autocomplete="off">
+      <input type="password" id="reset-pw1" placeholder="New admin password" autocomplete="off">
+      <input type="password" id="reset-pw2" placeholder="Confirm new password" autocomplete="off">
+      <button class="btn-reset" onclick="doResetPassword()">Set Admin Password</button>
+      <div id="pw-reset-msg"></div>
+    </div>
   </div>
 </div>
 
@@ -341,6 +359,7 @@ body.dark-mode #confirm-msg{color:#e0e0e0!important;}
 <!-- ── Main ── -->
 <div id="main-content">
   <div id="top-header">
+    <button id="mobile-menu-btn" onclick="toggleSidebar()" aria-label="Open menu">&#9776;</button>
     <div id="page-title">📋 Active Jobs</div>
     <div id="header-actions">
       <button class="hdr-btn btn-add" onclick="openAddModal()">➕ Add Job</button>
@@ -1171,6 +1190,9 @@ function deleteJob(id) {
 
 const PW_ADMIN = '2d8f693a554950343de320b8789f03563e1291bde42cdab4658cae4be8654f1b';
 const PW_EMP_1 = 'd4e2501734145318e12b209000cf646434ff9d3fae8bc9302dba2d7ce01f3073';
+const RECOVERY_CODE = 'NOURHR2026';
+const ADMIN_PW_STORE = 'ne_admin_pw_hash';
+const EMP_PW_STORE   = 'ne_emp_pw_hash';
 
 let trackerIsAdmin = false;
 
@@ -1191,7 +1213,9 @@ async function checkPassword() {
   try {
     if (!crypto || !crypto.subtle) throw new Error('Secure context required — open via HTTPS.');
     const hashed = await hashPassword(entered);
-    if (hashed === PW_ADMIN) {
+    const adminHash = localStorage.getItem(ADMIN_PW_STORE) || PW_ADMIN;
+    const empHash   = localStorage.getItem(EMP_PW_STORE)   || PW_EMP_1;
+    if (hashed === adminHash) {
       trackerIsAdmin = true;
       sessionStorage.setItem('ne_admin_session', '1');
       document.getElementById('pw-overlay').style.display = 'none';
@@ -1199,7 +1223,7 @@ async function checkPassword() {
       loadJobs().then(() => { setView('active'); renderJobs(); });
       return;
     }
-    if (hashed === PW_EMP_1) {
+    if (hashed === empHash) {
       trackerIsAdmin = false;
       sessionStorage.setItem('ne_emp_session', '1');
       document.getElementById('pw-overlay').style.display = 'none';
@@ -1215,6 +1239,45 @@ async function checkPassword() {
   document.getElementById('pw-input').value = '';
   document.getElementById('pw-input').focus();
 }
+
+function toggleResetPanel() {
+  const panel = document.getElementById('pw-reset-panel');
+  panel.style.display = panel.style.display === 'block' ? 'none' : 'block';
+}
+
+async function doResetPassword() {
+  const msgEl = document.getElementById('pw-reset-msg');
+  const code = (document.getElementById('reset-code').value || '').trim();
+  const pw1  = document.getElementById('reset-pw1').value;
+  const pw2  = document.getElementById('reset-pw2').value;
+  msgEl.style.color = '#e74c3c';
+  if (!code) { msgEl.textContent = 'Enter recovery code.'; return; }
+  if (code !== RECOVERY_CODE) { msgEl.textContent = 'Incorrect recovery code.'; return; }
+  if (!pw1 || pw1.length < 4) { msgEl.textContent = 'Password must be at least 4 characters.'; return; }
+  if (pw1 !== pw2) { msgEl.textContent = 'Passwords do not match.'; return; }
+  const h = await hashPassword(pw1);
+  localStorage.setItem(ADMIN_PW_STORE, h);
+  msgEl.style.color = '#27ae60';
+  msgEl.textContent = 'Admin password updated! You can now login with your new password.';
+  document.getElementById('reset-code').value = '';
+  document.getElementById('reset-pw1').value  = '';
+  document.getElementById('reset-pw2').value  = '';
+  setTimeout(() => { document.getElementById('pw-reset-panel').style.display = 'none'; document.getElementById('pw-input').focus(); }, 2500);
+}
+
+window.setAdminPassword = async function(pw) {
+  const h = await hashPassword(pw);
+  localStorage.setItem(ADMIN_PW_STORE, h);
+  console.log('Admin password updated. Hash:', h);
+  alert('Admin password updated! Login with your new password.');
+};
+
+window.setUserPassword = async function(pw) {
+  const h = await hashPassword(pw);
+  localStorage.setItem(EMP_PW_STORE, h);
+  console.log('User password updated. Hash:', h);
+  alert('User password updated!');
+};
 
 // Enter key on password
 document.getElementById('pw-input').addEventListener('keyup', e => { if (e.key === 'Enter') checkPassword(); });
