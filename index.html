@@ -424,9 +424,9 @@ body.sb-collapsed #main-content { margin-left: 56px; }
 /* ── Date Picker (Add/Update form) ── */
 .date-wrap { position: relative; display: flex; align-items: center; gap: 5px; }
 .date-wrap input[type="text"] { flex: 1; }
-.cal-btn { background: #e8f0fe; border: 1.5px solid #d0dce8; border-radius: 6px; padding: 6px 8px; font-size: 15px; cursor: pointer; flex-shrink: 0; line-height: 1; display: flex; align-items: center; justify-content: center; transition: background 0.15s; }
+.cal-btn { position: relative; background: #e8f0fe; border: 1.5px solid #d0dce8; border-radius: 6px; padding: 6px 8px; font-size: 15px; cursor: pointer; flex-shrink: 0; line-height: 1; display: flex; align-items: center; justify-content: center; transition: background 0.15s; overflow: hidden; }
 .cal-btn:hover { background: #2e86c1; }
-.cal-btn input[type="date"] { position: absolute; opacity: 0; width: 0; height: 0; pointer-events: none; }
+.cal-btn input[type="date"] { position: absolute; inset: 0; opacity: 0; width: 100%; height: 100%; cursor: pointer; z-index: 1; }
 
 /* ── Smart List filter actions bar ── */
 #isl-filter-actions { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin: 14px 0 10px; }
@@ -3239,7 +3239,7 @@ async function exportSmartListExcel() {
     cell.alignment  = { vertical: 'middle', wrapText: false };
     cell.border     = { bottom: { style: 'medium', color: { argb: 'FF0F3050' } } };
   });
-  hdrRow.height = 18;
+  hdrRow.height = 24;
 
   // Data rows
   dataRows.forEach((cells, idx) => {
@@ -3253,7 +3253,7 @@ async function exportSmartListExcel() {
       cell.border    = THIN_BORDER;
       if (idx % 2 === 1) cell.fill = EVEN_FILL;
     });
-    row.height = 16;
+    row.height = 22;
   });
 
   // Auto-width columns (cap at 40)
