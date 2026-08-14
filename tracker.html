@@ -256,9 +256,10 @@ body.dark-mode #confirm-msg{color:#e0e0e0!important;}
 
     <!-- Employee Data -->
     <div class="sb-group">
-      <button class="sb-group-hdr" onclick="window.location.href='index.html'">
+      <button class="sb-group-hdr" onclick="toggleGroup('grp-emp')">
         <span class="sb-icon">👤</span>
         <span class="sb-label">Employee Data</span>
+        <span id="arrow-grp-emp" style="margin-left:auto;font-size:11px;opacity:0.7;">▸</span>
       </button>
       <div class="sb-group-items" id="grp-emp" style="display:none;">
         <button class="sb-item" onclick="window.location.href='index.html'"><span class="sb-icon">🔎</span><span class="sb-label">Employee Search</span></button>
