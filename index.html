@@ -1127,9 +1127,10 @@ body.view-lists #card-area:empty::after { display: none !important; }
 
       <!-- ── Job Tracker Group ── -->
       <div class="sb-group">
-        <button class="sb-group-hdr" onclick="window.location.href='tracker.html'">
+        <button class="sb-group-hdr" id="btn-grp-tracker" onclick="toggleTrackerGroup()">
           <span class="sb-icon">📋</span>
           <span class="sb-label">Job Tracker</span>
+          <span class="sb-arrow" id="arrow-grp-tracker">▸</span>
         </button>
         <div class="sb-group-items" id="grp-tracker" style="display:none;">
           <button class="sb-item sb-sub" onclick="window.location.href='tracker.html'">
@@ -3025,12 +3026,45 @@ function toggleEmpGroup() {
   const el    = document.getElementById('grp-emp');
   const arrow = document.getElementById('arrow-grp-emp');
   const hdr   = document.getElementById('btn-grp-emp');
-  if (el)    el.style.display = 'block';
-  if (arrow) arrow.textContent = '▾';
-  if (hdr)   hdr.classList.add('active-group');
-  const trkEl = document.getElementById('grp-tracker');
-  if (trkEl) trkEl.style.display = 'none';
-  sidebarNav('search');
+  const isOpen = el && el.style.display !== 'none';
+  if (isOpen) {
+    if (el)    el.style.display = 'none';
+    if (arrow) arrow.textContent = '▸';
+    if (hdr)   hdr.classList.remove('active-group');
+  } else {
+    if (el)    el.style.display = 'block';
+    if (arrow) arrow.textContent = '▾';
+    if (hdr)   hdr.classList.add('active-group');
+    const trkEl    = document.getElementById('grp-tracker');
+    const trkArrow = document.getElementById('arrow-grp-tracker');
+    const trkHdr   = document.getElementById('btn-grp-tracker');
+    if (trkEl)    trkEl.style.display = 'none';
+    if (trkArrow) trkArrow.textContent = '▸';
+    if (trkHdr)   trkHdr.classList.remove('active-group');
+    sidebarNav('search');
+  }
+}
+
+function toggleTrackerGroup() {
+  const el    = document.getElementById('grp-tracker');
+  const arrow = document.getElementById('arrow-grp-tracker');
+  const hdr   = document.getElementById('btn-grp-tracker');
+  const isOpen = el && el.style.display !== 'none';
+  if (isOpen) {
+    if (el)    el.style.display = 'none';
+    if (arrow) arrow.textContent = '▸';
+    if (hdr)   hdr.classList.remove('active-group');
+  } else {
+    if (el)    el.style.display = 'block';
+    if (arrow) arrow.textContent = '▾';
+    if (hdr)   hdr.classList.add('active-group');
+    const empEl    = document.getElementById('grp-emp');
+    const empArrow = document.getElementById('arrow-grp-emp');
+    const empHdr   = document.getElementById('btn-grp-emp');
+    if (empEl)    empEl.style.display = 'none';
+    if (empArrow) empArrow.textContent = '▸';
+    if (empHdr)   empHdr.classList.remove('active-group');
+  }
 }
 
 /* ── Date picker → DD/MM/YYYY format ── */

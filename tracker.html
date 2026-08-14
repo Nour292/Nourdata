@@ -256,9 +256,10 @@ body.dark-mode #confirm-msg{color:#e0e0e0!important;}
 
     <!-- Employee Data -->
     <div class="sb-group">
-      <button class="sb-group-hdr" onclick="window.location.href='index.html'">
+      <button class="sb-group-hdr" id="btn-grp-emp" onclick="toggleEmpGroupTracker()">
         <span class="sb-icon">👤</span>
         <span class="sb-label">Employee Data</span>
+        <span id="arrow-grp-emp" style="margin-left:auto;font-size:11px;opacity:0.7;">▸</span>
       </button>
       <div class="sb-group-items" id="grp-emp" style="display:none;">
         <button class="sb-item" onclick="window.location.href='index.html'"><span class="sb-icon">🔎</span><span class="sb-label">Employee Search</span></button>
@@ -270,7 +271,7 @@ body.dark-mode #confirm-msg{color:#e0e0e0!important;}
 
     <!-- Job Tracker -->
     <div class="sb-group">
-      <button class="sb-group-hdr active-group" onclick="activateJobTracker()">
+      <button class="sb-group-hdr active-group" id="btn-grp-tracker" onclick="toggleTrackerGroup()">
         <span class="sb-icon">📌</span>
         <span class="sb-label">Job Tracker</span>
       </button>
@@ -574,14 +575,44 @@ function toggleSidebar() {
   document.getElementById('sidebar').classList.toggle('collapsed');
 }
 
-function activateJobTracker() {
-  const trkEl = document.getElementById('grp-tracker');
-  if (trkEl) trkEl.style.display = 'block';
-  const empEl = document.getElementById('grp-emp');
+function toggleTrackerGroup() {
+  const trkEl  = document.getElementById('grp-tracker');
+  const trkHdr = document.getElementById('btn-grp-tracker');
+  const isOpen = trkEl && trkEl.style.display !== 'none';
+  if (isOpen) {
+    if (trkEl)  trkEl.style.display = 'none';
+    if (trkHdr) trkHdr.classList.remove('active-group');
+  } else {
+    if (trkEl)  trkEl.style.display = 'block';
+    if (trkHdr) trkHdr.classList.add('active-group');
+    const empEl    = document.getElementById('grp-emp');
+    const empArrow = document.getElementById('arrow-grp-emp');
+    const empHdr   = document.getElementById('btn-grp-emp');
+    if (empEl)    empEl.style.display = 'none';
+    if (empArrow) empArrow.textContent = '▸';
+    if (empHdr)   empHdr.classList.remove('active-group');
+    setView('active');
+  }
+}
+
+function toggleEmpGroupTracker() {
+  const empEl    = document.getElementById('grp-emp');
   const empArrow = document.getElementById('arrow-grp-emp');
-  if (empEl) empEl.style.display = 'none';
-  if (empArrow) empArrow.textContent = '▸';
-  setView('active');
+  const empHdr   = document.getElementById('btn-grp-emp');
+  const isOpen   = empEl && empEl.style.display !== 'none';
+  if (isOpen) {
+    if (empEl)    empEl.style.display = 'none';
+    if (empArrow) empArrow.textContent = '▸';
+    if (empHdr)   empHdr.classList.remove('active-group');
+  } else {
+    if (empEl)    empEl.style.display = 'block';
+    if (empArrow) empArrow.textContent = '▾';
+    if (empHdr)   empHdr.classList.add('active-group');
+    const trkEl  = document.getElementById('grp-tracker');
+    const trkHdr = document.getElementById('btn-grp-tracker');
+    if (trkEl)  trkEl.style.display = 'none';
+    if (trkHdr) trkHdr.classList.remove('active-group');
+  }
 }
 
 function toggleGroup(id) {
