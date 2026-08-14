@@ -1748,7 +1748,12 @@ function alertEmoji(days) {
   return '🟢';
 }
 
-function fmtDate(str) { return v(str); }
+function fmtDate(str) {
+  const d = parseDate(str);
+  if (!d) return v(str);
+  const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  return String(d.getDate()).padStart(2,'0') + '-' + months[d.getMonth()] + '-' + d.getFullYear();
+}
 
 function todayStr() {
   const d = new Date();
@@ -1792,17 +1797,17 @@ function renderCard(cells, accessLevel) {
 
   html += row2('Job Title', get(COL.jobTitle), 'Location', get(COL.location));
   html += row2('Nationality', get(COL.nationality), 'Mobile', get(COL.mobile));
-  html += row2('Date of Birth', get(COL.dob), 'Age', get(COL.age));
+  html += row2('Date of Birth', fmtDate(get(COL.dob)), 'Age', get(COL.age));
 
   if (isEnded) {
-    html += row2('Joining Date', get(COL.joiningDate), 'Job Ended', get(COL.jobEnded), {red2: true});
+    html += row2('Joining Date', fmtDate(get(COL.joiningDate)), 'Job Ended', fmtDate(get(COL.jobEnded)), {red2: true});
     html += row2('Contract', get(COL.contract), 'Total Service (Y,M,D)', service);
     html += row2('Annual Leave', get(COL.annualLeave), 'Tickets', get(COL.tickets));
     html += row2('Medical', get(COL.medical), 'Status', get(COL.status));
     html += row1('Email', get(COL.email));
     html += row1('IBAN', get(COL.iban));
   } else {
-    html += row2('Joining Date', get(COL.joiningDate), 'Service', service);
+    html += row2('Joining Date', fmtDate(get(COL.joiningDate)), 'Service', service);
     html += row2('Contract', get(COL.contract), 'Annual Leave', get(COL.annualLeave));
     html += row2('Tickets', get(COL.tickets), 'Medical', get(COL.medical));
     html += row2('Status', get(COL.status), 'Email', get(COL.email));
@@ -1829,16 +1834,16 @@ function renderCard(cells, accessLevel) {
   html += `<div class="sec-hdr">IDs &amp; Documents</div>`;
   html += `<table class="dtbl"><colgroup><col class="lbl"><col class="val"><col class="lbl"><col class="val"></colgroup><tbody>`;
   html += row2('ID No', get(COL.idNo), 'ID Profession', get(COL.idProfession));
-  html += row2('ID Exp (Gregorian)', get(COL.idExpGreg), 'ID Remaining Days', get(COL.idRemDays));
-  html += row2('Qiwa Start', get(COL.qiwaStart), 'Qiwa Ending', get(COL.qiwaEnd));
-  html += row2('Passport No', get(COL.ppNumber), 'PP Expiry', get(COL.ppExpiry));
+  html += row2('ID Exp (Gregorian)', fmtDate(get(COL.idExpGreg)), 'ID Remaining Days', get(COL.idRemDays));
+  html += row2('Qiwa Start', fmtDate(get(COL.qiwaStart)), 'Qiwa Ending', fmtDate(get(COL.qiwaEnd)));
+  html += row2('Passport No', get(COL.ppNumber), 'PP Expiry', fmtDate(get(COL.ppExpiry)));
   html += `</tbody></table>`;
 
   /* ── Alerts ── */
   html += `<div class="alerts-block">`;
 
   if (isEnded) {
-    html += `<p style="color:#c0392b;margin:0;font-weight:700;font-size:14px;text-align:left;">🔴 File is closed — ${v(jobEnded)}</p>`;
+    html += `<p style="color:#c0392b;margin:0;font-weight:700;font-size:14px;text-align:left;">🔴 File is closed — ${fmtDate(jobEnded)}</p>`;
   } else {
     const checks = [
       { label: 'Iqama (ID)',   dateVal: get(COL.idExpGreg),  remDays: get(COL.idRemDays) },
