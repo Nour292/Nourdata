@@ -538,6 +538,9 @@ body.dark-mode #top-bar-right img { filter: brightness(0.75) !important; }
     margin: 0 auto;
   }
 }
+/* ── Role restrictions ── */
+body.user-mode #snav-add { display: none !important; }
+
 @media print {
   /* Hide everything except the card */
   #sidebar, #sb-toggle, #top-header,
@@ -1461,6 +1464,9 @@ function unlockApp() {
   if (arrowTrk) arrowTrk.textContent = '▸';
   document.getElementById('employeeNumber').focus();
   sidebarNav('search');
+  if (sessionStorage.getItem('ne_role') === 'user') {
+    document.body.classList.add('user-mode');
+  }
 }
 
 /* ─── Dark Mode ─── */
@@ -1477,6 +1483,7 @@ function toggleDarkMode() {
 
 /* ─── Logout ─── */
 function logout() {
+  sessionStorage.removeItem('ne_role');
   window.location.reload();
 }
 
@@ -2445,7 +2452,13 @@ function printPaneResult(pane) {
 
 /* Enter key for deep search + Age filter — init after DOM ready */
 document.addEventListener('DOMContentLoaded', function() {
-  unlockApp();
+  const role = sessionStorage.getItem('ne_role');
+  if (role) {
+    document.getElementById('login-overlay').style.display = 'none';
+    unlockApp();
+  } else {
+    setTimeout(() => { const p = document.getElementById('login-pass'); if(p) p.focus(); }, 50);
+  }
 
   const dsInput = document.getElementById('sl-ds-input');
   if (dsInput) dsInput.addEventListener('keyup', e => { if (e.key === 'Enter') runDeepSearch(); });
@@ -3481,5 +3494,38 @@ function sidebarNav(section) {
 </script>
 <!-- Close: app-shell / page-body / main-content / layout -->
 </div></div></div></div>
+
+<!-- ── Login Overlay ── -->
+<div id="login-overlay" style="position:fixed;inset:0;background:#0d1f2d;display:flex;align-items:center;justify-content:center;z-index:9999;">
+  <div style="background:#1a2b3c;border-radius:16px;padding:40px 36px;width:320px;box-shadow:0 20px 60px rgba(0,0,0,0.6);text-align:center;">
+    <img src="https://nour292.github.io/Nourdata/nour_energy_logo.png" alt="Logo" style="width:72px;height:72px;border-radius:50%;background:#fff;padding:5px;margin-bottom:14px;">
+    <h2 style="color:#fff;font-size:20px;font-weight:700;margin-bottom:4px;">Nour Energy</h2>
+    <p style="color:#8fa8c0;font-size:13px;margin-bottom:28px;">HR System</p>
+    <input id="login-pass" type="password" placeholder="Enter password"
+      style="width:100%;padding:12px 14px;border-radius:8px;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.07);color:#fff;font-size:15px;outline:none;margin-bottom:8px;box-sizing:border-box;"
+      onkeydown="if(event.key==='Enter')doLogin()">
+    <div id="login-error" style="color:#e74c3c;font-size:12px;margin-bottom:10px;min-height:18px;"></div>
+    <button onclick="doLogin()" style="width:100%;padding:13px;border-radius:8px;border:none;background:#1a6fa8;color:#fff;font-size:15px;font-weight:700;cursor:pointer;">Login</button>
+  </div>
+</div>
+<script>
+function doLogin() {
+  const pass = (document.getElementById('login-pass').value || '').trim();
+  const err  = document.getElementById('login-error');
+  if (pass === 'nour-pr') {
+    sessionStorage.setItem('ne_role', 'admin');
+    document.getElementById('login-overlay').style.display = 'none';
+    unlockApp();
+  } else if (pass === '4190') {
+    sessionStorage.setItem('ne_role', 'user');
+    document.getElementById('login-overlay').style.display = 'none';
+    unlockApp();
+  } else {
+    err.textContent = 'Incorrect password. Please try again.';
+    document.getElementById('login-pass').value = '';
+    document.getElementById('login-pass').focus();
+  }
+}
+</script>
 </body>
 </html>
