@@ -279,10 +279,12 @@ body.dark-mode #confirm-msg{color:#e0e0e0!important;}
       <div class="sb-group-items" id="grp-tracker">
         <button class="sb-item active" id="sb-active" onclick="setView('active')"><span class="sb-icon">📋</span><span class="sb-label">Active Jobs</span></button>
         <button class="sb-item" id="sb-completed" onclick="setView('completed')"><span class="sb-icon">✅</span><span class="sb-label">Completed</span></button>
-        <button class="sb-item" id="sb-alljobs" onclick="setView('all')"><span class="sb-icon">📊</span><span class="sb-label">List of All Jobs</span></button>
-        <button class="sb-item" id="sb-loc-dam" onclick="filterLocation('Dammam')"><span class="sb-icon">🏭</span><span class="sb-label">Dammam</span></button>
-        <button class="sb-item" id="sb-loc-jed" onclick="filterLocation('Jeddah')"><span class="sb-icon">🌊</span><span class="sb-label">Jeddah</span></button>
-        <button class="sb-item" id="sb-loc-riy" onclick="filterLocation('Riyadh')"><span class="sb-icon">🏙</span><span class="sb-label">Riyadh</span></button>
+        <button class="sb-item" id="sb-alljobs" onclick="setView('all');toggleAlljobsGroup()"><span class="sb-icon">📊</span><span class="sb-label">List of All Jobs</span><span id="arrow-alljobs" style="margin-left:auto;font-size:11px;opacity:0.7;">▸</span></button>
+        <div id="alljobs-sub" style="background:rgba(0,0,0,0.12);display:none;">
+          <button class="sb-item" id="sb-loc-dam" onclick="filterLocation('Dammam')" style="padding-left:40px;"><span class="sb-icon">🏭</span><span class="sb-label">Dammam</span></button>
+          <button class="sb-item" id="sb-loc-jed" onclick="filterLocation('Jeddah')" style="padding-left:40px;"><span class="sb-icon">🌊</span><span class="sb-label">Jeddah</span></button>
+          <button class="sb-item" id="sb-loc-riy" onclick="filterLocation('Riyadh')" style="padding-left:40px;"><span class="sb-icon">🏙</span><span class="sb-label">Riyadh</span></button>
+        </div>
         <button class="sb-item" onclick="openAddModal()"><span class="sb-icon">➕</span><span class="sb-label">Add New Job</span></button>
       </div>
     </div>
@@ -622,6 +624,15 @@ function setView(v) {
   renderJobs();
 }
 
+
+function toggleAlljobsGroup() {
+  const sub   = document.getElementById('alljobs-sub');
+  const arrow = document.getElementById('arrow-alljobs');
+  if (!sub) return;
+  const open = sub.style.display !== 'none';
+  sub.style.display = open ? 'none' : 'block';
+  if (arrow) arrow.textContent = open ? '▸' : '▾';
+}
 
 function filterLocation(loc) {
   currentLocationFilter = loc;
