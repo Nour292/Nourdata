@@ -3523,12 +3523,10 @@ function doLogin() {
   const err  = document.getElementById('login-error');
   if (pass === 'nour-pr') {
     sessionStorage.setItem('ne_role', 'admin');
-    document.getElementById('login-overlay').style.display = 'none';
-    unlockApp();
+    window.location.href = 'tracker.html';
   } else if (pass === '4190') {
     sessionStorage.setItem('ne_role', 'user');
-    document.getElementById('login-overlay').style.display = 'none';
-    unlockApp();
+    window.location.href = 'tracker.html';
   } else {
     err.textContent = 'Incorrect password. Please try again.';
     document.getElementById('login-pass').value = '';
