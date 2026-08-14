@@ -1328,9 +1328,32 @@ function installApp(e) {
   if (_deferredInstall) {
     _deferredInstall.prompt();
     _deferredInstall.userChoice.then(() => { _deferredInstall = null; });
-  } else {
-    alert('To install on your desktop:\n\n• Edge: click ⋯ menu → Apps → Install this site as an app\n• Chrome: click ⋮ menu → More tools → Create shortcut → check "Open as window"');
+    return;
   }
+  const ex = document.getElementById('_im');
+  if (ex) { ex.style.display = 'flex'; return; }
+  const m = document.createElement('div');
+  m.id = '_im';
+  m.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.78);z-index:99999;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(8px);';
+  m.innerHTML = `<div style="background:#152436;border:1px solid rgba(255,255,255,0.12);border-radius:22px;padding:44px 38px 36px;width:480px;max-width:94vw;text-align:center;box-shadow:0 32px 72px rgba(0,0,0,0.75);">
+    <div style="font-size:52px;margin-bottom:14px;">💻</div>
+    <h3 style="color:#fff;font-size:22px;font-weight:700;margin:0 0 10px;">Install Desktop Application</h3>
+    <p style="color:#7fa8c8;font-size:13px;margin:0 0 28px;line-height:1.7;">Install Nour Energy HR as a desktop app — opens in its own window, no browser bars, accessible from your taskbar.</p>
+    <div style="background:rgba(255,255,255,0.05);border-radius:14px;padding:18px 22px;margin-bottom:12px;text-align:left;">
+      <p style="color:#5ba8d8;font-size:13px;font-weight:700;margin:0 0 7px;">📌 Microsoft Edge (Recommended)</p>
+      <p style="color:#c8dcea;font-size:13px;margin:0;line-height:1.6;">Click <b style="color:#fff">⋯</b> in the top-right corner → <b style="color:#fff">Apps</b> → <b style="color:#fff">Install this site as an app</b> → Install</p>
+    </div>
+    <div style="background:rgba(255,255,255,0.05);border-radius:14px;padding:18px 22px;margin-bottom:26px;text-align:left;">
+      <p style="color:#5ba8d8;font-size:13px;font-weight:700;margin:0 0 7px;">🌐 Google Chrome</p>
+      <p style="color:#c8dcea;font-size:13px;margin:0;line-height:1.6;">Click <b style="color:#fff">⋮</b> in the top-right corner → <b style="color:#fff">More tools</b> → <b style="color:#fff">Create shortcut</b> → check "Open as window" → Create</p>
+    </div>
+    <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;">
+      <a href="NourEnergyHR.url" download="Nour Energy HR.url" style="padding:12px 26px;border-radius:11px;background:linear-gradient(135deg,#1a6fa8,#2980b9);color:#fff;font-size:13px;font-weight:700;text-decoration:none;display:inline-flex;align-items:center;gap:7px;box-shadow:0 4px 20px rgba(26,111,168,0.45);">📥 Download Shortcut File</a>
+      <button onclick="document.getElementById('_im').style.display='none'" style="padding:12px 26px;border-radius:11px;border:1px solid rgba(255,255,255,0.18);background:transparent;color:#8fa8c0;font-size:13px;cursor:pointer;font-family:Calibri,sans-serif;">Close</button>
+    </div>
+  </div>`;
+  m.onclick = ev => { if (ev.target === m) m.style.display = 'none'; };
+  document.body.appendChild(m);
 }
 function doLogin() {
   const pass = (document.getElementById('login-pass').value || '').trim();
