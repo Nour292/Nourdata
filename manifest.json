@@ -1,0 +1,17 @@
+{
+  "name": "Nour Energy HR System",
+  "short_name": "Nour HR",
+  "description": "Human Resources Management System",
+  "start_url": "./tracker.html",
+  "display": "standalone",
+  "background_color": "#0d1f2d",
+  "theme_color": "#1a6fa8",
+  "icons": [
+    {
+      "src": "nour_energy_logo.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
