@@ -1181,7 +1181,7 @@ document.addEventListener('keydown', e => {
 });
 
 // Init
-(function() {
+document.addEventListener('DOMContentLoaded', function() {
   if (localStorage.getItem('ne_dark_mode') === '1') {
     document.body.classList.add('dark-mode');
     const btn = document.querySelector('#sb-footer button:first-child');
@@ -1199,7 +1199,7 @@ document.addEventListener('keydown', e => {
   } else {
     setTimeout(() => { const p = document.getElementById('login-pass'); if(p) p.focus(); }, 50);
   }
-})();
+});
 
 // ── Auto-calculate days ──
 function setDate(fieldId, isoVal) {
