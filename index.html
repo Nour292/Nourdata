@@ -3025,17 +3025,12 @@ function toggleEmpGroup() {
   const el    = document.getElementById('grp-emp');
   const arrow = document.getElementById('arrow-grp-emp');
   const hdr   = document.getElementById('btn-grp-emp');
-  const isOpen = el && el.style.display !== 'none';
-  if (isOpen) {
-    if (el)    el.style.display = 'none';
-    if (arrow) arrow.textContent = '▸';
-    if (hdr)   hdr.classList.remove('active-group');
-  } else {
-    if (el)    el.style.display = 'block';
-    if (arrow) arrow.textContent = '▾';
-    if (hdr)   hdr.classList.add('active-group');
-    sidebarNav('search');
-  }
+  if (el)    el.style.display = 'block';
+  if (arrow) arrow.textContent = '▾';
+  if (hdr)   hdr.classList.add('active-group');
+  const trkEl = document.getElementById('grp-tracker');
+  if (trkEl) trkEl.style.display = 'none';
+  sidebarNav('search');
 }
 
 /* ── Date picker → DD/MM/YYYY format ── */
