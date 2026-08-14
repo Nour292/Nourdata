@@ -539,7 +539,11 @@ body.dark-mode #top-bar-right img { filter: brightness(0.75) !important; }
   }
 }
 /* ── Role restrictions ── */
-body.user-mode #snav-add { display: none !important; }
+body.user-mode #snav-add,
+body.user-mode #snav-dashboard,
+body.user-mode #snav-deepsearch,
+body.user-mode #snav-lists,
+body.user-mode #filterButton { display: none !important; }
 
 @media print {
   /* Hide everything except the card */
