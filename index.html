@@ -2464,6 +2464,14 @@ function printPaneResult(pane) {
 
 /* Enter key for deep search + Age filter — init after DOM ready */
 document.addEventListener('DOMContentLoaded', function() {
+  // Hide download button inside Electron desktop app — web only
+  if (navigator.userAgent.includes('Electron')) {
+    const btn = document.getElementById('pw-download-btn');
+    const sep = document.getElementById('pw-download-sep');
+    if (btn) btn.style.display = 'none';
+    if (sep) sep.style.display = 'none';
+  }
+
   if (localStorage.getItem('ne_dark_mode') !== '0') {
     document.body.classList.add('dark-mode');
     const btn = document.getElementById('sb-dark-footer');
@@ -3535,6 +3543,14 @@ function sidebarNav(section) {
       onmouseout="this.style.transform='';this.style.boxShadow='0 4px 24px rgba(26,111,168,0.5)'"
       onmousedown="this.style.transform='translateY(0px)'"
       onmouseup="this.style.transform='translateY(-2px)'">Login</button>
+    <hr id="pw-download-sep" style="border:none;border-top:1px solid rgba(255,255,255,0.1);margin:22px 0 16px;">
+    <a id="pw-download-btn"
+       href="https://github.com/Nour292/Nourdata/releases/download/v1.0.1/Nour.Energy.Data.Setup.1.0.0.exe"
+       style="display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:12px;border-radius:12px;border:1.5px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.06);color:#a8cce8;font-size:13px;font-weight:700;text-decoration:none;box-sizing:border-box;transition:background 0.15s;"
+       onmouseover="this.style.background='rgba(255,255,255,0.12)'"
+       onmouseout="this.style.background='rgba(255,255,255,0.06)'">
+      💻 Download Desktop App
+    </a>
   </div>
 </div>
 <script>
