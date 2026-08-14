@@ -1471,7 +1471,10 @@ function unlockApp() {
   document.getElementById('employeeNumber').focus();
   sidebarNav('search');
   if (sessionStorage.getItem('ne_role') === 'user') {
+    currentAccessLevel = 'employee';
     document.body.classList.add('user-mode');
+  } else {
+    currentAccessLevel = 'admin';
   }
 }
 
