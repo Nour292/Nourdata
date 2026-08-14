@@ -1452,9 +1452,9 @@ function unlockApp() {
   const trackerGroup = document.getElementById('grp-tracker');
   if (trackerGroup) trackerGroup.closest('.sb-group').style.display = '';
   const grpEmp = document.getElementById('grp-emp');
-  if (grpEmp) { grpEmp.style.display = 'none'; const h = grpEmp.previousElementSibling; if(h) h.classList.remove('active-group'); }
+  if (grpEmp) { grpEmp.style.display = 'block'; const h = grpEmp.previousElementSibling; if(h) h.classList.add('active-group'); }
   const arrowEmp = document.getElementById('arrow-grp-emp');
-  if (arrowEmp) arrowEmp.textContent = '▸';
+  if (arrowEmp) arrowEmp.textContent = '▾';
   const grpTrk = document.getElementById('grp-tracker');
   if (grpTrk) { grpTrk.style.display = 'none'; const h = grpTrk.previousElementSibling; if(h) h.classList.remove('active-group'); }
   const arrowTrk = document.getElementById('arrow-grp-tracker');
