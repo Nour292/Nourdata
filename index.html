@@ -1476,6 +1476,7 @@ function unlockApp() {
 /* ─── Dark Mode ─── */
 function toggleDarkMode() {
   const isDark = document.body.classList.toggle('dark-mode');
+  localStorage.setItem('ne_dark_mode', isDark ? '1' : '0');
   const btn = document.getElementById('sb-dark-footer');
   if (btn) {
     const icon  = btn.querySelector('.sb-icon');
@@ -2461,6 +2462,16 @@ function printPaneResult(pane) {
 
 /* Enter key for deep search + Age filter — init after DOM ready */
 document.addEventListener('DOMContentLoaded', function() {
+  if (localStorage.getItem('ne_dark_mode') !== '0') {
+    document.body.classList.add('dark-mode');
+    const btn = document.getElementById('sb-dark-footer');
+    if (btn) {
+      const icon  = btn.querySelector('.sb-icon');
+      const label = btn.querySelector('.sb-label');
+      if (icon)  icon.textContent  = '☀️';
+      if (label) label.textContent = 'Light Mode';
+    }
+  }
   const role = sessionStorage.getItem('ne_role');
   if (role) {
     document.getElementById('login-overlay').style.display = 'none';

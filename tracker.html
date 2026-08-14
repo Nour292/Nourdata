@@ -1182,7 +1182,7 @@ document.addEventListener('keydown', e => {
 
 // Init
 document.addEventListener('DOMContentLoaded', function() {
-  if (localStorage.getItem('ne_dark_mode') === '1') {
+  if (localStorage.getItem('ne_dark_mode') !== '0') {
     document.body.classList.add('dark-mode');
     const btn = document.querySelector('#sb-footer button:first-child');
     if (btn) {
