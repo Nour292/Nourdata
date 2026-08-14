@@ -256,10 +256,9 @@ body.dark-mode #confirm-msg{color:#e0e0e0!important;}
 
     <!-- Employee Data -->
     <div class="sb-group">
-      <button class="sb-group-hdr" onclick="toggleGroup('grp-emp')">
+      <button class="sb-group-hdr" onclick="window.location.href='index.html'">
         <span class="sb-icon">👤</span>
         <span class="sb-label">Employee Data</span>
-        <span class="sb-arrow" id="arrow-grp-emp">▸</span>
       </button>
       <div class="sb-group-items" id="grp-emp" style="display:none;">
         <button class="sb-item" onclick="window.location.href='index.html'"><span class="sb-icon">🔎</span><span class="sb-label">Employee Search</span></button>
@@ -271,10 +270,9 @@ body.dark-mode #confirm-msg{color:#e0e0e0!important;}
 
     <!-- Job Tracker -->
     <div class="sb-group">
-      <button class="sb-group-hdr active-group" onclick="toggleGroup('grp-tracker')">
+      <button class="sb-group-hdr active-group" onclick="setView('active')">
         <span class="sb-icon">📌</span>
         <span class="sb-label">Job Tracker</span>
-        <span class="sb-arrow" id="arrow-grp-tracker">▾</span>
       </button>
       <div class="sb-group-items" id="grp-tracker">
         <button class="sb-item active" id="sb-active" onclick="setView('active')"><span class="sb-icon">📋</span><span class="sb-label">Active Jobs</span></button>
@@ -635,8 +633,8 @@ function toggleAlljobsGroup() {
 }
 
 function filterLocation(loc) {
+  if (currentLocationFilter === loc) loc = 'All';
   currentLocationFilter = loc;
-  // Highlight active sidebar city button
   const locMap = {Dammam:'sb-loc-dam', Jeddah:'sb-loc-jed', Riyadh:'sb-loc-riy'};
   Object.entries(locMap).forEach(([l, id]) => {
     const el = document.getElementById(id);
