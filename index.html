@@ -525,39 +525,6 @@ body.dark-mode #dash-content { background: #22223b !important; border-radius: 8p
 
 /* Logo */
 body.dark-mode #top-bar-right img { filter: brightness(0.75) !important; }
-#pw-overlay {
-  position: fixed; inset: 0;
-  background: rgba(15,30,50,0.72);
-  display: flex; align-items: center; justify-content: center;
-  z-index: 9999;
-}
-#pw-box {
-  background: #fff;
-  border-radius: 10px;
-  padding: 36px 40px 30px;
-  box-shadow: 0 8px 40px rgba(0,0,0,0.3);
-  text-align: center;
-  width: 340px;
-}
-#pw-box img { height: 70px; margin-bottom: 16px; }
-#pw-box h2 { font-size: 20px; color: #1a5276; margin: 0 0 6px; }
-#pw-box p  { font-size: 13px; color: #777; margin: 0 0 18px; }
-#pw-input {
-  width: 100%; padding: 10px 14px; font-size: 16px;
-  border: 2px solid #c8d8e8; border-radius: 6px;
-  margin-bottom: 12px; box-sizing: border-box; text-align: center;
-  letter-spacing: 3px;
-}
-#pw-input:focus { border-color: #2e86c1; outline: none; }
-#pw-submit {
-  width: 100%; padding: 11px; font-size: 16px; font-weight: bold;
-  background: #2e86c1; color: #fff; border: none; border-radius: 6px; cursor: pointer;
-}
-#pw-submit:hover { background: #1a5276; }
-#pw-error { color: #c0392b; font-size: 13px; margin-top: 10px; min-height: 18px; }
-#pw-download-sep { border: none; border-top: 1px solid #e8eef3; margin: 18px 0 14px; }
-#pw-download-btn { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; padding: 10px; font-size: 13px; font-weight: 700; background: #f0f7ff; color: #1a5276; border: 1.5px solid #c8d8e8; border-radius: 6px; cursor: pointer; text-decoration: none; transition: background 0.15s; }
-#pw-download-btn:hover { background: #dceeff; border-color: #2e86c1; }
 
 /* ── Card ── */
 @media screen {
@@ -573,7 +540,7 @@ body.dark-mode #top-bar-right img { filter: brightness(0.75) !important; }
 }
 @media print {
   /* Hide everything except the card */
-  #sidebar, #sb-toggle, #top-header, #pw-overlay,
+  #sidebar, #sb-toggle, #top-header,
   #inline-search-panel, #tab-row,
   .no-print, #sb-footer { display: none !important; }
 
@@ -928,7 +895,7 @@ body.view-lists #card-area:empty::after { display: none !important; }
   #main-content { width: 100% !important; }
   #page-body  { width: 100% !important; }
   #card-area  { width: 100% !important; margin: 0 !important; padding: 0 !important; }
-  #top-bar, #pw-overlay, #logoutButton, .no-print { display: none !important; }
+  #top-bar, #logoutButton, .no-print { display: none !important; }
   .sec-hdr { margin: 10px 0 0 0; font-size: 13px; padding: 5px 10px; print-color-adjust: exact; -webkit-print-color-adjust: exact; }
   .dtbl { width: 100% !important; }
   .dtbl td, .dtbl th { font-size: 13px; padding: 5px 10px; }
@@ -1118,24 +1085,8 @@ body.view-lists #card-area:empty::after { display: none !important; }
 </head>
 <body>
 
-<!-- ── Password Overlay ── -->
-<div id="pw-overlay">
-  <div id="pw-box">
-    <img src="https://nour292.github.io/Nourdata/nour_energy_logo.png" alt="Nour Energy" onerror="this.style.display='none'">
-    <h2>Nour Energy Data</h2>
-    <p>Enter your password to access</p>
-    <input type="password" id="pw-input" placeholder="Enter password" autocomplete="off">
-    <button id="pw-submit" onclick="checkPassword();">Login</button>
-    <div id="pw-error"></div>
-    <hr id="pw-download-sep">
-    <a id="pw-download-btn" href="https://github.com/Nour292/Nourdata/releases/download/v1.0.1/Nour.Energy.Data.Setup.1.0.0.exe" download>
-      💻 Download Desktop App
-    </a>
-  </div>
-</div>
-
 <!-- ── Layout ── -->
-<div id="layout" style="display:none;">
+<div id="layout">
 
   <!-- SIDEBAR -->
   <aside id="sidebar">
@@ -1485,76 +1436,22 @@ async function loadSheetRows() {
 }
 
 /* ─── Access Level ─── */
-// 'none' = not logged in | 'employee' = standard access | 'admin' = full access
-let currentAccessLevel = 'none';
+let currentAccessLevel = 'admin';
 let csvRows = null;
 
-// Password hashes (SHA-256) — do not store plain passwords here
-const PW_ADMIN     = '2d8f693a554950343de320b8789f03563e1291bde42cdab4658cae4be8654f1b';
-const PW_EMP_1     = 'd4e2501734145318e12b209000cf646434ff9d3fae8bc9302dba2d7ce01f3073';
-
-function sha256(msg) {
-  const K=[0x428a2f98,0x71374491,0xb5c0fbcf,0xe9b5dba5,0x3956c25b,0x59f111f1,0x923f82a4,0xab1c5ed5,0xd807aa98,0x12835b01,0x243185be,0x550c7dc3,0x72be5d74,0x80deb1fe,0x9bdc06a7,0xc19bf174,0xe49b69c1,0xefbe4786,0x0fc19dc6,0x240ca1cc,0x2de92c6f,0x4a7484aa,0x5cb0a9dc,0x76f988da,0x983e5152,0xa831c66d,0xb00327c8,0xbf597fc7,0xc6e00bf3,0xd5a79147,0x06ca6351,0x14292967,0x27b70a85,0x2e1b2138,0x4d2c6dfc,0x53380d13,0x650a7354,0x766a0abb,0x81c2c92e,0x92722c85,0xa2bfe8a1,0xa81a664b,0xc24b8b70,0xc76c51a3,0xd192e819,0xd6990624,0xf40e3585,0x106aa070,0x19a4c116,0x1e376c08,0x2748774c,0x34b0bcb5,0x391c0cb3,0x4ed8aa4a,0x5b9cca4f,0x682e6ff3,0x748f82ee,0x78a5636f,0x84c87814,0x8cc70208,0x90befffa,0xa4506ceb,0xbef9a3f7,0xc67178f2];
-  const H=[0x6a09e667,0xbb67ae85,0x3c6ef372,0xa54ff53a,0x510e527f,0x9b05688c,0x1f83d9ab,0x5be0cd19];
-  const b=[];for(let i=0;i<msg.length;i++){const c=msg.charCodeAt(i);if(c<128)b.push(c);else if(c<2048)b.push((c>>6)|192,c&63|128);else b.push((c>>12)|224,(c>>6)&63|128,c&63|128);}
-  const n=b.length;b.push(0x80);while(b.length%64!==56)b.push(0);const lb=n*8;b.push(0,0,0,0,(lb>>24)&255,(lb>>16)&255,(lb>>8)&255,lb&255);
-  const rot=(bits,x)=>(x>>>bits)|(x<<(32-bits));
-  for(let i=0;i<b.length;i+=64){const w=new Array(64);for(let j=0;j<16;j++)w[j]=(b[i+j*4]<<24)|(b[i+j*4+1]<<16)|(b[i+j*4+2]<<8)|b[i+j*4+3];for(let j=16;j<64;j++){const s0=rot(7,w[j-15])^rot(18,w[j-15])^(w[j-15]>>>3),s1=rot(17,w[j-2])^rot(19,w[j-2])^(w[j-2]>>>10);w[j]=(w[j-16]+s0+w[j-7]+s1)|0;}let[a,bb,c,d,e,f,g,h]=H;for(let j=0;j<64;j++){const S1=rot(6,e)^rot(11,e)^rot(25,e),ch=(e&f)^(~e&g),t1=(h+S1+ch+K[j]+w[j])|0,S0=rot(2,a)^rot(13,a)^rot(22,a),maj=(a&bb)^(a&c)^(bb&c),t2=(S0+maj)|0;h=g;g=f;f=e;e=(d+t1)|0;d=c;c=bb;bb=a;a=(t1+t2)|0;}H[0]=(H[0]+a)|0;H[1]=(H[1]+bb)|0;H[2]=(H[2]+c)|0;H[3]=(H[3]+d)|0;H[4]=(H[4]+e)|0;H[5]=(H[5]+f)|0;H[6]=(H[6]+g)|0;H[7]=(H[7]+h)|0;}
-  return H.map(h=>(h>>>0).toString(16).padStart(8,'0')).join('');
-}
-
-function checkPassword() {
-  const errEl = document.getElementById('pw-error');
-  const entered = document.getElementById('pw-input').value.trim();
-  if (!entered) { errEl.textContent = 'Please enter your password.'; return; }
-  const hashed = sha256(entered);
-  if (hashed === PW_ADMIN) {
-    currentAccessLevel = 'admin';
-    unlockApp();
-    return;
-  }
-  if (hashed === PW_EMP_1) {
-    currentAccessLevel = 'employee';
-    unlockApp();
-    return;
-  }
-  errEl.textContent = 'Access denied. Invalid password.';
-  document.getElementById('pw-input').value = '';
-  document.getElementById('pw-input').focus();
-}
-
-function unlockApp(skipRedirect) {
-  document.getElementById('pw-overlay').style.display = 'none';
-  document.getElementById('pw-input').value = '';
-  document.getElementById('pw-error').textContent = '';
-  const isAdmin = currentAccessLevel === 'admin';
-
-  localStorage.setItem('ne_role', currentAccessLevel);
-  localStorage.setItem('ne_login_time', Date.now().toString());
-
-  if (isAdmin) {
-    // Fresh login → go to tracker. Returning from tracker → stay here.
-    if (!skipRedirect) {
-      window.location.replace('tracker.html');
-      return;
-    }
-  }
-
-  // Show layout
+function unlockApp() {
   document.getElementById('layout').style.display = 'flex';
 
-  // Show/hide admin items
   ['snav-dashboard','snav-deepsearch','snav-lists','snav-add'].forEach(id => {
     const el = document.getElementById(id);
-    if (el) el.style.display = isAdmin ? 'flex' : 'none';
+    if (el) el.style.display = 'flex';
   });
-  document.getElementById('dataFormButton').style.display = isAdmin ? '' : 'none';
-  document.getElementById('filterButton').style.display    = isAdmin ? '' : 'none';
+  document.getElementById('dataFormButton').style.display = '';
+  document.getElementById('filterButton').style.display = '';
   document.getElementById('tab-row').style.display = 'none';
   document.getElementById('inline-search-panel').style.display = 'none';
   const trackerGroup = document.getElementById('grp-tracker');
   if (trackerGroup) trackerGroup.closest('.sb-group').style.display = '';
-  // Both sidebar groups start collapsed — user expands what they need
   const grpEmp = document.getElementById('grp-emp');
   if (grpEmp) { grpEmp.style.display = 'none'; const h = grpEmp.previousElementSibling; if(h) h.classList.remove('active-group'); }
   const arrowEmp = document.getElementById('arrow-grp-emp');
@@ -1581,30 +1478,7 @@ function toggleDarkMode() {
 
 /* ─── Logout ─── */
 function logout() {
-  currentAccessLevel = 'none';
-  csvRows = null;
-  clearCard();
-  localStorage.removeItem('ne_role');
-  localStorage.removeItem('ne_login_time');
-  document.body.classList.remove('dark-mode');
-  document.getElementById('dataFormButton').style.display = 'none';
-  document.getElementById('filterButton').style.display = 'none';
-  document.getElementById('tab-row').style.display = 'none';
-  document.getElementById('inline-search-panel').style.display = 'none';
-  // Hide admin sidebar items
-  ['snav-dashboard','snav-deepsearch','snav-lists','snav-add'].forEach(id => {
-    const el = document.getElementById(id);
-    if (el) el.style.display = 'none';
-  });
-  // Reset active nav to search
-  document.querySelectorAll('.sb-item').forEach(b => b.classList.remove('active'));
-  const s = document.getElementById('snav-search');
-  if (s) s.classList.add('active');
-  document.getElementById('page-title').textContent = 'Employee Search';
-  inlineCurrentTab = 'deep';
-  document.body.classList.remove('view-dashboard','view-deepsearch','view-lists','view-search');
-  document.getElementById('pw-overlay').style.display = 'flex';
-  document.getElementById('pw-input').focus();
+  window.location.reload();
 }
 
 /* ─── Deep Search ─── */
@@ -1814,10 +1688,6 @@ function clearCard() {
   if (dsArea) dsArea.innerHTML = '<p style="text-align:center;color:#888;padding:30px 0;">Type in the search box above and click <strong>🔍 Deep Search</strong> to search all employee data.</p>';
 }
 
-/* ─── Enter key ─── */
-document.getElementById('pw-input').addEventListener('keyup', e => {
-  if (e.key === 'Enter') checkPassword();  // async — handled automatically
-});
 /* Enter key handled in DOMContentLoaded below */
 
 /* ─── Helpers ─── */
@@ -2576,13 +2446,7 @@ function printPaneResult(pane) {
 
 /* Enter key for deep search + Age filter — init after DOM ready */
 document.addEventListener('DOMContentLoaded', function() {
-  // Hide download button when running inside Electron desktop app
-  if (navigator.userAgent.includes('Electron')) {
-    const btn = document.getElementById('pw-download-btn');
-    const sep = document.getElementById('pw-download-sep');
-    if (btn) btn.style.display = 'none';
-    if (sep) sep.style.display = 'none';
-  }
+  unlockApp();
 
   const dsInput = document.getElementById('sl-ds-input');
   if (dsInput) dsInput.addEventListener('keyup', e => { if (e.key === 'Enter') runDeepSearch(); });
@@ -3113,25 +2977,6 @@ function populateFilterDropdowns(rows) {
 
 
 document.addEventListener('DOMContentLoaded', function() {
-  // ── Session restore (survives refresh, expires after 1 hour) ──
-  const SESSION_MS = 60 * 60 * 1000;
-  const role = localStorage.getItem('ne_role');
-  const savedTime = parseInt(localStorage.getItem('ne_login_time') || '0');
-  if (role && (Date.now() - savedTime) < SESSION_MS) {
-    currentAccessLevel = role;
-    document.getElementById('filterButton').style.display = (role === 'admin') ? '' : 'none';
-    unlockApp(true); // skipRedirect — stays on index.html
-    const remaining = SESSION_MS - (Date.now() - savedTime);
-    setTimeout(() => { logout(); const e = document.getElementById('pw-error'); if (e) e.textContent = 'Session expired. Please log in again.'; }, remaining);
-  } else {
-    localStorage.removeItem('ne_role');
-    localStorage.removeItem('ne_login_time');
-  }
-
-  // Auto-focus password box on load (only if not already logged in)
-  const pwInput = document.getElementById('pw-input');
-  if (pwInput && currentAccessLevel === 'none') setTimeout(() => pwInput.focus(), 100);
-
   // Top search box — employee card search OR deep search depending on active tab
   const topInput = document.getElementById('employeeNumber');
   if (topInput) {

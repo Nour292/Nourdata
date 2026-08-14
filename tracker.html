@@ -172,18 +172,6 @@ body.sb-collapsed #main-content{margin-left:52px;}
 #hold-reason-field textarea{width:100%;padding:8px;font-size:13px;border:1.5px solid #d0dce8;border-radius:7px;font-family:'Calibri',sans-serif;resize:vertical;min-height:60px;}
 #status-footer{padding:12px 18px;border-top:1px solid #e8eef5;display:flex;gap:8px;justify-content:flex-end;}
 
-/* ── Password overlay ── */
-#pw-overlay{display:flex;flex-direction:column;align-items:center;position:fixed;inset:0;background:linear-gradient(135deg,#1a2b3c 0%,#2e4057 100%);z-index:9999;overflow-y:auto;padding:20px 0;}
-#pw-box{background:#fff;border-radius:16px;padding:36px 40px;width:340px;max-width:calc(100% - 40px);text-align:center;box-shadow:0 8px 40px rgba(0,0,0,0.35);margin:auto;}
-#pw-box img{height:70px;margin-bottom:14px;}
-#pw-box h2{font-size:20px;font-weight:700;color:#1a2b3c;margin-bottom:6px;}
-#pw-box p{font-size:13px;color:#888;margin-bottom:20px;}
-#pw-box input{width:100%;padding:11px 14px;font-size:15px;border:2px solid #d0dce8;border-radius:8px;margin-bottom:12px;font-family:Calibri,sans-serif;text-align:center;letter-spacing:2px;}
-#pw-box input:focus{border-color:#2e86c1;outline:none;}
-#pw-box button{width:100%;padding:12px;background:#2e86c1;color:#fff;font-size:15px;font-weight:700;border:none;border-radius:8px;cursor:pointer;}
-#pw-box button:hover{background:#1a5276;}
-#pw-error{color:#e74c3c;font-size:13px;margin-top:10px;font-weight:600;min-height:20px;}
-#layout{display:none;}
 
 body.dark-mode{background:#1a1a2e!important;}
 body.dark-mode #sidebar{background:#0f1923!important;}
@@ -254,17 +242,6 @@ body.dark-mode #confirm-msg{color:#e0e0e0!important;}
 </head>
 <body>
 
-<!-- ── Password Overlay ── -->
-<div id="pw-overlay">
-  <div id="pw-box">
-    <img src="https://nour292.github.io/Nourdata/nour_energy_logo.png" alt="Nour Energy" onerror="this.style.display='none'">
-    <h2>Nour Energy</h2>
-    <p>Job Tracker — Enter your password</p>
-    <input type="password" id="pw-input" placeholder="Enter password" autocomplete="off">
-    <button id="pw-submit" onclick="checkPassword()">Login</button>
-    <div id="pw-error"></div>
-  </div>
-</div>
 
 <div id="layout">
 
@@ -558,13 +535,7 @@ function confirmDialog(msg, onOk) {
 }
 
 function doLogout() {
-  trackerIsAdmin = false;
-  localStorage.removeItem('ne_role');
-  localStorage.removeItem('ne_login_time');
-  document.getElementById('layout').style.display = 'none';
-  document.getElementById('pw-overlay').style.display = 'flex';
-  document.getElementById('pw-input').value = '';
-  document.getElementById('pw-error').textContent = '';
+  window.location.href = 'index.html';
 }
 
 function genId() { return 'J' + Date.now(); }
@@ -1149,63 +1120,13 @@ function quickComplete(id, afterDone) {
 function markComplete() { quickComplete(statusJobId, closeStatusModal); }
 
 function deleteJob(id) {
-  if (!trackerIsAdmin) { showToast('No permission to delete records.'); return; }
   confirmDialog('Permanently delete this record?', () => {
     jobs=jobs.filter(j=>j.id!==id); saveJobs(); renderJobs();
   });
 }
 
-const PW_ADMIN = '2d8f693a554950343de320b8789f03563e1291bde42cdab4658cae4be8654f1b';
-const PW_EMP_1 = 'd4e2501734145318e12b209000cf646434ff9d3fae8bc9302dba2d7ce01f3073';
-
-let trackerIsAdmin = false;
-
-function applyAccessLevel() {
-  if (!trackerIsAdmin) {
-    document.querySelectorAll('.tracker-delete-btn').forEach(el => el.style.display = 'none');
-  }
-}
-
-function sha256(msg) {
-  const K=[0x428a2f98,0x71374491,0xb5c0fbcf,0xe9b5dba5,0x3956c25b,0x59f111f1,0x923f82a4,0xab1c5ed5,0xd807aa98,0x12835b01,0x243185be,0x550c7dc3,0x72be5d74,0x80deb1fe,0x9bdc06a7,0xc19bf174,0xe49b69c1,0xefbe4786,0x0fc19dc6,0x240ca1cc,0x2de92c6f,0x4a7484aa,0x5cb0a9dc,0x76f988da,0x983e5152,0xa831c66d,0xb00327c8,0xbf597fc7,0xc6e00bf3,0xd5a79147,0x06ca6351,0x14292967,0x27b70a85,0x2e1b2138,0x4d2c6dfc,0x53380d13,0x650a7354,0x766a0abb,0x81c2c92e,0x92722c85,0xa2bfe8a1,0xa81a664b,0xc24b8b70,0xc76c51a3,0xd192e819,0xd6990624,0xf40e3585,0x106aa070,0x19a4c116,0x1e376c08,0x2748774c,0x34b0bcb5,0x391c0cb3,0x4ed8aa4a,0x5b9cca4f,0x682e6ff3,0x748f82ee,0x78a5636f,0x84c87814,0x8cc70208,0x90befffa,0xa4506ceb,0xbef9a3f7,0xc67178f2];
-  const H=[0x6a09e667,0xbb67ae85,0x3c6ef372,0xa54ff53a,0x510e527f,0x9b05688c,0x1f83d9ab,0x5be0cd19];
-  const b=[];for(let i=0;i<msg.length;i++){const c=msg.charCodeAt(i);if(c<128)b.push(c);else if(c<2048)b.push((c>>6)|192,c&63|128);else b.push((c>>12)|224,(c>>6)&63|128,c&63|128);}
-  const n=b.length;b.push(0x80);while(b.length%64!==56)b.push(0);const lb=n*8;b.push(0,0,0,0,(lb>>24)&255,(lb>>16)&255,(lb>>8)&255,lb&255);
-  const rot=(bits,x)=>(x>>>bits)|(x<<(32-bits));
-  for(let i=0;i<b.length;i+=64){const w=new Array(64);for(let j=0;j<16;j++)w[j]=(b[i+j*4]<<24)|(b[i+j*4+1]<<16)|(b[i+j*4+2]<<8)|b[i+j*4+3];for(let j=16;j<64;j++){const s0=rot(7,w[j-15])^rot(18,w[j-15])^(w[j-15]>>>3),s1=rot(17,w[j-2])^rot(19,w[j-2])^(w[j-2]>>>10);w[j]=(w[j-16]+s0+w[j-7]+s1)|0;}let[a,bb,c,d,e,f,g,h]=H;for(let j=0;j<64;j++){const S1=rot(6,e)^rot(11,e)^rot(25,e),ch=(e&f)^(~e&g),t1=(h+S1+ch+K[j]+w[j])|0,S0=rot(2,a)^rot(13,a)^rot(22,a),maj=(a&bb)^(a&c)^(bb&c),t2=(S0+maj)|0;h=g;g=f;f=e;e=(d+t1)|0;d=c;c=bb;bb=a;a=(t1+t2)|0;}H[0]=(H[0]+a)|0;H[1]=(H[1]+bb)|0;H[2]=(H[2]+c)|0;H[3]=(H[3]+d)|0;H[4]=(H[4]+e)|0;H[5]=(H[5]+f)|0;H[6]=(H[6]+g)|0;H[7]=(H[7]+h)|0;}
-  return H.map(h=>(h>>>0).toString(16).padStart(8,'0')).join('');
-}
-
-function checkPassword() {
-  const errEl = document.getElementById('pw-error');
-  const entered = document.getElementById('pw-input').value.trim();
-  if (!entered) { errEl.textContent = 'Please enter your password.'; return; }
-  const hashed = sha256(entered);
-  if (hashed === PW_ADMIN) {
-    trackerIsAdmin = true;
-    localStorage.setItem('ne_role', 'admin');
-    localStorage.setItem('ne_login_time', Date.now().toString());
-    document.getElementById('pw-overlay').style.display = 'none';
-    document.getElementById('layout').style.display = 'flex';
-    loadJobs().then(() => { setView('active'); renderJobs(); });
-    return;
-  }
-  if (hashed === PW_EMP_1) {
-    trackerIsAdmin = false;
-    localStorage.setItem('ne_role', 'employee');
-    localStorage.setItem('ne_login_time', Date.now().toString());
-    document.getElementById('pw-overlay').style.display = 'none';
-    document.getElementById('layout').style.display = 'flex';
-    loadJobs().then(() => { setView('active'); renderJobs(); });
-    return;
-  }
-  errEl.textContent = 'Incorrect password. Please try again.';
-  document.getElementById('pw-input').value = '';
-  document.getElementById('pw-input').focus();
-}
-
-// Enter key on password
-document.getElementById('pw-input').addEventListener('keyup', e => { if (e.key === 'Enter') checkPassword(); });
+let trackerIsAdmin = true;
+function applyAccessLevel() {}
 
 // Escape closes any open modal
 document.addEventListener('keydown', e => {
@@ -1215,8 +1136,8 @@ document.addEventListener('keydown', e => {
   if (document.getElementById('modal-overlay').classList.contains('open')) { closeModal(); }
 });
 
-// Init — check session (from index.html login or direct)
-(function initTracker() {
+// Init
+(function() {
   if (localStorage.getItem('ne_dark_mode') === '1') {
     document.body.classList.add('dark-mode');
     const btn = document.querySelector('#sb-footer button:first-child');
@@ -1226,20 +1147,7 @@ document.addEventListener('keydown', e => {
       if (label) label.textContent = 'Light Mode';
     }
   }
-  const role = localStorage.getItem('ne_role');
-  const loginTime = parseInt(localStorage.getItem('ne_login_time') || '0');
-  const SESSION_MS = 60 * 60 * 1000;
-  if (role && (Date.now() - loginTime) < SESSION_MS) {
-    trackerIsAdmin = (role === 'admin');
-    document.getElementById('pw-overlay').style.display = 'none';
-    document.getElementById('layout').style.display = 'flex';
-    loadJobs().then(() => { setView('active'); renderJobs(); });
-  } else {
-    localStorage.removeItem('ne_role');
-    localStorage.removeItem('ne_login_time');
-    document.getElementById('pw-overlay').style.display = 'flex';
-    document.getElementById('pw-input').focus();
-  }
+  loadJobs().then(() => { setView('active'); renderJobs(); });
 })();
 
 // ── Auto-calculate days ──
