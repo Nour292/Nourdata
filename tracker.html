@@ -280,14 +280,9 @@ body.dark-mode #confirm-msg{color:#e0e0e0!important;}
         <button class="sb-item active" id="sb-active" onclick="setView('active')"><span class="sb-icon">📋</span><span class="sb-label">Active Jobs</span></button>
         <button class="sb-item" id="sb-completed" onclick="setView('completed')"><span class="sb-icon">✅</span><span class="sb-label">Completed</span></button>
         <button class="sb-item" id="sb-alljobs" onclick="setView('all')"><span class="sb-icon">📊</span><span class="sb-label">List of All Jobs</span></button>
-        <button class="sb-item" id="sb-loc-all" onclick="filterLocation('All');toggleLocGroup()">
-          <span class="sb-icon">🌐</span><span class="sb-label">All Locations</span><span id="arrow-locs" style="margin-left:auto;font-size:11px;opacity:0.7;">▸</span>
-        </button>
-        <div id="loc-sub-items" style="background:rgba(0,0,0,0.12);display:none;">
-          <button class="sb-item" id="sb-loc-dam" onclick="filterLocation('Dammam')" style="padding-left:40px;"><span class="sb-icon">🏭</span><span class="sb-label">Dammam</span></button>
-          <button class="sb-item" id="sb-loc-jed" onclick="filterLocation('Jeddah')" style="padding-left:40px;"><span class="sb-icon">🌊</span><span class="sb-label">Jeddah</span></button>
-          <button class="sb-item" id="sb-loc-riy" onclick="filterLocation('Riyadh')" style="padding-left:40px;"><span class="sb-icon">🏙</span><span class="sb-label">Riyadh</span></button>
-        </div>
+        <button class="sb-item" id="sb-loc-dam" onclick="filterLocation('Dammam')"><span class="sb-icon">🏭</span><span class="sb-label">Dammam</span></button>
+        <button class="sb-item" id="sb-loc-jed" onclick="filterLocation('Jeddah')"><span class="sb-icon">🌊</span><span class="sb-label">Jeddah</span></button>
+        <button class="sb-item" id="sb-loc-riy" onclick="filterLocation('Riyadh')"><span class="sb-icon">🏙</span><span class="sb-label">Riyadh</span></button>
         <button class="sb-item" onclick="openAddModal()"><span class="sb-icon">➕</span><span class="sb-label">Add New Job</span></button>
       </div>
     </div>
@@ -627,19 +622,11 @@ function setView(v) {
   renderJobs();
 }
 
-function toggleLocGroup() {
-  const sub   = document.getElementById('loc-sub-items');
-  const arrow = document.getElementById('arrow-locs');
-  if (!sub) return;
-  const open = sub.style.display !== 'none';
-  sub.style.display  = open ? 'none' : 'block';
-  if (arrow) arrow.textContent = open ? '▸' : '▾';
-}
 
 function filterLocation(loc) {
   currentLocationFilter = loc;
   // Highlight active sidebar city button
-  const locMap = {All:'sb-loc-all', Dammam:'sb-loc-dam', Jeddah:'sb-loc-jed', Riyadh:'sb-loc-riy'};
+  const locMap = {Dammam:'sb-loc-dam', Jeddah:'sb-loc-jed', Riyadh:'sb-loc-riy'};
   Object.entries(locMap).forEach(([l, id]) => {
     const el = document.getElementById(id);
     if (el) el.classList.toggle('active', l === loc);
