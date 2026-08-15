@@ -449,7 +449,9 @@ function saveAndPrint() {
   win.document.write(html);
   win.document.close();
   win.focus();
-  setTimeout(() => win.print(), 700);
+  // Wait for logo image to load before printing
+  win.onload = () => win.print();
+  setTimeout(() => { try { win.print(); } catch(e) {} }, 1500);
   showToast('Print preview opened!', false);
 }
 
@@ -494,9 +496,10 @@ td { vertical-align: middle; padding: 4px 7px; }
     <td colspan="8" style="border:none;padding:0;">
       <table style="width:100%;border-collapse:collapse;">
         <tr>
-          <td style="width:67%;padding:6px 8px;border:none;vertical-align:middle;">
-            <div style="font-size:16pt;font-weight:700;text-align:center;direction:rtl;padding-bottom:3px;">نموذج طلب بدل السكن</div>
-            <div style="font-size:13pt;font-weight:700;text-align:center;">HOUSING ALLOWANCE REQUEST FORM</div>
+          <td style="width:67%;padding:4px 8px;border:none;vertical-align:middle;text-align:center;">
+            <div style="margin-bottom:4pt;"><img src="https://nour292.github.io/Nourdata/nour_energy_logo.png" style="width:52pt;height:52pt;border-radius:50%;background:#fff;padding:2pt;border:0.5pt solid #ccc;" onerror="this.style.display='none'"></div>
+            <div style="font-size:15pt;font-weight:700;text-align:center;direction:rtl;padding-bottom:3px;">نموذج طلب بدل السكن</div>
+            <div style="font-size:12pt;font-weight:700;text-align:center;">HOUSING ALLOWANCE REQUEST FORM</div>
           </td>
           <td style="width:33%;border:1pt solid #000;padding:5px 10px;vertical-align:middle;font-size:9pt;">
             <div><strong>Doc No:</strong> QMS-QF-HR-001</div>
@@ -522,7 +525,7 @@ td { vertical-align: middle; padding: 4px 7px; }
   <!-- ===== INSTRUCTION ===== -->
   <tr>
     <td colspan="8" class="b" style="padding:6px 8px;">
-      <div style="font-size:9.5pt;">Please make necessary arrangements for payment of housing allowance covering the period:</div>
+      <div style="font-size:9.5pt;">Please make necessary arrangements for payment of housing allowance covering the period between:</div>
       <div class="ar" style="margin-top:3px;">يرجى اتخاذ الترتيبات اللازمة لصرف بدل السكن الذي يغطي الفترة من:</div>
     </td>
   </tr>
@@ -539,7 +542,7 @@ td { vertical-align: middle; padding: 4px 7px; }
   <tr><td colspan="8" class="gap" style="border:none;"></td></tr>
 
   <!-- ===== HOUSING ALLOWANCE TYPE ===== -->
-  <tr><td colspan="8" class="sec-hdr">HOUSING ALLOWANCE TYPE &nbsp;/&nbsp; <span style="direction:rtl;display:inline;">نوع بدل السكن</span></td></tr>
+  <tr><td colspan="8" class="sec-hdr">HOUSING ALLOWANCE TYPE (نوع بدل السكن)</td></tr>
   <tr>
     <td class="b center" style="width:5%;">${cb(d.type1)}</td>
     <td colspan="7" class="b" style="font-size:9.5pt;">
@@ -559,7 +562,7 @@ td { vertical-align: middle; padding: 4px 7px; }
   <tr><td colspan="8" class="gap" style="border:none;"></td></tr>
 
   <!-- ===== EMPLOYEE DETAILS ===== -->
-  <tr><td colspan="8" class="sec-hdr">EMPLOYEE DETAILS &nbsp;/&nbsp; <span style="direction:rtl;display:inline;">تفاصيل بيانات الموظف</span></td></tr>
+  <tr><td colspan="8" class="sec-hdr">EMPLOYEE DETAILS (تفاصيل بيانات الموظف)</td></tr>
   <tr>
     <td colspan="3" class="b lbl">Name &nbsp;<span class="ar" style="display:inline;">(الاسم)</span></td>
     <td colspan="5" class="b val">${d.name}</td>
@@ -581,7 +584,7 @@ td { vertical-align: middle; padding: 4px 7px; }
   <tr><td colspan="8" class="gap" style="border:none;"></td></tr>
 
   <!-- ===== HOUSING ALLOWANCE DETAILS ===== -->
-  <tr><td colspan="8" class="sec-hdr">HOUSING ALLOWANCE DETAILS &nbsp;/&nbsp; <span style="direction:rtl;display:inline;">تفاصيل بدل السكن</span></td></tr>
+  <tr><td colspan="8" class="sec-hdr">HOUSING ALLOWANCE DETAILS (تفاصيل بدل السكن)</td></tr>
   <tr>
     <td class="b center">${cb(d.det1)}</td>
     <td colspan="7" class="b" style="font-size:9.5pt;">
@@ -609,15 +612,15 @@ td { vertical-align: middle; padding: 4px 7px; }
   <!-- ===== SIGNATURES (Row 33) ===== -->
   <tr>
     <td colspan="2" class="b sig-area center" style="font-size:9pt;font-weight:700;vertical-align:bottom;padding-bottom:6px;">
-      HR Manager<br><span class="ar">(اسم المورّد، تأشير)</span>
+      HR Manager<br><span class="ar">(مدير الموارد البشرية)</span>
     </td>
     <td style="border:none;width:4%;"></td>
     <td colspan="2" class="b sig-area center" style="font-size:9pt;font-weight:700;vertical-align:bottom;padding-bottom:6px;">
-      Department Manager<br><span class="ar">(اسم القسم، توقيع)</span>
+      Department Manager<br><span class="ar">(مدير القسم)</span>
     </td>
     <td style="border:none;width:4%;"></td>
     <td colspan="2" class="b sig-area center" style="font-size:9pt;font-weight:700;vertical-align:bottom;padding-bottom:6px;">
-      Finance Dept.<br><span class="ar">(القسم المالي، توقيع)</span>
+      Finance Dept.<br><span class="ar">(القسم المالي)</span>
     </td>
   </tr>
 </table>
