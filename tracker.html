@@ -291,6 +291,20 @@ body.user-mode .tracker-delete-btn { display: none !important; }
       </div>
     </div>
 
+    <!-- Official Forms -->
+    <div class="sb-group">
+      <button class="sb-group-hdr" id="btn-grp-forms" onclick="toggleFormsGroup()">
+        <span class="sb-icon">📄</span>
+        <span class="sb-label">Official Forms</span>
+        <span class="sb-arrow" id="arrow-grp-forms">▸</span>
+      </button>
+      <div class="sb-group-items" id="grp-forms" style="display:none;">
+        <button class="sb-item" onclick="window.location.href='forms.html'">
+          <span class="sb-icon">🏠</span><span class="sb-label">Housing Allowance</span>
+        </button>
+      </div>
+    </div>
+
   </nav>
   <div id="sb-footer">
     <button onclick="toggleDarkMode()" style="display:flex;align-items:center;gap:10px;width:100%;padding:9px 12px;background:none;border:none;border-bottom:1px solid rgba(255,255,255,0.08);color:#8fa8c0;font-size:13px;font-weight:700;cursor:pointer;margin-bottom:6px;white-space:nowrap;">
@@ -600,6 +614,16 @@ function toggleTrackerGroup() {
     if (empHdr)   empHdr.classList.remove('active-group');
     setView('active');
   }
+}
+
+function toggleFormsGroup() {
+  const el    = document.getElementById('grp-forms');
+  const arrow = document.getElementById('arrow-grp-forms');
+  const hdr   = document.getElementById('btn-grp-forms');
+  const open  = el && el.style.display !== 'none';
+  if (el)    el.style.display = open ? 'none' : 'block';
+  if (arrow) arrow.textContent = open ? '▸' : '▾';
+  if (hdr)   hdr.classList.toggle('active-group', !open);
 }
 
 function toggleEmpGroupTracker() {
