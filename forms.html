@@ -11,6 +11,7 @@
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
 <title>Nour Energy — Official Forms</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 html,body{font-family:'Calibri',sans-serif;background:#f0f4f8;min-height:100vh;}
@@ -415,44 +416,105 @@ function fmtIso(iso) {
   return String(d.getDate()).padStart(2,'0') + '-' + m[d.getMonth()] + '-' + d.getFullYear();
 }
 
-// ── Save & Print ──
-function saveAndPrint() {
-  const empNo      = (document.getElementById('f-empno').value || '').trim();
-  const name       = (document.getElementById('f-name').value || '').trim();
-  const nationality= (document.getElementById('f-nationality').value || '').trim();
-  const dept       = (document.getElementById('f-dept').value || '').trim();
-  const date       = (document.getElementById('f-date').value || '').trim();
-  const startIso   = document.getElementById('f-start').value;
-  const endIso     = document.getElementById('f-end').value;
+// ── Fill actual Excel file and download ──
+const EXCEL_TEMPLATE = 'https://nour292.github.io/Nourdata/forms/QMS-QF-HR-001%20Housing%20Allowance%20Request%20Form.xlsx';
+
+async function fillAndDownloadExcel(data) {
+  const res = await fetch(EXCEL_TEMPLATE);
+  if (!res.ok) throw new Error('Could not fetch Excel template (' + res.status + ')');
+  const buf = await res.arrayBuffer();
+  const wb  = XLSX.read(buf, { type: 'array', cellStyles: true });
+  const ws  = wb.Sheets[wb.SheetNames[0]];
+
+  // Helper — set a cell as plain text, preserve existing style if any
+  function setCell(ref, value) {
+    const existing = ws[ref] || {};
+    ws[ref] = Object.assign({}, existing, { v: value, t: 's', w: value });
+    delete ws[ref].f; // remove any formula
+  }
+
+  setCell('B5',  data.date);
+  setCell('C9',  data.startDate);
+  setCell('H9',  data.endDate);
+  setCell('C16', data.name);
+  setCell('C17', data.nationality);
+  setCell('C19', data.empNo);
+
+  const out  = XLSX.write(wb, { bookType: 'xlsx', type: 'array', cellStyles: true });
+  const blob = new Blob([out], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href     = url;
+  a.download = 'Housing_Allowance_' + data.empNo + '_' + data.date.replace(/-/g, '') + '.xlsx';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  setTimeout(() => URL.revokeObjectURL(url), 5000);
+}
+
+// ── Save & Print (Option B: Excel download + HTML print) ──
+async function saveAndPrint() {
+  const empNo       = (document.getElementById('f-empno').value || '').trim();
+  const name        = (document.getElementById('f-name').value || '').trim();
+  const nationality = (document.getElementById('f-nationality').value || '').trim();
+  const dept        = (document.getElementById('f-dept').value || '').trim();
+  const date        = (document.getElementById('f-date').value || '').trim();
+  const startIso    = document.getElementById('f-start').value;
+  const endIso      = document.getElementById('f-end').value;
 
   if (!empNo)    { showToast('Please enter Employee Number.', true); return; }
   if (!name)     { showToast('Employee not found. Please check the number.', true); return; }
   if (!startIso) { showToast('Please enter Starting Date.', true); return; }
   if (!endIso)   { showToast('Please enter Ending Date.', true); return; }
 
-  const type1  = document.getElementById('f-type1').checked;
-  const type2  = document.getElementById('f-type2').checked;
-  const det1   = document.getElementById('f-det1').checked;
-  const det2   = document.getElementById('f-det2').checked;
-  const det3   = document.getElementById('f-det3').checked;
-
   const data = {
     date, empNo, name, nationality, dept,
     startDate: fmtIso(startIso),
-    endDate: fmtIso(endIso),
-    type1, type2, det1, det2, det3
+    endDate:   fmtIso(endIso),
+    type1: document.getElementById('f-type1').checked,
+    type2: document.getElementById('f-type2').checked,
+    det1:  document.getElementById('f-det1').checked,
+    det2:  document.getElementById('f-det2').checked,
+    det3:  document.getElementById('f-det3').checked,
   };
 
-  const html = generatePrintHTML(data);
+  // Disable button while working
+  const btn = document.querySelector('.btn-print-form');
+  const origHtml = btn.innerHTML;
+  btn.innerHTML = '⏳ Processing…';
+  btn.disabled = true;
+
+  // ── Step 1: Fill actual Excel and download ──
+  let excelOk = false;
+  try {
+    await fillAndDownloadExcel(data);
+    excelOk = true;
+  } catch(e) {
+    console.warn('Excel fill failed:', e);
+  }
+
+  // ── Step 2: Open HTML print preview ──
   const win = window.open('', '_blank', 'width=950,height=750,scrollbars=yes');
-  if (!win) { showToast('Popup blocked — please allow popups and try again.', true); return; }
-  win.document.write(html);
-  win.document.close();
-  win.focus();
-  // Wait for logo image to load before printing
-  win.onload = () => win.print();
-  setTimeout(() => { try { win.print(); } catch(e) {} }, 1500);
-  showToast('Print preview opened!', false);
+  if (win) {
+    win.document.write(generatePrintHTML(data));
+    win.document.close();
+    win.focus();
+    win.onload = () => win.print();
+    setTimeout(() => { try { win.print(); } catch(e) {} }, 1500);
+  }
+
+  btn.innerHTML = origHtml;
+  btn.disabled = false;
+
+  if (excelOk && win) {
+    showToast('Excel saved + Print preview opened!', false);
+  } else if (excelOk) {
+    showToast('Excel saved! (popup blocked — allow popups)', false);
+  } else if (win) {
+    showToast('Print opened. Excel save failed — check connection.', false);
+  } else {
+    showToast('Popup blocked — please allow popups and try again.', true);
+  }
 }
 
 // ── Generate print HTML (pixel-perfect replica of Excel form) ──
