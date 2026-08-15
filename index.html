@@ -1153,20 +1153,6 @@ body.view-lists #card-area:empty::after { display: none !important; }
         </div>
       </div>
 
-      <!-- Official Forms -->
-      <div class="sb-group">
-        <button class="sb-group-hdr" id="btn-grp-forms" onclick="toggleFormsGroup()">
-          <span class="sb-icon">📄</span>
-          <span class="sb-label">Official Forms</span>
-          <span class="sb-arrow" id="arrow-grp-forms">▸</span>
-        </button>
-        <div class="sb-group-items" id="grp-forms" style="display:none;">
-          <button class="sb-item sb-sub" onclick="window.location.href='forms.html'">
-            <span class="sb-icon">🏠</span><span class="sb-label">Housing Allowance</span>
-          </button>
-        </div>
-      </div>
-
     </nav>
 
     <div id="sb-footer">
@@ -3401,16 +3387,6 @@ function toggleSidebar() {
   sb.classList.toggle('collapsed');
   const btn = document.getElementById('sb-toggle');
   btn.innerHTML = sb.classList.contains('collapsed') ? '&#9776;' : '&#10005;';
-}
-
-function toggleFormsGroup() {
-  const el    = document.getElementById('grp-forms');
-  const arrow = document.getElementById('arrow-grp-forms');
-  const hdr   = document.getElementById('btn-grp-forms');
-  const open  = el && el.style.display !== 'none';
-  if (el)    el.style.display = open ? 'none' : 'block';
-  if (arrow) arrow.textContent = open ? '▸' : '▾';
-  if (hdr)   hdr.classList.toggle('active-group', !open);
 }
 
 function toggleFilterPanel() {
