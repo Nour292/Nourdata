@@ -1199,7 +1199,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if (role === 'user') document.body.classList.add('user-mode');
     loadJobs().then(() => { setView('active'); renderJobs(); });
   } else {
-    setTimeout(() => { const p = document.getElementById('login-pass'); if(p) p.focus(); }, 50);
+    setTimeout(() => { const p = document.getElementById('login-otp'); if(p) p.focus(); }, 50);
   }
 });
 
@@ -1355,14 +1355,96 @@ function installApp(e) {
   m.onclick = ev => { if (ev.target === m) m.style.display = 'none'; };
   document.body.appendChild(m);
 }
-function doLogin() {
-  const pass = (document.getElementById('login-pass').value || '').trim();
+const OTP_URL = 'https://script.google.com/macros/s/AKfycbzGXoDV-fdif6qiP_wFjmoULC0pXoRDVsH1P_-LptWEAIwYC3NBzDo-aWwOr4OXoaVuxQ/exec';
+let _otpTimer = null, _otpExpiry = 0;
+
+function setLoginTab(tab) {
+  const isAdmin = tab === 'admin';
+  document.getElementById('login-admin-panel').style.display = isAdmin ? 'block' : 'none';
+  document.getElementById('login-user-panel').style.display  = isAdmin ? 'none'  : 'block';
+  const ta = document.getElementById('tab-admin'), tu = document.getElementById('tab-user');
+  if (isAdmin) {
+    ta.style.background = 'linear-gradient(135deg,#1a6fa8,#2980b9)'; ta.style.color = '#fff';
+    tu.style.background = 'transparent'; tu.style.color = '#5b90b8';
+    setTimeout(() => { const el = document.getElementById('login-otp'); if(el) el.focus(); }, 50);
+  } else {
+    tu.style.background = 'linear-gradient(135deg,#1a6fa8,#2980b9)'; tu.style.color = '#fff';
+    ta.style.background = 'transparent'; ta.style.color = '#5b90b8';
+    setTimeout(() => { const el = document.getElementById('login-pass'); if(el) el.focus(); }, 50);
+  }
+}
+
+async function generateAdminOTP() {
+  const btn = document.getElementById('btn-gen-otp');
+  const status = document.getElementById('otp-status');
+  btn.disabled = true; btn.textContent = '⏳ Sending to Sheet…';
+  status.style.color = '#8fa8c0'; status.textContent = '';
+  try {
+    const res  = await fetch(OTP_URL + '?action=generate', { redirect: 'follow' });
+    const data = await res.json();
+    if (data.ok) {
+      status.style.color = '#27ae60';
+      status.textContent = '✔ OTP sent — check "Admin OTP" tab in Google Sheet';
+      _otpExpiry = Date.now() + 5 * 60 * 1000;
+      startOTPCountdown();
+    } else {
+      status.style.color = '#e74c3c';
+      status.textContent = '✘ ' + (data.error || 'Failed to generate OTP');
+    }
+  } catch(e) {
+    status.style.color = '#e74c3c';
+    status.textContent = '✘ Could not reach server. Check connection.';
+  }
+  btn.disabled = false; btn.textContent = '🔄 Regenerate OTP';
+}
+
+function startOTPCountdown() {
+  clearInterval(_otpTimer);
+  const status = document.getElementById('otp-status');
+  _otpTimer = setInterval(() => {
+    const rem  = Math.max(0, _otpExpiry - Date.now());
+    const mins = Math.floor(rem / 60000);
+    const secs = Math.floor((rem % 60000) / 1000);
+    if (rem <= 0) {
+      clearInterval(_otpTimer);
+      status.style.color = '#e74c3c';
+      status.textContent = '⚠ OTP expired — generate a new one';
+      const inp = document.getElementById('login-otp'); if(inp) inp.value = '';
+    } else {
+      status.style.color = rem < 60000 ? '#e67e22' : '#27ae60';
+      status.textContent = '✔ OTP active — expires in ' + mins + ':' + String(secs).padStart(2,'0');
+    }
+  }, 1000);
+}
+
+async function doAdminLogin() {
+  const code = (document.getElementById('login-otp').value || '').trim();
   const err  = document.getElementById('login-error');
-  if (pass === 'nour-pr') {
-    sessionStorage.setItem('ne_role', 'admin');
-    document.getElementById('login-overlay').style.display = 'none';
-    loadJobs().then(() => { setView('active'); renderJobs(); });
-  } else if (pass === '4190') {
+  if (!code || code.length !== 6) { err.textContent = 'Enter the 6-digit OTP from the Google Sheet.'; return; }
+  err.textContent = '';
+  const btn = document.getElementById('btn-admin-login');
+  btn.textContent = 'Verifying…'; btn.disabled = true;
+  try {
+    const res  = await fetch(OTP_URL + '?action=verify&code=' + encodeURIComponent(code), { redirect: 'follow' });
+    const data = await res.json();
+    if (data.ok) {
+      clearInterval(_otpTimer);
+      sessionStorage.setItem('ne_role', 'admin');
+      document.getElementById('login-overlay').style.display = 'none';
+      loadJobs().then(() => { setView('active'); renderJobs(); });
+    } else {
+      err.textContent = data.error || 'Invalid OTP. Please try again.';
+    }
+  } catch(e) {
+    err.textContent = 'Could not verify OTP. Check your connection.';
+  }
+  btn.textContent = 'Login'; btn.disabled = false;
+}
+
+function doUserLogin() {
+  const pass = (document.getElementById('login-pass').value || '').trim();
+  const err  = document.getElementById('login-error-user');
+  if (pass === '4190') {
     sessionStorage.setItem('ne_role', 'user');
     document.getElementById('login-overlay').style.display = 'none';
     document.body.classList.add('user-mode');
@@ -1377,22 +1459,44 @@ function doLogin() {
 
 <!-- ── Login Overlay ── -->
 <div id="login-overlay" style="position:fixed;inset:0;background:linear-gradient(140deg,#071428 0%,#0f2040 45%,#091830 100%);display:flex;align-items:center;justify-content:center;z-index:9999;overflow:hidden;">
-  <div style="position:relative;background:rgba(255,255,255,0.06);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border:1px solid rgba(255,255,255,0.11);border-radius:24px;padding:52px 44px 36px;width:400px;max-width:92vw;box-shadow:0 32px 80px rgba(0,0,0,0.7),inset 0 1px 0 rgba(255,255,255,0.1);text-align:center;">
+  <div style="position:relative;background:rgba(255,255,255,0.06);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border:1px solid rgba(255,255,255,0.11);border-radius:24px;padding:44px 44px 36px;width:420px;max-width:92vw;box-shadow:0 32px 80px rgba(0,0,0,0.7),inset 0 1px 0 rgba(255,255,255,0.1);text-align:center;">
     <img src="https://nour292.github.io/Nourdata/nour_energy_logo.png" alt="Logo" style="width:112px;height:112px;border-radius:50%;background:#fff;padding:13px;margin:0 auto 22px;display:block;box-shadow:0 0 48px rgba(26,111,168,0.5),0 12px 32px rgba(0,0,0,0.45);">
     <h2 style="color:#ffffff;font-size:30px;font-weight:700;margin:0 0 7px;letter-spacing:0.3px;">Nour Energy</h2>
-    <p style="color:#5b90b8;font-size:13px;margin:0 0 38px;letter-spacing:2.5px;text-transform:uppercase;font-weight:600;">HR System</p>
-    <input id="login-pass" type="password" placeholder="Enter password"
-      style="width:100%;padding:15px 18px;border-radius:12px;border:1.5px solid rgba(255,255,255,0.12);background:rgba(255,255,255,0.07);color:#fff;font-size:15px;outline:none;margin-bottom:10px;box-sizing:border-box;transition:border-color 0.25s,box-shadow 0.25s;font-family:Calibri,sans-serif;"
-      onkeydown="if(event.key==='Enter')doLogin()"
-      onfocus="this.style.borderColor='rgba(42,134,200,0.8)';this.style.boxShadow='0 0 0 3px rgba(42,134,200,0.15)'"
-      onblur="this.style.borderColor='rgba(255,255,255,0.12)';this.style.boxShadow='none'">
-    <div id="login-error" style="color:#e74c3c;font-size:12px;margin-bottom:12px;min-height:18px;text-align:left;padding-left:2px;"></div>
-    <button onclick="doLogin()"
-      style="width:100%;padding:15px;border-radius:12px;border:none;background:linear-gradient(135deg,#1a6fa8 0%,#2980b9 100%);color:#fff;font-size:17px;font-weight:700;cursor:pointer;letter-spacing:0.5px;box-shadow:0 4px 24px rgba(26,111,168,0.5);transition:transform 0.15s,box-shadow 0.15s;font-family:Calibri,sans-serif;"
-      onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 8px 32px rgba(26,111,168,0.65)'"
-      onmouseout="this.style.transform='';this.style.boxShadow='0 4px 24px rgba(26,111,168,0.5)'"
-      onmousedown="this.style.transform='translateY(0px)'"
-      onmouseup="this.style.transform='translateY(-2px)'">Login</button>
+    <p style="color:#5b90b8;font-size:13px;margin:0 0 24px;letter-spacing:2.5px;text-transform:uppercase;font-weight:600;">HR System</p>
+    <div style="display:flex;gap:6px;margin-bottom:22px;background:rgba(0,0,0,0.25);border-radius:12px;padding:4px;">
+      <button id="tab-admin" onclick="setLoginTab('admin')" style="flex:1;padding:10px;border:none;border-radius:9px;font-size:14px;font-weight:700;cursor:pointer;background:linear-gradient(135deg,#1a6fa8,#2980b9);color:#fff;font-family:Calibri,sans-serif;">👔 Admin</button>
+      <button id="tab-user"  onclick="setLoginTab('user')"  style="flex:1;padding:10px;border:none;border-radius:9px;font-size:14px;font-weight:700;cursor:pointer;background:transparent;color:#5b90b8;font-family:Calibri,sans-serif;">👤 User</button>
+    </div>
+    <div id="login-admin-panel">
+      <button id="btn-gen-otp" onclick="generateAdminOTP()" style="width:100%;padding:13px;margin-bottom:10px;border-radius:12px;border:1.5px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.08);color:#fff;font-size:14px;font-weight:700;cursor:pointer;font-family:Calibri,sans-serif;">🔑 Generate OTP</button>
+      <div id="otp-status" style="font-size:12px;color:#8fa8c0;margin-bottom:10px;min-height:18px;line-height:1.4;"></div>
+      <input id="login-otp" type="text" inputmode="numeric" maxlength="6" placeholder="Enter 6-digit OTP"
+        style="width:100%;padding:15px 18px;border-radius:12px;border:1.5px solid rgba(255,255,255,0.12);background:rgba(255,255,255,0.07);color:#fff;font-size:22px;letter-spacing:8px;text-align:center;outline:none;margin-bottom:10px;box-sizing:border-box;font-family:Calibri,sans-serif;transition:border-color 0.25s,box-shadow 0.25s;"
+        onkeydown="if(event.key==='Enter')doAdminLogin()"
+        onfocus="this.style.borderColor='rgba(42,134,200,0.8)';this.style.boxShadow='0 0 0 3px rgba(42,134,200,0.15)'"
+        onblur="this.style.borderColor='rgba(255,255,255,0.12)';this.style.boxShadow='none'">
+      <div id="login-error" style="color:#e74c3c;font-size:12px;margin-bottom:10px;min-height:18px;text-align:left;padding-left:2px;"></div>
+      <button onclick="doAdminLogin()" id="btn-admin-login"
+        style="width:100%;padding:15px;border-radius:12px;border:none;background:linear-gradient(135deg,#1a6fa8 0%,#2980b9 100%);color:#fff;font-size:17px;font-weight:700;cursor:pointer;letter-spacing:0.5px;box-shadow:0 4px 24px rgba(26,111,168,0.5);transition:transform 0.15s,box-shadow 0.15s;font-family:Calibri,sans-serif;"
+        onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 8px 32px rgba(26,111,168,0.65)'"
+        onmouseout="this.style.transform='';this.style.boxShadow='0 4px 24px rgba(26,111,168,0.5)'"
+        onmousedown="this.style.transform='translateY(0)'"
+        onmouseup="this.style.transform='translateY(-2px)'">Login</button>
+    </div>
+    <div id="login-user-panel" style="display:none;">
+      <input id="login-pass" type="password" placeholder="Enter password"
+        style="width:100%;padding:15px 18px;border-radius:12px;border:1.5px solid rgba(255,255,255,0.12);background:rgba(255,255,255,0.07);color:#fff;font-size:15px;outline:none;margin-bottom:10px;box-sizing:border-box;transition:border-color 0.25s,box-shadow 0.25s;font-family:Calibri,sans-serif;"
+        onkeydown="if(event.key==='Enter')doUserLogin()"
+        onfocus="this.style.borderColor='rgba(42,134,200,0.8)';this.style.boxShadow='0 0 0 3px rgba(42,134,200,0.15)'"
+        onblur="this.style.borderColor='rgba(255,255,255,0.12)';this.style.boxShadow='none'">
+      <div id="login-error-user" style="color:#e74c3c;font-size:12px;margin-bottom:10px;min-height:18px;text-align:left;padding-left:2px;"></div>
+      <button onclick="doUserLogin()"
+        style="width:100%;padding:15px;border-radius:12px;border:none;background:linear-gradient(135deg,#1a6fa8 0%,#2980b9 100%);color:#fff;font-size:17px;font-weight:700;cursor:pointer;letter-spacing:0.5px;box-shadow:0 4px 24px rgba(26,111,168,0.5);transition:transform 0.15s,box-shadow 0.15s;font-family:Calibri,sans-serif;"
+        onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 8px 32px rgba(26,111,168,0.65)'"
+        onmouseout="this.style.transform='';this.style.boxShadow='0 4px 24px rgba(26,111,168,0.5)'"
+        onmousedown="this.style.transform='translateY(0)'"
+        onmouseup="this.style.transform='translateY(-2px)'">Login</button>
+    </div>
   </div>
 </div>
 </body>
