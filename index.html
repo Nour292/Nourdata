@@ -1173,7 +1173,7 @@ body.view-lists #card-area:empty::after { display: none !important; }
     <div id="top-header">
       <h1 id="page-title">Employee Search</h1>
       <div id="search-wrapper">
-        <input type="text" id="employeeNumber" placeholder="Employee Number or ID No">
+        <input type="text" id="employeeNumber" placeholder="Employee Number or ID No" oninput="onLiveDeepSearch()">
       </div>
       <div id="header-actions">
         <button class="hdr-btn" id="searchButton" onclick="searchEmployee()">Search</button>
@@ -1256,7 +1256,7 @@ body.view-lists #card-area:empty::after { display: none !important; }
       </div>
 
       <div id="ds-result-area">
-        <p style="text-align:center;color:#888;padding:30px 0;">Type in the search box above and click <strong>🔍 Deep Search</strong> to search all employee data.</p>
+        <p style="text-align:center;color:#888;padding:30px 0;">Start typing in the search box above — results appear instantly.</p>
       </div>
     </div>
 
@@ -1546,6 +1546,21 @@ const DS_FIXED = [
   { label: 'Job Title', idx: COL.jobTitle },
 ];
 const DS_FIXED_IDX = new Set(DS_FIXED.map(c => c.idx));
+
+/* ─── Deep Search — live-as-you-type ─── */
+let _dsTimer = null;
+function onLiveDeepSearch() {
+  const pane = document.getElementById('ipane-deepsearch');
+  if (!pane || pane.style.display === 'none') return; // only fire on Deep Search pane
+  clearTimeout(_dsTimer);
+  const q = document.getElementById('employeeNumber').value.trim();
+  if (!q) {
+    const area = document.getElementById('ds-result-area');
+    if (area) area.innerHTML = '<p style="text-align:center;color:#888;padding:30px 0;">Start typing to search all employee data.</p>';
+    return;
+  }
+  _dsTimer = setTimeout(deepSearchInline, 300);
+}
 
 /* ─── Deep Search — inline pane version ─── */
 function deepSearchInline() {
