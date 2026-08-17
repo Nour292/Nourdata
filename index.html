@@ -3403,13 +3403,22 @@ function toggleSidebar() {
   const btn = document.getElementById('sb-toggle');
   btn.innerHTML = sb.classList.contains('collapsed') ? '&#9776;' : '&#10005;';
 }
-document.addEventListener('click', function(e) {
-  const sb  = document.getElementById('sidebar');
-  const btn = document.getElementById('sb-toggle');
-  if (sb && !sb.classList.contains('collapsed') && !sb.contains(e.target) && btn && !btn.contains(e.target)) {
-    toggleSidebar();
-  }
-});
+(function() {
+  const sb = document.getElementById('sidebar');
+  let _t = null;
+  if (!sb) return;
+  sb.addEventListener('mouseenter', function() {
+    clearTimeout(_t);
+    sb.classList.remove('collapsed');
+    document.body.classList.remove('sb-collapsed');
+  });
+  sb.addEventListener('mouseleave', function() {
+    _t = setTimeout(function() {
+      sb.classList.add('collapsed');
+      document.body.classList.add('sb-collapsed');
+    }, 300);
+  });
+})();
 
 function toggleFilterPanel() {
   const currentSection = document.body.className.match(/view-(\w+)/)?.[1];

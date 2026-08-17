@@ -580,13 +580,22 @@ function toggleSidebar() {
   document.body.classList.toggle('sb-collapsed');
   document.getElementById('sidebar').classList.toggle('collapsed');
 }
-document.addEventListener('click', function(e) {
-  const sb  = document.getElementById('sidebar');
-  const btn = document.getElementById('sb-toggle');
-  if (sb && !sb.classList.contains('collapsed') && !sb.contains(e.target) && btn && !btn.contains(e.target)) {
-    toggleSidebar();
-  }
-});
+(function() {
+  const sb = document.getElementById('sidebar');
+  let _t = null;
+  if (!sb) return;
+  sb.addEventListener('mouseenter', function() {
+    clearTimeout(_t);
+    sb.classList.remove('collapsed');
+    document.body.classList.remove('sb-collapsed');
+  });
+  sb.addEventListener('mouseleave', function() {
+    _t = setTimeout(function() {
+      sb.classList.add('collapsed');
+      document.body.classList.add('sb-collapsed');
+    }, 300);
+  });
+})();
 
 function toggleTrackerGroup() {
   const trkEl   = document.getElementById('grp-tracker');
