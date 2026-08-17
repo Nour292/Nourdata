@@ -3403,6 +3403,13 @@ function toggleSidebar() {
   const btn = document.getElementById('sb-toggle');
   btn.innerHTML = sb.classList.contains('collapsed') ? '&#9776;' : '&#10005;';
 }
+document.addEventListener('click', function(e) {
+  const sb  = document.getElementById('sidebar');
+  const btn = document.getElementById('sb-toggle');
+  if (sb && !sb.classList.contains('collapsed') && !sb.contains(e.target) && btn && !btn.contains(e.target)) {
+    toggleSidebar();
+  }
+});
 
 function toggleFilterPanel() {
   const currentSection = document.body.className.match(/view-(\w+)/)?.[1];
