@@ -1114,16 +1114,63 @@ function setView(v) {
 // ─── Export ───────────────────────────────────────────────────────────────────
 function exportCSV() {
   const isInv = currentView === 'invoices';
+  if (!generated) { showToast('Generate records first.', 'err'); return; }
   const data = isInv ? getFilteredInvoices() : getFilteredPOs();
   const cols = (isInv ? invCols : poCols).filter(c => c.on);
-  const header = cols.map(c => `"${c.label}"`).join(',');
-  const rows = data.map(row => cols.map(c => `"${String(row[c.key]||'').replace(/"/g,'""')}"`).join(','));
-  const csv = [header, ...rows].join('\r\n');
-  const blob = new Blob(['﻿'+csv], {type:'text/csv;charset=utf-8;'});
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = `${isInv?'Invoices':'PurchaseOrders'}_${new Date().toISOString().slice(0,10)}.csv`;
-  a.click();
+  if (!data.length) { showToast('No records to export.', 'err'); return; }
+
+  function buildXlsx(ExcelJS) {
+    const wb = new ExcelJS.Workbook();
+    wb.creator = 'Nour Energy';
+    const ws = wb.addWorksheet(isInv ? 'Invoices' : 'Purchase Orders');
+
+    // Column widths: max of label vs content
+    ws.columns = cols.map(col => {
+      let maxLen = col.label.length;
+      data.forEach(row => { const v = String(row[col.key]||''); if (v.length > maxLen) maxLen = v.length; });
+      return { key: col.key, width: Math.min(Math.max(maxLen + 2, 10), 45) };
+    });
+
+    // Header row — matches #1a2b3c background, white bold Calibri
+    const hRow = ws.addRow(cols.map(c => c.label));
+    hRow.height = 22;
+    hRow.eachCell(cell => {
+      cell.fill      = { type:'pattern', pattern:'solid', fgColor:{ argb:'FF1A2B3C' } };
+      cell.font      = { name:'Calibri', size:11, bold:true, color:{ argb:'FFFFFFFF' } };
+      cell.alignment = { vertical:'middle', horizontal:'left' };
+      cell.border    = { top:{style:'thin',color:{argb:'FF2C4A6A'}}, left:{style:'thin',color:{argb:'FF2C4A6A'}}, bottom:{style:'thin',color:{argb:'FF2C4A6A'}}, right:{style:'thin',color:{argb:'FF2C4A6A'}} };
+    });
+
+    // Data rows — alternating white / #f7fafd, matches tr:nth-child(even)
+    data.forEach((row, idx) => {
+      const dRow = ws.addRow(cols.map(c => String(row[c.key]||'')));
+      dRow.height = 18;
+      const bg = idx % 2 === 1 ? 'FFF7FAFD' : 'FFFFFFFF';
+      dRow.eachCell({ includeEmpty:true }, cell => {
+        cell.fill      = { type:'pattern', pattern:'solid', fgColor:{ argb:bg } };
+        cell.font      = { name:'Calibri', size:11, color:{ argb:'FF1A2B3C' } };
+        cell.alignment = { vertical:'middle', horizontal:'left' };
+        cell.border    = { bottom:{style:'thin',color:{argb:'FFE8F0F8'}}, right:{style:'hair',color:{argb:'FFD0DCE8'}} };
+      });
+    });
+
+    // Freeze header row
+    ws.views = [{ state:'frozen', ySplit:1, activeCell:'A2' }];
+
+    const fname = `${isInv?'Invoices':'PurchaseOrders'}_${new Date().toISOString().slice(0,10)}.xlsx`;
+    wb.xlsx.writeBuffer().then(buf => {
+      const blob = new Blob([buf], { type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+      const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = fname; a.click();
+      showToast('Excel exported ✓');
+    });
+  }
+
+  if (window.ExcelJS) { buildXlsx(window.ExcelJS); return; }
+  const s = document.createElement('script');
+  s.src = 'https://cdn.jsdelivr.net/npm/exceljs@4.3.0/dist/exceljs.min.js';
+  s.onload = () => buildXlsx(window.ExcelJS);
+  s.onerror = () => showToast('Failed to load Excel library', 'err');
+  document.head.appendChild(s);
 }
 function exportPDF() { window.print(); }
 
