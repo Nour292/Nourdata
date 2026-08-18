@@ -60,6 +60,7 @@ body.sb-collapsed #main-content{margin-left:52px;}
 .btn-add{background:#2e86c1;color:#fff;}
 .btn-csv{background:#117a65;color:#fff;}
 .btn-pdf{background:#5d4037;color:#fff;}
+.btn-copy{background:#1a6b8a;color:#fff;}
 #page-body{padding:20px 24px;flex:1;}
 
 /* ── Module Panel ── */
@@ -319,6 +320,7 @@ body.dark-mode .sug-item:hover{background:#1a2b3c!important;}
     <div id="page-title">🧾 Submitted Invoices</div>
     <div id="header-actions">
       <button class="hdr-btn" id="btn-bulk-add" onclick="openBulkModal()" style="background:#1a7a4a;color:#fff;border-color:#15623b;">📋 Bulk Add</button>
+      <button class="hdr-btn btn-copy" onclick="copyTable()">📋 Copy</button>
       <button class="hdr-btn btn-csv" onclick="exportCSV()">⬇️ Excel</button>
       <button class="hdr-btn btn-pdf" onclick="exportPDF()">🖨 PDF</button>
     </div>
@@ -1139,6 +1141,47 @@ function setView(v) {
 }
 
 // ─── Export ───────────────────────────────────────────────────────────────────
+async function copyTable() {
+  if (!generated) { showToast('Generate records first.', 'err'); return; }
+  const isInv = currentView === 'invoices';
+  const data = isInv ? getFilteredInvoices() : getFilteredPOs();
+  const cols = (isInv ? invCols : poCols).filter(c => c.on);
+  if (!data.length) { showToast('No records to copy.', 'err'); return; }
+
+  let html = '<table border="1" cellpadding="6" cellspacing="0" style="border-collapse:collapse;font-family:Calibri,sans-serif;font-size:11pt;">';
+  html += '<thead><tr>';
+  cols.forEach(c => {
+    html += `<th style="background:#1a2b3c;color:#ffffff;font-weight:bold;padding:8px 12px;text-align:left;border:1px solid #1a2b3c;">${escHtml(c.label)}</th>`;
+  });
+  html += '</tr></thead><tbody>';
+  data.forEach((row, idx) => {
+    const bg = idx % 2 === 0 ? '#ffffff' : '#f0f4f8';
+    html += `<tr>`;
+    cols.forEach(c => {
+      html += `<td style="padding:6px 12px;border:1px solid #d0dce8;background:${bg};">${escHtml(String(row[c.key]||''))}</td>`;
+    });
+    html += '</tr>';
+  });
+  html += '</tbody></table>';
+
+  const tsv = [
+    cols.map(c => c.label).join('\t'),
+    ...data.map(row => cols.map(c => String(row[c.key]||'')).join('\t'))
+  ].join('\n');
+
+  try {
+    await navigator.clipboard.write([
+      new ClipboardItem({
+        'text/html': new Blob([html], { type: 'text/html' }),
+        'text/plain': new Blob([tsv], { type: 'text/plain' })
+      })
+    ]);
+  } catch {
+    await navigator.clipboard.writeText(tsv);
+  }
+  showToast(`${data.length} row${data.length !== 1 ? 's' : ''} copied ✓`);
+}
+
 function exportCSV() {
   const isInv = currentView === 'invoices';
   if (!generated) { showToast('Generate records first.', 'err'); return; }
