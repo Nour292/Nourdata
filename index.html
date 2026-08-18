@@ -546,6 +546,7 @@ body.user-mode #snav-dashboard,
 body.user-mode #snav-deepsearch,
 body.user-mode #snav-lists,
 body.user-mode #filterButton { display: none !important; }
+body.user-mode .admin-only { display: none !important; }
 
 @media print {
   /* Hide everything except the card */
@@ -1151,6 +1152,14 @@ body.view-lists #card-area:empty::after { display: none !important; }
             <span class="sb-icon">➕</span><span class="sb-label">Add New Job</span>
           </button>
         </div>
+      </div>
+
+      <!-- ── Submitted Invoices (admin only) ── -->
+      <div class="sb-group admin-only">
+        <button class="sb-group-hdr" onclick="window.location.href='invoices.html'">
+          <span class="sb-icon">🧾</span>
+          <span class="sb-label">Submitted Invoices</span>
+        </button>
       </div>
 
     </nav>
@@ -3403,22 +3412,6 @@ function toggleSidebar() {
   const btn = document.getElementById('sb-toggle');
   btn.innerHTML = sb.classList.contains('collapsed') ? '&#9776;' : '&#10005;';
 }
-(function() {
-  const sb = document.getElementById('sidebar');
-  let _t = null;
-  if (!sb) return;
-  sb.addEventListener('mouseenter', function() {
-    clearTimeout(_t);
-    sb.classList.remove('collapsed');
-    document.body.classList.remove('sb-collapsed');
-  });
-  sb.addEventListener('mouseleave', function() {
-    _t = setTimeout(function() {
-      sb.classList.add('collapsed');
-      document.body.classList.add('sb-collapsed');
-    }, 300);
-  });
-})();
 
 function toggleFilterPanel() {
   const currentSection = document.body.className.match(/view-(\w+)/)?.[1];

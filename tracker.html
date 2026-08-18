@@ -584,22 +584,6 @@ function toggleSidebar() {
   document.body.classList.toggle('sb-collapsed');
   document.getElementById('sidebar').classList.toggle('collapsed');
 }
-(function() {
-  const sb = document.getElementById('sidebar');
-  let _t = null;
-  if (!sb) return;
-  sb.addEventListener('mouseenter', function() {
-    clearTimeout(_t);
-    sb.classList.remove('collapsed');
-    document.body.classList.remove('sb-collapsed');
-  });
-  sb.addEventListener('mouseleave', function() {
-    _t = setTimeout(function() {
-      sb.classList.add('collapsed');
-      document.body.classList.add('sb-collapsed');
-    }, 300);
-  });
-})();
 
 function toggleTrackerGroup() {
   const trkEl   = document.getElementById('grp-tracker');
