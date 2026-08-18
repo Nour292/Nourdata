@@ -496,6 +496,7 @@ let poCols  = PO_COLS_DEF.map(c => ({...c}));
 let invFilters = {}, poFilters = {};
 let liveSearchVal = '';
 let editingInvRow = null, editingPORow = null;
+let generated = false;
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 function escHtml(s) {
@@ -669,6 +670,11 @@ function renderTable() {
 }
 
 function renderInvoiceTable() {
+  if (!generated) {
+    document.getElementById('table-wrap').innerHTML = '<p style="text-align:center;padding:56px;color:#8fa8c0;font-size:14px;font-weight:600;">Set your filters and click <strong>Generate</strong> to load records.</p>';
+    document.getElementById('rec-count').textContent = '';
+    return;
+  }
   const vis = invCols.filter(c => c.on);
   const data = getFilteredInvoices();
   let html = '<table><thead><tr>';
@@ -697,6 +703,11 @@ function renderInvoiceTable() {
 }
 
 function renderPOTable() {
+  if (!generated) {
+    document.getElementById('table-wrap').innerHTML = '<p style="text-align:center;padding:56px;color:#8fa8c0;font-size:14px;font-weight:600;">Set your filters and click <strong>Generate</strong> to load records.</p>';
+    document.getElementById('rec-count').textContent = '';
+    return;
+  }
   const vis = poCols.filter(c => c.on);
   const data = getFilteredPOs();
   let html = '<table><thead><tr>';
@@ -779,6 +790,7 @@ function renderFilterPanel() {
 }
 
 function applyFilters() {
+  generated = true;
   const g = id => document.getElementById(id)?.value || '';
   if (currentView === 'invoices') {
     invFilters = {
@@ -796,6 +808,7 @@ function applyFilters() {
 }
 
 function resetFilters() {
+  generated = false;
   if (currentView === 'invoices') invFilters = {};
   else poFilters = {};
   liveSearchVal = '';
@@ -808,6 +821,7 @@ function resetFilters() {
 // ─── View switching ───────────────────────────────────────────────────────────
 function setView(v) {
   currentView = v;
+  generated = false;
   liveSearchVal = '';
   const s = document.getElementById('live-search');
   if (s) s.value = '';
