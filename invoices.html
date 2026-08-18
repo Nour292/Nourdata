@@ -122,6 +122,21 @@ body.dark-mode #search-clear-btn:hover{border-color:#e74c3c!important;color:#e74
 .tbl-btn{padding:3px 8px;font-size:14px;border:none;border-radius:5px;cursor:pointer;background:transparent;line-height:1;transition:background 0.15s;}
 .tbl-btn:hover{background:#f0f4f8;}
 .tbl-del:hover{background:#fee2e2;}
+
+/* ── Bulk Add ── */
+.bulk-modal-box{width:98vw;max-width:1400px;max-height:92vh;}
+#bulk-scroll{overflow:auto;flex:1;}
+#bulk-table{width:100%;border-collapse:collapse;font-size:12.5px;}
+#bulk-table th{background:#1a2b3c;color:#fff;padding:8px 10px;font-weight:700;text-align:left;white-space:nowrap;position:sticky;top:0;z-index:10;}
+#bulk-table td{padding:3px 5px;border-bottom:1px solid #e8f0f8;}
+#bulk-table tr:nth-child(even) td{background:#f7fafd;}
+.bulk-row-num{display:block;text-align:center;font-size:11px;color:#8fa8c0;font-weight:700;padding:4px 0;}
+.bulk-inp{width:100%;padding:5px 7px;font-size:12px;border:1.5px solid #d0dce8;border-radius:5px;font-family:'Calibri',sans-serif;background:#f7fafd;outline:none;box-sizing:border-box;}
+.bulk-inp:focus{border-color:#2e86c1;background:#fff;}
+.bulk-inp.err{border-color:#e74c3c!important;background:#fff5f5!important;}
+.bulk-desc-sug{position:absolute;top:100%;left:0;right:0;background:#fff;border:1.5px solid #d0dce8;border-top:none;border-radius:0 0 5px 5px;max-height:120px;overflow-y:auto;z-index:500;box-shadow:0 4px 12px rgba(0,0,0,0.12);}
+.bulk-desc-sug .sug-item{padding:5px 8px;font-size:12px;cursor:pointer;font-family:'Calibri',sans-serif;color:#2c3e50;}
+.bulk-desc-sug .sug-item:hover{background:#e8f4fd;}
 #loading-msg{text-align:center;padding:48px;color:#888;font-size:15px;}
 
 /* ── Autocomplete ── */
@@ -198,6 +213,14 @@ body.dark-mode #search-wrap{background:#1e2d3d!important;border-color:#2a3f54!im
 body.dark-mode #live-search{background:#162330!important;border-color:#2a3f54!important;color:#c8d8e8!important;}
 body.dark-mode #table-container{background:#1e2d3d!important;border-color:#2a3f54!important;}
 body.dark-mode #table-wrap td{color:#c8d8e8!important;border-color:#2a3d50!important;}
+body.dark-mode #bulk-table th{background:#0d1a28!important;}
+body.dark-mode #bulk-table td{border-color:#2a3d50!important;}
+body.dark-mode #bulk-table tr:nth-child(even) td{background:#162330!important;}
+body.dark-mode .bulk-inp{background:#162330!important;border-color:#2a3f54!important;color:#c8d8e8!important;}
+body.dark-mode .bulk-inp:focus{background:#1a2b3c!important;}
+body.dark-mode .bulk-desc-sug{background:#162330!important;border-color:#2a3f54!important;}
+body.dark-mode .bulk-desc-sug .sug-item{color:#c8d8e8!important;}
+body.dark-mode .bulk-desc-sug .sug-item:hover{background:#1e3448!important;}
 body.dark-mode #table-wrap tr:nth-child(odd) td{background:#1a2b3c!important;}
 body.dark-mode #table-wrap tr:nth-child(even) td{background:#162330!important;}
 body.dark-mode #table-wrap tr:hover td{background:#1e3a52!important;}
@@ -295,6 +318,7 @@ body.dark-mode .sug-item:hover{background:#1a2b3c!important;}
     <div id="page-title">🧾 Submitted Invoices</div>
     <div id="header-actions">
       <button class="hdr-btn btn-add" id="btn-add" onclick="openAddInvModal()">➕ Add Invoice</button>
+      <button class="hdr-btn" id="btn-bulk-add" onclick="openBulkModal()" style="background:#1a7a4a;color:#fff;border-color:#15623b;">📋 Bulk Add</button>
       <button class="hdr-btn btn-csv" onclick="exportCSV()">⬇️ Excel</button>
       <button class="hdr-btn btn-pdf" onclick="exportPDF()">🖨 PDF</button>
     </div>
@@ -389,6 +413,44 @@ body.dark-mode .sug-item:hover{background:#1a2b3c!important;}
     <div class="modal-footer">
       <button class="modal-btn modal-btn-cancel" onclick="closeInvModal()">Cancel</button>
       <button class="modal-btn modal-btn-save" id="inv-save-btn" onclick="saveInvoice()">💾 Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── Bulk Add Modal ── -->
+<div id="bulk-modal" class="modal-overlay">
+  <div class="modal-box bulk-modal-box">
+    <div class="modal-header">
+      <div class="modal-title">📋 Bulk Add Invoices</div>
+      <div style="display:flex;gap:12px;align-items:center;">
+        <span id="bulk-progress" style="font-size:12px;color:#8fa8c0;display:none;font-weight:700;"></span>
+        <button class="modal-close" onclick="closeBulkModal()">✕</button>
+      </div>
+    </div>
+    <div class="modal-body" style="padding:0;overflow:hidden;display:flex;flex-direction:column;flex:1;">
+      <div id="bulk-scroll">
+        <table id="bulk-table">
+          <thead>
+            <tr>
+              <th style="width:32px;">#</th>
+              <th style="min-width:130px;">Date *</th>
+              <th style="min-width:220px;">Description *</th>
+              <th style="min-width:140px;">Invoice Number *</th>
+              <th style="min-width:110px;">Amount *</th>
+              <th style="min-width:150px;">Purchase Order</th>
+              <th style="min-width:110px;">Batch Number</th>
+            </tr>
+          </thead>
+          <tbody id="bulk-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+    <div class="modal-footer" style="gap:8px;">
+      <button class="modal-btn modal-btn-cancel" onclick="addBulkRows(10)">+ 10 Rows</button>
+      <div style="flex:1;"></div>
+      <button class="modal-btn modal-btn-cancel" onclick="clearBulkRows()">🗑 Clear All</button>
+      <button class="modal-btn modal-btn-cancel" onclick="closeBulkModal()">Cancel</button>
+      <button class="modal-btn modal-btn-save" id="bulk-save-btn" onclick="saveBulkInvoices()">💾 Save All</button>
     </div>
   </div>
 </div>
@@ -1405,6 +1467,130 @@ async function deletePO(row) {
   });
 }
 
+// ─── Bulk Add ─────────────────────────────────────────────────────────────────
+const BULK_INITIAL_ROWS = 30;
+
+function openBulkModal() {
+  const tbody = document.getElementById('bulk-tbody');
+  tbody.innerHTML = '';
+  for (let i = 0; i < BULK_INITIAL_ROWS; i++) _addBulkRow(tbody, i + 1);
+  document.getElementById('bulk-modal').classList.add('open');
+}
+
+function closeBulkModal() {
+  document.getElementById('bulk-modal').classList.remove('open');
+}
+
+function addBulkRows(n) {
+  const tbody = document.getElementById('bulk-tbody');
+  const start = tbody.querySelectorAll('tr').length;
+  for (let i = 0; i < n; i++) _addBulkRow(tbody, start + i + 1);
+  document.getElementById('bulk-scroll').scrollTop = 99999;
+}
+
+function _addBulkRow(tbody, num) {
+  const tr = document.createElement('tr');
+  tr.innerHTML = `
+    <td><span class="bulk-row-num">${num}</span></td>
+    <td><input type="date" class="bulk-inp bulk-date" onchange="onBulkDateChange(this)"></td>
+    <td style="position:relative;">
+      <input type="text" class="bulk-inp bulk-desc" oninput="onBulkDescInput(this)" autocomplete="off" onblur="hideBulkDescSug(this)">
+      <div class="bulk-desc-sug" style="display:none;"></div>
+    </td>
+    <td><input type="text" class="bulk-inp bulk-invno"></td>
+    <td><input type="number" class="bulk-inp bulk-amount" step="0.01" placeholder="0.00"></td>
+    <td><input type="text" class="bulk-inp bulk-po"></td>
+    <td><input type="text" class="bulk-inp bulk-batch" placeholder="Auto"></td>`;
+  tbody.appendChild(tr);
+}
+
+function clearBulkRows() {
+  document.querySelectorAll('#bulk-tbody .bulk-inp').forEach(inp => { inp.value = ''; inp.classList.remove('err'); });
+  document.querySelectorAll('#bulk-tbody .bulk-desc-sug').forEach(s => s.style.display = 'none');
+}
+
+function onBulkDateChange(input) {
+  const row = input.closest('tr');
+  const dateVal = input.value;
+  if (!dateVal) return;
+  let batchFromOther = null;
+  document.querySelectorAll('#bulk-tbody tr').forEach(r => {
+    if (r === row) return;
+    const d = r.querySelector('.bulk-date'), b = r.querySelector('.bulk-batch');
+    if (d && b && d.value === dateVal && b.value) batchFromOther = b.value;
+  });
+  row.querySelector('.bulk-batch').value = batchFromOther || getAutoBatchNumber(dateVal);
+}
+
+function onBulkDescInput(input) {
+  const sug = input.nextElementSibling;
+  const val = input.value;
+  if (!val || val.length < 2) { sug.style.display = 'none'; return; }
+  const q = val.toLowerCase();
+  const seen = new Set(), matches = [];
+  for (const inv of invoices) {
+    if (inv.description && inv.description.toLowerCase().includes(q) && !seen.has(inv.description)) {
+      seen.add(inv.description); matches.push(inv.description);
+      if (matches.length >= 8) break;
+    }
+  }
+  if (!matches.length) { sug.style.display = 'none'; return; }
+  sug.innerHTML = matches.map(s => `<div class="sug-item" data-val="${escHtml(s)}" onmousedown="selectBulkDesc(this)">${escHtml(s)}</div>`).join('');
+  sug.style.display = 'block';
+}
+
+function selectBulkDesc(el) {
+  el.parentElement.previousElementSibling.value = el.dataset.val;
+  el.parentElement.style.display = 'none';
+}
+
+function hideBulkDescSug(input) {
+  setTimeout(() => { if (input.nextElementSibling) input.nextElementSibling.style.display = 'none'; }, 150);
+}
+
+async function saveBulkInvoices() {
+  const toSave = [], errRows = [];
+  document.querySelectorAll('#bulk-tbody tr').forEach(row => {
+    const date   = row.querySelector('.bulk-date')?.value;
+    const desc   = row.querySelector('.bulk-desc')?.value.trim();
+    const invno  = row.querySelector('.bulk-invno')?.value.trim();
+    const amount = row.querySelector('.bulk-amount')?.value.trim();
+    const po     = row.querySelector('.bulk-po')?.value.trim();
+    const batch  = row.querySelector('.bulk-batch')?.value.trim();
+    if (!date && !desc && !invno && !amount) return; // blank row — skip
+    let hasErr = false;
+    [['bulk-date', date], ['bulk-desc', desc], ['bulk-invno', invno], ['bulk-amount', amount]].forEach(([cls, val]) => {
+      const el = row.querySelector(`.${cls}`);
+      if (!val) { el.classList.add('err'); hasErr = true; }
+      else el.classList.remove('err');
+    });
+    if (hasErr) { errRows.push(row); return; }
+    toSave.push({ date: fmtForSheet(date), description: desc, invoiceNumber: invno, amount, purchaseOrder: po, batchNumber: batch });
+  });
+
+  if (errRows.length) { showToast(`Fix ${errRows.length} incomplete row${errRows.length>1?'s':''}`, 'err'); return; }
+  if (!toSave.length) { showToast('No invoices to save', 'err'); return; }
+
+  const btn = document.getElementById('bulk-save-btn');
+  const prog = document.getElementById('bulk-progress');
+  btn.disabled = true; prog.style.display = 'inline';
+
+  let saved = 0, failed = 0;
+  for (const inv of toSave) {
+    prog.textContent = `Saving ${saved + failed + 1} / ${toSave.length}…`;
+    try {
+      await fetch(GS_WRITE_URL, { method:'POST', redirect:'follow', body: JSON.stringify({ action:'addInvoice', ...inv }) });
+      saved++;
+    } catch { failed++; }
+  }
+
+  btn.disabled = false; prog.style.display = 'none';
+  closeBulkModal();
+  await loadInvoices();
+  renderTable();
+  showToast(failed ? `Saved ${saved}, ${failed} failed` : `${saved} invoice${saved!==1?'s':''} saved ✓`);
+}
+
 // ─── Toast ────────────────────────────────────────────────────────────────────
 function showToast(msg, type='ok') {
   const t = document.getElementById('save-toast');
@@ -1480,9 +1666,13 @@ window.addEventListener('DOMContentLoaded', async () => {
     if (e.target === document.getElementById('po-modal')) closePOModal();
   });
 
+  document.getElementById('bulk-modal').addEventListener('click', e => {
+    if (e.target === document.getElementById('bulk-modal')) closeBulkModal();
+  });
+
   // ESC key closes modals
   document.addEventListener('keydown', e => {
-    if (e.key === 'Escape') { closeInvModal(); closePOModal(); }
+    if (e.key === 'Escape') { closeInvModal(); closePOModal(); closeBulkModal(); }
   });
 });
 </script>
