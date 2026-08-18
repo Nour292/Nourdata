@@ -126,7 +126,8 @@ body.dark-mode #search-clear-btn:hover{border-color:#e74c3c!important;color:#e74
 /* ── Bulk Add ── */
 .bulk-modal-box{width:98vw;max-width:1400px;max-height:92vh;}
 #bulk-scroll{overflow:auto;flex:1;}
-#bulk-table{width:100%;border-collapse:collapse;font-size:12.5px;}
+#bulk-table{width:100%;border-collapse:collapse;font-size:12.5px;table-layout:fixed;}
+#bulk-scroll{overflow-y:auto;overflow-x:hidden;}
 #bulk-table th{background:#1a2b3c;color:#fff;padding:8px 10px;font-weight:700;text-align:left;white-space:nowrap;position:sticky;top:0;z-index:10;}
 #bulk-table td{padding:3px 5px;border-bottom:1px solid #e8f0f8;}
 #bulk-table tr:nth-child(even) td{background:#f7fafd;}
@@ -432,13 +433,13 @@ body.dark-mode .sug-item:hover{background:#1a2b3c!important;}
         <table id="bulk-table">
           <thead>
             <tr>
-              <th style="width:32px;">#</th>
-              <th style="min-width:130px;">Date *</th>
-              <th style="min-width:220px;">Description *</th>
-              <th style="min-width:140px;">Invoice Number *</th>
-              <th style="min-width:110px;">Amount *</th>
-              <th style="min-width:150px;">Purchase Order</th>
-              <th style="min-width:110px;">Batch Number</th>
+              <th style="width:3%;">#</th>
+              <th style="width:14%;">Date *</th>
+              <th style="width:27%;">Description *</th>
+              <th style="width:16%;">Invoice Number *</th>
+              <th style="width:10%;">Amount *</th>
+              <th style="width:16%;">Purchase Order</th>
+              <th style="width:14%;">Batch Number</th>
             </tr>
           </thead>
           <tbody id="bulk-tbody"></tbody>
@@ -1474,6 +1475,10 @@ function openBulkModal() {
   const tbody = document.getElementById('bulk-tbody');
   tbody.innerHTML = '';
   for (let i = 0; i < BULK_INITIAL_ROWS; i++) _addBulkRow(tbody, i + 1);
+  const today = new Date().toISOString().slice(0, 10);
+  const todayBatch = String(getAutoBatchNumber(today));
+  tbody.querySelectorAll('.bulk-date').forEach(inp => inp.value = today);
+  tbody.querySelectorAll('.bulk-batch').forEach(inp => inp.value = todayBatch);
   document.getElementById('bulk-modal').classList.add('open');
 }
 
