@@ -74,12 +74,11 @@ body.sb-collapsed #main-content{margin-left:52px;}
 .col-check:hover{border-color:#2e86c1;background:#f0f8ff;}
 .col-check input{width:13px;height:13px;cursor:pointer;accent-color:#2e86c1;}
 .filter-divider{border:none;border-top:1px solid #e8f0f8;margin:12px 0;}
-.filter-row{display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end;}
-.filter-field{display:flex;flex-direction:column;gap:4px;}
+.filter-row{display:flex;flex-wrap:nowrap;gap:10px;align-items:flex-end;}
+.filter-field{display:flex;flex-direction:column;gap:4px;flex:1;min-width:0;}
 .filter-field label{font-size:11px;font-weight:700;color:#5a7a9a;text-transform:uppercase;letter-spacing:0.4px;}
-.filter-field input,.filter-field select{padding:7px 10px;font-size:13px;border:1.5px solid #d0dce8;border-radius:7px;font-family:'Calibri',sans-serif;background:#f7fafd;outline:none;min-width:140px;}
+.filter-field input,.filter-field select{padding:7px 10px;font-size:13px;border:1.5px solid #d0dce8;border-radius:7px;font-family:'Calibri',sans-serif;background:#f7fafd;outline:none;width:100%;box-sizing:border-box;}
 .filter-field input:focus,.filter-field select:focus{border-color:#2e86c1;background:#fff;}
-.filter-field-wide input{min-width:200px;}
 .filter-sug-list{position:absolute;top:100%;left:0;right:0;background:#fff;border:1.5px solid #d0dce8;border-top:none;border-radius:0 0 7px 7px;max-height:180px;overflow-y:auto;z-index:300;box-shadow:0 4px 12px rgba(0,0,0,0.12);}
 .filter-sug-item{padding:7px 10px;font-size:13px;cursor:pointer;font-family:'Calibri',sans-serif;color:#2c3e50;}
 .filter-sug-item:hover{background:#e8f4fd;}
@@ -790,14 +789,24 @@ function renderFilterPanel() {
     panel.innerHTML = `<div class="filter-row">
       <div class="filter-field"><label>Date From</label><input type="date" id="ff-datefrom" value="${f.dateFrom||''}"></div>
       <div class="filter-field"><label>Date To</label><input type="date" id="ff-dateto" value="${f.dateTo||''}"></div>
-      <div class="filter-field filter-field-wide"><label>Description</label>
+      <div class="filter-field"><label>Description</label>
         <div style="position:relative;">
-          <input type="text" id="ff-desc" placeholder="Partial match…" value="${escHtml(f.description||'')}" oninput="onFilterDescInput(this.value)" autocomplete="off" onblur="hideFilterDescSug()">
+          <input type="text" id="ff-desc" placeholder="Partial match…" value="${escHtml(f.description||'')}" oninput="onFilterTextInput('ff-desc','ff-desc-sug','description',this.value)" autocomplete="off" onblur="hideFilterSug('ff-desc-sug')">
           <div id="ff-desc-sug" class="filter-sug-list" style="display:none;"></div>
         </div>
       </div>
-      <div class="filter-field"><label>Invoice Number</label><input type="text" id="ff-invno" placeholder="Partial match…" value="${escHtml(f.invoiceNumber||'')}"></div>
-      <div class="filter-field"><label>Purchase Order</label><input type="text" id="ff-po" placeholder="Partial match…" value="${escHtml(f.purchaseOrder||'')}"></div>
+      <div class="filter-field"><label>Invoice Number</label>
+        <div style="position:relative;">
+          <input type="text" id="ff-invno" placeholder="Partial match…" value="${escHtml(f.invoiceNumber||'')}" oninput="onFilterTextInput('ff-invno','ff-invno-sug','invoiceNumber',this.value)" autocomplete="off" onblur="hideFilterSug('ff-invno-sug')">
+          <div id="ff-invno-sug" class="filter-sug-list" style="display:none;"></div>
+        </div>
+      </div>
+      <div class="filter-field"><label>Purchase Order</label>
+        <div style="position:relative;">
+          <input type="text" id="ff-po" placeholder="Partial match…" value="${escHtml(f.purchaseOrder||'')}" oninput="onFilterTextInput('ff-po','ff-po-sug','purchaseOrder',this.value)" autocomplete="off" onblur="hideFilterSug('ff-po-sug')">
+          <div id="ff-po-sug" class="filter-sug-list" style="display:none;"></div>
+        </div>
+      </div>
       <div class="filter-field"><label>Batch Number</label>
         <div class="multi-select-wrap">
           <button type="button" class="multi-select-btn" id="batch-ms-btn" onclick="toggleBatchPanel(event)">
@@ -885,37 +894,38 @@ function resetFilters() {
   renderTable();
 }
 
-// ─── Filter: Description autocomplete ────────────────────────────────────────
-function onFilterDescInput(val) {
-  const sug = document.getElementById('ff-desc-sug');
+// ─── Filter: Text field autocomplete (shared) ────────────────────────────────
+function onFilterTextInput(inputId, sugId, dataKey, val) {
+  const sug = document.getElementById(sugId);
   if (!sug) return;
   if (!val || val.length < 2) { sug.style.display = 'none'; return; }
   const q = val.toLowerCase();
   const seen = new Set();
   const matches = [];
   for (const inv of invoices) {
-    if (inv.description && inv.description.toLowerCase().includes(q) && !seen.has(inv.description)) {
-      seen.add(inv.description);
-      matches.push(inv.description);
+    const v = inv[dataKey];
+    if (v && String(v).toLowerCase().includes(q) && !seen.has(v)) {
+      seen.add(v);
+      matches.push(String(v));
       if (matches.length >= 10) break;
     }
   }
   if (!matches.length) { sug.style.display = 'none'; return; }
   sug.innerHTML = matches.map(s =>
-    `<div class="filter-sug-item" data-val="${escHtml(s)}" onmousedown="selectFilterDesc(this.dataset.val)">${escHtml(s)}</div>`
+    `<div class="filter-sug-item" data-val="${escHtml(s)}" onmousedown="selectFilterText('${inputId}','${sugId}',this.dataset.val)">${escHtml(s)}</div>`
   ).join('');
   sug.style.display = 'block';
 }
 
-function selectFilterDesc(val) {
-  const input = document.getElementById('ff-desc');
+function selectFilterText(inputId, sugId, val) {
+  const input = document.getElementById(inputId);
   if (input) input.value = val;
-  hideFilterDescSug();
+  hideFilterSug(sugId);
 }
 
-function hideFilterDescSug() {
+function hideFilterSug(sugId) {
   setTimeout(() => {
-    const sug = document.getElementById('ff-desc-sug');
+    const sug = document.getElementById(sugId);
     if (sug) sug.style.display = 'none';
   }, 150);
 }
@@ -1305,10 +1315,10 @@ window.addEventListener('DOMContentLoaded', async () => {
       const panel = document.getElementById('batch-ms-panel');
       if (panel) panel.style.display = 'none';
     }
-    if (!e.target.closest('#ff-desc') && !e.target.closest('#ff-desc-sug')) {
-      const sug = document.getElementById('ff-desc-sug');
-      if (sug) sug.style.display = 'none';
-    }
+    ['ff-desc-sug','ff-invno-sug','ff-po-sug'].forEach(id => {
+      const sug = document.getElementById(id);
+      if (sug && !e.target.closest(`[id="${id}"]`) && !e.target.closest(`#${id.replace('-sug','')}`)) sug.style.display = 'none';
+    });
   });
 
   // Close modals on backdrop click
