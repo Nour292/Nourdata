@@ -240,6 +240,7 @@ body.dark-mode #confirm-msg{color:#e0e0e0!important;}
 .cal-btn input[type="date"] { position: absolute; opacity: 0; width: 0; height: 0; pointer-events: none; }
 
 body.user-mode .tracker-delete-btn { display: none !important; }
+body.user-mode .admin-only { display: none !important; }
 @media print{#sidebar,#top-header,#smart-search-bar,#stats-bar,.card-footer-bar,#modal-overlay,#status-modal{display:none!important;}#main-content{margin-left:0!important;}.job-card{break-inside:avoid;border:1px solid #ddd;}}
 </style>
 </head>
@@ -287,7 +288,7 @@ body.user-mode .tracker-delete-btn { display: none !important; }
     </div>
 
     <!-- Submitted Invoices -->
-    <div class="sb-group">
+    <div class="sb-group admin-only">
       <button class="sb-group-hdr" onclick="window.location.href='invoices.html'">
         <span class="sb-icon">🧾</span>
         <span class="sb-label">Submitted Invoices</span>
