@@ -170,6 +170,7 @@ body.dark-mode .col-check{background:#162330!important;border-color:#2a3f54!impo
 body.dark-mode .col-check:hover{border-color:#2e86c1!important;background:#1a2b3c!important;}
 body.dark-mode .filter-field label{color:#8fa8c0!important;}
 body.dark-mode .filter-field input,body.dark-mode .filter-field select{background:#162330!important;border-color:#2a3f54!important;color:#c8d8e8!important;}
+body.dark-mode input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.7) brightness(2);cursor:pointer;}
 body.dark-mode .filter-divider{border-color:#2a3f54!important;}
 body.dark-mode .btn-reset{background:#162330!important;border-color:#2a3f54!important;color:#c8d8e8!important;}
 body.dark-mode #search-wrap{background:#1e2d3d!important;border-color:#2a3f54!important;}
@@ -307,7 +308,7 @@ body.dark-mode .sug-item:hover{background:#1a2b3c!important;}
     <!-- ── Search bar ── -->
     <div id="search-wrap">
       <span style="color:#5a7a9a;font-size:16px;">🔍</span>
-      <input type="text" id="live-search" placeholder="Type to search all visible records…" oninput="liveSearchVal=this.value;renderTable()" autocomplete="off" spellcheck="false">
+      <input type="text" id="live-search" placeholder="Type to search all visible records…" oninput="onLiveSearch(this.value)" autocomplete="off" spellcheck="false">
       <span id="rec-count" style="color:#888;font-size:12px;font-weight:600;white-space:nowrap;"></span>
     </div>
 
@@ -789,6 +790,12 @@ function renderFilterPanel() {
   }
 }
 
+function onLiveSearch(val) {
+  liveSearchVal = val;
+  if (val.trim()) generated = true;
+  renderTable();
+}
+
 function applyFilters() {
   generated = true;
   const g = id => document.getElementById(id)?.value || '';
@@ -1105,22 +1112,6 @@ window.addEventListener('DOMContentLoaded', async () => {
 
   applyTheme();
 
-  // Sidebar hover collapse
-  const sb = document.getElementById('sidebar');
-  let _sbTimer = null;
-  sb.addEventListener('mouseenter', () => {
-    clearTimeout(_sbTimer);
-    sb.classList.remove('collapsed');
-    document.body.classList.remove('sb-collapsed');
-  });
-  sb.addEventListener('mouseleave', () => {
-    _sbTimer = setTimeout(() => {
-      sb.classList.add('collapsed');
-      document.body.classList.add('sb-collapsed');
-    }, 300);
-  });
-  sb.classList.add('collapsed');
-  document.body.classList.add('sb-collapsed');
 
   // Load data
   const loadingEl = document.getElementById('loading-msg');
