@@ -563,6 +563,14 @@ function fmtForSheet(inputDate) {
   return `${d.getDate()}-${mo[d.getMonth()]}-${d.getFullYear()}`;
 }
 
+function fmtForPO(val) {
+  if (!val) return '';
+  if (/^Po\s*-\s*/i.test(val)) return val;
+  const num = val.replace(/\D/g, '');
+  if (!num) return val;
+  return 'Po - ' + num.padStart(6, '0');
+}
+
 function parseDisplayDate(s) {
   if (!s) return null;
   const mo = {Jan:0,Feb:1,Mar:2,Apr:3,May:4,Jun:5,Jul:6,Aug:7,Sep:8,Oct:9,Nov:10,Dec:11};
@@ -1410,7 +1418,7 @@ async function saveBulkInvoices() {
       else el.classList.remove('err');
     });
     if (hasErr) { errRows.push(row); return; }
-    toSave.push({ date: fmtForSheet(date), description: desc, invoiceNumber: invno, amount, purchaseOrder: po, batchNumber: batch });
+    toSave.push({ date: fmtForSheet(date), description: desc, invoiceNumber: invno, amount, purchaseOrder: fmtForPO(po), batchNumber: batch });
   });
 
   if (errRows.length) { showToast(`Fix ${errRows.length} incomplete row${errRows.length>1?'s':''}`, 'err'); return; }
