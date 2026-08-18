@@ -1,0 +1,1149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<link rel="icon" type="image/png" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAVtElEQVR42u2beXRd1ZXmf3d47977Bg1PA5IsWcLtseMRDHEY7HggjgkVBuN46oiYYJPExqFpGigWKyEVzMoqcLqAihNiGw9xIEwLBzBFlQeagCsYG8/gASGENVjz8OY7nv7j6b2YNHRbtkxSK3W03h9Pujr3nr332d93vr2vJIQQXKDhui6fNb0kSZ95/eddqyjKhXpEpAtlACHE5y70r2G+7FAHe9HpdBrTNCkoKGDTpk3s3bsXwzCQJAlVVZFlOffJ2l4Iged5n/rEYjHS6TSVlZXcdNNNjB8/HkmSkGX5rzMCXNdFURS2bt3KqFGjGDNmDFOmTGHPnj3ouo7P50PXdfx+Pz6fiqKoSJKEEALXdXEcB8dxiEb7SCZTDBkyhCVLljBv3jxGjRqFpmkXZAuog+V5WZaJxWJs2bKFzZs347ousiwzdOhQiouLMQwDwzBQVT+KqqDIMiABAgTYjkNPTzfFxcUsWDCfuXPnout67h7vvfceI0aMIBwO/z/zyECHPFielySJDRs20NzcTCAQoKenF0mSKCuvoKi4hMKCCKFgmGAwSMAIoBsBDMMgGAwhyQqapnHrrd9ly5YtLF68GF3XEULw5ptvsmDBAiZPnszGjRuRJAnP8/56toAQAiEEjuMwYsQIZs2axfr16/nkk0+4/fbb8fn8+DUdxafi8/nwKSqyoiDLErKiEI/Hqa6q4pbaWkaPHpWb98SJE2zcuIFt216jq6uLRCJBSUkJ+/fvJxQKDVoUqIPhfVVVef755zl16hRjx44FwDRNdN3A0AP4NT+K5kdVMwZQVBVFlkmmkmzdeipLF8zHQCfXi/wBqXi7IIvwAAAAASUVORK5CYII=">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#1a6fa8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<title>Nour Energy — Submitted Invoices</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html,body{font-family:'Calibri',sans-serif;background:#f0f4f8;min-height:100vh;}
+#layout{display:flex;min-height:100vh;}
+
+/* ── Sidebar ── */
+#sidebar{width:220px;min-width:220px;background:#1a2b3c;display:flex;flex-direction:column;position:fixed;top:0;left:0;bottom:0;z-index:200;transition:width 0.25s ease,min-width 0.25s ease;overflow:hidden;}
+#sidebar.collapsed{width:52px;min-width:52px;}
+#sb-header{display:flex;align-items:center;gap:10px;padding:14px 12px;border-bottom:1px solid rgba(255,255,255,0.08);min-height:58px;}
+#sidebar.collapsed #sb-header{padding:14px 0;justify-content:center;}
+#sb-logo{width:60px;height:60px;border-radius:50%;object-fit:contain;flex-shrink:0;background:#fff;padding:4px;}
+#sidebar.collapsed #sb-logo{display:none;}
+#sb-title{font-size:14px;font-weight:700;color:#fff;white-space:nowrap;flex:1;line-height:1.3;}
+#sb-title small{display:block;font-size:11px;font-weight:400;color:#8fa8c0;}
+#sidebar.collapsed #sb-title{opacity:0;width:0;flex:0;}
+#sb-toggle{width:30px;height:30px;background:rgba(255,255,255,0.1);border:none;border-radius:6px;color:#fff;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-left:auto;}
+#sb-toggle:hover{background:rgba(255,255,255,0.2);}
+#sidebar.collapsed #sb-toggle{margin-left:0;width:36px;height:36px;}
+#sb-nav{flex:1;padding:4px 0;overflow-y:auto;}
+.sb-group{border-bottom:1px solid rgba(255,255,255,0.06);}
+.sb-group-hdr{display:flex;align-items:center;gap:10px;width:100%;padding:11px 16px;background:none;border:none;color:#8fa8c0;font-size:13px;font-weight:700;cursor:pointer;text-align:left;white-space:nowrap;transition:background 0.15s,color 0.15s;}
+.sb-group-hdr:hover{background:rgba(255,255,255,0.05);color:#fff;}
+.sb-group-hdr.active-group{color:#fff;}
+.sb-group-items{background:rgba(0,0,0,0.15);}
+.sb-item{display:flex;align-items:center;gap:12px;padding:9px 16px 9px 32px;cursor:pointer;color:#b8cfe0;font-size:13px;font-weight:600;border:none;background:none;width:100%;text-align:left;white-space:nowrap;transition:background 0.15s,color 0.15s;}
+.sb-item:hover{background:rgba(255,255,255,0.07);color:#fff;}
+.sb-item.active{background:rgba(46,134,193,0.22);color:#fff;border-left:3px solid #2e86c1;}
+.sb-icon{font-size:16px;flex-shrink:0;width:20px;text-align:center;}
+.sb-label{transition:opacity 0.2s;}
+#sidebar.collapsed .sb-label{opacity:0;width:0;overflow:hidden;}
+#sidebar.collapsed .sb-item{padding:9px 0;justify-content:center;}
+#sidebar.collapsed .sb-group-hdr{padding:11px 0;justify-content:center;}
+#sidebar.collapsed .sb-group-items{display:none!important;}
+#sb-footer{padding:10px;border-top:1px solid rgba(255,255,255,0.08);}
+#sb-logout{display:flex;align-items:center;gap:10px;width:100%;padding:9px 12px;background:rgba(231,76,60,0.15);border:1px solid rgba(231,76,60,0.3);border-radius:7px;color:#e74c3c;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap;}
+#sb-logout:hover{background:rgba(231,76,60,0.28);}
+#sidebar.collapsed #sb-logout{justify-content:center;padding:9px;}
+#sidebar.collapsed #sb-logout-label{display:none;}
+
+/* ── Main ── */
+#main-content{margin-left:220px;flex:1;display:flex;flex-direction:column;min-height:100vh;transition:margin-left 0.25s;background:#f0f4f8;}
+body.sb-collapsed #main-content{margin-left:52px;}
+#top-header{background:#fff;border-bottom:1px solid #e0e8f0;padding:12px 24px;display:flex;align-items:center;gap:16px;position:sticky;top:0;z-index:100;box-shadow:0 1px 4px rgba(0,0,0,0.06);}
+#page-title{font-size:18px;font-weight:700;color:#1a2b3c;}
+#header-actions{display:flex;gap:8px;margin-left:auto;}
+.hdr-btn{height:36px;padding:0 16px;font-family:'Calibri',sans-serif;font-size:13px;font-weight:700;border:none;border-radius:8px;cursor:pointer;display:flex;align-items:center;gap:6px;transition:filter 0.15s;}
+.hdr-btn:hover{filter:brightness(1.1);}
+.btn-add{background:#2e86c1;color:#fff;}
+.btn-csv{background:#117a65;color:#fff;}
+.btn-pdf{background:#5d4037;color:#fff;}
+#page-body{padding:20px 24px;flex:1;}
+
+/* ── Module Panel ── */
+#module-panel{background:#fff;border-radius:12px;padding:16px 18px;margin-bottom:16px;box-shadow:0 1px 8px rgba(0,0,0,0.08);border:1px solid #e0e8f0;}
+.mp-section-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
+.mp-section-hdr span{font-size:13px;font-weight:700;color:#1a2b3c;}
+.mp-btn-group{display:flex;gap:6px;}
+.mp-sm-btn{padding:4px 12px;font-size:12px;font-weight:700;border:1.5px solid #d0dce8;border-radius:6px;background:#f7fafd;color:#5a7a9a;cursor:pointer;font-family:'Calibri',sans-serif;}
+.mp-sm-btn:hover{border-color:#2e86c1;color:#2e86c1;}
+#col-checks{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:4px;}
+.col-check{display:flex;align-items:center;gap:5px;font-size:12px;font-weight:600;color:#1a2b3c;cursor:pointer;padding:4px 11px;border:1.5px solid #d0dce8;border-radius:20px;background:#f7fafd;user-select:none;transition:all 0.15s;}
+.col-check:hover{border-color:#2e86c1;background:#f0f8ff;}
+.col-check input{width:13px;height:13px;cursor:pointer;accent-color:#2e86c1;}
+.filter-divider{border:none;border-top:1px solid #e8f0f8;margin:12px 0;}
+.filter-row{display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end;}
+.filter-field{display:flex;flex-direction:column;gap:4px;}
+.filter-field label{font-size:11px;font-weight:700;color:#5a7a9a;text-transform:uppercase;letter-spacing:0.4px;}
+.filter-field input,.filter-field select{padding:7px 10px;font-size:13px;border:1.5px solid #d0dce8;border-radius:7px;font-family:'Calibri',sans-serif;background:#f7fafd;outline:none;min-width:140px;}
+.filter-field input:focus,.filter-field select:focus{border-color:#2e86c1;background:#fff;}
+.filter-field-wide input{min-width:200px;}
+.filter-btns{display:flex;gap:8px;padding-top:18px;}
+.btn-generate{padding:8px 20px;background:#2e86c1;color:#fff;border:none;border-radius:7px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Calibri',sans-serif;}
+.btn-generate:hover{filter:brightness(1.1);}
+.btn-reset{padding:8px 16px;background:#f0f4f8;color:#1a2b3c;border:1.5px solid #d0dce8;border-radius:7px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Calibri',sans-serif;}
+.btn-reset:hover{background:#e8eef5;}
+
+/* ── Search + count bar ── */
+#search-wrap{display:flex;align-items:center;gap:10px;background:#fff;border-radius:10px;padding:10px 14px;margin-bottom:14px;box-shadow:0 1px 6px rgba(0,0,0,0.06);border:1px solid #e0e8f0;}
+#live-search{flex:1;border:1.5px solid #d0dce8;border-radius:7px;padding:8px 12px;font-size:14px;font-family:'Calibri',sans-serif;background:#f7fafd;outline:none;}
+#live-search:focus{border-color:#2e86c1;background:#fff;box-shadow:0 0 0 3px rgba(46,134,193,0.1);}
+#rec-count{font-size:12px;color:#888;font-weight:600;white-space:nowrap;}
+
+/* ── Table container ── */
+#table-container{background:#fff;border-radius:12px;padding:16px;box-shadow:0 1px 8px rgba(0,0,0,0.08);border:1px solid #e0e8f0;}
+#table-wrap{overflow-x:auto;}
+#table-wrap table{width:100%;border-collapse:collapse;font-size:13px;}
+#table-wrap th{background:#1a2b3c;color:#fff;padding:9px 12px;font-weight:700;text-align:left;white-space:nowrap;position:sticky;top:0;}
+#table-wrap td{padding:8px 12px;border-bottom:1px solid #e8f0f8;vertical-align:middle;}
+#table-wrap tr:nth-child(even) td{background:#f7fafd;}
+#table-wrap tr:hover td{background:#e8f3fd;}
+.dup-inv{color:#e74c3c!important;font-weight:700;}
+.inv-yes{color:#27ae60;font-weight:700;}
+.inv-no{color:#e74c3c;font-weight:700;}
+.empty-cell{text-align:center;color:#aab;padding:48px!important;font-size:14px;}
+.tbl-actions{white-space:nowrap;text-align:right;}
+.tbl-btn{padding:3px 8px;font-size:14px;border:none;border-radius:5px;cursor:pointer;background:transparent;line-height:1;transition:background 0.15s;}
+.tbl-btn:hover{background:#f0f4f8;}
+.tbl-del:hover{background:#fee2e2;}
+#loading-msg{text-align:center;padding:48px;color:#888;font-size:15px;}
+
+/* ── Autocomplete ── */
+#desc-wrap{position:relative;}
+#desc-suggestions{position:absolute;top:100%;left:0;right:0;background:#fff;border:1.5px solid #d0dce8;border-top:none;border-radius:0 0 7px 7px;max-height:200px;overflow-y:auto;z-index:300;box-shadow:0 4px 12px rgba(0,0,0,0.15);display:none;}
+.sug-item{padding:8px 12px;font-size:13px;cursor:pointer;border-bottom:1px solid #f0f4f8;}
+.sug-item:hover{background:#f0f8ff;}
+.dup-field{border-color:#e74c3c!important;}
+#dup-warning{color:#e74c3c;font-size:11px;font-weight:700;margin-top:3px;display:none;}
+
+/* ── Modals ── */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(10,25,40,0.6);z-index:500;align-items:center;justify-content:center;padding:20px;}
+.modal-overlay.open{display:flex;}
+.modal-box{background:#fff;border-radius:14px;width:680px;max-width:96vw;max-height:92vh;overflow-y:auto;box-shadow:0 8px 40px rgba(0,0,0,0.25);display:flex;flex-direction:column;}
+.modal-box.wide{width:860px;}
+.modal-header{padding:16px 20px;border-bottom:1px solid #e8eef5;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:#fff;z-index:1;border-radius:14px 14px 0 0;}
+.modal-title{font-size:16px;font-weight:700;color:#1a2b3c;}
+.modal-close{background:none;border:none;font-size:20px;cursor:pointer;color:#888;padding:4px 8px;border-radius:6px;}
+.modal-close:hover{background:#f0f4f8;}
+.modal-body{padding:20px;flex:1;}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.form-grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;}
+.form-field{display:flex;flex-direction:column;gap:4px;}
+.form-field.full{grid-column:1/-1;}
+.form-field label{font-size:12px;font-weight:700;color:#5a7a9a;}
+.form-field input,.form-field select,.form-field textarea{padding:8px 10px;font-size:13px;border:1.5px solid #d0dce8;border-radius:7px;font-family:'Calibri',sans-serif;background:#f7fafd;outline:none;}
+.form-field input:focus,.form-field select:focus,.form-field textarea:focus{border-color:#2e86c1;background:#fff;}
+.form-field input:disabled{background:#f0f0f0;color:#888;cursor:not-allowed;}
+.form-section-hdr{grid-column:1/-1;font-size:13px;font-weight:700;color:#fff;background:#1a5276;padding:6px 10px;border-radius:5px;margin-top:4px;}
+.modal-footer{padding:14px 20px;border-top:1px solid #e8eef5;display:flex;gap:10px;justify-content:flex-end;position:sticky;bottom:0;background:#fff;border-radius:0 0 14px 14px;}
+.modal-btn{padding:9px 22px;font-size:13px;font-weight:700;border:none;border-radius:8px;cursor:pointer;font-family:'Calibri',sans-serif;}
+.modal-btn-save{background:#2e86c1;color:#fff;}
+.modal-btn-save:hover{filter:brightness(1.1);}
+.modal-btn-cancel{background:#f0f4f8;color:#1a2b3c;}
+.modal-btn-cancel:hover{background:#e8eef5;}
+.modal-btn:disabled{opacity:0.6;cursor:not-allowed;}
+
+/* ── Confirm dialog ── */
+#confirm-overlay{display:none;position:fixed;inset:0;background:rgba(10,25,40,0.65);z-index:9000;align-items:center;justify-content:center;}
+#confirm-overlay.open{display:flex;}
+#confirm-box{background:#fff;border-radius:12px;padding:24px 28px;width:360px;max-width:92vw;box-shadow:0 8px 32px rgba(0,0,0,0.28);}
+#confirm-msg{font-size:15px;font-weight:600;color:#1a2b3c;margin-bottom:18px;line-height:1.5;}
+#confirm-actions{display:flex;gap:10px;justify-content:flex-end;}
+
+/* ── Toast ── */
+#save-toast{position:fixed;bottom:24px;right:24px;padding:10px 20px;border-radius:8px;font-size:13px;font-weight:700;color:#fff;background:#27ae60;z-index:8000;display:none;box-shadow:0 4px 16px rgba(0,0,0,0.2);pointer-events:none;}
+#save-toast.toast-err{background:#e74c3c;}
+
+/* ── Dark mode ── */
+body.dark-mode{background:#1a1a2e!important;}
+body.dark-mode #sidebar{background:#0f1923!important;}
+body.dark-mode #top-header{background:#1e2d3d!important;border-color:#2a3d50!important;}
+body.dark-mode #page-title{color:#e0e0e0!important;}
+body.dark-mode #main-content{background:#1a1a2e!important;}
+body.dark-mode #module-panel{background:#1e2d3d!important;border-color:#2a3f54!important;}
+body.dark-mode .mp-section-hdr span{color:#e0e0e0!important;}
+body.dark-mode .mp-sm-btn{background:#162330!important;border-color:#2a3f54!important;color:#8fa8c0!important;}
+body.dark-mode .mp-sm-btn:hover{border-color:#2e86c1!important;color:#2e86c1!important;}
+body.dark-mode .col-check{background:#162330!important;border-color:#2a3f54!important;color:#c8d8e8!important;}
+body.dark-mode .col-check:hover{border-color:#2e86c1!important;background:#1a2b3c!important;}
+body.dark-mode .filter-field label{color:#8fa8c0!important;}
+body.dark-mode .filter-field input,body.dark-mode .filter-field select{background:#162330!important;border-color:#2a3f54!important;color:#c8d8e8!important;}
+body.dark-mode .filter-divider{border-color:#2a3f54!important;}
+body.dark-mode .btn-reset{background:#162330!important;border-color:#2a3f54!important;color:#c8d8e8!important;}
+body.dark-mode #search-wrap{background:#1e2d3d!important;border-color:#2a3f54!important;}
+body.dark-mode #live-search{background:#162330!important;border-color:#2a3f54!important;color:#c8d8e8!important;}
+body.dark-mode #table-container{background:#1e2d3d!important;border-color:#2a3f54!important;}
+body.dark-mode #table-wrap td{color:#c8d8e8!important;border-color:#2a3d50!important;}
+body.dark-mode #table-wrap tr:nth-child(odd) td{background:#1a2b3c!important;}
+body.dark-mode #table-wrap tr:nth-child(even) td{background:#162330!important;}
+body.dark-mode #table-wrap tr:hover td{background:#1e3a52!important;}
+body.dark-mode .tbl-btn:hover{background:#1a2b3c!important;}
+body.dark-mode .tbl-del:hover{background:#3d1010!important;}
+body.dark-mode .modal-box{background:#1e2d3d!important;}
+body.dark-mode .modal-header{background:#1e2d3d!important;border-color:#2a3d50!important;}
+body.dark-mode .modal-footer{background:#1e2d3d!important;border-color:#2a3d50!important;}
+body.dark-mode .modal-title{color:#e0e0e0!important;}
+body.dark-mode .modal-close{color:#8fa8c0!important;}
+body.dark-mode .modal-close:hover{background:#162330!important;}
+body.dark-mode .modal-btn-cancel{background:#162330!important;color:#c8d8e8!important;}
+body.dark-mode .form-field label{color:#8fa8c0!important;}
+body.dark-mode .form-field input,body.dark-mode .form-field select,body.dark-mode .form-field textarea{background:#162330!important;border-color:#2a3f54!important;color:#c8d8e8!important;}
+body.dark-mode .form-field input:disabled{background:#0d1a24!important;color:#4a6a80!important;}
+body.dark-mode .form-section-hdr{background:#0f2032!important;}
+body.dark-mode #confirm-box{background:#1e2d3d!important;}
+body.dark-mode #confirm-msg{color:#e0e0e0!important;}
+body.dark-mode #desc-suggestions{background:#1e2d3d!important;border-color:#2a3f54!important;}
+body.dark-mode .sug-item{border-color:#2a3d50!important;color:#c8d8e8!important;}
+body.dark-mode .sug-item:hover{background:#1a2b3c!important;}
+
+/* ── Print ── */
+@media print{
+  #sidebar,#top-header,#module-panel,#search-wrap,.tbl-actions,#confirm-overlay,#save-toast,#inv-modal,#po-modal{display:none!important;}
+  #main-content{margin-left:0!important;}
+  body{background:#fff!important;}
+  #page-body{padding:0!important;}
+  #table-container{box-shadow:none!important;border:none!important;padding:0!important;border-radius:0!important;}
+  #table-wrap{overflow:visible!important;}
+  #table-wrap table{font-size:10pt;}
+  #table-wrap th{background:#1a2b3c!important;color:#fff!important;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+  #table-wrap tr:nth-child(even) td{background:#f7fafd!important;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+  @page{size:A4 portrait;margin:15mm 12mm;}
+}
+</style>
+</head>
+<body>
+
+<div id="layout">
+
+<!-- ── Sidebar ── -->
+<aside id="sidebar">
+  <div id="sb-header">
+    <img src="https://nour292.github.io/Nourdata/nour_energy_logo.png" alt="Logo" id="sb-logo">
+    <div id="sb-title">Nour Energy<small>HR System</small></div>
+    <button id="sb-toggle" onclick="toggleSidebar()" aria-label="Toggle sidebar">&#9776;</button>
+  </div>
+  <nav id="sb-nav">
+
+    <!-- Employee Data -->
+    <div class="sb-group">
+      <button class="sb-group-hdr" onclick="window.location.href='index.html'">
+        <span class="sb-icon">👤</span>
+        <span class="sb-label">Employee Data</span>
+      </button>
+    </div>
+
+    <!-- Job Tracker -->
+    <div class="sb-group">
+      <button class="sb-group-hdr" onclick="window.location.href='tracker.html'">
+        <span class="sb-icon">📌</span>
+        <span class="sb-label">Job Tracker</span>
+      </button>
+    </div>
+
+    <!-- Submitted Invoices -->
+    <div class="sb-group">
+      <button class="sb-group-hdr active-group" id="btn-grp-inv" onclick="toggleInvGroup()">
+        <span class="sb-icon">🧾</span>
+        <span class="sb-label">Submitted Invoices</span>
+        <span id="arrow-grp-inv" style="margin-left:auto;font-size:11px;opacity:0.7;">▾</span>
+      </button>
+      <div class="sb-group-items" id="grp-inv" style="display:block;">
+        <button class="sb-item active" id="sb-inv" onclick="setView('invoices')"><span class="sb-icon">🧾</span><span class="sb-label">Invoice List</span></button>
+        <button class="sb-item" id="sb-po" onclick="setView('pos')"><span class="sb-icon">📄</span><span class="sb-label">Purchase Orders</span></button>
+      </div>
+    </div>
+
+  </nav>
+  <div id="sb-footer">
+    <button onclick="toggleDarkMode()" style="display:flex;align-items:center;gap:10px;width:100%;padding:9px 12px;background:none;border:none;border-bottom:1px solid rgba(255,255,255,0.08);color:#8fa8c0;font-size:13px;font-weight:700;cursor:pointer;margin-bottom:6px;white-space:nowrap;">
+      <span>🌙</span><span class="sb-label">Dark Mode</span>
+    </button>
+    <button id="sb-logout" onclick="confirmDialog('Logout from Nour Energy HR?', doLogout)">
+      <span>⏻</span><span id="sb-logout-label">Logout</span>
+    </button>
+  </div>
+</aside>
+
+<!-- ── Main ── -->
+<div id="main-content">
+  <div id="top-header">
+    <div id="page-title">🧾 Submitted Invoices</div>
+    <div id="header-actions">
+      <button class="hdr-btn btn-add" id="btn-add" onclick="openAddInvModal()">➕ Add Invoice</button>
+      <button class="hdr-btn btn-csv" onclick="exportCSV()">⬇️ Excel</button>
+      <button class="hdr-btn btn-pdf" onclick="exportPDF()">🖨 PDF</button>
+    </div>
+  </div>
+
+  <div id="page-body">
+
+    <!-- ── Module Panel ── -->
+    <div id="module-panel">
+      <!-- Columns -->
+      <div class="mp-section-hdr">
+        <span>📋 Columns</span>
+        <div class="mp-btn-group">
+          <button class="mp-sm-btn" onclick="selectAllCols()">Select All</button>
+          <button class="mp-sm-btn" onclick="clearAllCols()">Clear All</button>
+        </div>
+      </div>
+      <div id="col-checks"></div>
+
+      <hr class="filter-divider">
+
+      <!-- Filters -->
+      <div class="mp-section-hdr" style="margin-bottom:10px;">
+        <span>🔽 Filters</span>
+      </div>
+      <div id="filter-panel"></div>
+      <div class="filter-btns" style="margin-top:12px;">
+        <button class="btn-generate" onclick="applyFilters()">🔍 Generate</button>
+        <button class="btn-reset" onclick="resetFilters()">✕ Reset</button>
+      </div>
+    </div>
+
+    <!-- ── Search bar ── -->
+    <div id="search-wrap">
+      <span style="color:#5a7a9a;font-size:16px;">🔍</span>
+      <input type="text" id="live-search" placeholder="Type to search all visible records…" oninput="liveSearchVal=this.value;renderTable()" autocomplete="off" spellcheck="false">
+      <span id="rec-count" style="color:#888;font-size:12px;font-weight:600;white-space:nowrap;"></span>
+    </div>
+
+    <!-- ── Loading ── -->
+    <div id="loading-msg" style="display:none;text-align:center;padding:48px;color:#888;font-size:15px;">⏳ Loading data from Google Sheets…</div>
+
+    <!-- ── Table ── -->
+    <div id="table-container">
+      <div id="table-wrap"></div>
+    </div>
+
+  </div>
+</div>
+</div>
+
+<!-- ── Invoice Modal ── -->
+<div id="inv-modal" class="modal-overlay">
+  <div class="modal-box">
+    <div class="modal-header">
+      <div class="modal-title" id="inv-modal-title">Add New Invoice</div>
+      <button class="modal-close" onclick="closeInvModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="form-field">
+          <label>Date *</label>
+          <input type="date" id="inv-f-date" onchange="onInvDateChange(this.value)">
+        </div>
+        <div class="form-field">
+          <label>Amount *</label>
+          <input type="number" id="inv-f-amount" step="0.01" placeholder="0.00">
+        </div>
+        <div class="form-field">
+          <label>Invoice Number *</label>
+          <input type="text" id="inv-f-invno" oninput="checkInvNoDup()" autocomplete="off">
+          <span id="dup-warning">⚠️ Duplicate invoice number</span>
+        </div>
+        <div class="form-field">
+          <label>Purchase Order</label>
+          <input type="text" id="inv-f-po" placeholder="e.g. Po - 012345">
+        </div>
+        <div class="form-field full">
+          <label>Description *</label>
+          <div id="desc-wrap">
+            <input type="text" id="inv-f-desc" oninput="onDescInput(this.value)" autocomplete="off">
+            <div id="desc-suggestions"></div>
+          </div>
+        </div>
+        <div class="form-field">
+          <label>Batch Number</label>
+          <input type="text" id="inv-f-batch" placeholder="Auto-filled">
+        </div>
+        <div class="form-field" style="align-self:flex-end;">
+          <label style="color:#aaa;font-size:11px;">Batch: same date = same number, new date = +1</label>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="modal-btn modal-btn-cancel" onclick="closeInvModal()">Cancel</button>
+      <button class="modal-btn modal-btn-save" id="inv-save-btn" onclick="saveInvoice()">💾 Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── PO Modal ── -->
+<div id="po-modal" class="modal-overlay">
+  <div class="modal-box wide">
+    <div class="modal-header">
+      <div class="modal-title" id="po-modal-title">Add New Purchase Order</div>
+      <button class="modal-close" onclick="closePOModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid-3">
+        <div class="form-field">
+          <label>PO Number *</label>
+          <input type="text" id="po-f-ponum" placeholder="e.g. 12345">
+        </div>
+        <div class="form-field">
+          <label>Date</label>
+          <input type="date" id="po-f-date">
+        </div>
+        <div class="form-field">
+          <label>S/No</label>
+          <input type="text" id="po-f-sno">
+        </div>
+        <div class="form-field">
+          <label>PO Value</label>
+          <input type="number" id="po-f-poval" step="0.01" placeholder="0.00">
+        </div>
+        <div class="form-field">
+          <label>Currency</label>
+          <input type="text" id="po-f-currency" placeholder="e.g. SAR">
+        </div>
+        <div class="form-field">
+          <label>Cost</label>
+          <input type="number" id="po-f-cost" step="0.01" placeholder="0.00">
+        </div>
+        <div class="form-field">
+          <label>Supplier Name *</label>
+          <input type="text" id="po-f-supplier">
+        </div>
+        <div class="form-field">
+          <label>Terms of Payment</label>
+          <input type="text" id="po-f-terms">
+        </div>
+        <div class="form-field">
+          <label>Delivery Date</label>
+          <input type="date" id="po-f-deldate">
+        </div>
+        <div class="form-field">
+          <label>Term of Delivery</label>
+          <input type="text" id="po-f-termdel">
+        </div>
+        <div class="form-field">
+          <label>Relevant Personnel</label>
+          <input type="text" id="po-f-relevant">
+        </div>
+        <div class="form-field">
+          <label>Invoiced (Auto — from sheet)</label>
+          <input type="text" id="po-f-invoiced" disabled placeholder="Computed by sheet formula">
+        </div>
+        <div class="form-field full">
+          <label>Material Description</label>
+          <input type="text" id="po-f-matdesc">
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="modal-btn modal-btn-cancel" onclick="closePOModal()">Cancel</button>
+      <button class="modal-btn modal-btn-save" id="po-save-btn" onclick="savePO()">💾 Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── Confirm dialog ── -->
+<div id="confirm-overlay">
+  <div id="confirm-box">
+    <div id="confirm-msg"></div>
+    <div id="confirm-actions">
+      <button class="modal-btn modal-btn-cancel" id="confirm-cancel">Cancel</button>
+      <button class="modal-btn modal-btn-save" id="confirm-ok">Confirm</button>
+    </div>
+  </div>
+</div>
+<div id="save-toast"></div>
+
+<script>
+// ─── Constants ───────────────────────────────────────────────────────────────
+const GS_ID  = '16QYl00ATXVIlQKkqRxdAIdU6J3u7lDfg0PIoJfaDBpo';
+const GS_KEY = 'AIzaSyBfjtlvDvGxmS1OcqFVGNMMadqza1ofCrI';
+const GS_WRITE_URL = 'https://script.google.com/macros/s/AKfycbzGXoDV-fdif6qiP_wFjmoULC0pXoRDVsH1P_-LptWEAIwYC3NBzDo-aWwOr4OXoaVuxQ/exec';
+
+// ─── Column definitions ──────────────────────────────────────────────────────
+const INV_COLS_DEF = [
+  {key:'date',          label:'Date',            on:true },
+  {key:'description',   label:'Description',     on:true },
+  {key:'invoiceNumber', label:'Invoice Number',  on:true },
+  {key:'amount',        label:'Amount',          on:true },
+  {key:'currency',      label:'Currency',        on:false},
+  {key:'purchaseOrder', label:'Purchase Order',  on:true },
+  {key:'batchNumber',   label:'Batch Number',    on:true },
+  {key:'status',        label:'Status',          on:false},
+];
+const PO_COLS_DEF = [
+  {key:'sNo',               label:'S/No',                 on:false},
+  {key:'poNumber',          label:'PO Number',            on:true },
+  {key:'date',              label:'Date',                 on:false},
+  {key:'poValue',           label:'PO Value',             on:false},
+  {key:'invoiced',          label:'Invoiced',             on:true },
+  {key:'currency',          label:'Currency',             on:false},
+  {key:'materialDesc',      label:'Material Description', on:false},
+  {key:'cost',              label:'Cost',                 on:true },
+  {key:'supplierName',      label:'Supplier Name',        on:true },
+  {key:'termsPayment',      label:'Terms of Payment',     on:false},
+  {key:'deliveryDate',      label:'Delivery Date',        on:false},
+  {key:'termDelivery',      label:'Term of Delivery',     on:false},
+  {key:'relevantPersonnel', label:'Relevant Personnel',   on:true },
+];
+
+// ─── State ───────────────────────────────────────────────────────────────────
+let invoices = [], pos = [];
+let dupInvoiceNos = new Set();
+let currentView = 'invoices';
+let invCols = INV_COLS_DEF.map(c => ({...c}));
+let poCols  = PO_COLS_DEF.map(c => ({...c}));
+let invFilters = {}, poFilters = {};
+let liveSearchVal = '';
+let editingInvRow = null, editingPORow = null;
+
+// ─── Helpers ─────────────────────────────────────────────────────────────────
+function escHtml(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+
+function toInputDate(d) {
+  const mo = {Jan:'01',Feb:'02',Mar:'03',Apr:'04',May:'05',Jun:'06',Jul:'07',Aug:'08',Sep:'09',Oct:'10',Nov:'11',Dec:'12'};
+  const p = String(d||'').split('-');
+  if (p.length === 3) {
+    const day = p[0].padStart(2,'0'), mon = mo[p[1]]||p[1];
+    let yr = p[2]; if (yr.length===2) yr='20'+yr;
+    return `${yr}-${mon}-${day}`;
+  }
+  return '';
+}
+
+function fmtForSheet(inputDate) {
+  if (!inputDate) return '';
+  const mo = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const d = new Date(inputDate+'T00:00:00');
+  if (isNaN(d)) return inputDate;
+  return `${d.getDate()}-${mo[d.getMonth()]}-${d.getFullYear()}`;
+}
+
+function parseDisplayDate(s) {
+  if (!s) return null;
+  const mo = {Jan:0,Feb:1,Mar:2,Apr:3,May:4,Jun:5,Jul:6,Aug:7,Sep:8,Oct:9,Nov:10,Dec:11};
+  const p = String(s).split('-');
+  if (p.length===3) {
+    const day=parseInt(p[0]), mon=mo[p[1]]; let yr=parseInt(p[2]);
+    if (yr<100) yr+=2000;
+    if (!isNaN(day) && mon!==undefined) return new Date(yr,mon,day);
+  }
+  const d = new Date(s);
+  return isNaN(d) ? null : d;
+}
+
+// ─── Theme ───────────────────────────────────────────────────────────────────
+function applyTheme() {
+  document.body.classList.toggle('dark-mode', localStorage.getItem('ne_dark_mode') !== '0');
+}
+function toggleDarkMode() {
+  const dark = document.body.classList.toggle('dark-mode');
+  localStorage.setItem('ne_dark_mode', dark ? '1' : '0');
+}
+
+// ─── Sidebar ─────────────────────────────────────────────────────────────────
+function toggleSidebar() {
+  document.body.classList.toggle('sb-collapsed');
+  document.getElementById('sidebar').classList.toggle('collapsed');
+}
+function toggleInvGroup() {
+  const el = document.getElementById('grp-inv');
+  const arrow = document.getElementById('arrow-grp-inv');
+  const hdr = document.getElementById('btn-grp-inv');
+  const open = el.style.display !== 'none';
+  el.style.display = open ? 'none' : 'block';
+  arrow.textContent = open ? '▸' : '▾';
+  hdr.classList.toggle('active-group', !open);
+}
+function doLogout() {
+  sessionStorage.removeItem('ne_role');
+  window.location.href = 'index.html';
+}
+
+// ─── Data loading ─────────────────────────────────────────────────────────────
+async function loadInvoices() {
+  const range = encodeURIComponent("'Submitted Invoices'!A:H");
+  const url = `https://sheets.googleapis.com/v4/spreadsheets/${GS_ID}/values/${range}?key=${GS_KEY}`;
+  const res = await fetch(url);
+  const data = await res.json();
+  const rows = (data.values || []).slice(1);
+  invoices = rows.map((r, i) => ({
+    _row: i+2,
+    date:          r[0]||'',
+    description:   r[1]||'',
+    invoiceNumber: r[2]||'',
+    amount:        r[3]||'',
+    currency:      r[4]||'',
+    purchaseOrder: r[5]||'',
+    batchNumber:   r[6]||'',
+    status:        r[7]||''
+  }));
+  computeDupInvNos();
+}
+
+async function loadPOs() {
+  const range = encodeURIComponent("'Purchase Order'!A:M");
+  const url = `https://sheets.googleapis.com/v4/spreadsheets/${GS_ID}/values/${range}?key=${GS_KEY}`;
+  const res = await fetch(url);
+  const data = await res.json();
+  const rows = (data.values || []).slice(1);
+  pos = rows.map((r, i) => ({
+    _row: i+2,
+    sNo:               r[0]||'',
+    poNumber:          r[1]||'',
+    date:              r[2]||'',
+    poValue:           r[3]||'',
+    invoiced:          r[4]||'',
+    currency:          r[5]||'',
+    materialDesc:      r[6]||'',
+    cost:              r[7]||'',
+    supplierName:      r[8]||'',
+    termsPayment:      r[9]||'',
+    deliveryDate:      r[10]||'',
+    termDelivery:      r[11]||'',
+    relevantPersonnel: r[12]||''
+  }));
+}
+
+// ─── Duplicate detection ──────────────────────────────────────────────────────
+function computeDupInvNos() {
+  const cnt = {};
+  invoices.forEach(inv => { if (inv.invoiceNumber) cnt[inv.invoiceNumber] = (cnt[inv.invoiceNumber]||0)+1; });
+  dupInvoiceNos = new Set(Object.keys(cnt).filter(k => cnt[k]>1));
+}
+
+// ─── Filtering ───────────────────────────────────────────────────────────────
+function getFilteredInvoices() {
+  return invoices.filter(inv => {
+    if (liveSearchVal) {
+      const q = liveSearchVal.toLowerCase();
+      if (![inv.date,inv.description,inv.invoiceNumber,inv.amount,inv.purchaseOrder,inv.batchNumber,inv.status]
+          .some(v => String(v).toLowerCase().includes(q))) return false;
+    }
+    if (invFilters.dateFrom) {
+      const d = parseDisplayDate(inv.date), from = new Date(invFilters.dateFrom+'T00:00:00');
+      if (!d || d < from) return false;
+    }
+    if (invFilters.dateTo) {
+      const d = parseDisplayDate(inv.date), to = new Date(invFilters.dateTo+'T23:59:59');
+      if (!d || d > to) return false;
+    }
+    if (invFilters.description && !inv.description.toLowerCase().includes(invFilters.description.toLowerCase())) return false;
+    if (invFilters.invoiceNumber && !inv.invoiceNumber.toLowerCase().includes(invFilters.invoiceNumber.toLowerCase())) return false;
+    if (invFilters.purchaseOrder && !inv.purchaseOrder.toLowerCase().includes(invFilters.purchaseOrder.toLowerCase())) return false;
+    if (invFilters.batchNumber && String(inv.batchNumber) !== String(invFilters.batchNumber)) return false;
+    return true;
+  });
+}
+
+function getFilteredPOs() {
+  return pos.filter(po => {
+    if (liveSearchVal) {
+      const q = liveSearchVal.toLowerCase();
+      if (![po.sNo,po.poNumber,po.date,po.poValue,po.invoiced,po.supplierName,po.relevantPersonnel,po.materialDesc]
+          .some(v => String(v).toLowerCase().includes(q))) return false;
+    }
+    if (poFilters.dateFrom) {
+      const d = parseDisplayDate(po.date), from = new Date(poFilters.dateFrom+'T00:00:00');
+      if (!d || d < from) return false;
+    }
+    if (poFilters.dateTo) {
+      const d = parseDisplayDate(po.date), to = new Date(poFilters.dateTo+'T23:59:59');
+      if (!d || d > to) return false;
+    }
+    if (poFilters.invoiced && poFilters.invoiced !== 'all') {
+      const inv = po.invoiced.toLowerCase();
+      if (poFilters.invoiced === 'invoiced' && inv !== 'invoiced') return false;
+      if (poFilters.invoiced === 'noinvoice' && inv !== 'no invoice') return false;
+    }
+    return true;
+  });
+}
+
+// ─── Rendering ───────────────────────────────────────────────────────────────
+function renderTable() {
+  if (currentView === 'invoices') renderInvoiceTable();
+  else renderPOTable();
+}
+
+function renderInvoiceTable() {
+  const vis = invCols.filter(c => c.on);
+  const data = getFilteredInvoices();
+  let html = '<table><thead><tr>';
+  vis.forEach(c => { html += `<th>${escHtml(c.label)}</th>`; });
+  html += '<th style="width:72px;"></th></tr></thead><tbody>';
+  if (!data.length) {
+    html += `<tr><td colspan="${vis.length+1}" class="empty-cell">No records found</td></tr>`;
+  } else {
+    data.forEach(inv => {
+      const dup = dupInvoiceNos.has(inv.invoiceNumber);
+      html += '<tr>';
+      vis.forEach(c => {
+        const cls = (c.key==='invoiceNumber' && dup) ? ' class="dup-inv"' : '';
+        html += `<td${cls}>${escHtml(inv[c.key]||'')}</td>`;
+      });
+      html += `<td class="tbl-actions">
+        <button class="tbl-btn" title="Edit" onclick="openEditInvModal(${inv._row})">✏️</button>
+        <button class="tbl-btn tbl-del" title="Delete" onclick="deleteInvoice(${inv._row})">🗑</button>
+      </td></tr>`;
+    });
+  }
+  html += '</tbody></table>';
+  document.getElementById('table-wrap').innerHTML = html;
+  const n = data.length;
+  document.getElementById('rec-count').textContent = `${n} record${n!==1?'s':''}`;
+}
+
+function renderPOTable() {
+  const vis = poCols.filter(c => c.on);
+  const data = getFilteredPOs();
+  let html = '<table><thead><tr>';
+  vis.forEach(c => { html += `<th>${escHtml(c.label)}</th>`; });
+  html += '<th style="width:72px;"></th></tr></thead><tbody>';
+  if (!data.length) {
+    html += `<tr><td colspan="${vis.length+1}" class="empty-cell">No records found</td></tr>`;
+  } else {
+    data.forEach(po => {
+      html += '<tr>';
+      vis.forEach(c => {
+        let cls = '';
+        if (c.key==='invoiced') {
+          const v = po.invoiced.toLowerCase();
+          cls = v==='invoiced' ? ' class="inv-yes"' : v ? ' class="inv-no"' : '';
+        }
+        html += `<td${cls}>${escHtml(po[c.key]||'')}</td>`;
+      });
+      html += `<td class="tbl-actions">
+        <button class="tbl-btn" title="Edit" onclick="openEditPOModal(${po._row})">✏️</button>
+        <button class="tbl-btn tbl-del" title="Delete" onclick="deletePO(${po._row})">🗑</button>
+      </td></tr>`;
+    });
+  }
+  html += '</tbody></table>';
+  document.getElementById('table-wrap').innerHTML = html;
+  const n = data.length;
+  document.getElementById('rec-count').textContent = `${n} record${n!==1?'s':''}`;
+}
+
+// ─── Column selector ──────────────────────────────────────────────────────────
+function renderColSelector() {
+  const cols = currentView === 'invoices' ? invCols : poCols;
+  const prefix = currentView === 'invoices' ? 'inv' : 'po';
+  document.getElementById('col-checks').innerHTML = cols.map((c,i) =>
+    `<label class="col-check"><input type="checkbox" ${c.on?'checked':''} onchange="toggleCol('${prefix}',${i},this.checked)">${escHtml(c.label)}</label>`
+  ).join('');
+}
+function toggleCol(prefix, idx, val) {
+  if (prefix==='inv') invCols[idx].on = val;
+  else poCols[idx].on = val;
+  renderTable();
+}
+function selectAllCols() {
+  (currentView==='invoices' ? invCols : poCols).forEach(c => c.on=true);
+  renderColSelector(); renderTable();
+}
+function clearAllCols() {
+  (currentView==='invoices' ? invCols : poCols).forEach(c => c.on=false);
+  renderColSelector(); renderTable();
+}
+
+// ─── Filter panel ─────────────────────────────────────────────────────────────
+function renderFilterPanel() {
+  const panel = document.getElementById('filter-panel');
+  if (currentView === 'invoices') {
+    const f = invFilters;
+    panel.innerHTML = `<div class="filter-row">
+      <div class="filter-field"><label>Date From</label><input type="date" id="ff-datefrom" value="${f.dateFrom||''}"></div>
+      <div class="filter-field"><label>Date To</label><input type="date" id="ff-dateto" value="${f.dateTo||''}"></div>
+      <div class="filter-field filter-field-wide"><label>Description</label><input type="text" id="ff-desc" placeholder="Partial match…" value="${escHtml(f.description||'')}"></div>
+      <div class="filter-field"><label>Invoice Number</label><input type="text" id="ff-invno" placeholder="Partial match…" value="${escHtml(f.invoiceNumber||'')}"></div>
+      <div class="filter-field"><label>Purchase Order</label><input type="text" id="ff-po" placeholder="Partial match…" value="${escHtml(f.purchaseOrder||'')}"></div>
+      <div class="filter-field"><label>Batch Number</label><input type="text" id="ff-batch" placeholder="Exact match…" value="${escHtml(f.batchNumber||'')}"></div>
+    </div>`;
+  } else {
+    const f = poFilters;
+    panel.innerHTML = `<div class="filter-row">
+      <div class="filter-field"><label>Date From</label><input type="date" id="ff-datefrom" value="${f.dateFrom||''}"></div>
+      <div class="filter-field"><label>Date To</label><input type="date" id="ff-dateto" value="${f.dateTo||''}"></div>
+      <div class="filter-field"><label>Invoiced Status</label>
+        <select id="ff-invstatus">
+          <option value="all" ${(!f.invoiced||f.invoiced==='all')?'selected':''}>All</option>
+          <option value="invoiced" ${f.invoiced==='invoiced'?'selected':''}>Invoiced</option>
+          <option value="noinvoice" ${f.invoiced==='noinvoice'?'selected':''}>No Invoice</option>
+        </select>
+      </div>
+    </div>`;
+  }
+}
+
+function applyFilters() {
+  const g = id => document.getElementById(id)?.value || '';
+  if (currentView === 'invoices') {
+    invFilters = {
+      dateFrom: g('ff-datefrom'), dateTo: g('ff-dateto'),
+      description: g('ff-desc'), invoiceNumber: g('ff-invno'),
+      purchaseOrder: g('ff-po'), batchNumber: g('ff-batch')
+    };
+  } else {
+    poFilters = {
+      dateFrom: g('ff-datefrom'), dateTo: g('ff-dateto'),
+      invoiced: g('ff-invstatus')
+    };
+  }
+  renderTable();
+}
+
+function resetFilters() {
+  if (currentView === 'invoices') invFilters = {};
+  else poFilters = {};
+  liveSearchVal = '';
+  const s = document.getElementById('live-search');
+  if (s) s.value = '';
+  renderFilterPanel();
+  renderTable();
+}
+
+// ─── View switching ───────────────────────────────────────────────────────────
+function setView(v) {
+  currentView = v;
+  liveSearchVal = '';
+  const s = document.getElementById('live-search');
+  if (s) s.value = '';
+
+  document.getElementById('sb-inv').classList.toggle('active', v==='invoices');
+  document.getElementById('sb-po').classList.toggle('active', v==='pos');
+
+  document.getElementById('page-title').textContent = v==='invoices' ? '🧾 Submitted Invoices' : '📄 Purchase Orders';
+
+  const addBtn = document.getElementById('btn-add');
+  addBtn.textContent = v==='invoices' ? '➕ Add Invoice' : '➕ Add PO';
+  addBtn.onclick = v==='invoices' ? openAddInvModal : openAddPOModal;
+
+  renderColSelector();
+  renderFilterPanel();
+  renderTable();
+}
+
+// ─── Export ───────────────────────────────────────────────────────────────────
+function exportCSV() {
+  const isInv = currentView === 'invoices';
+  const data = isInv ? getFilteredInvoices() : getFilteredPOs();
+  const cols = (isInv ? invCols : poCols).filter(c => c.on);
+  const header = cols.map(c => `"${c.label}"`).join(',');
+  const rows = data.map(row => cols.map(c => `"${String(row[c.key]||'').replace(/"/g,'""')}"`).join(','));
+  const csv = [header, ...rows].join('\r\n');
+  const blob = new Blob(['﻿'+csv], {type:'text/csv;charset=utf-8;'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `${isInv?'Invoices':'PurchaseOrders'}_${new Date().toISOString().slice(0,10)}.csv`;
+  a.click();
+}
+function exportPDF() { window.print(); }
+
+// ─── Batch number logic ───────────────────────────────────────────────────────
+function getAutoBatchNumber(dateStr) {
+  if (!invoices.length) return 1;
+  const last = invoices[invoices.length-1];
+  const lastBatch = parseInt(last.batchNumber) || 0;
+  const lastDateInput = toInputDate(last.date);
+  if (dateStr === lastDateInput) return lastBatch;
+  return lastBatch + 1;
+}
+
+// ─── Invoice modal ────────────────────────────────────────────────────────────
+function openAddInvModal() {
+  editingInvRow = null;
+  document.getElementById('inv-modal-title').textContent = 'Add New Invoice';
+  const today = new Date().toISOString().slice(0,10);
+  document.getElementById('inv-f-date').value = today;
+  document.getElementById('inv-f-desc').value = '';
+  document.getElementById('inv-f-invno').value = '';
+  document.getElementById('inv-f-amount').value = '';
+  document.getElementById('inv-f-po').value = '';
+  document.getElementById('inv-f-batch').value = getAutoBatchNumber(today);
+  clearInvErrors();
+  document.getElementById('inv-modal').classList.add('open');
+  setTimeout(() => document.getElementById('inv-f-desc').focus(), 60);
+}
+
+function openEditInvModal(row) {
+  const inv = invoices.find(i => i._row === row);
+  if (!inv) return;
+  editingInvRow = row;
+  document.getElementById('inv-modal-title').textContent = 'Edit Invoice';
+  document.getElementById('inv-f-date').value = toInputDate(inv.date) || '';
+  document.getElementById('inv-f-desc').value = inv.description;
+  document.getElementById('inv-f-invno').value = inv.invoiceNumber;
+  document.getElementById('inv-f-amount').value = inv.amount;
+  document.getElementById('inv-f-po').value = inv.purchaseOrder;
+  document.getElementById('inv-f-batch').value = inv.batchNumber;
+  clearInvErrors();
+  document.getElementById('inv-modal').classList.add('open');
+}
+
+function closeInvModal() {
+  document.getElementById('inv-modal').classList.remove('open');
+  hideDescSuggestions();
+}
+
+function clearInvErrors() {
+  document.getElementById('inv-f-invno').classList.remove('dup-field');
+  document.getElementById('dup-warning').style.display = 'none';
+}
+
+function checkInvNoDup() {
+  const val = document.getElementById('inv-f-invno').value.trim();
+  const dup = val && invoices.some(i => i.invoiceNumber === val && i._row !== editingInvRow);
+  document.getElementById('inv-f-invno').classList.toggle('dup-field', !!dup);
+  document.getElementById('dup-warning').style.display = dup ? 'block' : 'none';
+}
+
+function onInvDateChange(val) {
+  if (editingInvRow) return;
+  document.getElementById('inv-f-batch').value = getAutoBatchNumber(val);
+}
+
+async function saveInvoice() {
+  const date    = document.getElementById('inv-f-date').value;
+  const desc    = document.getElementById('inv-f-desc').value.trim();
+  const invNo   = document.getElementById('inv-f-invno').value.trim();
+  const amount  = document.getElementById('inv-f-amount').value.trim();
+  const po      = document.getElementById('inv-f-po').value.trim();
+  const batch   = document.getElementById('inv-f-batch').value.trim();
+
+  if (!date || !desc || !invNo || !amount) { showToast('Fill required fields (Date, Description, Invoice No, Amount)', 'err'); return; }
+
+  const data = {
+    date: fmtForSheet(date), description: desc, invoiceNumber: invNo,
+    amount, purchaseOrder: po, batchNumber: batch
+  };
+  const btn = document.getElementById('inv-save-btn');
+  btn.disabled = true; btn.textContent = '⏳ Saving…';
+  try {
+    const action = editingInvRow ? 'updateInvoice' : 'addInvoice';
+    const payload = editingInvRow ? {action, sheetRow: editingInvRow, data} : {action, data};
+    await fetch(GS_WRITE_URL, {method:'POST', redirect:'follow', body: JSON.stringify(payload)});
+    closeInvModal();
+    showToast('Invoice saved ✓');
+    await loadInvoices();
+    renderTable();
+  } catch(e) {
+    showToast('Save failed: '+e.message, 'err');
+  } finally {
+    btn.disabled = false; btn.textContent = '💾 Save';
+  }
+}
+
+async function deleteInvoice(row) {
+  confirmDialog('Delete this invoice? This cannot be undone.', async () => {
+    try {
+      await fetch(GS_WRITE_URL, {method:'POST', redirect:'follow', body: JSON.stringify({action:'deleteInvoice', sheetRow: row})});
+      showToast('Invoice deleted');
+      await loadInvoices();
+      renderTable();
+    } catch(e) { showToast('Delete failed', 'err'); }
+  });
+}
+
+// ─── Description autocomplete ─────────────────────────────────────────────────
+function onDescInput(val) {
+  if (!val || val.length < 2) { hideDescSuggestions(); return; }
+  const q = val.toLowerCase();
+  const seen = new Set();
+  const matches = invoices
+    .filter(inv => inv.description && inv.description.toLowerCase().includes(q) && !seen.has(inv.description) && seen.add(inv.description))
+    .slice(0, 10)
+    .map(inv => inv.description);
+  if (!matches.length) { hideDescSuggestions(); return; }
+  const list = document.getElementById('desc-suggestions');
+  list.innerHTML = matches.map(s => `<div class="sug-item" onmousedown="selectDesc(this.textContent)">${escHtml(s)}</div>`).join('');
+  list.style.display = 'block';
+}
+function selectDesc(val) {
+  document.getElementById('inv-f-desc').value = val;
+  hideDescSuggestions();
+}
+function hideDescSuggestions() {
+  const el = document.getElementById('desc-suggestions');
+  if (el) el.style.display = 'none';
+}
+
+// ─── PO modal ─────────────────────────────────────────────────────────────────
+function openAddPOModal() {
+  editingPORow = null;
+  document.getElementById('po-modal-title').textContent = 'Add New Purchase Order';
+  ['po-f-ponum','po-f-date','po-f-sno','po-f-poval','po-f-currency',
+   'po-f-matdesc','po-f-cost','po-f-supplier','po-f-terms',
+   'po-f-deldate','po-f-termdel','po-f-relevant'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = '';
+  });
+  document.getElementById('po-f-invoiced').value = '';
+  document.getElementById('po-modal').classList.add('open');
+  setTimeout(() => document.getElementById('po-f-ponum').focus(), 60);
+}
+
+function openEditPOModal(row) {
+  const po = pos.find(p => p._row === row);
+  if (!po) return;
+  editingPORow = row;
+  document.getElementById('po-modal-title').textContent = 'Edit Purchase Order';
+  const rawPN = String(po.poNumber).replace(/^Po\s*-\s*/i,'').trim();
+  document.getElementById('po-f-ponum').value   = rawPN;
+  document.getElementById('po-f-date').value    = toInputDate(po.date) || '';
+  document.getElementById('po-f-sno').value     = po.sNo;
+  document.getElementById('po-f-poval').value   = po.poValue;
+  document.getElementById('po-f-currency').value= po.currency;
+  document.getElementById('po-f-matdesc').value = po.materialDesc;
+  document.getElementById('po-f-cost').value    = po.cost;
+  document.getElementById('po-f-supplier').value= po.supplierName;
+  document.getElementById('po-f-terms').value   = po.termsPayment;
+  document.getElementById('po-f-deldate').value = toInputDate(po.deliveryDate) || '';
+  document.getElementById('po-f-termdel').value = po.termDelivery;
+  document.getElementById('po-f-relevant').value= po.relevantPersonnel;
+  document.getElementById('po-f-invoiced').value= po.invoiced;
+  document.getElementById('po-modal').classList.add('open');
+}
+
+function closePOModal() {
+  document.getElementById('po-modal').classList.remove('open');
+}
+
+async function savePO() {
+  const poNum   = document.getElementById('po-f-ponum').value.trim();
+  const supplier= document.getElementById('po-f-supplier').value.trim();
+  if (!poNum || !supplier) { showToast('PO Number and Supplier Name are required', 'err'); return; }
+
+  const data = {
+    sNo:               document.getElementById('po-f-sno').value.trim(),
+    poNumber:          poNum,
+    date:              fmtForSheet(document.getElementById('po-f-date').value),
+    poValue:           document.getElementById('po-f-poval').value.trim(),
+    currency:          document.getElementById('po-f-currency').value.trim(),
+    materialDesc:      document.getElementById('po-f-matdesc').value.trim(),
+    cost:              document.getElementById('po-f-cost').value.trim(),
+    supplierName:      supplier,
+    termsPayment:      document.getElementById('po-f-terms').value.trim(),
+    deliveryDate:      fmtForSheet(document.getElementById('po-f-deldate').value),
+    termDelivery:      document.getElementById('po-f-termdel').value.trim(),
+    relevantPersonnel: document.getElementById('po-f-relevant').value.trim()
+  };
+
+  const btn = document.getElementById('po-save-btn');
+  btn.disabled = true; btn.textContent = '⏳ Saving…';
+  try {
+    const action = editingPORow ? 'updatePO' : 'addPO';
+    const payload = editingPORow ? {action, sheetRow: editingPORow, data} : {action, data};
+    await fetch(GS_WRITE_URL, {method:'POST', redirect:'follow', body: JSON.stringify(payload)});
+    closePOModal();
+    showToast('PO saved ✓');
+    await loadPOs();
+    renderTable();
+  } catch(e) {
+    showToast('Save failed: '+e.message, 'err');
+  } finally {
+    btn.disabled = false; btn.textContent = '💾 Save';
+  }
+}
+
+async function deletePO(row) {
+  confirmDialog('Delete this Purchase Order? This cannot be undone.', async () => {
+    try {
+      await fetch(GS_WRITE_URL, {method:'POST', redirect:'follow', body: JSON.stringify({action:'deletePO', sheetRow: row})});
+      showToast('PO deleted');
+      await loadPOs();
+      renderTable();
+    } catch(e) { showToast('Delete failed', 'err'); }
+  });
+}
+
+// ─── Toast ────────────────────────────────────────────────────────────────────
+function showToast(msg, type='ok') {
+  const t = document.getElementById('save-toast');
+  t.textContent = msg;
+  t.className = type==='err' ? 'toast-err' : '';
+  t.style.display = 'block';
+  clearTimeout(t._timer);
+  t._timer = setTimeout(() => { t.style.display='none'; }, 2800);
+}
+
+// ─── Confirm dialog ───────────────────────────────────────────────────────────
+function confirmDialog(msg, onOk) {
+  const overlay = document.getElementById('confirm-overlay');
+  document.getElementById('confirm-msg').textContent = msg;
+  overlay.classList.add('open');
+  const ok = document.getElementById('confirm-ok');
+  const cancel = document.getElementById('confirm-cancel');
+  const close = () => overlay.classList.remove('open');
+  ok.onclick = () => { close(); onOk(); };
+  cancel.onclick = close;
+}
+
+// ─── Init ─────────────────────────────────────────────────────────────────────
+window.addEventListener('DOMContentLoaded', async () => {
+  // Auth guard
+  if (sessionStorage.getItem('ne_role') !== 'admin') {
+    window.location.href = 'index.html';
+    return;
+  }
+
+  applyTheme();
+
+  // Sidebar hover collapse
+  const sb = document.getElementById('sidebar');
+  let _sbTimer = null;
+  sb.addEventListener('mouseenter', () => {
+    clearTimeout(_sbTimer);
+    sb.classList.remove('collapsed');
+    document.body.classList.remove('sb-collapsed');
+  });
+  sb.addEventListener('mouseleave', () => {
+    _sbTimer = setTimeout(() => {
+      sb.classList.add('collapsed');
+      document.body.classList.add('sb-collapsed');
+    }, 300);
+  });
+  sb.classList.add('collapsed');
+  document.body.classList.add('sb-collapsed');
+
+  // Load data
+  const loadingEl = document.getElementById('loading-msg');
+  const tableEl   = document.getElementById('table-container');
+  loadingEl.style.display = 'block';
+  tableEl.style.display   = 'none';
+  try {
+    await Promise.all([loadInvoices(), loadPOs()]);
+  } catch(e) {
+    showToast('Error loading data from Sheets', 'err');
+  }
+  loadingEl.style.display = 'none';
+  tableEl.style.display   = 'block';
+
+  // Initial render
+  renderColSelector();
+  renderFilterPanel();
+  renderTable();
+
+  // Close desc dropdown on outside click
+  document.addEventListener('click', e => {
+    if (!e.target.closest('#desc-wrap')) hideDescSuggestions();
+  });
+
+  // Close modals on backdrop click
+  document.getElementById('inv-modal').addEventListener('click', e => {
+    if (e.target === document.getElementById('inv-modal')) closeInvModal();
+  });
+  document.getElementById('po-modal').addEventListener('click', e => {
+    if (e.target === document.getElementById('po-modal')) closePOModal();
+  });
+
+  // ESC key closes modals
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') { closeInvModal(); closePOModal(); }
+  });
+});
+</script>
+</body>
+</html>
