@@ -229,34 +229,44 @@ body.dark-mode .sug-item:hover{background:#1a2b3c!important;}
   <div id="sb-header">
     <img src="https://nour292.github.io/Nourdata/nour_energy_logo.png" alt="Logo" id="sb-logo">
     <div id="sb-title">Nour Energy<small>HR System</small></div>
-    <button id="sb-toggle" onclick="toggleSidebar()" aria-label="Toggle sidebar">&#9776;</button>
   </div>
   <nav id="sb-nav">
 
     <!-- Employee Data -->
     <div class="sb-group">
-      <button class="sb-group-hdr" onclick="window.location.href='index.html'">
+      <div class="sb-group-hdr active-group">
         <span class="sb-icon">👤</span>
         <span class="sb-label">Employee Data</span>
-      </button>
+      </div>
+      <div class="sb-group-items" style="display:block;">
+        <button class="sb-item" onclick="window.location.href='index.html'"><span class="sb-icon">🔎</span><span class="sb-label">Employee Search</span></button>
+        <button class="sb-item" onclick="window.location.href='index.html'"><span class="sb-icon">📊</span><span class="sb-label">Dashboard</span></button>
+        <button class="sb-item" onclick="window.location.href='index.html'"><span class="sb-icon">🔍</span><span class="sb-label">Deep Search</span></button>
+        <button class="sb-item" onclick="window.location.href='index.html'"><span class="sb-icon">📋</span><span class="sb-label">Smart Lists</span></button>
+      </div>
     </div>
 
     <!-- Job Tracker -->
     <div class="sb-group">
-      <button class="sb-group-hdr" onclick="window.location.href='tracker.html'">
+      <div class="sb-group-hdr active-group">
         <span class="sb-icon">📌</span>
         <span class="sb-label">Job Tracker</span>
-      </button>
+      </div>
+      <div class="sb-group-items" style="display:block;">
+        <button class="sb-item" onclick="window.location.href='tracker.html'"><span class="sb-icon">📋</span><span class="sb-label">Active Jobs</span></button>
+        <button class="sb-item" onclick="window.location.href='tracker.html'"><span class="sb-icon">✅</span><span class="sb-label">Completed</span></button>
+        <button class="sb-item" onclick="window.location.href='tracker.html'"><span class="sb-icon">📊</span><span class="sb-label">List of All Jobs</span></button>
+        <button class="sb-item" onclick="window.location.href='tracker.html'"><span class="sb-icon">➕</span><span class="sb-label">Add New Job</span></button>
+      </div>
     </div>
 
     <!-- Submitted Invoices -->
     <div class="sb-group">
-      <button class="sb-group-hdr active-group" id="btn-grp-inv" onclick="toggleInvGroup()">
+      <div class="sb-group-hdr active-group">
         <span class="sb-icon">🧾</span>
         <span class="sb-label">Submitted Invoices</span>
-        <span id="arrow-grp-inv" style="margin-left:auto;font-size:11px;opacity:0.7;">▾</span>
-      </button>
-      <div class="sb-group-items" id="grp-inv" style="display:block;">
+      </div>
+      <div class="sb-group-items" style="display:block;">
         <button class="sb-item active" id="sb-inv" onclick="setView('invoices')"><span class="sb-icon">🧾</span><span class="sb-label">Invoice List</span></button>
         <button class="sb-item" id="sb-po" onclick="setView('pos')"><span class="sb-icon">📄</span><span class="sb-label">Purchase Orders</span></button>
       </div>
