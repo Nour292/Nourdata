@@ -652,7 +652,7 @@ function getFilteredInvoices() {
       const d = parseDisplayDate(inv.date), to = new Date(invFilters.dateTo+'T23:59:59');
       if (!d || d > to) return false;
     }
-    if (invFilters.description && !inv.description.toLowerCase().includes(invFilters.description.toLowerCase())) return false;
+    if (invFilters.descriptions && invFilters.descriptions.length && !invFilters.descriptions.includes(inv.description)) return false;
     if (invFilters.invoiceNumber && !inv.invoiceNumber.toLowerCase().includes(invFilters.invoiceNumber.toLowerCase())) return false;
     if (invFilters.purchaseOrder && !inv.purchaseOrder.toLowerCase().includes(invFilters.purchaseOrder.toLowerCase())) return false;
     if (invFilters.batchNumbers && invFilters.batchNumbers.length && !invFilters.batchNumbers.includes(String(inv.batchNumber))) return false;
@@ -790,9 +790,19 @@ function renderFilterPanel() {
       <div class="filter-field"><label>Date From</label><input type="date" id="ff-datefrom" value="${f.dateFrom||''}"></div>
       <div class="filter-field"><label>Date To</label><input type="date" id="ff-dateto" value="${f.dateTo||''}"></div>
       <div class="filter-field"><label>Description</label>
-        <div style="position:relative;">
-          <input type="text" id="ff-desc" placeholder="Partial match…" value="${escHtml(f.description||'')}" oninput="onFilterTextInput('ff-desc','ff-desc-sug','description',this.value)" autocomplete="off" onblur="hideFilterSug('ff-desc-sug')">
-          <div id="ff-desc-sug" class="filter-sug-list" style="display:none;"></div>
+        <div class="multi-select-wrap">
+          <button type="button" class="multi-select-btn" id="desc-ms-btn" onclick="toggleDescPanel(event)">
+            <span id="desc-ms-label">${getDescBtnLabel()}</span><span style="font-size:10px;margin-left:4px;">▾</span>
+          </button>
+          <div class="multi-select-panel" id="desc-ms-panel" style="display:none;">
+            <div style="padding:6px 8px;border-bottom:1px solid #edf3f8;">
+              <input class="ms-search-inp" id="desc-ms-search" type="text" placeholder="Search description…" oninput="filterDescOptions(this.value)">
+            </div>
+            <label class="ms-opt" style="border-bottom:1px solid #edf3f8;">
+              <input type="checkbox" id="desc-select-all" onchange="toggleAllDescs(this.checked)"> Select All
+            </label>
+            <div id="desc-options-list"></div>
+          </div>
         </div>
       </div>
       <div class="filter-field"><label>Invoice Number</label>
@@ -824,6 +834,7 @@ function renderFilterPanel() {
         </div>
       </div>
     </div>`;
+    populateDescOptions('');
     populateBatchOptions('');
   } else {
     const f = poFilters;
@@ -871,7 +882,7 @@ function applyFilters() {
   if (currentView === 'invoices') {
     invFilters = {
       dateFrom: g('ff-datefrom'), dateTo: g('ff-dateto'),
-      description: g('ff-desc'), invoiceNumber: g('ff-invno'),
+      descriptions: invFilters.descriptions || [], invoiceNumber: g('ff-invno'),
       purchaseOrder: g('ff-po'), batchNumbers: invFilters.batchNumbers || []
     };
   } else {
@@ -885,13 +896,87 @@ function applyFilters() {
 
 function resetFilters() {
   generated = false;
-  if (currentView === 'invoices') invFilters = {batchNumbers: []};
+  if (currentView === 'invoices') invFilters = {batchNumbers: [], descriptions: []};
   else poFilters = {};
   liveSearchVal = '';
   const s = document.getElementById('live-search');
   if (s) s.value = '';
   renderFilterPanel();
   renderTable();
+}
+
+// ─── Filter: Description multi-select ───────────────────────────────────────
+function getUniqueDescriptions() {
+  const seen = new Set();
+  return invoices
+    .filter(inv => inv.description && !seen.has(inv.description) && seen.add(inv.description))
+    .map(inv => inv.description)
+    .sort((a, b) => a.localeCompare(b));
+}
+
+function getDescBtnLabel() {
+  const n = (invFilters.descriptions || []).length;
+  if (!n) return 'All descriptions';
+  const total = getUniqueDescriptions().length;
+  return n === total ? 'All descriptions' : `${n} selected`;
+}
+
+function toggleDescPanel(e) {
+  if (e) e.stopPropagation();
+  const panel = document.getElementById('desc-ms-panel');
+  if (!panel) return;
+  const isOpen = panel.style.display !== 'none';
+  const batchPanel = document.getElementById('batch-ms-panel');
+  if (batchPanel) batchPanel.style.display = 'none';
+  panel.style.display = isOpen ? 'none' : 'block';
+  if (!isOpen) populateDescOptions('');
+}
+
+function populateDescOptions(search) {
+  const descs = getUniqueDescriptions().filter(d => !search || d.toLowerCase().includes(search.toLowerCase()));
+  const selected = invFilters.descriptions || [];
+  const container = document.getElementById('desc-options-list');
+  if (!container) return;
+  container.innerHTML = descs.map(d =>
+    `<label class="ms-opt"><input type="checkbox" value="${escHtml(d)}" ${selected.includes(d) ? 'checked' : ''} onchange="onDescCheck(this)"> ${escHtml(d)}</label>`
+  ).join('');
+  updateDescSelectAll();
+}
+
+function onDescCheck(cb) {
+  if (!invFilters.descriptions) invFilters.descriptions = [];
+  if (cb.checked) {
+    if (!invFilters.descriptions.includes(cb.value)) invFilters.descriptions.push(cb.value);
+  } else {
+    invFilters.descriptions = invFilters.descriptions.filter(d => d !== cb.value);
+  }
+  updateDescLabel();
+  updateDescSelectAll();
+}
+
+function toggleAllDescs(checked) {
+  invFilters.descriptions = checked ? [...getUniqueDescriptions()] : [];
+  const searchEl = document.getElementById('desc-ms-search');
+  populateDescOptions(searchEl ? searchEl.value : '');
+  updateDescLabel();
+}
+
+function updateDescLabel() {
+  const lbl = document.getElementById('desc-ms-label');
+  if (lbl) lbl.textContent = getDescBtnLabel();
+}
+
+function updateDescSelectAll() {
+  const cb = document.getElementById('desc-select-all');
+  if (!cb) return;
+  const total = getUniqueDescriptions().length;
+  const sel = (invFilters.descriptions || []).length;
+  cb.checked = total > 0 && sel === total;
+  cb.indeterminate = sel > 0 && sel < total;
+}
+
+function filterDescOptions(search) {
+  populateDescOptions(search);
 }
 
 // ─── Filter: Text field autocomplete (shared) ────────────────────────────────
@@ -951,6 +1036,8 @@ function toggleBatchPanel(e) {
   const panel = document.getElementById('batch-ms-panel');
   if (!panel) return;
   const isOpen = panel.style.display !== 'none';
+  const descPanel = document.getElementById('desc-ms-panel');
+  if (descPanel) descPanel.style.display = 'none';
   panel.style.display = isOpen ? 'none' : 'block';
   if (!isOpen) populateBatchOptions('');
 }
@@ -1312,10 +1399,11 @@ window.addEventListener('DOMContentLoaded', async () => {
   document.addEventListener('click', e => {
     if (!e.target.closest('#desc-wrap')) hideDescSuggestions();
     if (!e.target.closest('.multi-select-wrap')) {
-      const panel = document.getElementById('batch-ms-panel');
-      if (panel) panel.style.display = 'none';
+      ['batch-ms-panel','desc-ms-panel'].forEach(id => {
+        const p = document.getElementById(id); if (p) p.style.display = 'none';
+      });
     }
-    ['ff-desc-sug','ff-invno-sug','ff-po-sug'].forEach(id => {
+    ['ff-invno-sug','ff-po-sug'].forEach(id => {
       const sug = document.getElementById(id);
       if (sug && !e.target.closest(`[id="${id}"]`) && !e.target.closest(`#${id.replace('-sug','')}`)) sug.style.display = 'none';
     });
