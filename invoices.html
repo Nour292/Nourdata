@@ -127,13 +127,13 @@ body.dark-mode #search-clear-btn:hover{border-color:#e74c3c!important;color:#e74
 .bulk-modal-box{width:98vw;max-width:1400px;max-height:92vh;}
 #bulk-modal .modal-box{width:98vw;max-width:1400px;max-height:92vh;}
 #bulk-scroll{overflow:auto;flex:1;}
-#bulk-table{width:100%;border-collapse:collapse;font-size:12.5px;table-layout:fixed;}
+#bulk-table{width:100%;border-collapse:collapse;font-size:14px;table-layout:fixed;}
 #bulk-scroll{overflow-y:auto;overflow-x:hidden;}
-#bulk-table th{background:#1a2b3c;color:#fff;padding:8px 10px;font-weight:700;text-align:left;white-space:nowrap;position:sticky;top:0;z-index:10;}
-#bulk-table td{padding:3px 5px;border-bottom:1px solid #e8f0f8;}
+#bulk-table th{background:#1a2b3c;color:#fff;padding:10px 10px;font-weight:700;font-size:13.5px;text-align:left;white-space:nowrap;position:sticky;top:0;z-index:10;}
+#bulk-table td{padding:4px 5px;border-bottom:1px solid #e8f0f8;}
 #bulk-table tr:nth-child(even) td{background:#f7fafd;}
-.bulk-row-num{display:block;text-align:center;font-size:11px;color:#8fa8c0;font-weight:700;padding:4px 0;}
-.bulk-inp{width:100%;padding:5px 7px;font-size:12px;border:1.5px solid #d0dce8;border-radius:5px;font-family:'Calibri',sans-serif;background:#f7fafd;outline:none;box-sizing:border-box;}
+.bulk-row-num{display:block;text-align:center;font-size:13px;color:#8fa8c0;font-weight:700;padding:4px 0;}
+.bulk-inp{width:100%;padding:7px 8px;font-size:13.5px;font-weight:600;border:1.5px solid #d0dce8;border-radius:5px;font-family:'Calibri',sans-serif;background:#f7fafd;outline:none;box-sizing:border-box;}
 .bulk-inp:focus{border-color:#2e86c1;background:#fff;}
 .bulk-inp.err{border-color:#e74c3c!important;background:#fff5f5!important;}
 .bulk-desc-sug{position:absolute;top:100%;left:0;right:0;background:#fff;border:1.5px solid #d0dce8;border-top:none;border-radius:0 0 5px 5px;max-height:120px;overflow-y:auto;z-index:500;box-shadow:0 4px 12px rgba(0,0,0,0.12);}
@@ -1558,7 +1558,7 @@ async function saveBulkInvoices() {
     const amount = row.querySelector('.bulk-amount')?.value.trim();
     const po     = row.querySelector('.bulk-po')?.value.trim();
     const batch  = row.querySelector('.bulk-batch')?.value.trim();
-    if (!date && !desc && !invno && !amount) return; // blank row — skip
+    if (!desc && !invno && !amount) return; // blank row — skip (date is pre-filled)
     let hasErr = false;
     [['bulk-date', date], ['bulk-desc', desc], ['bulk-invno', invno], ['bulk-amount', amount]].forEach(([cls, val]) => {
       const el = row.querySelector(`.${cls}`);
