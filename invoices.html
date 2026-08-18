@@ -125,6 +125,7 @@ body.dark-mode #search-clear-btn:hover{border-color:#e74c3c!important;color:#e74
 
 /* ── Bulk Add ── */
 .bulk-modal-box{width:98vw;max-width:1400px;max-height:92vh;}
+#bulk-modal .modal-box{width:98vw;max-width:1400px;max-height:92vh;}
 #bulk-scroll{overflow:auto;flex:1;}
 #bulk-table{width:100%;border-collapse:collapse;font-size:12.5px;table-layout:fixed;}
 #bulk-scroll{overflow-y:auto;overflow-x:hidden;}
@@ -434,12 +435,12 @@ body.dark-mode .sug-item:hover{background:#1a2b3c!important;}
           <thead>
             <tr>
               <th style="width:3%;">#</th>
-              <th style="width:14%;">Date *</th>
-              <th style="width:27%;">Description *</th>
-              <th style="width:16%;">Invoice Number *</th>
-              <th style="width:10%;">Amount *</th>
-              <th style="width:16%;">Purchase Order</th>
-              <th style="width:14%;">Batch Number</th>
+              <th style="width:13%;">Date *</th>
+              <th style="width:26%;">Description *</th>
+              <th style="width:14.5%;">Invoice Number *</th>
+              <th style="width:14.5%;">Amount *</th>
+              <th style="width:14.5%;">Purchase Order</th>
+              <th style="width:14.5%;">Batch Number</th>
             </tr>
           </thead>
           <tbody id="bulk-tbody"></tbody>
@@ -1476,9 +1477,10 @@ function openBulkModal() {
   tbody.innerHTML = '';
   for (let i = 0; i < BULK_INITIAL_ROWS; i++) _addBulkRow(tbody, i + 1);
   const today = new Date().toISOString().slice(0, 10);
-  const todayBatch = String(getAutoBatchNumber(today));
+  const maxBatch = invoices.length ? Math.max(...invoices.map(inv => parseInt(inv.batchNumber) || 0)) : 0;
+  const nextBatch = String(maxBatch + 1);
   tbody.querySelectorAll('.bulk-date').forEach(inp => inp.value = today);
-  tbody.querySelectorAll('.bulk-batch').forEach(inp => inp.value = todayBatch);
+  tbody.querySelectorAll('.bulk-batch').forEach(inp => inp.value = nextBatch);
   document.getElementById('bulk-modal').classList.add('open');
 }
 
@@ -1516,15 +1518,9 @@ function clearBulkRows() {
 
 function onBulkDateChange(input) {
   const row = input.closest('tr');
-  const dateVal = input.value;
-  if (!dateVal) return;
-  let batchFromOther = null;
-  document.querySelectorAll('#bulk-tbody tr').forEach(r => {
-    if (r === row) return;
-    const d = r.querySelector('.bulk-date'), b = r.querySelector('.bulk-batch');
-    if (d && b && d.value === dateVal && b.value) batchFromOther = b.value;
-  });
-  row.querySelector('.bulk-batch').value = batchFromOther || getAutoBatchNumber(dateVal);
+  if (!input.value) return;
+  const maxBatch = invoices.length ? Math.max(...invoices.map(inv => parseInt(inv.batchNumber) || 0)) : 0;
+  row.querySelector('.bulk-batch').value = String(maxBatch + 1);
 }
 
 function onBulkDescInput(input) {
