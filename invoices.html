@@ -80,6 +80,17 @@ body.sb-collapsed #main-content{margin-left:52px;}
 .filter-field input,.filter-field select{padding:7px 10px;font-size:13px;border:1.5px solid #d0dce8;border-radius:7px;font-family:'Calibri',sans-serif;background:#f7fafd;outline:none;min-width:140px;}
 .filter-field input:focus,.filter-field select:focus{border-color:#2e86c1;background:#fff;}
 .filter-field-wide input{min-width:200px;}
+.filter-sug-list{position:absolute;top:100%;left:0;right:0;background:#fff;border:1.5px solid #d0dce8;border-top:none;border-radius:0 0 7px 7px;max-height:180px;overflow-y:auto;z-index:300;box-shadow:0 4px 12px rgba(0,0,0,0.12);}
+.filter-sug-item{padding:7px 10px;font-size:13px;cursor:pointer;font-family:'Calibri',sans-serif;color:#2c3e50;}
+.filter-sug-item:hover{background:#e8f4fd;}
+.multi-select-wrap{position:relative;}
+.multi-select-btn{width:100%;padding:7px 10px;font-size:13px;border:1.5px solid #d0dce8;border-radius:7px;font-family:'Calibri',sans-serif;background:#f7fafd;text-align:left;cursor:pointer;display:flex;justify-content:space-between;align-items:center;min-width:140px;color:#2c3e50;}
+.multi-select-btn:focus{border-color:#2e86c1;outline:none;background:#fff;}
+.multi-select-panel{position:absolute;top:calc(100% + 2px);left:0;min-width:180px;background:#fff;border:1.5px solid #d0dce8;border-radius:7px;z-index:300;max-height:220px;overflow-y:auto;box-shadow:0 4px 14px rgba(0,0,0,0.14);}
+.ms-opt{display:flex;align-items:center;gap:7px;padding:6px 10px;font-size:13px;cursor:pointer;font-family:'Calibri',sans-serif;color:#2c3e50;}
+.ms-opt:hover{background:#f0f8ff;}
+.ms-opt input[type="checkbox"]{cursor:pointer;accent-color:#2e86c1;width:14px;height:14px;flex-shrink:0;}
+.ms-search-inp{width:100%;padding:5px 8px;font-size:12px;border:1px solid #d0dce8;border-radius:5px;font-family:'Calibri',sans-serif;box-sizing:border-box;}
 .filter-btns{display:flex;gap:8px;padding-top:18px;}
 .btn-generate{padding:8px 20px;background:#2e86c1;color:#fff;border:none;border-radius:7px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Calibri',sans-serif;}
 .btn-generate:hover{filter:brightness(1.1);}
@@ -175,6 +186,11 @@ body.dark-mode .col-check:hover{border-color:#2e86c1!important;background:#1a2b3
 body.dark-mode .filter-field label{color:#8fa8c0!important;}
 body.dark-mode .filter-field input,body.dark-mode .filter-field select{background:#162330!important;border-color:#2a3f54!important;color:#c8d8e8!important;}
 body.dark-mode input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.7) brightness(2);cursor:pointer;}
+body.dark-mode .filter-sug-list,body.dark-mode .multi-select-panel{background:#162330!important;border-color:#2a3f54!important;}
+body.dark-mode .filter-sug-item,body.dark-mode .ms-opt{color:#c8d8e8!important;}
+body.dark-mode .filter-sug-item:hover,body.dark-mode .ms-opt:hover{background:#1e3448!important;}
+body.dark-mode .multi-select-btn{background:#162330!important;border-color:#2a3f54!important;color:#c8d8e8!important;}
+body.dark-mode .ms-search-inp{background:#1a2c3a!important;border-color:#2a3f54!important;color:#c8d8e8!important;}
 body.dark-mode .filter-divider{border-color:#2a3f54!important;}
 body.dark-mode .btn-reset{background:#162330!important;border-color:#2a3f54!important;color:#c8d8e8!important;}
 body.dark-mode #search-wrap{background:#1e2d3d!important;border-color:#2a3f54!important;}
@@ -640,7 +656,7 @@ function getFilteredInvoices() {
     if (invFilters.description && !inv.description.toLowerCase().includes(invFilters.description.toLowerCase())) return false;
     if (invFilters.invoiceNumber && !inv.invoiceNumber.toLowerCase().includes(invFilters.invoiceNumber.toLowerCase())) return false;
     if (invFilters.purchaseOrder && !inv.purchaseOrder.toLowerCase().includes(invFilters.purchaseOrder.toLowerCase())) return false;
-    if (invFilters.batchNumber && String(inv.batchNumber) !== String(invFilters.batchNumber)) return false;
+    if (invFilters.batchNumbers && invFilters.batchNumbers.length && !invFilters.batchNumbers.includes(String(inv.batchNumber))) return false;
     return true;
   });
 }
@@ -774,11 +790,32 @@ function renderFilterPanel() {
     panel.innerHTML = `<div class="filter-row">
       <div class="filter-field"><label>Date From</label><input type="date" id="ff-datefrom" value="${f.dateFrom||''}"></div>
       <div class="filter-field"><label>Date To</label><input type="date" id="ff-dateto" value="${f.dateTo||''}"></div>
-      <div class="filter-field filter-field-wide"><label>Description</label><input type="text" id="ff-desc" placeholder="Partial match…" value="${escHtml(f.description||'')}"></div>
+      <div class="filter-field filter-field-wide"><label>Description</label>
+        <div style="position:relative;">
+          <input type="text" id="ff-desc" placeholder="Partial match…" value="${escHtml(f.description||'')}" oninput="onFilterDescInput(this.value)" autocomplete="off" onblur="hideFilterDescSug()">
+          <div id="ff-desc-sug" class="filter-sug-list" style="display:none;"></div>
+        </div>
+      </div>
       <div class="filter-field"><label>Invoice Number</label><input type="text" id="ff-invno" placeholder="Partial match…" value="${escHtml(f.invoiceNumber||'')}"></div>
       <div class="filter-field"><label>Purchase Order</label><input type="text" id="ff-po" placeholder="Partial match…" value="${escHtml(f.purchaseOrder||'')}"></div>
-      <div class="filter-field"><label>Batch Number</label><input type="text" id="ff-batch" placeholder="Exact match…" value="${escHtml(f.batchNumber||'')}"></div>
+      <div class="filter-field"><label>Batch Number</label>
+        <div class="multi-select-wrap">
+          <button type="button" class="multi-select-btn" id="batch-ms-btn" onclick="toggleBatchPanel(event)">
+            <span id="batch-ms-label">${getBatchBtnLabel()}</span><span style="font-size:10px;margin-left:4px;">▾</span>
+          </button>
+          <div class="multi-select-panel" id="batch-ms-panel" style="display:none;">
+            <div style="padding:6px 8px;border-bottom:1px solid #edf3f8;">
+              <input class="ms-search-inp" id="batch-ms-search" type="text" placeholder="Search batch…" oninput="filterBatchOptions(this.value)">
+            </div>
+            <label class="ms-opt" style="border-bottom:1px solid #edf3f8;">
+              <input type="checkbox" id="batch-select-all" onchange="toggleAllBatches(this.checked)"> Select All
+            </label>
+            <div id="batch-options-list"></div>
+          </div>
+        </div>
+      </div>
     </div>`;
+    populateBatchOptions('');
   } else {
     const f = poFilters;
     panel.innerHTML = `<div class="filter-row">
@@ -826,7 +863,7 @@ function applyFilters() {
     invFilters = {
       dateFrom: g('ff-datefrom'), dateTo: g('ff-dateto'),
       description: g('ff-desc'), invoiceNumber: g('ff-invno'),
-      purchaseOrder: g('ff-po'), batchNumber: g('ff-batch')
+      purchaseOrder: g('ff-po'), batchNumbers: invFilters.batchNumbers || []
     };
   } else {
     poFilters = {
@@ -839,13 +876,120 @@ function applyFilters() {
 
 function resetFilters() {
   generated = false;
-  if (currentView === 'invoices') invFilters = {};
+  if (currentView === 'invoices') invFilters = {batchNumbers: []};
   else poFilters = {};
   liveSearchVal = '';
   const s = document.getElementById('live-search');
   if (s) s.value = '';
   renderFilterPanel();
   renderTable();
+}
+
+// ─── Filter: Description autocomplete ────────────────────────────────────────
+function onFilterDescInput(val) {
+  const sug = document.getElementById('ff-desc-sug');
+  if (!sug) return;
+  if (!val || val.length < 2) { sug.style.display = 'none'; return; }
+  const q = val.toLowerCase();
+  const seen = new Set();
+  const matches = [];
+  for (const inv of invoices) {
+    if (inv.description && inv.description.toLowerCase().includes(q) && !seen.has(inv.description)) {
+      seen.add(inv.description);
+      matches.push(inv.description);
+      if (matches.length >= 10) break;
+    }
+  }
+  if (!matches.length) { sug.style.display = 'none'; return; }
+  sug.innerHTML = matches.map(s =>
+    `<div class="filter-sug-item" data-val="${escHtml(s)}" onmousedown="selectFilterDesc(this.dataset.val)">${escHtml(s)}</div>`
+  ).join('');
+  sug.style.display = 'block';
+}
+
+function selectFilterDesc(val) {
+  const input = document.getElementById('ff-desc');
+  if (input) input.value = val;
+  hideFilterDescSug();
+}
+
+function hideFilterDescSug() {
+  setTimeout(() => {
+    const sug = document.getElementById('ff-desc-sug');
+    if (sug) sug.style.display = 'none';
+  }, 150);
+}
+
+// ─── Filter: Batch Number multi-select ───────────────────────────────────────
+function getUniqueBatches() {
+  const seen = new Set();
+  return invoices
+    .filter(inv => inv.batchNumber && !seen.has(String(inv.batchNumber)) && seen.add(String(inv.batchNumber)))
+    .map(inv => String(inv.batchNumber))
+    .sort((a, b) => (Number(a) - Number(b)) || a.localeCompare(b));
+}
+
+function getBatchBtnLabel() {
+  const n = (invFilters.batchNumbers || []).length;
+  if (!n) return 'All batches';
+  const total = getUniqueBatches().length;
+  return n === total ? 'All batches' : `${n} selected`;
+}
+
+function toggleBatchPanel(e) {
+  if (e) e.stopPropagation();
+  const panel = document.getElementById('batch-ms-panel');
+  if (!panel) return;
+  const isOpen = panel.style.display !== 'none';
+  panel.style.display = isOpen ? 'none' : 'block';
+  if (!isOpen) populateBatchOptions('');
+}
+
+function populateBatchOptions(search) {
+  const batches = getUniqueBatches().filter(b => !search || b.toLowerCase().includes(search.toLowerCase()));
+  const selected = invFilters.batchNumbers || [];
+  const container = document.getElementById('batch-options-list');
+  if (!container) return;
+  container.innerHTML = batches.map(b =>
+    `<label class="ms-opt"><input type="checkbox" value="${escHtml(b)}" ${selected.includes(b) ? 'checked' : ''} onchange="onBatchCheck(this)"> ${escHtml(b)}</label>`
+  ).join('');
+  updateBatchSelectAll();
+}
+
+function onBatchCheck(cb) {
+  if (!invFilters.batchNumbers) invFilters.batchNumbers = [];
+  if (cb.checked) {
+    if (!invFilters.batchNumbers.includes(cb.value)) invFilters.batchNumbers.push(cb.value);
+  } else {
+    invFilters.batchNumbers = invFilters.batchNumbers.filter(b => b !== cb.value);
+  }
+  updateBatchLabel();
+  updateBatchSelectAll();
+}
+
+function toggleAllBatches(checked) {
+  invFilters.batchNumbers = checked ? [...getUniqueBatches()] : [];
+  const searchEl = document.getElementById('batch-ms-search');
+  populateBatchOptions(searchEl ? searchEl.value : '');
+  updateBatchLabel();
+}
+
+function updateBatchLabel() {
+  const lbl = document.getElementById('batch-ms-label');
+  if (lbl) lbl.textContent = getBatchBtnLabel();
+}
+
+function updateBatchSelectAll() {
+  const cb = document.getElementById('batch-select-all');
+  if (!cb) return;
+  const total = getUniqueBatches().length;
+  const sel = (invFilters.batchNumbers || []).length;
+  cb.checked = total > 0 && sel === total;
+  cb.indeterminate = sel > 0 && sel < total;
+}
+
+function filterBatchOptions(search) {
+  populateBatchOptions(search);
 }
 
 // ─── View switching ───────────────────────────────────────────────────────────
@@ -1154,9 +1298,17 @@ window.addEventListener('DOMContentLoaded', async () => {
   renderFilterPanel();
   renderTable();
 
-  // Close desc dropdown on outside click
+  // Close dropdowns on outside click
   document.addEventListener('click', e => {
     if (!e.target.closest('#desc-wrap')) hideDescSuggestions();
+    if (!e.target.closest('.multi-select-wrap')) {
+      const panel = document.getElementById('batch-ms-panel');
+      if (panel) panel.style.display = 'none';
+    }
+    if (!e.target.closest('#ff-desc') && !e.target.closest('#ff-desc-sug')) {
+      const sug = document.getElementById('ff-desc-sug');
+      if (sug) sug.style.display = 'none';
+    }
   });
 
   // Close modals on backdrop click
