@@ -567,9 +567,7 @@ function saveJobs() {
     localStorage.setItem('ne_tracker_jobs', snapshot);
     showToast('Saved ✓');
     try {
-      const formData = new FormData();
-      formData.append('payload', JSON.stringify({ action: 'saveJobs', jobs: JSON.parse(snapshot) }));
-      await fetch(GS_WRITE_URL, { method: 'POST', mode: 'no-cors', body: formData });
+      await fetch(GS_WRITE_URL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain' }, body: JSON.stringify({ action: 'saveJobs', jobs: JSON.parse(snapshot) }) });
     } catch(e) { console.error('Sheets sync error:', e); }
   });
   return saveQueue;
