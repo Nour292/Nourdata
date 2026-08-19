@@ -161,6 +161,7 @@ body.dark-mode #search-clear-btn:hover{border-color:#e74c3c!important;color:#e74
 .modal-close:hover{background:#f0f4f8;}
 .modal-body{padding:20px;flex:1;}
 .form-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:12px;}
+#inv-modal .modal-box{width:1100px;}
 .form-grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;}
 .form-field{display:flex;flex-direction:column;gap:4px;}
 .form-field.full{grid-column:1/-1;}
@@ -247,7 +248,7 @@ body.dark-mode .sug-item:hover{background:#1a2b3c!important;}
 
 /* ── Print ── */
 @media print{
-  #sidebar,#top-header,#module-panel,#search-wrap,.tbl-actions,#confirm-overlay,#save-toast,#po-modal{display:none!important;}
+  #sidebar,#top-header,#module-panel,#search-wrap,.tbl-actions,#confirm-overlay,#save-toast,#inv-modal,#po-modal{display:none!important;}
   #main-content{margin-left:0!important;}
   body{background:#fff!important;}
   #page-body{padding:0!important;}
@@ -371,6 +372,52 @@ body.dark-mode .sug-item:hover{background:#1a2b3c!important;}
 
   </div>
 </div>
+</div>
+
+<!-- ── Edit Invoice Modal ── -->
+<div id="inv-modal" class="modal-overlay">
+  <div class="modal-box">
+    <div class="modal-header">
+      <div class="modal-title">Edit Invoice</div>
+      <button class="modal-close" onclick="closeInvModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="form-field">
+          <label>Date *</label>
+          <input type="date" id="inv-f-date">
+        </div>
+        <div class="form-field">
+          <label>Description *</label>
+          <div id="desc-wrap">
+            <input type="text" id="inv-f-desc" oninput="onDescInput(this.value)" autocomplete="off">
+            <div id="desc-suggestions"></div>
+          </div>
+        </div>
+        <div class="form-field">
+          <label>Invoice Number *</label>
+          <input type="text" id="inv-f-invno" oninput="checkInvNoDup()" autocomplete="off">
+          <span id="dup-warning">⚠️ Duplicate invoice number</span>
+        </div>
+        <div class="form-field">
+          <label>Amount *</label>
+          <input type="number" id="inv-f-amount" step="0.01" placeholder="0.00">
+        </div>
+        <div class="form-field">
+          <label>Purchase Order</label>
+          <input type="text" id="inv-f-po" placeholder="e.g. Po - 012345">
+        </div>
+        <div class="form-field">
+          <label>Batch Number</label>
+          <input type="text" id="inv-f-batch">
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="modal-btn modal-btn-cancel" onclick="closeInvModal()">Cancel</button>
+      <button class="modal-btn modal-btn-save" id="inv-save-btn" onclick="saveInvoice()">💾 Save</button>
+    </div>
+  </div>
 </div>
 
 <!-- ── Bulk Add Modal ── -->
@@ -531,7 +578,7 @@ let invCols = INV_COLS_DEF.map(c => ({...c}));
 let poCols  = PO_COLS_DEF.map(c => ({...c}));
 let invFilters = {}, poFilters = {};
 let liveSearchVal = '';
-let editingPORow = null;
+let editingInvRow = null, editingPORow = null;
 let generated = false;
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
@@ -741,6 +788,7 @@ function renderInvoiceTable() {
         html += `<td${cls}>${escHtml(inv[c.key]||'')}</td>`;
       });
       html += `<td class="tbl-actions">
+        <button class="tbl-btn" title="Edit" onclick="openEditInvModal(${inv._row})">✏️</button>
         <button class="tbl-btn tbl-del" title="Delete" onclick="deleteInvoice(${inv._row})">🗑</button>
       </td></tr>`;
     });
@@ -1273,6 +1321,84 @@ function getAutoBatchNumber(dateStr) {
   return lastBatch + 1;
 }
 
+// ─── Invoice edit modal ───────────────────────────────────────────────────────
+function openEditInvModal(row) {
+  const inv = invoices.find(i => i._row === row);
+  if (!inv) return;
+  editingInvRow = row;
+  document.getElementById('inv-f-date').value = toInputDate(inv.date) || '';
+  document.getElementById('inv-f-desc').value = inv.description;
+  document.getElementById('inv-f-invno').value = inv.invoiceNumber;
+  document.getElementById('inv-f-amount').value = inv.amount;
+  document.getElementById('inv-f-po').value = inv.purchaseOrder;
+  document.getElementById('inv-f-batch').value = inv.batchNumber;
+  clearInvErrors();
+  document.getElementById('inv-modal').classList.add('open');
+}
+
+function closeInvModal() {
+  document.getElementById('inv-modal').classList.remove('open');
+  hideDescSuggestions();
+}
+
+function clearInvErrors() {
+  document.getElementById('inv-f-invno').classList.remove('dup-field');
+  document.getElementById('dup-warning').style.display = 'none';
+}
+
+function checkInvNoDup() {
+  const val = document.getElementById('inv-f-invno').value.trim();
+  const dup = val && invoices.some(i => i.invoiceNumber === val && i._row !== editingInvRow);
+  document.getElementById('inv-f-invno').classList.toggle('dup-field', !!dup);
+  document.getElementById('dup-warning').style.display = dup ? 'block' : 'none';
+}
+
+async function saveInvoice() {
+  const date   = document.getElementById('inv-f-date').value;
+  const desc   = document.getElementById('inv-f-desc').value.trim();
+  const invNo  = document.getElementById('inv-f-invno').value.trim();
+  const amount = document.getElementById('inv-f-amount').value.trim();
+  const po     = document.getElementById('inv-f-po').value.trim();
+  const batch  = document.getElementById('inv-f-batch').value.trim();
+  if (!date || !desc || !invNo || !amount) { showToast('Fill required fields (Date, Description, Invoice No, Amount)', 'err'); return; }
+  const data = { date: fmtForSheet(date), description: desc, invoiceNumber: invNo, amount, purchaseOrder: po, batchNumber: batch };
+  const btn = document.getElementById('inv-save-btn');
+  btn.disabled = true; btn.textContent = '⏳ Saving…';
+  try {
+    await fetch(GS_WRITE_URL, { method:'POST', redirect:'follow', body: JSON.stringify({ action:'updateInvoice', sheetRow: editingInvRow, data }) });
+    closeInvModal();
+    showToast('Invoice updated ✓');
+    await loadInvoices();
+    renderTable();
+  } catch(e) {
+    showToast('Save failed: '+e.message, 'err');
+  } finally {
+    btn.disabled = false; btn.textContent = '💾 Save';
+  }
+}
+
+// ─── Description autocomplete (edit modal) ────────────────────────────────────
+function onDescInput(val) {
+  if (!val || val.length < 2) { hideDescSuggestions(); return; }
+  const q = val.toLowerCase();
+  const seen = new Set();
+  const matches = invoices
+    .filter(inv => inv.description && inv.description.toLowerCase().includes(q) && !seen.has(inv.description) && seen.add(inv.description))
+    .slice(0, 10).map(inv => inv.description);
+  if (!matches.length) { hideDescSuggestions(); return; }
+  const list = document.getElementById('desc-suggestions');
+  list.innerHTML = matches.map(s => `<div class="sug-item" onmousedown="selectDesc(this.textContent)">${escHtml(s)}</div>`).join('');
+  list.style.display = 'block';
+}
+function selectDesc(val) {
+  document.getElementById('inv-f-desc').value = val;
+  hideDescSuggestions();
+}
+function hideDescSuggestions() {
+  const el = document.getElementById('desc-suggestions');
+  if (el) el.style.display = 'none';
+}
+
 async function deleteInvoice(row) {
   confirmDialog('Delete this invoice? This cannot be undone.', async () => {
     try {
@@ -1551,6 +1677,7 @@ window.addEventListener('DOMContentLoaded', async () => {
 
   // Close dropdowns on outside click
   document.addEventListener('click', e => {
+    if (!e.target.closest('#desc-wrap')) hideDescSuggestions();
     if (!e.target.closest('.multi-select-wrap')) {
       ['batch-ms-panel','desc-ms-panel'].forEach(id => {
         const p = document.getElementById(id); if (p) p.style.display = 'none';
@@ -1563,6 +1690,9 @@ window.addEventListener('DOMContentLoaded', async () => {
   });
 
   // Close modals on backdrop click
+  document.getElementById('inv-modal').addEventListener('click', e => {
+    if (e.target === document.getElementById('inv-modal')) closeInvModal();
+  });
   document.getElementById('po-modal').addEventListener('click', e => {
     if (e.target === document.getElementById('po-modal')) closePOModal();
   });
@@ -1573,7 +1703,7 @@ window.addEventListener('DOMContentLoaded', async () => {
 
   // ESC key closes modals
   document.addEventListener('keydown', e => {
-    if (e.key === 'Escape') { closePOModal(); closeBulkModal(); }
+    if (e.key === 'Escape') { closeInvModal(); closePOModal(); closeBulkModal(); }
   });
 });
 </script>
