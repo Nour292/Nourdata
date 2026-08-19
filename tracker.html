@@ -699,7 +699,7 @@ function setView(v) {
   document.getElementById('sb-completed').classList.toggle('active', v==='completed');
   document.getElementById('sb-alljobs').classList.toggle('active', v==='all');
   const sortEl = document.getElementById('all-sort-by');
-  if (sortEl) sortEl.style.display = v === 'all' ? '' : 'none';
+  if (sortEl) sortEl.style.display = v === 'all' ? 'inline-block' : 'none';
   if (v === 'all') { renderAllJobsTable(); return; }
   document.getElementById('jobs-container').innerHTML = '';
   renderJobs();
@@ -739,7 +739,7 @@ function renderAllJobsTable() {
 
   // Always show sort dropdown when this view is active
   const sortEl2 = document.getElementById('all-sort-by');
-  if (sortEl2) sortEl2.style.display = '';
+  if (sortEl2) sortEl2.style.display = 'inline-block';
 
   const sortBy = document.getElementById('all-sort-by')?.value || '';
   const pd = s => parseDate(s) || new Date(0);
