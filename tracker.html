@@ -409,7 +409,7 @@ body.user-mode .admin-only { display: none !important; }
           <label>Hold Reason</label>
           <input type="text" id="f-holdreason" placeholder="e.g. No Timesheet, Pending Signature...">
         </div>
-        <div class="form-section-hdr">Dates</div>
+        <div class="form-section-hdr" id="dates-section-hdr">Dates</div>
         <div class="form-field" id="row-leave"><label id="lbl-leavedate">Start Vacation Date</label><div class="date-wrap"><input type="text" id="f-leavedate" placeholder="DD-MMM-YY" oninput="calcDays()"><button type="button" class="cal-btn" onclick="this.querySelector('input[type=date]').showPicker()">📅<input type="date" onchange="setDate('f-leavedate',this.value);calcDays();" style="position:absolute;opacity:0;width:0;height:0;pointer-events:none;"></button></div></div>
         <div class="form-field" id="row-return"><label>Vacation End Date</label><div class="date-wrap"><input type="text" id="f-returndate" placeholder="DD-MMM-YY" oninput="calcDays()"><button type="button" class="cal-btn" onclick="this.querySelector('input[type=date]').showPicker()">📅<input type="date" onchange="setDate('f-returndate',this.value);calcDays();" style="position:absolute;opacity:0;width:0;height:0;pointer-events:none;"></button></div></div>
         <div class="form-field" id="row-actual"><label>Arrival Date</label><div class="date-wrap">
@@ -453,6 +453,14 @@ body.user-mode .admin-only { display: none !important; }
         <div class="form-field" id="row-hend"><label>Housing End</label><div class="date-wrap">
             <input type="text" id="f-housingend" placeholder="DD-MMM-YY">
             <button type="button" class="cal-btn" onclick="this.querySelector('input[type=date]').showPicker()">📅<input type="date" onchange="setDate('f-housingend',this.value)" style="position:absolute;opacity:0;width:0;height:0;pointer-events:none;"></button>
+          </div></div>
+        <div class="form-field" id="row-paf-oldstatus" style="display:none;"><label>Old Status</label>
+          <input type="text" id="f-paf-oldstatus" placeholder="e.g. Active"></div>
+        <div class="form-field" id="row-paf-newstatus" style="display:none;"><label>New Status</label>
+          <input type="text" id="f-paf-newstatus" placeholder="e.g. Transferred"></div>
+        <div class="form-field" id="row-paf-effdate" style="display:none;"><label>Effective Date</label><div class="date-wrap">
+            <input type="text" id="f-paf-effdate" placeholder="DD-MMM-YY">
+            <button type="button" class="cal-btn" onclick="this.querySelector('input[type=date]').showPicker()">📅<input type="date" onchange="setDate('f-paf-effdate',this.value)" style="position:absolute;opacity:0;width:0;height:0;pointer-events:none;"></button>
           </div></div>
         <div class="form-section-hdr">Documents</div>
         <div class="form-field" id="row-encash-type" style="display:none;"><label>Type of Encashment</label>
@@ -734,6 +742,7 @@ function renderAllJobsTable() {
   const isVac  = typeF === 'Vacation';
   const isResig   = typeF === 'Resignation' || typeF === 'Termination' || typeF === 'Resign & Rejoin';
   const isHousing = typeF === 'Housing';
+  const isPAF     = typeF === 'PAF';
   let rows = filtered.map(j => `<tr>
     <td><span class="emp-badge">${esc(j.empNum||'')}</span></td>
     <td style="font-weight:600;">${esc(j.empName||'')}</td>
@@ -743,6 +752,7 @@ function renderAllJobsTable() {
     ${isVac     ? `<td style="font-size:12px;">${fmtDisplay(j.leaveDate)||'—'}</td><td style="font-size:12px;">${fmtDisplay(j.actualReturn)||'—'}</td>` : ''}
     ${isResig   ? `<td style="font-size:12px;color:#c0392b;font-weight:600;">${fmtDisplay(j.lastDay)||'—'}</td>` : ''}
     ${isHousing ? `<td style="font-size:12px;">${fmtDisplay(j.housingStart)||'—'}</td><td style="font-size:12px;">${fmtDisplay(j.housingEnd)||'—'}</td>` : ''}
+    ${isPAF ? `<td style="font-size:12px;">${j.pafOldStatus||'—'}</td><td style="font-size:12px;">${j.pafNewStatus||'—'}</td><td style="font-size:12px;">${fmtDisplay(j.pafEffDate)||'—'}</td>` : ''}
     <td style="color:#888;font-size:12px;">${fmtDisplay(j.createdAt)||'—'}</td>
     <td><button class="card-action-btn btn-edit" style="padding:4px 10px;font-size:12px;" onclick="openEditModal('${j.id}')">✏️</button></td>
   </tr>`).join('');
@@ -750,7 +760,7 @@ function renderAllJobsTable() {
   container.innerHTML = `<div id="all-jobs-table-wrap">
     <table>
       <thead><tr>
-        <th>Emp No</th><th>Name</th><th>Location</th><th>Type</th><th>Status</th>${isVac ? '<th>Start Date</th><th>Arrival Date</th>' : ''}${isResig ? '<th>Last Working Day</th>' : ''}${isHousing ? '<th>Housing Start</th><th>Housing End</th>' : ''}<th>Created</th><th></th>
+        <th>Emp No</th><th>Name</th><th>Location</th><th>Type</th><th>Status</th>${isVac ? '<th>Start Date</th><th>Arrival Date</th>' : ''}${isResig ? '<th>Last Working Day</th>' : ''}${isHousing ? '<th>Housing Start</th><th>Housing End</th>' : ''}${isPAF ? '<th>Old Status</th><th>New Status</th><th>Effective Date</th>' : ''}<th>Created</th><th></th>
       </tr></thead>
       <tbody>${rows}</tbody>
     </table>
@@ -867,6 +877,9 @@ function renderCard(job) {
   if(job.extDays) body+=fld('Ext. Days',job.extDays);
   if(job.housingStart) body+=fld('Housing Start',fmtDisplay(job.housingStart));
   if(job.housingEnd) body+=fld('Housing End',fmtDisplay(job.housingEnd));
+  if(job.pafOldStatus) body+=fld('Old Status',job.pafOldStatus);
+  if(job.pafNewStatus) body+=fld('New Status',job.pafNewStatus);
+  if(job.pafEffDate) body+=fld('Effective Date',fmtDisplay(job.pafEffDate));
   if(job.iqama) body+=fld('Iqama Expiry',fmtDisplay(job.iqama));
   if(job.notes) body+=fld('Notes',job.notes);
   if(!body) body='<div style="color:#bbb;font-size:12px;text-align:center;padding:8px 0;">No details added</div>';
@@ -1021,6 +1034,9 @@ function openEditModal(id) {
   const f_dep=document.getElementById('f-depticket'); if(f_dep) f_dep.value=j.depTicket||'';
   const f_arr=document.getElementById('f-arrticket'); if(f_arr) f_arr.value=j.arrTicket||'';
   const f_ld=document.getElementById('f-lastday'); if(f_ld) f_ld.value=j.lastDay||'';
+  const f_pos=document.getElementById('f-paf-oldstatus'); if(f_pos) f_pos.value=j.pafOldStatus||'';
+  const f_pns=document.getElementById('f-paf-newstatus'); if(f_pns) f_pns.value=j.pafNewStatus||'';
+  const f_ped=document.getElementById('f-paf-effdate'); if(f_ped) f_ped.value=j.pafEffDate||'';
   document.getElementById('f-notes').value=j.notes||'';
   toggleDateFields();
   document.getElementById('modal-overlay').classList.add('open');
@@ -1037,21 +1053,29 @@ function toggleDateFields() {
   const isHouse     = type === 'Housing';
   const isEncash    = type === 'Encashment';
   const isResignGrp = ['Resignation','Termination','Resign & Rejoin'].includes(type);
+  const isPAF       = type === 'PAF';
+
+  // Section header
+  const dateHdr = document.getElementById('dates-section-hdr');
+  if (dateHdr) dateHdr.textContent = isPAF ? 'Status Update' : 'Dates';
 
   // Date fields
-  show('row-leave',     isVac || isResignGrp);
-  show('row-return',    isVac);
-  show('row-actual',    isVac);
-  show('row-depticket', isVac);
-  show('row-arrticket', isVac);
-  show('row-lastday',   isResignGrp);
-  show('row-days',      isVac || isResignGrp);
-  show('row-ext',       isVac);
-  show('row-extdays',   isVac);
-  show('row-reentry',   isVac && !isEncash);
-  show('row-visaexpiry',isVac);
-  show('row-hstart',    isHouse);
-  show('row-hend',      isHouse);
+  show('row-leave',          isVac || isResignGrp);
+  show('row-return',         isVac);
+  show('row-actual',         isVac);
+  show('row-depticket',      isVac);
+  show('row-arrticket',      isVac);
+  show('row-lastday',        isResignGrp);
+  show('row-days',           isVac || isResignGrp);
+  show('row-ext',            isVac);
+  show('row-extdays',        isVac);
+  show('row-reentry',        isVac && !isEncash);
+  show('row-visaexpiry',     isVac);
+  show('row-hstart',         isHouse);
+  show('row-hend',           isHouse);
+  show('row-paf-oldstatus',  isPAF);
+  show('row-paf-newstatus',  isPAF);
+  show('row-paf-effdate',    isPAF);
   show('hold-reason-row', status === 'On Hold');
 
   // Dynamic label for leave date field
@@ -1127,6 +1151,7 @@ function saveJob() {
     actualReturn:normDate(g('f-actualreturn')), days:g('f-days'),
     extDate:normDate(g('f-extdate')), extDays:g('f-extdays'),
     housingStart:normDate(g('f-housingstart')), housingEnd:normDate(g('f-housingend')),
+    pafOldStatus:g('f-paf-oldstatus'), pafNewStatus:g('f-paf-newstatus'), pafEffDate:normDate(g('f-paf-effdate')),
     notes:g('f-notes'),
     createdAt:editingJobId?(jobs.find(j=>j.id===editingJobId)?.createdAt||todayFormatted()):todayFormatted(),
     updatedAt:todayFormatted(),
