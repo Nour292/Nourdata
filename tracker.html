@@ -735,7 +735,7 @@ function renderAllJobsTable() {
 
   const esc = escHtml;
   const isVac  = typeF === 'Vacation';
-  const isResig = typeF === 'Resignation' || typeF === 'Termination';
+  const isResig = typeF === 'Resignation' || typeF === 'Termination' || typeF === 'Resign & Rejoin';
   let rows = filtered.map(j => `<tr>
     <td><span class="emp-badge">${esc(j.empNum||'')}</span></td>
     <td style="font-weight:600;">${esc(j.empName||'')}</td>
