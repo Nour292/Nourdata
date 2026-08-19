@@ -737,6 +737,10 @@ function renderAllJobsTable() {
   const typeF   = (document.getElementById('filter-type')?.value||'');
   const locF    = currentLocationFilter;
 
+  // Always show sort dropdown when this view is active
+  const sortEl2 = document.getElementById('all-sort-by');
+  if (sortEl2) sortEl2.style.display = '';
+
   const sortBy = document.getElementById('all-sort-by')?.value || '';
   const pd = s => parseDate(s) || new Date(0);
 
