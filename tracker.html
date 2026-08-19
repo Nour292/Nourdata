@@ -410,7 +410,7 @@ body.user-mode .admin-only { display: none !important; }
           <input type="text" id="f-holdreason" placeholder="e.g. No Timesheet, Pending Signature...">
         </div>
         <div class="form-section-hdr">Dates</div>
-        <div class="form-field" id="row-leave"><label>Start Vacation Date</label><div class="date-wrap"><input type="text" id="f-leavedate" placeholder="DD-MMM-YY" oninput="calcDays()"><button type="button" class="cal-btn" onclick="this.querySelector('input[type=date]').showPicker()">📅<input type="date" onchange="setDate('f-leavedate',this.value);calcDays();" style="position:absolute;opacity:0;width:0;height:0;pointer-events:none;"></button></div></div>
+        <div class="form-field" id="row-leave"><label id="lbl-leavedate">Start Vacation Date</label><div class="date-wrap"><input type="text" id="f-leavedate" placeholder="DD-MMM-YY" oninput="calcDays()"><button type="button" class="cal-btn" onclick="this.querySelector('input[type=date]').showPicker()">📅<input type="date" onchange="setDate('f-leavedate',this.value);calcDays();" style="position:absolute;opacity:0;width:0;height:0;pointer-events:none;"></button></div></div>
         <div class="form-field" id="row-return"><label>Vacation End Date</label><div class="date-wrap"><input type="text" id="f-returndate" placeholder="DD-MMM-YY" oninput="calcDays()"><button type="button" class="cal-btn" onclick="this.querySelector('input[type=date]').showPicker()">📅<input type="date" onchange="setDate('f-returndate',this.value);calcDays();" style="position:absolute;opacity:0;width:0;height:0;pointer-events:none;"></button></div></div>
         <div class="form-field" id="row-actual"><label>Arrival Date</label><div class="date-wrap">
             <input type="text" id="f-actualreturn" placeholder="DD-MMM-YY" oninput="calcDays()">
@@ -853,7 +853,7 @@ function renderCard(job) {
       }).join(' ')
     : '<span class="status-dot" style="background:#ccc"></span><span class="status-text" style="color:#aaa">No Status</span>';
   let body='';
-  if(job.leaveDate) body+=fld('Start Vacation Date',fmtDisplay(job.leaveDate));
+  if(job.leaveDate){const leaveLbl=job.type==='Resignation'?'Resignation Date':job.type==='Termination'?'Termination Date':job.type==='Resign & Rejoin'?'Resign & Rejoin Date':'Start Vacation Date';body+=fld(leaveLbl,fmtDisplay(job.leaveDate));}
   if(job.returnDate) body+=fld('Vacation End Date',fmtDisplay(job.returnDate));
   if(job.actualReturn) body+=fld('Arrival Date',fmtDisplay(job.actualReturn),'highlight');
   if(job.days) body+=fld('Days',job.days);
@@ -1053,6 +1053,15 @@ function toggleDateFields() {
   show('row-hstart',    isHouse);
   show('row-hend',      isHouse);
   show('hold-reason-row', status === 'On Hold');
+
+  // Dynamic label for leave date field
+  const lblLeave = document.getElementById('lbl-leavedate');
+  if (lblLeave) {
+    if (type === 'Resignation') lblLeave.textContent = 'Resignation Date';
+    else if (type === 'Termination') lblLeave.textContent = 'Termination Date';
+    else if (type === 'Resign & Rejoin') lblLeave.textContent = 'Resign & Rejoin Date';
+    else lblLeave.textContent = 'Start Vacation Date';
+  }
 
   // Documents
   show('row-ticket-doc',  !isEncash);
