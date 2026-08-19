@@ -455,9 +455,6 @@ body.user-mode .admin-only { display: none !important; }
             <button type="button" class="cal-btn" onclick="this.querySelector('input[type=date]').showPicker()">📅<input type="date" onchange="setDate('f-housingend',this.value)" style="position:absolute;opacity:0;width:0;height:0;pointer-events:none;"></button>
           </div></div>
         <div class="form-section-hdr">Documents</div>
-        <div class="form-field" id="row-ticket-doc"><label>Ticket</label>
-          <input type="text" id="f-ticket" placeholder="e.g. One-way / Return">
-        </div>
         <div class="form-field" id="row-encash-type" style="display:none;"><label>Type of Encashment</label>
           <select id="f-encashtype"><option value="">-- Select --</option><option>Ticket Encashment</option><option>Ticket and Annual Leave Encashment</option></select>
         </div>
@@ -870,7 +867,6 @@ function renderCard(job) {
   if(job.extDays) body+=fld('Ext. Days',job.extDays);
   if(job.housingStart) body+=fld('Housing Start',fmtDisplay(job.housingStart));
   if(job.housingEnd) body+=fld('Housing End',fmtDisplay(job.housingEnd));
-  if(job.ticket) body+=fld('Ticket',job.ticket);
   if(job.iqama) body+=fld('Iqama Expiry',fmtDisplay(job.iqama));
   if(job.notes) body+=fld('Notes',job.notes);
   if(!body) body='<div style="color:#bbb;font-size:12px;text-align:center;padding:8px 0;">No details added</div>';
@@ -1020,7 +1016,6 @@ function openEditModal(id) {
   document.getElementById('f-extdays').value=j.extDays||'';
   document.getElementById('f-housingstart').value=j.housingStart||'';
   document.getElementById('f-housingend').value=j.housingEnd||'';
-  const f_tkt=document.getElementById('f-ticket'); if(f_tkt) f_tkt.value=j.ticket||'';
   document.getElementById('f-reentry').value=j.reentry||'';
   const f_enc=document.getElementById('f-encashtype'); if(f_enc) f_enc.value=j.encashType||'';
   const f_dep=document.getElementById('f-depticket'); if(f_dep) f_dep.value=j.depTicket||'';
@@ -1123,7 +1118,7 @@ function saveJob() {
     actualReturn:normDate(g('f-actualreturn')), days:g('f-days'),
     extDate:normDate(g('f-extdate')), extDays:g('f-extdays'),
     housingStart:normDate(g('f-housingstart')), housingEnd:normDate(g('f-housingend')),
-    ticket:g('f-ticket'), notes:g('f-notes'),
+    notes:g('f-notes'),
     createdAt:editingJobId?(jobs.find(j=>j.id===editingJobId)?.createdAt||todayFormatted()):todayFormatted(),
     updatedAt:todayFormatted(),
   };
