@@ -1151,10 +1151,6 @@ function setView(v) {
 
   document.getElementById('page-title').textContent = v==='invoices' ? '🧾 Submitted Invoices' : '📄 Purchase Orders';
 
-  const addBtn = document.getElementById('btn-add');
-  addBtn.textContent = v==='invoices' ? '➕ Add Invoice' : '➕ Add PO';
-  addBtn.onclick = v==='invoices' ? openAddInvModal : openAddPOModal;
-
   renderColSelector();
   renderFilterPanel();
   renderTable();
