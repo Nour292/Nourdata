@@ -950,6 +950,7 @@ function sortJobsForDisplay(arr) {
 }
 
 function renderJobs() {
+  if (currentView === 'all') { renderStats(); renderAllJobsTable(); return; }
   renderStats();
   const container = document.getElementById('jobs-container');
   const search  = (document.getElementById('filter-search')?.value||'').trim().toLowerCase();
