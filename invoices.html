@@ -516,8 +516,8 @@ const INV_COLS_DEF = [
 ];
 const PO_COLS_DEF = [
   {key:'sNo',               label:'S/No',                 on:false},
-  {key:'poNumber',          label:'PO Number',            on:true },
-  {key:'date',              label:'Date',                 on:false},
+  {key:'poNumber',          label:'Purchase Order',       on:true },
+  {key:'date',              label:'Date',                 on:true },
   {key:'poValue',           label:'PO Value',             on:false},
   {key:'invoiced',          label:'Invoiced',             on:true },
   {key:'currency',          label:'Currency',             on:false},
@@ -705,6 +705,12 @@ function getFilteredPOs() {
       const d = parseDisplayDate(po.date), to = new Date(poFilters.dateTo+'T23:59:59');
       if (!d || d > to) return false;
     }
+    if (poFilters.poNumber) {
+      if (!String(po.poNumber||'').toLowerCase().includes(poFilters.poNumber.toLowerCase())) return false;
+    }
+    if (poFilters.supplierName) {
+      if (!String(po.supplierName||'').toLowerCase().includes(poFilters.supplierName.toLowerCase())) return false;
+    }
     if (poFilters.invoiced && poFilters.invoiced !== 'all') {
       const inv = po.invoiced.toLowerCase();
       if (poFilters.invoiced === 'invoiced' && inv !== 'invoiced') return false;
@@ -870,6 +876,18 @@ function renderFilterPanel() {
     panel.innerHTML = `<div class="filter-row">
       <div class="filter-field"><label>Date From</label><input type="date" id="ff-datefrom" value="${f.dateFrom||''}"></div>
       <div class="filter-field"><label>Date To</label><input type="date" id="ff-dateto" value="${f.dateTo||''}"></div>
+      <div class="filter-field"><label>PO Number</label>
+        <div style="position:relative;">
+          <input type="text" id="ff-ponum" placeholder="Partial match…" value="${escHtml(f.poNumber||'')}" oninput="onFilterTextInput('ff-ponum','ff-ponum-sug','poNumber',this.value)" autocomplete="off" onblur="hideFilterSug('ff-ponum-sug')">
+          <div id="ff-ponum-sug" class="filter-sug-list" style="display:none;"></div>
+        </div>
+      </div>
+      <div class="filter-field"><label>Supplier Name</label>
+        <div style="position:relative;">
+          <input type="text" id="ff-supplier" placeholder="Partial match…" value="${escHtml(f.supplierName||'')}" oninput="onFilterTextInput('ff-supplier','ff-supplier-sug','supplierName',this.value)" autocomplete="off" onblur="hideFilterSug('ff-supplier-sug')">
+          <div id="ff-supplier-sug" class="filter-sug-list" style="display:none;"></div>
+        </div>
+      </div>
       <div class="filter-field"><label>Invoiced Status</label>
         <select id="ff-invstatus">
           <option value="all" ${(!f.invoiced||f.invoiced==='all')?'selected':''}>All</option>
@@ -917,6 +935,7 @@ function applyFilters() {
   } else {
     poFilters = {
       dateFrom: g('ff-datefrom'), dateTo: g('ff-dateto'),
+      poNumber: g('ff-ponum'), supplierName: g('ff-supplier'),
       invoiced: g('ff-invstatus')
     };
   }
@@ -1016,7 +1035,8 @@ function onFilterTextInput(inputId, sugId, dataKey, val) {
   const q = val.toLowerCase();
   const seen = new Set();
   const matches = [];
-  for (const inv of invoices) {
+  const dataset = currentView === 'invoices' ? invoices : pos;
+  for (const inv of dataset) {
     const v = inv[dataKey];
     if (v && String(v).toLowerCase().includes(q) && !seen.has(v)) {
       seen.add(v);
@@ -1547,7 +1567,7 @@ window.addEventListener('DOMContentLoaded', async () => {
         const p = document.getElementById(id); if (p) p.style.display = 'none';
       });
     }
-    ['ff-invno-sug','ff-po-sug'].forEach(id => {
+    ['ff-invno-sug','ff-po-sug','ff-ponum-sug','ff-supplier-sug'].forEach(id => {
       const sug = document.getElementById(id);
       if (sug && !e.target.closest(`[id="${id}"]`) && !e.target.closest(`#${id.replace('-sug','')}`)) sug.style.display = 'none';
     });
