@@ -84,6 +84,8 @@ body.sb-collapsed #main-content{margin-left:52px;}
 #filter-type:focus{border-color:#2e86c1;}
 #filter-location{border:1.5px solid #d0dce8;border-radius:8px;padding:9px 12px;font-size:13px;font-family:'Calibri',sans-serif;background:#f7fafd;color:#1a2b3c;outline:none;cursor:pointer;flex-shrink:0;transition:border-color 0.2s;}
 #filter-location:focus{border-color:#2e86c1;}
+#all-sort-by{display:none;border:1.5px solid #2e86c1;border-radius:8px;padding:9px 12px;font-size:13px;font-family:'Calibri',sans-serif;background:#eaf4fb;color:#1a2b3c;outline:none;cursor:pointer;flex-shrink:0;transition:border-color 0.2s;}
+#all-sort-by:focus{border-color:#1a6fa8;}
 #ssb-clear-btn{display:none;align-items:center;gap:5px;padding:8px 14px;border:1.5px solid #e0e8f0;border-radius:8px;background:#fff;color:#888;font-size:13px;font-weight:600;font-family:'Calibri',sans-serif;cursor:pointer;white-space:nowrap;transition:all 0.15s;flex-shrink:0;}
 #ssb-clear-btn:hover{border-color:#e74c3c;color:#e74c3c;background:#fff8f8;}
 
@@ -189,7 +191,7 @@ body.dark-mode .field-value{color:#e0e0e0!important;}
 body.dark-mode .card-footer-bar{background:#162330!important;border-color:#2a3d50!important;}
 body.dark-mode .stat-card{background:#1e2d3d!important;color:#e0e0e0!important;}
 body.dark-mode .stat-num{color:#e0e0e0!important;}
-body.dark-mode #smart-search-bar{background:#1e2d3d!important;border-color:#2a3f54!important;}body.dark-mode #filter-search,body.dark-mode #filter-type,body.dark-mode #filter-location{background:#162330!important;border-color:#2a3f54!important;color:#c8d8e8!important;}body.dark-mode #ssb-clear-btn{background:#1e2d3d!important;border-color:#2a3f54!important;color:#8fa8c0!important;}body.dark-mode #ssb-clear-btn:hover{border-color:#e74c3c!important;color:#e74c3c!important;}
+body.dark-mode #smart-search-bar{background:#1e2d3d!important;border-color:#2a3f54!important;}body.dark-mode #filter-search,body.dark-mode #filter-type,body.dark-mode #filter-location{background:#162330!important;border-color:#2a3f54!important;color:#c8d8e8!important;}body.dark-mode #ssb-clear-btn{background:#1e2d3d!important;border-color:#2a3f54!important;color:#8fa8c0!important;}body.dark-mode #ssb-clear-btn:hover{border-color:#e74c3c!important;color:#e74c3c!important;}body.dark-mode #all-sort-by{background:#162330!important;border-color:#2e86c1!important;color:#c8d8e8!important;}
 body.dark-mode #inline-search-panel{background:#1e2d3d!important;}
 body.dark-mode .loc-header{border-color:#2a3d50!important;}
 body.dark-mode .loc-title{color:#e0e0e0!important;}
@@ -333,7 +335,7 @@ body.user-mode .admin-only { display: none !important; }
         <option>Jeddah</option>
         <option>Riyadh</option>
       </select>
-      <select id="filter-type" onchange="onSearchInput()">
+      <select id="filter-type" onchange="onTypeFilterChange()">
         <option value="">All Types</option>
         <option>Vacation</option>
         <option>Resignation</option>
@@ -344,6 +346,13 @@ body.user-mode .admin-only { display: none !important; }
         <option>Visit Visa</option>
         <option>PAF</option>
         <option>Email Request</option>
+      </select>
+      <select id="all-sort-by" onchange="renderAllJobsTable()">
+        <option value="">↕ Sort: Default</option>
+        <option value="empNum">↑ Emp No</option>
+        <option value="leaveDate">↓ Start Date</option>
+        <option value="actualReturn">↓ Arrival Date</option>
+        <option value="lastDay">↓ Last Working Day</option>
       </select>
       <button id="ssb-clear-btn" onclick="clearSmartSearch()" title="Clear">✕ Clear</button>
     </div>
@@ -648,10 +657,23 @@ function onSearchInput() {
   renderJobs();
 }
 
+function onTypeFilterChange() {
+  const type   = document.getElementById('filter-type').value;
+  const sortEl = document.getElementById('all-sort-by');
+  if (sortEl && currentView === 'all') {
+    if (type === 'Vacation') sortEl.value = 'leaveDate';
+    else if (['Resignation','Termination','Resign & Rejoin'].includes(type)) sortEl.value = 'lastDay';
+    else sortEl.value = '';
+  }
+  onSearchInput();
+}
+
 function clearSmartSearch() {
   document.getElementById('filter-search').value   = '';
   document.getElementById('filter-type').value     = '';
   document.getElementById('filter-location').value = '';
+  const sortEl = document.getElementById('all-sort-by');
+  if (sortEl) sortEl.value = '';
   updateClearBtn();
   filterLocation('All');
 }
@@ -676,6 +698,8 @@ function setView(v) {
   document.getElementById('sb-active').classList.toggle('active', v==='active');
   document.getElementById('sb-completed').classList.toggle('active', v==='completed');
   document.getElementById('sb-alljobs').classList.toggle('active', v==='all');
+  const sortEl = document.getElementById('all-sort-by');
+  if (sortEl) sortEl.style.display = v === 'all' ? '' : 'none';
   if (v === 'all') { renderAllJobsTable(); return; }
   document.getElementById('jobs-container').innerHTML = '';
   renderJobs();
@@ -713,6 +737,9 @@ function renderAllJobsTable() {
   const typeF   = (document.getElementById('filter-type')?.value||'');
   const locF    = currentLocationFilter;
 
+  const sortBy = document.getElementById('all-sort-by')?.value || '';
+  const pd = s => parseDate(s) || new Date(0);
+
   let filtered = jobs.filter(j => {
     if (locF !== 'All' && j.location !== locF) return false;
     if (search) {
@@ -722,10 +749,22 @@ function renderAllJobsTable() {
     }
     if (typeF && j.type !== typeF) return false;
     return true;
-  }).slice().sort((a,b) => {
-    const da = parseDate(a.createdAt)||new Date(0), db = parseDate(b.createdAt)||new Date(0);
-    return db - da;
   });
+
+  if (sortBy === 'empNum') {
+    filtered.sort((a,b) => String(a.empNum||'').localeCompare(String(b.empNum||''), undefined, {numeric:true}));
+  } else if (sortBy === 'leaveDate') {
+    filtered.sort((a,b) => pd(b.leaveDate) - pd(a.leaveDate));
+  } else if (sortBy === 'actualReturn') {
+    filtered.sort((a,b) => pd(b.actualReturn) - pd(a.actualReturn));
+  } else if (sortBy === 'lastDay') {
+    filtered.sort((a,b) => pd(b.lastDay) - pd(a.lastDay));
+  } else {
+    // Auto-sort by type
+    if (typeF === 'Vacation') filtered.sort((a,b) => pd(b.leaveDate) - pd(a.leaveDate));
+    else if (['Resignation','Termination','Resign & Rejoin'].includes(typeF)) filtered.sort((a,b) => pd(b.lastDay) - pd(a.lastDay));
+    else filtered.sort((a,b) => pd(b.createdAt) - pd(a.createdAt));
+  }
 
   if (!filtered.length) {
     container.innerHTML = '<div class="empty-state"><div class="empty-icon">📭</div><p style="font-size:15px;font-weight:700;color:#888;">No jobs found</p></div>';
