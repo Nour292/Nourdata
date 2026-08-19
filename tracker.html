@@ -735,15 +735,17 @@ function renderAllJobsTable() {
 
   const esc = escHtml;
   const isVac  = typeF === 'Vacation';
-  const isResig = typeF === 'Resignation' || typeF === 'Termination' || typeF === 'Resign & Rejoin';
+  const isResig   = typeF === 'Resignation' || typeF === 'Termination' || typeF === 'Resign & Rejoin';
+  const isHousing = typeF === 'Housing';
   let rows = filtered.map(j => `<tr>
     <td><span class="emp-badge">${esc(j.empNum||'')}</span></td>
     <td style="font-weight:600;">${esc(j.empName||'')}</td>
     <td>${esc(j.location||'')}</td>
     <td>${esc(j.type||'')}</td>
     <td>${getStatuses(j).map(sv=>statusBadge(sv)).join(' ')||'—'}</td>
-    ${isVac   ? `<td style="font-size:12px;">${fmtDisplay(j.leaveDate)||'—'}</td><td style="font-size:12px;">${fmtDisplay(j.actualReturn)||'—'}</td>` : ''}
-    ${isResig ? `<td style="font-size:12px;color:#c0392b;font-weight:600;">${fmtDisplay(j.lastDay)||'—'}</td>` : ''}
+    ${isVac     ? `<td style="font-size:12px;">${fmtDisplay(j.leaveDate)||'—'}</td><td style="font-size:12px;">${fmtDisplay(j.actualReturn)||'—'}</td>` : ''}
+    ${isResig   ? `<td style="font-size:12px;color:#c0392b;font-weight:600;">${fmtDisplay(j.lastDay)||'—'}</td>` : ''}
+    ${isHousing ? `<td style="font-size:12px;">${fmtDisplay(j.housingStart)||'—'}</td><td style="font-size:12px;">${fmtDisplay(j.housingEnd)||'—'}</td>` : ''}
     <td style="color:#888;font-size:12px;">${fmtDisplay(j.createdAt)||'—'}</td>
     <td><button class="card-action-btn btn-edit" style="padding:4px 10px;font-size:12px;" onclick="openEditModal('${j.id}')">✏️</button></td>
   </tr>`).join('');
@@ -751,7 +753,7 @@ function renderAllJobsTable() {
   container.innerHTML = `<div id="all-jobs-table-wrap">
     <table>
       <thead><tr>
-        <th>Emp No</th><th>Name</th><th>Location</th><th>Type</th><th>Status</th>${isVac ? '<th>Start Date</th><th>Arrival Date</th>' : ''}${isResig ? '<th>Last Working Day</th>' : ''}<th>Created</th><th></th>
+        <th>Emp No</th><th>Name</th><th>Location</th><th>Type</th><th>Status</th>${isVac ? '<th>Start Date</th><th>Arrival Date</th>' : ''}${isResig ? '<th>Last Working Day</th>' : ''}${isHousing ? '<th>Housing Start</th><th>Housing End</th>' : ''}<th>Created</th><th></th>
       </tr></thead>
       <tbody>${rows}</tbody>
     </table>
