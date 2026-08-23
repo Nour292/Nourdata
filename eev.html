@@ -873,13 +873,13 @@ th{background:#e8e8e8;font-size:8.5pt;text-align:center;}
     <td width="34%">Approved By: Wasef Hattab.<br><br><br>Date:</td>
   </tr>
 </table>
-<script>window.onload=function(){setTimeout(function(){window.print();},600);};</script>
 </body></html>`;
 
     const pw = window.open('', '_blank', 'width=900,height=700');
     pw.document.open();
     pw.document.write(html);
     pw.document.close();
+    setTimeout(function() { pw.print(); }, 600);
 
   } catch (e) {
     showToast('Error: ' + e.message, 'error');
