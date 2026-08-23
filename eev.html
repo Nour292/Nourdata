@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- NourData EEV Module v1.1 - Aug-2026 -->
+<!-- NourData EEV Module v1.2 - Aug-2026 -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -225,7 +225,7 @@ if (sessionStorage.getItem('ne_sb_collapsed') === '1') {
 <aside id="sidebar">
   <div id="sb-header">
     <img id="sb-logo" src="nour_energy_logo.png" alt="Nour Energy" onerror="this.style.display='none'">
-    <div id="sb-title">Nour Energy<small>EEV Module &nbsp;·&nbsp; v1.1</small></div>
+    <div id="sb-title">Nour Energy<small>Expense Voucher &nbsp;·&nbsp; v1.2</small></div>
     <button id="sb-toggle" onclick="toggleSidebar()" title="Toggle sidebar">&#9776;</button>
   </div>
   <nav id="sb-nav">
@@ -768,119 +768,27 @@ async function printSheet() {
   const empNum = document.getElementById('f-empnum').value.trim();
   if (!empNum) { showToast('Please enter Employee # first', 'error'); return; }
 
-  const amounts = EEV_CODES.map((_, i) => parseFloat(document.getElementById('amt-' + i).value) || 0);
+  const amounts    = EEV_CODES.map((_, i) => parseFloat(document.getElementById('amt-' + i).value) || 0);
   const newAdvance = parseFloat(document.getElementById('f-advance').value) || 0;
-  const today = new Date().toISOString().slice(0, 10);
+  const today      = new Date().toISOString().slice(0, 10);
 
   const payload = {
     action:     'prepareEEV',
-    empNum:     empNum,
+    empNum,
     date:       today,
     project:    document.getElementById('f-project').value,
-    newAdvance: newAdvance,
-    amounts:    amounts
+    newAdvance,
+    amounts
   };
 
-  showToast('Preparing voucher…', 'info');
+  showToast('Writing to sheet…', 'info');
 
   try {
-    const resp = await fetch(GS_WRITE, {
-      method:   'POST',
-      redirect: 'follow',
-      body:     JSON.stringify(payload)
-    });
+    const resp   = await fetch(GS_WRITE, { method: 'POST', redirect: 'follow', body: JSON.stringify(payload) });
     const result = await resp.json();
     if (!result.ok) { showToast('Error: ' + (result.error || 'Unknown'), 'error'); return; }
-
-    // Build popup voucher and auto-print
-    const startBal  = parseFloat(document.getElementById('f-start-bal').textContent.replace(/,/g,'')) || 0;
-    const totalEEV  = amounts.reduce((a,b) => a+b, 0);
-    const cashOnHand= startBal + newAdvance - totalEEV;
-    const project   = document.getElementById('f-project').value;
-    const empName   = result.empName || document.getElementById('f-empname').value;
-    const location  = result.location || '';
-    const refNum    = result.refNum || '';
-    const dateStr   = result.dateStr || today;
-
-    const nonZero = EEV_CODES.map((c,i) => ({...c, amt: amounts[i]})).filter(c => c.amt > 0);
-
-    const rows = nonZero.map(c => `
-      <tr>
-        <td style="text-align:center">${c.code}</td>
-        <td>${c.desc}</td>
-        <td style="text-align:center">${project}</td>
-        <td style="text-align:right;font-weight:700">${c.amt.toLocaleString('en-US',{minimumFractionDigits:2})}</td>
-      </tr>`).join('');
-
-    const html = `<!DOCTYPE html><html><head><meta charset="UTF-8">
-<title>EEV ${refNum}</title>
-<style>
-@page{size:A4 portrait;margin:8mm 10mm;}
-*{box-sizing:border-box;margin:0;padding:0;}
-body{font-family:Arial,sans-serif;font-size:9pt;}
-h2{font-size:13pt;text-align:center;margin-bottom:2px;}
-h3{font-size:10pt;text-align:center;margin-bottom:6px;font-weight:normal;}
-table{width:100%;border-collapse:collapse;margin-bottom:4px;}
-td,th{border:1px solid #000;padding:3px 5px;}
-th{background:#e8e8e8;font-size:8.5pt;text-align:center;}
-.lbl{font-size:8pt;color:#555;font-weight:700;}
-.val{font-weight:700;}
-.amt{text-align:right;}
-.sig td{padding:18px 5px 4px;font-weight:700;vertical-align:bottom;}
-.wf td{font-size:9pt;}
-.words{font-style:italic;font-size:8.5pt;padding:3px 5px;border:1px solid #ccc;margin-bottom:4px;background:#fffbe6;color:#7d6608;}
-</style></head><body>
-<h2>NOUR ENERGY CO. LTD.</h2>
-<h3>Employee Expense Voucher</h3>
-<table>
-  <tr>
-    <td width="18%"><span class="lbl">Emp #</span><br><span class="val">${empNum}</span></td>
-    <td width="34%"><span class="lbl">Employee Name</span><br><span class="val">${empName}</span></td>
-    <td width="18%"><span class="lbl">Location</span><br><span class="val">${location}</span></td>
-    <td width="16%"><span class="lbl">Date</span><br><span class="val">${dateStr}</span></td>
-    <td width="14%"><span class="lbl">Ref #</span><br><span class="val">${refNum}</span></td>
-  </tr>
-  <tr>
-    <td colspan="2"><span class="lbl">Project #</span><br><span class="val">${project}</span></td>
-    <td colspan="3"><span class="lbl">Requested By</span><br><span class="val">&nbsp;</span></td>
-  </tr>
-</table>
-<table>
-  <thead><tr><th width="8%">Code #</th><th>Description</th><th width="14%">Project</th><th width="16%">Amount (SR)</th></tr></thead>
-  <tbody>${rows}</tbody>
-  <tfoot><tr>
-    <td colspan="3" style="text-align:right;font-weight:700;">TOTAL</td>
-    <td class="amt" style="font-weight:700;">${totalEEV.toLocaleString('en-US',{minimumFractionDigits:2})}</td>
-  </tr></tfoot>
-</table>
-<div class="words">Amount in Words: ${amountToWords(totalEEV)}</div>
-<table class="wf">
-  <tr>
-    <th>Starting Balance</th><th>Plus New Advance</th><th>Less Above Exp</th><th>Cash on Hand</th><th>Verified By</th>
-  </tr>
-  <tr>
-    <td class="amt">${startBal.toLocaleString('en-US',{minimumFractionDigits:2})}</td>
-    <td class="amt">${newAdvance.toLocaleString('en-US',{minimumFractionDigits:2})}</td>
-    <td class="amt">${totalEEV.toLocaleString('en-US',{minimumFractionDigits:2})}</td>
-    <td class="amt" style="font-weight:700;">${cashOnHand.toLocaleString('en-US',{minimumFractionDigits:2})}</td>
-    <td>&nbsp;</td>
-  </tr>
-</table>
-<table class="sig" style="margin-top:10px;">
-  <tr>
-    <td width="33%">Prepared By: Mohammad Qasim<br><br><br>Date:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
-    <td width="33%">Checked By:<br><br><br>Date:</td>
-    <td width="34%">Approved By: Wasef Hattab.<br><br><br>Date:</td>
-  </tr>
-</table>
-</body></html>`;
-
-    const pw = window.open('', '_blank', 'width=900,height=700');
-    pw.document.open();
-    pw.document.write(html);
-    pw.document.close();
-    setTimeout(function() { pw.print(); }, 600);
-
+    showToast('Sheet ready — press Ctrl+P to print', 'success');
+    window.open(`https://docs.google.com/spreadsheets/d/${GS_ID}/edit#gid=546323593`, '_blank');
   } catch (e) {
     showToast('Error: ' + e.message, 'error');
   }
