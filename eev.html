@@ -1,0 +1,1159 @@
+<!DOCTYPE html>
+<!-- NourData EEV Module - Aug-2026 -->
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<link rel="icon" type="image/png" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAVtElEQVR42u2beXRd1ZXmf3d47977Bg1PA5IsWcLtseMRDHEY7HggjgkVBuN46oiYYJPExqFpGigWKyEVzMoqcLqAihNiGw9xIEwLBzBFlQeagCsYG8/gASGENVjz8OY7nv7j6b2YNHRbtkxSK3W03h9Pujr3nr332d93vr2vJIQQXKDhui6fNb0kSZ95/eddqyjKhXpEpAtlACHE5y70r2G+7FAHe9HpdBrTNCkoKGDTpk3s3bsXwzCQJAlVVZFlOffJ2l4Iged5n/rEYjHS6TSVlZXcdNNNjB8/HkmSkGX5rzMCXNdFURS2bt3KqFGjGDNmDFOmTGHPnj3ouo7P50PXdfx+Pz6fiqKoSJKEEALXdXEcB8dxiEb7SCZTDBkyhCVLljBv3jxGjRqFpmkXZAuog+V5WZaJxWJs2bKFzZs347ousiwzdOhQiouLMQwDwzBQVT+KqqDIMiABAgTYjkNPTzfFxcUsWDCfuXPnout67h7vvfceI0aMIBwO/z/zyECHPFielySJDRs20NzcTCAQoKenF0mSKCuvoKi4hMKCCKFgmGAwSMAIoBsBDMMgGAwhyQqapnHrrd9ly5YtLF68GF3XEULw5ptvsmDBAiZPnszGjRuRJAnP8/56toAQAiEEjuMwYsQIZs2axfr16/nkk0+4/fbb8fn8+DUdxafi8/nwKSqyoiDLErKiEI/Hqa6q4pbaWkaPHpWb98SJE2zcuIFt216jq6uLRCJBSUkJ+/fvJxQKDVoUqIPhfVVVef755zl16hRjx44FwDRNdN3A0AP4NT+K5kdVMwZQVBVFlkmmkmzdeipLF8zHQCfXi/wBqXi7IIvwAAAAASUVORK5CYII=">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#1a6fa8">
+<title>Nour Energy — EEV Module</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html,body{font-family:'Calibri',sans-serif;background:#f0f4f8;min-height:100vh;}
+#layout{display:flex;min-height:100vh;}
+
+/* ── Sidebar ── */
+#sidebar{width:220px;min-width:220px;background:#1a2b3c;display:flex;flex-direction:column;position:fixed;top:0;left:0;bottom:0;z-index:200;transition:width 0.25s ease,min-width 0.25s ease;overflow:hidden;}
+#sidebar.collapsed{width:52px;min-width:52px;}
+#sb-header{display:flex;align-items:center;gap:10px;padding:14px 12px;border-bottom:1px solid rgba(255,255,255,0.08);min-height:58px;}
+#sidebar.collapsed #sb-header{padding:14px 0;justify-content:center;}
+#sb-logo{width:60px;height:60px;border-radius:50%;object-fit:contain;flex-shrink:0;background:#fff;padding:4px;}
+#sidebar.collapsed #sb-logo{display:none;}
+#sb-title{font-size:14px;font-weight:700;color:#fff;white-space:nowrap;flex:1;line-height:1.3;}
+#sb-title small{display:block;font-size:11px;font-weight:400;color:#8fa8c0;}
+#sidebar.collapsed #sb-title{opacity:0;width:0;flex:0;}
+#sb-toggle{width:30px;height:30px;background:rgba(255,255,255,0.1);border:none;border-radius:6px;color:#fff;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-left:auto;}
+#sb-toggle:hover{background:rgba(255,255,255,0.2);}
+#sidebar.collapsed #sb-toggle{margin-left:0;width:36px;height:36px;}
+#sb-nav{flex:1;padding:4px 0;overflow-y:auto;}
+.sb-group{border-bottom:1px solid rgba(255,255,255,0.06);}
+.sb-group-hdr{display:flex;align-items:center;gap:10px;width:100%;padding:11px 16px;background:none;border:none;color:#8fa8c0;font-size:12px;font-weight:700;cursor:pointer;text-align:left;white-space:nowrap;text-transform:uppercase;letter-spacing:0.5px;}
+.sb-group-hdr:hover{background:rgba(255,255,255,0.05);color:#fff;}
+.sb-arrow{margin-left:auto;font-size:10px;transition:transform 0.2s;}
+.sb-group-items{background:rgba(0,0,0,0.15);}
+.sb-item{display:flex;align-items:center;gap:12px;padding:9px 16px 9px 28px;cursor:pointer;color:#b8cfe0;font-size:13px;font-weight:600;border:none;background:none;width:100%;text-align:left;white-space:nowrap;transition:background 0.15s,color 0.15s;text-decoration:none;}
+.sb-item:hover{background:rgba(255,255,255,0.07);color:#fff;}
+.sb-item.active{background:rgba(46,134,193,0.22);color:#fff;border-left:3px solid #2e86c1;}
+.sb-item.active .sb-icon{color:#2e86c1;}
+.sb-icon{font-size:15px;flex-shrink:0;width:18px;text-align:center;}
+.sb-label{transition:opacity 0.2s;}
+#sidebar.collapsed .sb-label{opacity:0;width:0;overflow:hidden;}
+#sidebar.collapsed .sb-item{padding:9px 0;justify-content:center;}
+#sidebar.collapsed .sb-group-hdr{padding:9px 0;justify-content:center;}
+#sidebar.collapsed .sb-group-items{display:none!important;}
+#sidebar.collapsed .sb-arrow{display:none;}
+#sb-footer{padding:10px;border-top:1px solid rgba(255,255,255,0.08);display:flex;flex-direction:column;gap:6px;}
+#sb-darkbtn{display:flex;align-items:center;gap:10px;width:100%;padding:8px 12px;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);border-radius:7px;color:#b8cfe0;font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap;font-family:'Calibri',sans-serif;}
+#sb-darkbtn:hover{background:rgba(255,255,255,0.14);color:#fff;}
+#sidebar.collapsed #sb-darkbtn{justify-content:center;padding:8px;}
+#sidebar.collapsed #sb-darklabel{display:none;}
+#sb-logout{display:flex;align-items:center;gap:10px;width:100%;padding:8px 12px;background:rgba(231,76,60,0.15);border:1px solid rgba(231,76,60,0.3);border-radius:7px;color:#e74c3c;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap;font-family:'Calibri',sans-serif;}
+#sb-logout:hover{background:rgba(231,76,60,0.28);}
+#sidebar.collapsed #sb-logout{justify-content:center;padding:8px;}
+#sidebar.collapsed #sb-logout-label{display:none;}
+
+/* ── Main ── */
+#main-content{margin-left:220px;flex:1;display:flex;flex-direction:column;min-height:100vh;transition:margin-left 0.25s;background:#f0f4f8;}
+body.sb-collapsed #main-content{margin-left:52px;}
+#top-header{background:#fff;border-bottom:1px solid #e0e8f0;padding:12px 24px;display:flex;align-items:center;gap:16px;position:sticky;top:0;z-index:100;box-shadow:0 1px 4px rgba(0,0,0,0.06);}
+#page-title{font-size:18px;font-weight:700;color:#1a2b3c;}
+#header-right{margin-left:auto;display:flex;align-items:center;gap:8px;}
+.hdr-btn{height:34px;padding:0 14px;font-family:'Calibri',sans-serif;font-size:13px;font-weight:700;border:none;border-radius:7px;cursor:pointer;display:flex;align-items:center;gap:6px;transition:filter 0.15s;}
+.hdr-btn:hover{filter:brightness(1.1);}
+.btn-print{background:#5d4037;color:#fff;}
+.btn-clear{background:#f0f4f8;color:#1a2b3c;border:1.5px solid #d0dce8;}
+.btn-save{background:#2e86c1;color:#fff;}
+.btn-excel{background:#117a65;color:#fff;}
+.btn-pdf{background:#7d3c98;color:#fff;}
+.btn-copy{background:#1a6b8a;color:#fff;}
+#page-body{padding:20px 24px;flex:1;}
+
+/* ── Section visibility ── */
+.section{display:none;}
+.section.active{display:block;}
+
+/* ── Filter bar ── */
+.filter-card{background:#fff;border-radius:10px;padding:14px 18px;margin-bottom:14px;box-shadow:0 1px 6px rgba(0,0,0,0.07);border:1px solid #e0e8f0;}
+.filter-row{display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end;}
+.filter-field{display:flex;flex-direction:column;gap:3px;flex:1;min-width:120px;}
+.filter-field label{font-size:11px;font-weight:700;color:#5a7a9a;text-transform:uppercase;letter-spacing:0.4px;}
+.filter-field input,.filter-field select{padding:7px 10px;font-size:13px;border:1.5px solid #d0dce8;border-radius:7px;font-family:'Calibri',sans-serif;background:#f7fafd;outline:none;width:100%;}
+.filter-field input:focus,.filter-field select:focus{border-color:#2e86c1;background:#fff;}
+.filter-btns{display:flex;gap:8px;padding-top:16px;}
+.btn-apply{padding:7px 18px;background:#2e86c1;color:#fff;border:none;border-radius:7px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Calibri',sans-serif;}
+.btn-apply:hover{filter:brightness(1.1);}
+.btn-reset{padding:7px 14px;background:#f0f4f8;color:#1a2b3c;border:1.5px solid #d0dce8;border-radius:7px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Calibri',sans-serif;}
+.btn-reset:hover{background:#e8eef5;}
+
+/* ── Table ── */
+.tbl-wrap{background:#fff;border-radius:10px;box-shadow:0 1px 6px rgba(0,0,0,0.07);border:1px solid #e0e8f0;overflow:hidden;}
+.tbl-toolbar{display:flex;align-items:center;justify-content:space-between;padding:10px 16px;border-bottom:1px solid #e8f0f8;}
+.tbl-count{font-size:13px;font-weight:700;color:#1a2b3c;}
+.tbl-actions{display:flex;gap:6px;}
+.tbl-scroll{overflow-x:auto;}
+table{width:100%;border-collapse:collapse;font-size:13px;}
+thead th{background:#1a2b3c;color:#e0e8f0;padding:9px 10px;text-align:left;font-weight:700;font-size:12px;white-space:nowrap;position:sticky;top:0;}
+thead th.num{text-align:right;}
+tbody tr:nth-child(even){background:#f8fafc;}
+tbody tr:hover{background:#e8f4fd;}
+tbody td{padding:8px 10px;border-bottom:1px solid #eef2f8;color:#2c3e50;white-space:nowrap;}
+tbody td.num{text-align:right;font-variant-numeric:tabular-nums;font-family:'Calibri',sans-serif;}
+tbody td.wf{color:#117a65;font-weight:700;}
+tbody td.ev{color:#c0392b;font-weight:700;}
+tbody td.bal{font-weight:700;}
+tfoot td{padding:9px 10px;background:#edf2f7;font-weight:700;color:#1a2b3c;font-size:13px;border-top:2px solid #c8d8e8;}
+tfoot td.num{text-align:right;font-variant-numeric:tabular-nums;}
+.no-data{text-align:center;padding:32px;color:#8fa8c0;font-size:14px;}
+
+/* ── EEV Form ── */
+.form-card{background:#fff;border-radius:10px;padding:18px 20px;margin-bottom:14px;box-shadow:0 1px 6px rgba(0,0,0,0.07);border:1px solid #e0e8f0;}
+.form-card-title{font-size:13px;font-weight:700;color:#1a2b3c;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid #e8f0f8;}
+.form-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px 14px;}
+.form-field{display:flex;flex-direction:column;gap:3px;}
+.form-field label{font-size:11px;font-weight:700;color:#5a7a9a;text-transform:uppercase;letter-spacing:0.4px;}
+.form-field input,.form-field select{padding:7px 10px;font-size:13px;border:1.5px solid #d0dce8;border-radius:7px;font-family:'Calibri',sans-serif;background:#f7fafd;outline:none;}
+.form-field input:focus,.form-field select:focus{border-color:#2e86c1;background:#fff;}
+.form-field input[readonly]{background:#f0f4f8;color:#5a7a9a;cursor:default;}
+.form-field.span2{grid-column:span 2;}
+.form-field.span3{grid-column:span 3;}
+
+/* Expense table */
+.exp-table-wrap{overflow-x:auto;border:1px solid #e0e8f0;border-radius:8px;}
+.exp-table{width:100%;border-collapse:collapse;font-size:13px;}
+.exp-table thead th{background:#1a2b3c;color:#e0e8f0;padding:8px 10px;text-align:left;font-weight:700;font-size:12px;}
+.exp-table thead th:last-child{text-align:right;min-width:120px;}
+.exp-table tbody tr:nth-child(even){background:#f8fafc;}
+.exp-table tbody tr:hover{background:#e8f4fd;}
+.exp-table tbody td{padding:5px 10px;border-bottom:1px solid #eef2f8;color:#2c3e50;}
+.exp-table tbody td.code{font-weight:700;color:#2e86c1;width:50px;}
+.exp-table .amt-inp{width:110px;padding:4px 8px;font-size:13px;border:1.5px solid #d0dce8;border-radius:5px;font-family:'Calibri',sans-serif;text-align:right;background:#fff;outline:none;}
+.exp-table .amt-inp:focus{border-color:#2e86c1;}
+.exp-table tfoot td{background:#edf2f7;padding:8px 10px;font-weight:700;border-top:2px solid #c8d8e8;}
+.exp-table tfoot td.total-amt{text-align:right;color:#1a2b3c;font-size:14px;}
+
+/* Working fund section */
+.wf-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px 14px;margin-top:12px;}
+.wf-item{display:flex;flex-direction:column;gap:3px;}
+.wf-item label{font-size:11px;font-weight:700;color:#5a7a9a;text-transform:uppercase;letter-spacing:0.4px;}
+.wf-item .wf-val{padding:8px 10px;font-size:14px;font-weight:700;border-radius:7px;font-variant-numeric:tabular-nums;}
+.wf-item.start .wf-val{background:#e8f4fd;color:#1a6b8a;border:1.5px solid #b8d9f0;}
+.wf-item.advance .wf-val{background:#fff;border:1.5px solid #d0dce8;}
+.wf-item.advance input{padding:8px 10px;font-size:14px;font-weight:700;border:1.5px solid #d0dce8;border-radius:7px;font-family:'Calibri',sans-serif;width:100%;outline:none;text-align:right;}
+.wf-item.advance input:focus{border-color:#2e86c1;background:#fff;}
+.wf-item.less .wf-val{background:#fdecea;color:#c0392b;border:1.5px solid #f5c6c0;}
+.wf-item.cash .wf-val{background:#e8f8f0;color:#117a65;border:1.5px solid #a9dfbf;font-size:16px;}
+.words-row{margin-top:10px;padding:8px 12px;background:#fffbf0;border:1px solid #f0e0a0;border-radius:7px;font-size:12px;color:#7d6608;font-style:italic;}
+
+/* Form actions */
+.form-actions{display:flex;gap:10px;margin-top:16px;padding-top:14px;border-top:1px solid #e8f0f8;}
+.btn-save-eev{padding:10px 28px;background:#2e86c1;color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;font-family:'Calibri',sans-serif;}
+.btn-save-eev:hover{filter:brightness(1.1);}
+.btn-save-eev:disabled{background:#8fa8c0;cursor:not-allowed;}
+.btn-print-sheet{padding:10px 20px;background:#5d4037;color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;font-family:'Calibri',sans-serif;}
+.btn-print-sheet:hover{filter:brightness(1.1);}
+.btn-clear-form{padding:10px 20px;background:#f0f4f8;color:#1a2b3c;border:1.5px solid #d0dce8;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;font-family:'Calibri',sans-serif;}
+.btn-clear-form:hover{background:#e8eef5;}
+
+/* ── Toast ── */
+#toast{position:fixed;bottom:24px;right:24px;background:#1a2b3c;color:#fff;padding:12px 20px;border-radius:10px;font-size:14px;font-weight:600;z-index:9999;opacity:0;transform:translateY(12px);transition:all 0.3s;pointer-events:none;max-width:380px;box-shadow:0 4px 20px rgba(0,0,0,0.25);}
+#toast.show{opacity:1;transform:translateY(0);}
+#toast.success{background:#117a65;}
+#toast.error{background:#c0392b;}
+#toast.info{background:#2e86c1;}
+
+/* ── Loading ── */
+#loading-overlay{position:fixed;inset:0;background:rgba(255,255,255,0.7);display:flex;align-items:center;justify-content:center;z-index:5000;display:none;}
+.spinner{width:40px;height:40px;border:4px solid #d0dce8;border-top-color:#2e86c1;border-radius:50%;animation:spin 0.7s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+/* ── Dark mode ── */
+body.dark-mode{background:#0f1824;}
+body.dark-mode #sidebar{background:#0d1a26;}
+body.dark-mode #main-content{background:#0f1824;}
+body.dark-mode #top-header{background:#162232;border-color:#1e3048;color:#e0e8f0;}
+body.dark-mode #page-title{color:#e0e8f0;}
+body.dark-mode .form-card,body.dark-mode .filter-card,body.dark-mode .tbl-wrap{background:#162232;border-color:#1e3048;}
+body.dark-mode .form-card-title,body.dark-mode .tbl-count{color:#e0e8f0;}
+body.dark-mode .form-field label,body.dark-mode .filter-field label,body.dark-mode .wf-item label{color:#8fa8c0;}
+body.dark-mode .form-field input,body.dark-mode .form-field select,body.dark-mode .filter-field input,body.dark-mode .filter-field select{background:#1e3048;border-color:#2a4060;color:#e0e8f0;}
+body.dark-mode .form-field input:focus,body.dark-mode .form-field select:focus,body.dark-mode .filter-field input:focus,body.dark-mode .filter-field select:focus{border-color:#2e86c1;background:#1a2b3c;}
+body.dark-mode .form-field input[readonly]{background:#162232;color:#8fa8c0;}
+body.dark-mode tbody tr:nth-child(even){background:#1a2b3c;}
+body.dark-mode tbody tr:hover{background:#1e3048;}
+body.dark-mode tbody td{color:#c8dce8;border-color:#1e3048;}
+body.dark-mode tfoot td,body.dark-mode thead th{background:#0d1a26;}
+body.dark-mode .exp-table tbody tr:nth-child(even){background:#1a2b3c;}
+body.dark-mode .exp-table tbody td{color:#c8dce8;border-color:#1e3048;}
+body.dark-mode .exp-table .amt-inp{background:#1e3048;border-color:#2a4060;color:#e0e8f0;}
+body.dark-mode .exp-table .amt-inp:focus{border-color:#2e86c1;}
+body.dark-mode .wf-item.start .wf-val{background:#1a2b3c;border-color:#2a4060;color:#4db8e8;}
+body.dark-mode .wf-item.advance input{background:#1e3048;border-color:#2a4060;color:#e0e8f0;}
+body.dark-mode .wf-item.less .wf-val{background:#2a1a1a;border-color:#4a2020;color:#f1948a;}
+body.dark-mode .wf-item.cash .wf-val{background:#1a2a20;border-color:#2a4a30;color:#6fcf97;}
+body.dark-mode .words-row{background:#1e1a10;border-color:#3a3010;color:#d4b800;}
+body.dark-mode .btn-clear-form{background:#1e3048;color:#e0e8f0;border-color:#2a4060;}
+body.dark-mode .btn-reset{background:#1e3048;color:#e0e8f0;border-color:#2a4060;}
+body.dark-mode .tbl-toolbar{border-color:#1e3048;}
+body.dark-mode #loading-overlay{background:rgba(15,24,36,0.75);}
+
+/* Print styles */
+@media print{
+  #sidebar,#top-header,#header-right,#toast,#loading-overlay{display:none!important;}
+  #main-content{margin-left:0!important;}
+  .filter-card,.form-actions,.tbl-toolbar{display:none!important;}
+  .tbl-wrap{box-shadow:none;border:1px solid #ccc;}
+}
+</style>
+</head>
+<body>
+<script>
+// Auth check — must run before any DOM
+if (sessionStorage.getItem('ne_role') !== 'admin') location.href = 'index.html';
+if (sessionStorage.getItem('ne_dark') === '1') document.body.classList.add('dark-mode');
+if (sessionStorage.getItem('ne_sb_collapsed') === '1') {
+  document.body.classList.add('sb-collapsed');
+}
+</script>
+
+<div id="loading-overlay"><div class="spinner"></div></div>
+<div id="toast"></div>
+
+<div id="layout">
+<!-- ══════════ SIDEBAR ══════════ -->
+<aside id="sidebar">
+  <div id="sb-header">
+    <img id="sb-logo" src="nour_energy_logo.png" alt="Nour Energy" onerror="this.style.display='none'">
+    <div id="sb-title">Nour Energy<small>EEV Module</small></div>
+    <button id="sb-toggle" onclick="toggleSidebar()" title="Toggle sidebar">&#9776;</button>
+  </div>
+  <nav id="sb-nav">
+    <!-- EEV Group -->
+    <div class="sb-group">
+      <button class="sb-group-hdr" onclick="toggleGroup(this)">
+        <span>&#128196;</span><span class="sb-label">EEV Module</span>
+        <span class="sb-arrow">&#9660;</span>
+      </button>
+      <div class="sb-group-items">
+        <button class="sb-item active" id="nav-form" onclick="showSection('form')">
+          <span class="sb-icon">&#128221;</span><span class="sb-label">EEV Form</span>
+        </button>
+        <button class="sb-item" id="nav-ledger" onclick="showSection('ledger')">
+          <span class="sb-icon">&#128202;</span><span class="sb-label">EEV Ledger</span>
+        </button>
+        <button class="sb-item" id="nav-statement" onclick="showSection('statement')">
+          <span class="sb-icon">&#128203;</span><span class="sb-label">Employee Statement</span>
+        </button>
+        <button class="sb-item" id="nav-balance" onclick="showSection('balance')">
+          <span class="sb-icon">&#9878;</span><span class="sb-label">Balance Summary</span>
+        </button>
+      </div>
+    </div>
+    <!-- Other Pages Group -->
+    <div class="sb-group">
+      <button class="sb-group-hdr" onclick="toggleGroup(this)">
+        <span>&#128279;</span><span class="sb-label">Other Pages</span>
+        <span class="sb-arrow">&#9660;</span>
+      </button>
+      <div class="sb-group-items">
+        <a class="sb-item" href="index.html">
+          <span class="sb-icon">&#128100;</span><span class="sb-label">Employee Data</span>
+        </a>
+        <a class="sb-item" href="tracker.html">
+          <span class="sb-icon">&#128736;</span><span class="sb-label">Job Tracker</span>
+        </a>
+        <a class="sb-item" href="invoices.html">
+          <span class="sb-icon">&#128196;</span><span class="sb-label">Submitted Invoices</span>
+        </a>
+      </div>
+    </div>
+  </nav>
+  <div id="sb-footer">
+    <button id="sb-darkbtn" onclick="toggleDark()">
+      <span>&#9790;</span><span id="sb-darklabel" class="sb-label">Dark Mode</span>
+    </button>
+    <button id="sb-logout" onclick="logout()">
+      <span>&#128275;</span><span id="sb-logout-label" class="sb-label">Logout</span>
+    </button>
+  </div>
+</aside>
+
+<!-- ══════════ MAIN CONTENT ══════════ -->
+<div id="main-content">
+  <div id="top-header">
+    <span id="page-title">Employee Expense Voucher</span>
+    <div id="header-right">
+      <!-- buttons change per section -->
+    </div>
+  </div>
+  <div id="page-body">
+
+    <!-- ────────── SECTION: EEV FORM ────────── -->
+    <div id="sec-form" class="section active">
+
+      <!-- Header Info Card -->
+      <div class="form-card">
+        <div class="form-card-title">&#128221; Voucher Information</div>
+        <div class="form-grid">
+          <div class="form-field">
+            <label>Reference # (Auto)</label>
+            <input type="text" id="f-refnum" readonly placeholder="Assigned on save">
+          </div>
+          <div class="form-field">
+            <label>Date *</label>
+            <input type="date" id="f-date">
+          </div>
+          <div class="form-field">
+            <label>Employee # *</label>
+            <input type="text" id="f-empnum" placeholder="Enter Emp #" oninput="onEmpNumChange()">
+          </div>
+          <div class="form-field span2">
+            <label>Employee Name</label>
+            <input type="text" id="f-empname" readonly placeholder="Auto-filled">
+          </div>
+          <div class="form-field">
+            <label>Location</label>
+            <input type="text" id="f-location" readonly placeholder="Auto-filled">
+          </div>
+          <div class="form-field">
+            <label>Department</label>
+            <input type="text" id="f-dept" placeholder="Department">
+          </div>
+          <div class="form-field">
+            <label>Project #</label>
+            <input type="text" id="f-project" placeholder="Project #">
+          </div>
+        </div>
+      </div>
+
+      <!-- Expense Items Card -->
+      <div class="form-card">
+        <div class="form-card-title">&#128181; Expense Items</div>
+        <div class="exp-table-wrap">
+          <table class="exp-table">
+            <thead>
+              <tr>
+                <th style="width:40px">#</th>
+                <th style="width:54px">Code</th>
+                <th>Description</th>
+                <th style="width:130px;text-align:right">Amount (SAR)</th>
+              </tr>
+            </thead>
+            <tbody id="exp-tbody"></tbody>
+            <tfoot>
+              <tr>
+                <td colspan="3" style="font-weight:700;color:#1a2b3c;text-align:right;padding-right:10px">TOTAL</td>
+                <td class="total-amt" id="f-total">0.00</td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+        <div class="words-row" id="f-words">Amount in words: —</div>
+      </div>
+
+      <!-- Working Fund Card -->
+      <div class="form-card">
+        <div class="form-card-title">&#128184; Working Fund</div>
+        <div class="wf-grid">
+          <div class="wf-item start">
+            <label>Starting Balance</label>
+            <div class="wf-val" id="f-start-bal">0.00</div>
+          </div>
+          <div class="wf-item advance">
+            <label>Plus New Advance</label>
+            <input type="number" id="f-advance" value="0" min="0" step="0.01" oninput="calcCashOnHand()">
+          </div>
+          <div class="wf-item less">
+            <label>Less Above Expenses</label>
+            <div class="wf-val" id="f-less-exp">0.00</div>
+          </div>
+          <div class="wf-item cash">
+            <label>Cash on Hand</label>
+            <div class="wf-val" id="f-cash">0.00</div>
+          </div>
+        </div>
+        <div class="form-actions">
+          <button class="btn-save-eev" onclick="saveEEV()" id="btn-save">&#128190; Save &amp; Record</button>
+          <button class="btn-print-sheet" onclick="printSheet()">&#128438; Print Sheet</button>
+          <button class="btn-clear-form" onclick="clearForm()">&#10005; Clear</button>
+        </div>
+      </div>
+    </div><!-- /sec-form -->
+
+    <!-- ────────── SECTION: EEV LEDGER ────────── -->
+    <div id="sec-ledger" class="section">
+      <div class="filter-card">
+        <div class="filter-row">
+          <div class="filter-field" style="max-width:140px">
+            <label>Date From</label>
+            <input type="date" id="lg-from">
+          </div>
+          <div class="filter-field" style="max-width:140px">
+            <label>Date To</label>
+            <input type="date" id="lg-to">
+          </div>
+          <div class="filter-field" style="max-width:200px">
+            <label>Employee</label>
+            <select id="lg-emp">
+              <option value="">All Employees</option>
+            </select>
+          </div>
+          <div class="filter-field" style="max-width:180px">
+            <label>Type</label>
+            <select id="lg-type">
+              <option value="">All Types</option>
+              <option value="Work Fund">Work Fund</option>
+              <option value="Expenses Voucher">Expenses Voucher</option>
+            </select>
+          </div>
+          <div class="filter-btns">
+            <button class="btn-apply" onclick="renderLedger()">Apply</button>
+            <button class="btn-reset" onclick="resetLedgerFilters()">Reset</button>
+          </div>
+        </div>
+      </div>
+      <div class="tbl-wrap">
+        <div class="tbl-toolbar">
+          <span class="tbl-count" id="lg-count">— records</span>
+          <div class="tbl-actions">
+            <button class="hdr-btn btn-excel" onclick="exportTable('lg-table','EEV_Ledger')">&#128196; Excel</button>
+            <button class="hdr-btn btn-pdf" onclick="printSection('sec-ledger')">&#128438; PDF</button>
+            <button class="hdr-btn btn-copy" onclick="copyTable('lg-table')">&#128203; Copy</button>
+          </div>
+        </div>
+        <div class="tbl-scroll">
+          <table id="lg-table">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Date</th>
+                <th>Emp #</th>
+                <th>Employee Name</th>
+                <th>Type</th>
+                <th>Reference</th>
+                <th class="num">Work Fund</th>
+                <th class="num">EEV Amount</th>
+                <th class="num">Balance</th>
+                <th>Project</th>
+                <th>Location</th>
+              </tr>
+            </thead>
+            <tbody id="lg-tbody"><tr><td colspan="11" class="no-data">Loading data…</td></tr></tbody>
+            <tfoot id="lg-tfoot"></tfoot>
+          </table>
+        </div>
+      </div>
+    </div><!-- /sec-ledger -->
+
+    <!-- ────────── SECTION: EMPLOYEE STATEMENT ────────── -->
+    <div id="sec-statement" class="section">
+      <div class="filter-card">
+        <div class="filter-row">
+          <div class="filter-field" style="max-width:220px">
+            <label>Employee *</label>
+            <select id="st-emp">
+              <option value="">Select Employee</option>
+            </select>
+          </div>
+          <div class="filter-field" style="max-width:140px">
+            <label>Date From</label>
+            <input type="date" id="st-from">
+          </div>
+          <div class="filter-field" style="max-width:140px">
+            <label>Date To</label>
+            <input type="date" id="st-to">
+          </div>
+          <div class="filter-btns">
+            <button class="btn-apply" onclick="renderStatement()">Load Statement</button>
+            <button class="btn-reset" onclick="resetStatementFilters()">Reset</button>
+          </div>
+        </div>
+      </div>
+      <div class="tbl-wrap">
+        <div class="tbl-toolbar">
+          <span class="tbl-count" id="st-count">Select an employee above</span>
+          <div class="tbl-actions">
+            <button class="hdr-btn btn-excel" onclick="exportTable('st-table','Employee_Statement')">&#128196; Excel</button>
+            <button class="hdr-btn btn-pdf" onclick="printSection('sec-statement')">&#128438; PDF</button>
+            <button class="hdr-btn btn-copy" onclick="copyTable('st-table')">&#128203; Copy</button>
+          </div>
+        </div>
+        <div class="tbl-scroll">
+          <table id="st-table">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Date</th>
+                <th>Type</th>
+                <th>Reference</th>
+                <th class="num">Work Fund</th>
+                <th class="num">EEV Amount</th>
+                <th class="num">Balance</th>
+                <th>Project</th>
+              </tr>
+            </thead>
+            <tbody id="st-tbody"><tr><td colspan="8" class="no-data">Select an employee to view statement</td></tr></tbody>
+            <tfoot id="st-tfoot"></tfoot>
+          </table>
+        </div>
+      </div>
+    </div><!-- /sec-statement -->
+
+    <!-- ────────── SECTION: BALANCE SUMMARY ────────── -->
+    <div id="sec-balance" class="section">
+      <div class="filter-card">
+        <div class="filter-row">
+          <div class="filter-field" style="max-width:260px">
+            <label>Search Employee</label>
+            <input type="text" id="bs-search" placeholder="Name or Emp #" oninput="renderBalanceSummary()">
+          </div>
+          <div class="filter-btns">
+            <button class="btn-apply" onclick="loadAllData().then(renderBalanceSummary)">&#8635; Refresh</button>
+          </div>
+        </div>
+      </div>
+      <div class="tbl-wrap">
+        <div class="tbl-toolbar">
+          <span class="tbl-count" id="bs-count">— employees</span>
+          <div class="tbl-actions">
+            <button class="hdr-btn btn-excel" onclick="exportTable('bs-table','Balance_Summary')">&#128196; Excel</button>
+            <button class="hdr-btn btn-pdf" onclick="printSection('sec-balance')">&#128438; PDF</button>
+            <button class="hdr-btn btn-copy" onclick="copyTable('bs-table')">&#128203; Copy</button>
+          </div>
+        </div>
+        <div class="tbl-scroll">
+          <table id="bs-table">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Emp #</th>
+                <th>Employee Name</th>
+                <th class="num">Total Work Fund</th>
+                <th class="num">Total EEV</th>
+                <th class="num">Current Balance</th>
+              </tr>
+            </thead>
+            <tbody id="bs-tbody"><tr><td colspan="6" class="no-data">Loading data…</td></tr></tbody>
+            <tfoot id="bs-tfoot"></tfoot>
+          </table>
+        </div>
+      </div>
+    </div><!-- /sec-balance -->
+
+  </div><!-- /page-body -->
+</div><!-- /main-content -->
+</div><!-- /layout -->
+
+<script>
+/* ══════════════════════════════════════════════
+   CONSTANTS
+══════════════════════════════════════════════ */
+const GS_ID    = '16QYl00ATXVIlQKkqRxdAIdU6J3u7lDfg0PIoJfaDBpo';
+const GS_KEY   = 'AIzaSyBfjtlvDvGxmS1OcqFVGNMMadqza1ofCrI';
+const GS_WRITE = 'https://script.google.com/macros/s/AKfycbzGXoDV-fdif6qiP_wFjmoULC0pXoRDVsH1P_-LptWEAIwYC3NBzDo-aWwOr4OXoaVuxQ/exec';
+const PRINT_URL= `https://docs.google.com/spreadsheets/d/${GS_ID}/edit#gid=546323593`;
+
+const EEV_CODES = [
+  {code:'001', desc:'Salary & Overtime (For Temp.Only)'},
+  {code:'007', desc:'Medical Insurance (For Personal Approval)'},
+  {code:'013', desc:'Iqama Cost, Driving License (For Admin: Approval)'},
+  {code:'014', desc:'Outside Business Travel & Accommodation'},
+  {code:'015', desc:'Hotel Rented, Apartment, Accommodation'},
+  {code:'016', desc:'Transportation Exp. (Fuel & Oil)'},
+  {code:'017', desc:'Business Entertainment & Meal (Food Expenses)'},
+  {code:'018', desc:'Per Diem / Daily Food Allowance'},
+  {code:'020', desc:'Assets Repair & Maintenance Exp.'},
+  {code:'021', desc:'Office & Store Rent'},
+  {code:'024', desc:'Postal Courier & Post (DHL)'},
+  {code:'025', desc:'Tel., Fax & Internet Exp.'},
+  {code:'026', desc:'Elect. & Water'},
+  {code:'027', desc:'Office Stationary'},
+  {code:'028', desc:'Office Printing, Picture'},
+  {code:'029', desc:'Office Supply & Indirect Materials (for office only)'},
+  {code:'030', desc:'Computer Requirements / Supplies'},
+  {code:'032', desc:'Annual Fees & Legalization (chamber, visa)'},
+  {code:'033', desc:'Licensing & Clearance & SEC, ARAMCO IDs'},
+  {code:'036', desc:'Tenders Fees, Gift vouchers'},
+  {code:'038', desc:'Direct Consumables for Projects'},
+  {code:'041', desc:'Crane Truck & Heavy Equipment Rent'},
+  {code:'042', desc:'Cost of Materials and Site Installation'},
+  {code:'046', desc:'Miscellaneous (Safety Shoes)'},
+  {code:'048', desc:'Other Transportation Exp. (Taxi, Airplane, car rent,...)'},
+  {code:'000', desc:'Assets & Emp. Accts.'}
+];
+
+/* ══════════════════════════════════════════════
+   DATA CACHE
+══════════════════════════════════════════════ */
+let masterData  = [];  // rows from Master File sheet (after header)
+let ledgeData   = [];  // rows from EEV Ledge sheet (after header)
+let ledgeHdr    = [];  // EEV Ledge header row
+
+/* ══════════════════════════════════════════════
+   SIDEBAR
+══════════════════════════════════════════════ */
+function toggleSidebar() {
+  const sb = document.getElementById('sidebar');
+  sb.classList.toggle('collapsed');
+  document.body.classList.toggle('sb-collapsed');
+  sessionStorage.setItem('ne_sb_collapsed', sb.classList.contains('collapsed') ? '1' : '0');
+}
+function toggleGroup(btn) {
+  const items = btn.nextElementSibling;
+  const arrow = btn.querySelector('.sb-arrow');
+  const hidden = items.style.display === 'none';
+  items.style.display = hidden ? '' : 'none';
+  if (arrow) arrow.style.transform = hidden ? '' : 'rotate(-90deg)';
+}
+function showSection(name) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.sb-item[id^="nav-"]').forEach(b => b.classList.remove('active'));
+  document.getElementById('sec-' + name).classList.add('active');
+  const navBtn = document.getElementById('nav-' + name);
+  if (navBtn) navBtn.classList.add('active');
+  const titles = {form:'Employee Expense Voucher', ledger:'EEV Ledger', statement:'Employee Statement', balance:'Balance Summary'};
+  document.getElementById('page-title').textContent = titles[name] || 'EEV Module';
+  if (name === 'ledger') renderLedger();
+  if (name === 'balance') renderBalanceSummary();
+}
+
+/* ══════════════════════════════════════════════
+   DARK MODE / LOGOUT
+══════════════════════════════════════════════ */
+function toggleDark() {
+  document.body.classList.toggle('dark-mode');
+  sessionStorage.setItem('ne_dark', document.body.classList.contains('dark-mode') ? '1' : '0');
+}
+function logout() {
+  sessionStorage.removeItem('ne_role');
+  sessionStorage.removeItem('ne_dark');
+  location.href = 'index.html';
+}
+
+/* ══════════════════════════════════════════════
+   DATA LOADING
+══════════════════════════════════════════════ */
+async function loadAllData() {
+  showLoading(true);
+  try {
+    const [mf, lg] = await Promise.all([
+      fetch(`https://sheets.googleapis.com/v4/spreadsheets/${GS_ID}/values/Master%20File?key=${GS_KEY}`).then(r => r.json()),
+      fetch(`https://sheets.googleapis.com/v4/spreadsheets/${GS_ID}/values/EEV%20Ledge?key=${GS_KEY}`).then(r => r.json())
+    ]);
+    const mfRows = mf.values || [];
+    masterData = mfRows.slice(1).filter(r => r[0]);
+    const lgRows = lg.values || [];
+    ledgeHdr  = lgRows[0] || [];
+    ledgeData = lgRows.slice(1).filter(r => r[1]);
+    populateEmpDropdowns();
+  } catch (e) {
+    showToast('Data load error: ' + e.message, 'error');
+  }
+  showLoading(false);
+}
+
+function getEmpName(empNum) {
+  const e = String(empNum).trim();
+  const row = masterData.find(r => String(r[0]||'').trim() === e);
+  return row ? String(row[1]||'').trim() : '';
+}
+
+/* ══════════════════════════════════════════════
+   EEV FORM — BUILD EXPENSE ROWS
+══════════════════════════════════════════════ */
+function buildExpenseRows() {
+  const tbody = document.getElementById('exp-tbody');
+  tbody.innerHTML = '';
+  EEV_CODES.forEach((item, i) => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td style="color:#8fa8c0;font-size:12px">${i+1}</td>
+      <td class="code">${item.code}</td>
+      <td>${item.desc}</td>
+      <td style="text-align:right">
+        <input class="amt-inp" type="number" id="amt-${i}" value="" min="0" step="0.01"
+          placeholder="0.00" oninput="calcTotal()">
+      </td>`;
+    tbody.appendChild(tr);
+  });
+}
+
+/* ══════════════════════════════════════════════
+   EEV FORM — CALCULATIONS
+══════════════════════════════════════════════ */
+function calcTotal() {
+  let total = 0;
+  EEV_CODES.forEach((_, i) => {
+    total += parseFloat(document.getElementById('amt-' + i).value) || 0;
+  });
+  document.getElementById('f-total').textContent = fmt(total);
+  document.getElementById('f-less-exp').textContent = fmt(total);
+  document.getElementById('f-words').textContent = 'Amount in words: ' + amountToWords(total);
+  calcCashOnHand();
+  return total;
+}
+
+function calcCashOnHand() {
+  const startBal = parseFloat(document.getElementById('f-start-bal').textContent.replace(/,/g, '')) || 0;
+  const advance  = parseFloat(document.getElementById('f-advance').value) || 0;
+  const lessExp  = parseFloat(document.getElementById('f-less-exp').textContent.replace(/,/g, '')) || 0;
+  document.getElementById('f-cash').textContent = fmt(startBal + advance - lessExp);
+}
+
+function onEmpNumChange() {
+  const empNum = document.getElementById('f-empnum').value.trim();
+  if (!empNum) {
+    document.getElementById('f-empname').value = '';
+    document.getElementById('f-location').value = '';
+    document.getElementById('f-start-bal').textContent = '0.00';
+    calcCashOnHand();
+    return;
+  }
+  // Look up in Master File
+  const row = masterData.find(r => String(r[0]||'').trim() === empNum);
+  if (row) {
+    document.getElementById('f-empname').value = row[1] || '';
+    document.getElementById('f-location').value = row[6] || row[5] || '';
+  }
+  // Calculate starting balance from ledge data
+  const balance = getEmpBalance(empNum);
+  document.getElementById('f-start-bal').textContent = fmt(balance);
+  calcCashOnHand();
+}
+
+function getEmpBalance(empNum) {
+  const e = String(empNum).trim();
+  let wf = 0, eev = 0;
+  ledgeData.forEach(row => {
+    if (String(row[1]||'').trim() === e) {
+      wf  += parseFloat(row[5]||0) || 0;
+      eev += parseFloat(row[4]||0) || 0;
+    }
+  });
+  return wf - eev;
+}
+
+/* ══════════════════════════════════════════════
+   EEV FORM — SAVE
+══════════════════════════════════════════════ */
+async function saveEEV() {
+  const empNum = document.getElementById('f-empnum').value.trim();
+  const date   = document.getElementById('f-date').value;
+  if (!empNum) { showToast('Please enter Employee #', 'error'); return; }
+  if (!date)   { showToast('Please enter Date', 'error'); return; }
+
+  const amounts = EEV_CODES.map((_, i) => parseFloat(document.getElementById('amt-' + i).value) || 0);
+  const total = amounts.reduce((a, b) => a + b, 0);
+  if (total === 0) { showToast('Please enter at least one expense amount', 'error'); return; }
+
+  const newAdvance = parseFloat(document.getElementById('f-advance').value) || 0;
+
+  const payload = {
+    action:      'saveEEV',
+    empNum:      empNum,
+    empName:     document.getElementById('f-empname').value,
+    date:        date,
+    department:  document.getElementById('f-dept').value,
+    project:     document.getElementById('f-project').value,
+    location:    document.getElementById('f-location').value,
+    newAdvance:  newAdvance,
+    amounts:     amounts
+  };
+
+  const btn = document.getElementById('btn-save');
+  btn.disabled = true;
+  btn.textContent = 'Saving…';
+
+  try {
+    const resp = await fetch(GS_WRITE, {
+      method:   'POST',
+      redirect: 'follow',
+      body:     JSON.stringify(payload)
+    });
+    const result = await resp.json();
+    if (result.ok) {
+      document.getElementById('f-refnum').value = result.refNum || '';
+      showToast(`Saved! Reference: ${result.refNum}`, 'success');
+      // Refresh ledge data after small delay
+      setTimeout(() => loadAllData(), 1500);
+    } else {
+      showToast('Error: ' + (result.error || 'Unknown error'), 'error');
+    }
+  } catch (e) {
+    showToast('Network error: ' + e.message, 'error');
+  }
+
+  btn.disabled = false;
+  btn.innerHTML = '&#128190; Save &amp; Record';
+}
+
+function printSheet() {
+  window.open(PRINT_URL, '_blank');
+}
+
+function clearForm() {
+  document.getElementById('f-refnum').value = '';
+  document.getElementById('f-date').value = '';
+  document.getElementById('f-empnum').value = '';
+  document.getElementById('f-empname').value = '';
+  document.getElementById('f-location').value = '';
+  document.getElementById('f-dept').value = '';
+  document.getElementById('f-project').value = '';
+  document.getElementById('f-advance').value = '0';
+  document.getElementById('f-start-bal').textContent = '0.00';
+  document.getElementById('f-less-exp').textContent = '0.00';
+  document.getElementById('f-cash').textContent = '0.00';
+  document.getElementById('f-total').textContent = '0.00';
+  document.getElementById('f-words').textContent = 'Amount in words: —';
+  EEV_CODES.forEach((_, i) => {
+    const el = document.getElementById('amt-' + i);
+    if (el) el.value = '';
+  });
+}
+
+/* ══════════════════════════════════════════════
+   LEDGER SECTION
+══════════════════════════════════════════════ */
+function renderLedger() {
+  const from   = document.getElementById('lg-from').value;
+  const to     = document.getElementById('lg-to').value;
+  const empF   = document.getElementById('lg-emp').value;
+  const typeF  = document.getElementById('lg-type').value;
+
+  const rows = ledgeData.filter(row => {
+    const d = parseEEVDate(row[0]);
+    if (from && d && d < new Date(from)) return false;
+    if (to   && d && d > new Date(to + 'T23:59:59')) return false;
+    if (empF && String(row[1]||'').trim() !== empF) return false;
+    if (typeF && String(row[2]||'').trim() !== typeF) return false;
+    return true;
+  });
+
+  const tbody = document.getElementById('lg-tbody');
+  const tfoot = document.getElementById('lg-tfoot');
+
+  if (!rows.length) {
+    tbody.innerHTML = '<tr><td colspan="11" class="no-data">No records found</td></tr>';
+    tfoot.innerHTML = '';
+    document.getElementById('lg-count').textContent = '0 records';
+    return;
+  }
+
+  let totWF = 0, totEEV = 0;
+  tbody.innerHTML = rows.map((row, i) => {
+    const wf  = parseFloat(row[5]||0) || 0;
+    const eev = parseFloat(row[4]||0) || 0;
+    const bal = parseFloat(row[6]||0) || 0;
+    totWF  += wf;
+    totEEV += eev;
+    const typeVal = String(row[2]||'').trim();
+    const typeCls = typeVal === 'Work Fund' ? 'wf' : (typeVal === 'Expenses Voucher' ? 'ev' : '');
+    const empNum  = String(row[1]||'').trim();
+    const empName = getEmpName(empNum);
+    return `<tr>
+      <td style="color:#8fa8c0;font-size:12px">${i+1}</td>
+      <td>${row[0]||''}</td>
+      <td>${empNum}</td>
+      <td>${empName}</td>
+      <td class="${typeCls}">${typeVal}</td>
+      <td>${row[3]||''}</td>
+      <td class="num wf">${wf ? fmt(wf) : '—'}</td>
+      <td class="num ev">${eev ? fmt(eev) : '—'}</td>
+      <td class="num bal">${fmt(bal)}</td>
+      <td>${row[7]||''}</td>
+      <td>${row[8]||''}</td>
+    </tr>`;
+  }).join('');
+
+  tfoot.innerHTML = `<tr>
+    <td colspan="6" style="font-weight:700;text-align:right">TOTAL</td>
+    <td class="num">${fmt(totWF)}</td>
+    <td class="num">${fmt(totEEV)}</td>
+    <td class="num">${fmt(totWF - totEEV)}</td>
+    <td colspan="2"></td>
+  </tr>`;
+
+  document.getElementById('lg-count').textContent = `${rows.length} record${rows.length !== 1 ? 's' : ''}`;
+}
+
+function resetLedgerFilters() {
+  document.getElementById('lg-from').value = '';
+  document.getElementById('lg-to').value = '';
+  document.getElementById('lg-emp').value = '';
+  document.getElementById('lg-type').value = '';
+  renderLedger();
+}
+
+/* ══════════════════════════════════════════════
+   STATEMENT SECTION
+══════════════════════════════════════════════ */
+function renderStatement() {
+  const empNum = document.getElementById('st-emp').value;
+  const from   = document.getElementById('st-from').value;
+  const to     = document.getElementById('st-to').value;
+
+  if (!empNum) { showToast('Please select an employee', 'error'); return; }
+
+  const rows = ledgeData.filter(row => {
+    if (String(row[1]||'').trim() !== empNum) return false;
+    const d = parseEEVDate(row[0]);
+    if (from && d && d < new Date(from)) return false;
+    if (to   && d && d > new Date(to + 'T23:59:59')) return false;
+    return true;
+  });
+
+  const empName = getEmpName(empNum);
+  const tbody = document.getElementById('st-tbody');
+  const tfoot = document.getElementById('st-tfoot');
+
+  if (!rows.length) {
+    tbody.innerHTML = '<tr><td colspan="8" class="no-data">No records for this employee</td></tr>';
+    tfoot.innerHTML = '';
+    document.getElementById('st-count').textContent = '0 records';
+    return;
+  }
+
+  let totWF = 0, totEEV = 0;
+  tbody.innerHTML = rows.map((row, i) => {
+    const wf  = parseFloat(row[5]||0) || 0;
+    const eev = parseFloat(row[4]||0) || 0;
+    const bal = parseFloat(row[6]||0) || 0;
+    totWF  += wf;
+    totEEV += eev;
+    const typeVal = String(row[2]||'').trim();
+    const typeCls = typeVal === 'Work Fund' ? 'wf' : (typeVal === 'Expenses Voucher' ? 'ev' : '');
+    return `<tr>
+      <td style="color:#8fa8c0;font-size:12px">${i+1}</td>
+      <td>${row[0]||''}</td>
+      <td class="${typeCls}">${typeVal}</td>
+      <td>${row[3]||''}</td>
+      <td class="num wf">${wf ? fmt(wf) : '—'}</td>
+      <td class="num ev">${eev ? fmt(eev) : '—'}</td>
+      <td class="num bal">${fmt(bal)}</td>
+      <td>${row[7]||''}</td>
+    </tr>`;
+  }).join('');
+
+  tfoot.innerHTML = `<tr>
+    <td colspan="4" style="font-weight:700;text-align:right">TOTAL — ${empName}</td>
+    <td class="num">${fmt(totWF)}</td>
+    <td class="num">${fmt(totEEV)}</td>
+    <td class="num">${fmt(totWF - totEEV)}</td>
+    <td></td>
+  </tr>`;
+
+  document.getElementById('st-count').textContent = `${empName} — ${rows.length} record${rows.length !== 1 ? 's' : ''}`;
+}
+
+function resetStatementFilters() {
+  document.getElementById('st-emp').value = '';
+  document.getElementById('st-from').value = '';
+  document.getElementById('st-to').value = '';
+  document.getElementById('st-tbody').innerHTML = '<tr><td colspan="8" class="no-data">Select an employee to view statement</td></tr>';
+  document.getElementById('st-tfoot').innerHTML = '';
+  document.getElementById('st-count').textContent = 'Select an employee above';
+}
+
+/* ══════════════════════════════════════════════
+   BALANCE SUMMARY
+══════════════════════════════════════════════ */
+function renderBalanceSummary() {
+  const search = (document.getElementById('bs-search').value || '').trim().toLowerCase();
+
+  // Aggregate by employee
+  const map = {};
+  ledgeData.forEach(row => {
+    const empNum = String(row[1]||'').trim();
+    if (!empNum) return;
+    if (!map[empNum]) map[empNum] = {empNum, wf:0, eev:0};
+    map[empNum].wf  += parseFloat(row[5]||0) || 0;
+    map[empNum].eev += parseFloat(row[4]||0) || 0;
+  });
+
+  let rows = Object.values(map).map(r => ({
+    ...r,
+    empName: getEmpName(r.empNum),
+    balance: r.wf - r.eev
+  }));
+
+  if (search) {
+    rows = rows.filter(r =>
+      r.empNum.toLowerCase().includes(search) ||
+      r.empName.toLowerCase().includes(search)
+    );
+  }
+
+  // Sort by balance descending
+  rows.sort((a, b) => b.balance - a.balance);
+
+  const tbody = document.getElementById('bs-tbody');
+  const tfoot = document.getElementById('bs-tfoot');
+
+  if (!rows.length) {
+    tbody.innerHTML = '<tr><td colspan="6" class="no-data">No data</td></tr>';
+    tfoot.innerHTML = '';
+    document.getElementById('bs-count').textContent = '0 employees';
+    return;
+  }
+
+  let totWF = 0, totEEV = 0;
+  tbody.innerHTML = rows.map((r, i) => {
+    totWF  += r.wf;
+    totEEV += r.eev;
+    const balCls = r.balance < 0 ? 'ev' : (r.balance > 0 ? 'wf' : '');
+    return `<tr>
+      <td style="color:#8fa8c0;font-size:12px">${i+1}</td>
+      <td>${r.empNum}</td>
+      <td>${r.empName}</td>
+      <td class="num wf">${fmt(r.wf)}</td>
+      <td class="num ev">${fmt(r.eev)}</td>
+      <td class="num bal ${balCls}">${fmt(r.balance)}</td>
+    </tr>`;
+  }).join('');
+
+  tfoot.innerHTML = `<tr>
+    <td colspan="3" style="font-weight:700;text-align:right">TOTAL</td>
+    <td class="num">${fmt(totWF)}</td>
+    <td class="num">${fmt(totEEV)}</td>
+    <td class="num">${fmt(totWF - totEEV)}</td>
+  </tr>`;
+
+  document.getElementById('bs-count').textContent = `${rows.length} employee${rows.length !== 1 ? 's' : ''}`;
+}
+
+/* ══════════════════════════════════════════════
+   EMPLOYEE DROPDOWNS
+══════════════════════════════════════════════ */
+function populateEmpDropdowns() {
+  // Unique employees from ledge data
+  const empSet = new Set();
+  ledgeData.forEach(row => {
+    const e = String(row[1]||'').trim();
+    if (e) empSet.add(e);
+  });
+  const empList = [...empSet].sort();
+
+  ['lg-emp', 'st-emp'].forEach(id => {
+    const sel = document.getElementById(id);
+    const cur = sel.value;
+    const first = sel.options[0];
+    sel.innerHTML = '';
+    sel.appendChild(first);
+    empList.forEach(e => {
+      const opt = document.createElement('option');
+      opt.value = e;
+      opt.textContent = `${e} — ${getEmpName(e)}`;
+      sel.appendChild(opt);
+    });
+    sel.value = cur;
+  });
+}
+
+/* ══════════════════════════════════════════════
+   EXPORT FUNCTIONS
+══════════════════════════════════════════════ */
+function exportTable(tableId, filename) {
+  const tbl = document.getElementById(tableId);
+  if (!tbl) return;
+  const rows = [...tbl.querySelectorAll('tr')];
+  const csv = rows.map(tr =>
+    [...tr.querySelectorAll('th,td')].map(td => {
+      const t = (td.innerText || td.textContent).replace(/"/g, '""').trim();
+      return `"${t}"`;
+    }).join(',')
+  ).join('\n');
+  const blob = new Blob(['﻿' + csv], {type:'text/csv;charset=utf-8;'});
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href = url; a.download = filename + '.csv'; a.click();
+  URL.revokeObjectURL(url);
+}
+
+function printSection(sectionId) {
+  const old = document.title;
+  document.title = document.getElementById('page-title').textContent;
+  window.print();
+  document.title = old;
+}
+
+function copyTable(tableId) {
+  const tbl = document.getElementById(tableId);
+  if (!tbl) return;
+  const rows = [...tbl.querySelectorAll('tr')];
+  const text = rows.map(tr =>
+    [...tr.querySelectorAll('th,td')].map(td => (td.innerText || td.textContent).trim()).join('\t')
+  ).join('\n');
+  navigator.clipboard.writeText(text).then(
+    () => showToast('Copied to clipboard', 'success'),
+    () => showToast('Copy failed', 'error')
+  );
+}
+
+/* ══════════════════════════════════════════════
+   HELPERS
+══════════════════════════════════════════════ */
+function fmt(n) {
+  const v = parseFloat(n) || 0;
+  return v.toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2});
+}
+
+function parseEEVDate(str) {
+  if (!str) return null;
+  const months = {Jan:0,Feb:1,Mar:2,Apr:3,May:4,Jun:5,Jul:6,Aug:7,Sep:8,Oct:9,Nov:10,Dec:11};
+  const m = String(str).match(/(\d{1,2})-([A-Za-z]{3})-(\d{4})/);
+  if (m) return new Date(parseInt(m[3]), months[m[2]] ?? 0, parseInt(m[1]));
+  const d = new Date(str);
+  return isNaN(d) ? null : d;
+}
+
+function amountToWords(num) {
+  if (!num || num === 0) return 'Zero Saudi Riyals Only';
+  const ones = ['','One','Two','Three','Four','Five','Six','Seven','Eight','Nine',
+    'Ten','Eleven','Twelve','Thirteen','Fourteen','Fifteen','Sixteen','Seventeen','Eighteen','Nineteen'];
+  const tens = ['','','Twenty','Thirty','Forty','Fifty','Sixty','Seventy','Eighty','Ninety'];
+  function words(n) {
+    if (n === 0) return '';
+    if (n < 20) return ones[n] + ' ';
+    if (n < 100) return tens[Math.floor(n/10)] + (n%10 ? ' '+ones[n%10] : '') + ' ';
+    if (n < 1000) return ones[Math.floor(n/100)] + ' Hundred ' + words(n%100);
+    if (n < 1000000) return words(Math.floor(n/1000)) + 'Thousand ' + words(n%1000);
+    return words(Math.floor(n/1000000)) + 'Million ' + words(n%1000000);
+  }
+  const riyals  = Math.floor(num);
+  const halalas = Math.round((num - riyals) * 100);
+  let result = words(riyals).trim() + ' Saudi Riyal' + (riyals !== 1 ? 's' : '');
+  if (halalas > 0) result += ' and ' + words(halalas).trim() + ' Halala' + (halalas !== 1 ? 's' : '');
+  return result + ' Only';
+}
+
+function showToast(msg, type) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'show ' + (type || '');
+  clearTimeout(t._timer);
+  t._timer = setTimeout(() => t.classList.remove('show'), 4000);
+}
+
+function showLoading(on) {
+  document.getElementById('loading-overlay').style.display = on ? 'flex' : 'none';
+}
+
+/* ══════════════════════════════════════════════
+   INIT
+══════════════════════════════════════════════ */
+document.addEventListener('DOMContentLoaded', () => {
+  // Restore sidebar state
+  if (sessionStorage.getItem('ne_sb_collapsed') === '1') {
+    document.getElementById('sidebar').classList.add('collapsed');
+  }
+  // Set today's date as default
+  document.getElementById('f-date').value = new Date().toISOString().slice(0, 10);
+  // Build expense rows
+  buildExpenseRows();
+  // Load data
+  loadAllData();
+});
+</script>
+</body>
+</html>
