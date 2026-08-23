@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- NourData EEV Module - Aug-2026 -->
+<!-- NourData EEV Module v1.1 - Aug-2026 -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -225,7 +225,7 @@ if (sessionStorage.getItem('ne_sb_collapsed') === '1') {
 <aside id="sidebar">
   <div id="sb-header">
     <img id="sb-logo" src="nour_energy_logo.png" alt="Nour Energy" onerror="this.style.display='none'">
-    <div id="sb-title">Nour Energy<small>EEV Module</small></div>
+    <div id="sb-title">Nour Energy<small>EEV Module &nbsp;·&nbsp; v1.1</small></div>
     <button id="sb-toggle" onclick="toggleSidebar()" title="Toggle sidebar">&#9776;</button>
   </div>
   <nav id="sb-nav">
@@ -295,30 +295,14 @@ if (sessionStorage.getItem('ne_sb_collapsed') === '1') {
       <!-- Header Info Card -->
       <div class="form-card">
         <div class="form-card-title">&#128221; Voucher Information</div>
-        <div class="form-grid">
-          <div class="form-field">
-            <label>Reference # (Auto)</label>
-            <input type="text" id="f-refnum" readonly placeholder="Assigned on save">
-          </div>
-          <div class="form-field">
-            <label>Date *</label>
-            <input type="date" id="f-date">
-          </div>
+        <div class="form-grid" style="grid-template-columns:repeat(3,1fr);">
           <div class="form-field">
             <label>Employee # *</label>
             <input type="text" id="f-empnum" placeholder="Enter Emp #" oninput="onEmpNumChange()">
           </div>
-          <div class="form-field span2">
+          <div class="form-field">
             <label>Employee Name</label>
-            <input type="text" id="f-empname" readonly placeholder="Auto-filled">
-          </div>
-          <div class="form-field">
-            <label>Location</label>
-            <input type="text" id="f-location" readonly placeholder="Auto-filled">
-          </div>
-          <div class="form-field">
-            <label>Department</label>
-            <input type="text" id="f-dept" placeholder="Department">
+            <input type="text" id="f-empname" readonly placeholder="Auto-filled from Master File">
           </div>
           <div class="form-field">
             <label>Project #</label>
@@ -705,18 +689,14 @@ function onEmpNumChange() {
   const empNum = document.getElementById('f-empnum').value.trim();
   if (!empNum) {
     document.getElementById('f-empname').value = '';
-    document.getElementById('f-location').value = '';
     document.getElementById('f-start-bal').textContent = '0.00';
     calcCashOnHand();
     return;
   }
-  // Look up in Master File
   const row = masterData.find(r => String(r[0]||'').trim() === empNum);
   if (row) {
     document.getElementById('f-empname').value = row[1] || '';
-    document.getElementById('f-location').value = row[6] || row[5] || '';
   }
-  // Calculate starting balance from ledge data
   const balance = getEmpBalance(empNum);
   document.getElementById('f-start-bal').textContent = fmt(balance);
   calcCashOnHand();
@@ -739,26 +719,23 @@ function getEmpBalance(empNum) {
 ══════════════════════════════════════════════ */
 async function saveEEV() {
   const empNum = document.getElementById('f-empnum').value.trim();
-  const date   = document.getElementById('f-date').value;
   if (!empNum) { showToast('Please enter Employee #', 'error'); return; }
-  if (!date)   { showToast('Please enter Date', 'error'); return; }
 
   const amounts = EEV_CODES.map((_, i) => parseFloat(document.getElementById('amt-' + i).value) || 0);
   const total = amounts.reduce((a, b) => a + b, 0);
   if (total === 0) { showToast('Please enter at least one expense amount', 'error'); return; }
 
   const newAdvance = parseFloat(document.getElementById('f-advance').value) || 0;
+  const today = new Date().toISOString().slice(0, 10);
 
   const payload = {
-    action:      'saveEEV',
-    empNum:      empNum,
-    empName:     document.getElementById('f-empname').value,
-    date:        date,
-    department:  document.getElementById('f-dept').value,
-    project:     document.getElementById('f-project').value,
-    location:    document.getElementById('f-location').value,
-    newAdvance:  newAdvance,
-    amounts:     amounts
+    action:     'saveEEV',
+    empNum:     empNum,
+    empName:    document.getElementById('f-empname').value,
+    date:       today,
+    project:    document.getElementById('f-project').value,
+    newAdvance: newAdvance,
+    amounts:    amounts
   };
 
   const btn = document.getElementById('btn-save');
@@ -773,9 +750,8 @@ async function saveEEV() {
     });
     const result = await resp.json();
     if (result.ok) {
-      document.getElementById('f-refnum').value = result.refNum || '';
       showToast(`Saved! Reference: ${result.refNum}`, 'success');
-      // Refresh ledge data after small delay
+      clearForm();
       setTimeout(() => loadAllData(), 1500);
     } else {
       showToast('Error: ' + (result.error || 'Unknown error'), 'error');
@@ -788,17 +764,45 @@ async function saveEEV() {
   btn.innerHTML = '&#128190; Save &amp; Record';
 }
 
-function printSheet() {
-  window.open(PRINT_URL, '_blank');
+async function printSheet() {
+  const empNum = document.getElementById('f-empnum').value.trim();
+  if (!empNum) { showToast('Please enter Employee # first', 'error'); return; }
+
+  const amounts = EEV_CODES.map((_, i) => parseFloat(document.getElementById('amt-' + i).value) || 0);
+  const newAdvance = parseFloat(document.getElementById('f-advance').value) || 0;
+  const today = new Date().toISOString().slice(0, 10);
+
+  const payload = {
+    action:     'prepareEEV',
+    empNum:     empNum,
+    date:       today,
+    project:    document.getElementById('f-project').value,
+    newAdvance: newAdvance,
+    amounts:    amounts
+  };
+
+  showToast('Preparing sheet for print…', 'info');
+
+  try {
+    const resp = await fetch(GS_WRITE, {
+      method:   'POST',
+      redirect: 'follow',
+      body:     JSON.stringify(payload)
+    });
+    const result = await resp.json();
+    if (result.ok) {
+      window.open(PRINT_URL, '_blank');
+    } else {
+      showToast('Error: ' + (result.error || 'Unknown'), 'error');
+    }
+  } catch (e) {
+    showToast('Error: ' + e.message, 'error');
+  }
 }
 
 function clearForm() {
-  document.getElementById('f-refnum').value = '';
-  document.getElementById('f-date').value = '';
   document.getElementById('f-empnum').value = '';
   document.getElementById('f-empname').value = '';
-  document.getElementById('f-location').value = '';
-  document.getElementById('f-dept').value = '';
   document.getElementById('f-project').value = '';
   document.getElementById('f-advance').value = '0';
   document.getElementById('f-start-bal').textContent = '0.00';
@@ -1147,8 +1151,6 @@ document.addEventListener('DOMContentLoaded', () => {
   if (sessionStorage.getItem('ne_sb_collapsed') === '1') {
     document.getElementById('sidebar').classList.add('collapsed');
   }
-  // Set today's date as default
-  document.getElementById('f-date').value = new Date().toISOString().slice(0, 10);
   // Build expense rows
   buildExpenseRows();
   // Load data
