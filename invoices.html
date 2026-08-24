@@ -281,7 +281,7 @@ body.dark-mode .sug-item:hover{background:#1a2b3c!important;}
 <aside id="sidebar">
   <div id="sb-header">
     <img src="https://nour292.github.io/Nourdata/nour_energy_logo.png" alt="Logo" id="sb-logo">
-    <div id="sb-title">Nour Energy<small>HR System &nbsp;·&nbsp; v1.3</small></div>
+    <div id="sb-title">Nour Energy<small>HR System &nbsp;·&nbsp; v1.4</small></div>
   </div>
   <nav id="sb-nav">
 
@@ -802,7 +802,7 @@ function renderInvoiceTable() {
   const data = getFilteredInvoices();
   let html = '<table><thead><tr>';
   vis.forEach(c => { html += `<th>${escHtml(c.label)}</th>`; });
-  html += '<th style="width:72px;"></th></tr></thead><tbody>';
+  html += '<th class="tbl-actions" style="width:72px;"></th></tr></thead><tbody>';
   if (!data.length) {
     html += `<tr><td colspan="${vis.length+1}" class="empty-cell">No records found</td></tr>`;
   } else {
@@ -835,7 +835,7 @@ function renderPOTable() {
   const data = getFilteredPOs();
   let html = '<table><thead><tr>';
   vis.forEach(c => { html += `<th>${escHtml(c.label)}</th>`; });
-  html += '<th style="width:72px;"></th></tr></thead><tbody>';
+  html += '<th class="tbl-actions" style="width:72px;"></th></tr></thead><tbody>';
   if (!data.length) {
     html += `<tr><td colspan="${vis.length+1}" class="empty-cell">No records found</td></tr>`;
   } else {
