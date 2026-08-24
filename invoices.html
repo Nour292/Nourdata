@@ -79,8 +79,8 @@ body.sb-collapsed #main-content{margin-left:52px;}
 .col-check:hover{border-color:#2e86c1;background:#f0f8ff;}
 .col-check input{width:13px;height:13px;cursor:pointer;accent-color:#2e86c1;}
 .filter-divider{border:none;border-top:1px solid #e8f0f8;margin:12px 0;}
-#mp-body{transition:max-height 0.25s ease,opacity 0.2s ease;overflow:hidden;max-height:600px;opacity:1;}
-#mp-body.collapsed{max-height:0;opacity:0;}
+#mp-body{transition:max-height 0.25s ease,opacity 0.2s ease;overflow:visible;max-height:600px;opacity:1;}
+#mp-body.collapsed{overflow:hidden;max-height:0;opacity:0;}
 #mp-toggle{width:28px;height:28px;background:rgba(46,134,193,0.1);border:1.5px solid #d0dce8;border-radius:6px;color:#2e86c1;font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:background 0.15s;}
 #mp-toggle:hover{background:rgba(46,134,193,0.2);}
 body.dark-mode #mp-toggle{background:rgba(46,134,193,0.15);border-color:#2a3f54;color:#7ec8f0;}
@@ -281,7 +281,7 @@ body.dark-mode .sug-item:hover{background:#1a2b3c!important;}
 <aside id="sidebar">
   <div id="sb-header">
     <img src="https://nour292.github.io/Nourdata/nour_energy_logo.png" alt="Logo" id="sb-logo">
-    <div id="sb-title">Nour Energy<small>HR System &nbsp;·&nbsp; v1.4</small></div>
+    <div id="sb-title">Nour Energy<small>HR System &nbsp;·&nbsp; v1.6</small></div>
   </div>
   <nav id="sb-nav">
 
@@ -1154,9 +1154,12 @@ function hideFilterSug(sugId) {
 function getUniqueBatches() {
   const seen = new Set();
   return invoices
-    .filter(inv => inv.batchNumber && !seen.has(String(inv.batchNumber)) && seen.add(String(inv.batchNumber)))
-    .map(inv => String(inv.batchNumber))
-    .sort((a, b) => (Number(b) - Number(a)) || b.localeCompare(a));
+    .filter(inv => {
+      const v = String(inv.batchNumber||'').trim();
+      return v && /^\d+$/.test(v) && !seen.has(v) && seen.add(v);
+    })
+    .map(inv => String(inv.batchNumber).trim())
+    .sort((a, b) => Number(b) - Number(a));
 }
 
 function getBatchBtnLabel() {
