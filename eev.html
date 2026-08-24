@@ -405,11 +405,10 @@ if (sessionStorage.getItem('ne_sb_collapsed') === '1') {
     <div id="sec-statement" class="section">
       <div class="filter-card">
         <div class="filter-row">
-          <div class="filter-field" style="max-width:220px">
+          <div class="filter-field" style="max-width:260px">
             <label>Employee *</label>
-            <select id="st-emp">
-              <option value="">Select Employee</option>
-            </select>
+            <input type="text" id="st-emp" list="st-emp-list" placeholder="Type Emp # or name">
+            <datalist id="st-emp-list"></datalist>
           </div>
           <div class="filter-field" style="max-width:140px">
             <label>Date From</label>
@@ -430,7 +429,7 @@ if (sessionStorage.getItem('ne_sb_collapsed') === '1') {
           <span class="tbl-count" id="st-count">Select an employee above</span>
           <div class="tbl-actions">
             <button class="hdr-btn btn-excel" onclick="exportTable('st-table','Employee_Statement')">&#128196; Excel</button>
-            <button class="hdr-btn btn-pdf" onclick="printSection('sec-statement')">&#128438; PDF</button>
+            <button class="hdr-btn btn-pdf" onclick="printStatement()">&#128438; PDF</button>
             <button class="hdr-btn btn-copy" onclick="copyTable('st-table')">&#128203; Copy</button>
           </div>
         </div>
@@ -438,17 +437,15 @@ if (sessionStorage.getItem('ne_sb_collapsed') === '1') {
           <table id="st-table">
             <thead>
               <tr>
-                <th>#</th>
                 <th>Date</th>
                 <th>Type</th>
                 <th>Reference</th>
                 <th class="num">Work Fund</th>
                 <th class="num">EEV Amount</th>
                 <th class="num">Balance</th>
-                <th>Project</th>
               </tr>
             </thead>
-            <tbody id="st-tbody"><tr><td colspan="8" class="no-data">Select an employee to view statement</td></tr></tbody>
+            <tbody id="st-tbody"><tr><td colspan="6" class="no-data">Select an employee to view statement</td></tr></tbody>
             <tfoot id="st-tfoot"></tfoot>
           </table>
         </div>
@@ -838,11 +835,12 @@ function resetLedgerFilters() {
    STATEMENT SECTION
 ══════════════════════════════════════════════ */
 function renderStatement() {
-  const empNum = document.getElementById('st-emp').value;
+  const empRaw = document.getElementById('st-emp').value.trim();
+  const empNum = empRaw.replace(/\s*—.*$/, '').trim();
   const from   = document.getElementById('st-from').value;
   const to     = document.getElementById('st-to').value;
 
-  if (!empNum) { showToast('Please select an employee', 'error'); return; }
+  if (!empNum) { showToast('Please enter an employee', 'error'); return; }
 
   const rows = ledgeData.filter(row => {
     if (String(row[1]||'').trim() !== empNum) return false;
@@ -857,14 +855,14 @@ function renderStatement() {
   const tfoot = document.getElementById('st-tfoot');
 
   if (!rows.length) {
-    tbody.innerHTML = '<tr><td colspan="8" class="no-data">No records for this employee</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="6" class="no-data">No records for this employee</td></tr>';
     tfoot.innerHTML = '';
     document.getElementById('st-count').textContent = '0 records';
     return;
   }
 
   let totWF = 0, totEEV = 0;
-  tbody.innerHTML = rows.map((row, i) => {
+  tbody.innerHTML = rows.map((row) => {
     const wf  = parseFloat(row[5]||0) || 0;
     const eev = parseFloat(row[4]||0) || 0;
     const bal = parseFloat(row[6]||0) || 0;
@@ -873,23 +871,20 @@ function renderStatement() {
     const typeVal = String(row[2]||'').trim();
     const typeCls = typeVal === 'Work Fund' ? 'wf' : (typeVal === 'Expenses Voucher' ? 'ev' : '');
     return `<tr>
-      <td style="color:#8fa8c0;font-size:12px">${i+1}</td>
       <td>${row[0]||''}</td>
       <td class="${typeCls}">${typeVal}</td>
       <td>${row[3]||''}</td>
       <td class="num wf">${wf ? fmt(wf) : '—'}</td>
       <td class="num ev">${eev ? fmt(eev) : '—'}</td>
       <td class="num bal">${fmt(bal)}</td>
-      <td>${row[7]||''}</td>
     </tr>`;
   }).join('');
 
   tfoot.innerHTML = `<tr>
-    <td colspan="4" style="font-weight:700;text-align:right">TOTAL — ${empName}</td>
+    <td colspan="3" style="font-weight:700;text-align:right">TOTAL — ${empName}</td>
     <td class="num">${fmt(totWF)}</td>
     <td class="num">${fmt(totEEV)}</td>
     <td class="num">${fmt(totWF - totEEV)}</td>
-    <td></td>
   </tr>`;
 
   document.getElementById('st-count').textContent = `${empName} — ${rows.length} record${rows.length !== 1 ? 's' : ''}`;
@@ -899,9 +894,87 @@ function resetStatementFilters() {
   document.getElementById('st-emp').value = '';
   document.getElementById('st-from').value = '';
   document.getElementById('st-to').value = '';
-  document.getElementById('st-tbody').innerHTML = '<tr><td colspan="8" class="no-data">Select an employee to view statement</td></tr>';
+  document.getElementById('st-tbody').innerHTML = '<tr><td colspan="6" class="no-data">Select an employee to view statement</td></tr>';
   document.getElementById('st-tfoot').innerHTML = '';
   document.getElementById('st-count').textContent = 'Select an employee above';
+}
+
+function printStatement() {
+  const empRaw = document.getElementById('st-emp').value.trim();
+  const empNum = empRaw.replace(/\s*—.*$/, '').trim();
+  const empName = empNum ? getEmpName(empNum) : '—';
+  const now = new Date();
+  const printDate = now.toLocaleDateString('en-GB', {day:'2-digit', month:'short', year:'numeric'});
+
+  // Auto-detect period from rendered rows
+  const tbl = document.getElementById('st-table');
+  const tblHTML = tbl ? tbl.outerHTML : '';
+  let minDate = null, maxDate = null;
+  if (tbl) {
+    tbl.querySelectorAll('tbody tr').forEach(tr => {
+      const cell = tr.querySelector('td');
+      if (!cell) return;
+      const raw = (cell.textContent || '').trim();
+      if (!raw) return;
+      let d = new Date(raw);
+      if (isNaN(d)) {
+        const p = raw.split(/[\/\-]/);
+        if (p.length === 3) {
+          const mmap = {jan:0,feb:1,mar:2,apr:3,may:4,jun:5,jul:6,aug:7,sep:8,oct:9,nov:10,dec:11};
+          const mi = mmap[p[1].toLowerCase().slice(0,3)];
+          d = mi !== undefined ? new Date(+p[2], mi, +p[0]) : new Date(+p[2], +p[1]-1, +p[0]);
+        }
+      }
+      if (!isNaN(d)) {
+        if (!minDate || d < minDate) minDate = d;
+        if (!maxDate || d > maxDate) maxDate = d;
+      }
+    });
+  }
+  const fmtD = d => d ? d.toLocaleDateString('en-GB', {day:'2-digit', month:'short', year:'numeric'}) : '—';
+  const periodStr = (minDate || maxDate) ? `${fmtD(minDate)} - ${fmtD(maxDate)}` : '—';
+
+  const html = `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Employee Statement</title>
+<style>
+@page{size:A4 portrait;margin:12mm 14mm 18mm;}
+@page{@top-right{content:counter(page);font-size:7pt;color:#888;}}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:Arial,sans-serif;font-size:9pt;color:#111;}
+.ph-header{margin-bottom:8px;}
+.ph-title{font-size:13pt;font-weight:700;margin-bottom:5px;}
+.ph-row{display:flex;align-items:baseline;font-size:9pt;line-height:1.8;}
+.ph-label{width:140px;flex-shrink:0;}
+.ph-sep{width:20px;flex-shrink:0;text-align:center;}
+.ph-val{font-weight:600;}
+.ph-divider{border:none;border-top:2px solid #1a2b3c;margin:8px 0;}
+table{width:100%;border-collapse:collapse;margin-top:6px;}
+th{background:#1a2b3c;color:#fff;padding:5px 6px;font-size:8.5pt;text-align:left;}
+th.num,td.num{text-align:right;}
+td{padding:4px 6px;font-size:8.5pt;border-bottom:1px solid #dde4ed;}
+tr:nth-child(even) td{background:#f5f8fc;}
+tfoot td{font-weight:700;background:#e8eef5;border-top:2px solid #1a2b3c;}
+.wf{font-weight:600;color:#1a7a3c;}
+.ev{font-weight:600;color:#a93226;}
+</style></head><body>
+<div class="ph-header">
+  <div class="ph-title">Expenses Voucher and Work Fund Statement</div>
+  <div class="ph-row"><span class="ph-label">Employee Number</span><span class="ph-sep">|</span><span class="ph-val">${empNum || '—'}</span></div>
+  <div class="ph-row"><span class="ph-label">Employee Name</span><span class="ph-sep">|</span><span class="ph-val">${empName}</span></div>
+  <div class="ph-row"><span class="ph-label">Period</span><span class="ph-sep">|</span><span class="ph-val">${periodStr}</span></div>
+</div>
+<hr class="ph-divider">
+${tblHTML}
+<div style="text-align:right;margin-top:14px;padding-top:6px;border-top:1px solid #ccc;font-size:8pt;color:#444;line-height:1.7">
+  Created By: <strong>Qasim</strong><br>
+  Date: <strong>${printDate}</strong>
+</div>
+</body></html>`;
+
+  const pw = window.open('', '_blank', 'width=900,height=700');
+  pw.document.open();
+  pw.document.write(html);
+  pw.document.close();
+  setTimeout(function() { pw.print(); }, 600);
 }
 
 /* ══════════════════════════════════════════════
@@ -992,19 +1065,14 @@ function populateEmpDropdowns() {
     lgList.appendChild(opt);
   });
 
-  // st-emp remains a select
-  const stSel = document.getElementById('st-emp');
-  const stCur = stSel.value;
-  const stFirst = stSel.options[0];
-  stSel.innerHTML = '';
-  stSel.appendChild(stFirst);
+  // st-emp is a text input + datalist
+  const stList = document.getElementById('st-emp-list');
+  stList.innerHTML = '';
   empList.forEach(e => {
     const opt = document.createElement('option');
-    opt.value = e;
-    opt.textContent = `${e} — ${getEmpName(e)}`;
-    stSel.appendChild(opt);
+    opt.value = `${e} — ${getEmpName(e)}`;
+    stList.appendChild(opt);
   });
-  stSel.value = stCur;
 }
 
 /* ══════════════════════════════════════════════
