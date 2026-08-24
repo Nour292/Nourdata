@@ -470,7 +470,7 @@ if (sessionStorage.getItem('ne_sb_collapsed') === '1') {
           <span class="tbl-count" id="bs-count">— employees</span>
           <div class="tbl-actions">
             <button class="hdr-btn btn-excel" onclick="exportTable('bs-table','Balance_Summary')">&#128196; Excel</button>
-            <button class="hdr-btn btn-pdf" onclick="printSection('sec-balance')">&#128438; PDF</button>
+            <button class="hdr-btn btn-pdf" onclick="printBalanceSummary()">&#128438; PDF</button>
             <button class="hdr-btn btn-copy" onclick="copyTable('bs-table')">&#128203; Copy</button>
           </div>
         </div>
@@ -962,6 +962,45 @@ tfoot td{font-weight:700;background:#e8eef5;border-top:2px solid #1a2b3c;}
   <div class="ph-row"><span class="ph-label">Employee Name</span><span class="ph-sep">|</span><span class="ph-val">${empName}</span></div>
   <div class="ph-row"><span class="ph-label">Period</span><span class="ph-sep">|</span><span class="ph-val">${periodStr}</span></div>
 </div>
+<hr class="ph-divider">
+${tblHTML}
+<div style="text-align:right;margin-top:14px;padding-top:6px;border-top:1px solid #ccc;font-size:8pt;color:#444;line-height:1.7">
+  Created By: <strong>Qasim</strong><br>
+  Date: <strong>${printDate}</strong>
+</div>
+</body></html>`;
+
+  const pw = window.open('', '_blank', 'width=900,height=700');
+  pw.document.open();
+  pw.document.write(html);
+  pw.document.close();
+  setTimeout(function() { pw.print(); }, 600);
+}
+
+function printBalanceSummary() {
+  const now = new Date();
+  const printDate = now.toLocaleDateString('en-GB', {day:'2-digit', month:'short', year:'numeric'});
+  const tbl = document.getElementById('bs-table');
+  const tblHTML = tbl ? tbl.outerHTML : '';
+
+  const html = `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Balance Summary</title>
+<style>
+@page{size:A4 portrait;margin:12mm 14mm 18mm;}
+@page{@top-right{content:counter(page);font-size:7pt;color:#888;}}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:Arial,sans-serif;font-size:9pt;color:#111;}
+.ph-title{font-size:13pt;font-weight:700;margin-bottom:8px;}
+.ph-divider{border:none;border-top:2px solid #1a2b3c;margin:8px 0;}
+table{width:100%;border-collapse:collapse;margin-top:6px;}
+th{background:#1a2b3c;color:#fff;padding:5px 6px;font-size:8.5pt;text-align:left;}
+th.num,td.num{text-align:right;}
+td{padding:4px 6px;font-size:8.5pt;border-bottom:1px solid #dde4ed;}
+tr:nth-child(even) td{background:#f5f8fc;}
+tfoot td{font-weight:700;background:#e8eef5;border-top:2px solid #1a2b3c;}
+.wf{font-weight:600;color:#1a7a3c;}
+.ev{font-weight:600;color:#a93226;}
+</style></head><body>
+<div class="ph-title">Balance Summary</div>
 <hr class="ph-divider">
 ${tblHTML}
 <div style="text-align:right;margin-top:14px;padding-top:6px;border-top:1px solid #ccc;font-size:8pt;color:#444;line-height:1.7">
