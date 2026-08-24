@@ -294,14 +294,14 @@ if (sessionStorage.getItem('ne_sb_collapsed') === '1') {
 
       <!-- Top bar: Voucher Info + Actions (3×2 grid) -->
       <div class="form-card" style="margin-bottom:8px;padding:10px 14px">
-        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px">
+        <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:8px;align-items:flex-end">
           <div class="form-field" style="margin:0">
             <label>Employee # *</label>
             <input type="text" id="f-empnum" placeholder="Enter Emp #" oninput="onEmpNumChange()">
           </div>
           <div class="form-field" style="margin:0">
             <label>Employee Name</label>
-            <input type="text" id="f-empname" readonly placeholder="Auto-filled from Master File">
+            <input type="text" id="f-empname" readonly placeholder="Auto-filled">
           </div>
           <div class="form-field" style="margin:0">
             <label>Project #</label>
