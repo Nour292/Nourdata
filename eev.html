@@ -461,7 +461,7 @@ if (sessionStorage.getItem('ne_sb_collapsed') === '1') {
             <input type="text" id="bs-search" placeholder="Name or Emp #" oninput="renderBalanceSummary()">
           </div>
           <div class="filter-btns">
-            <button class="btn-apply" onclick="ensureLedgeData(true).then(renderBalanceSummary)">&#8635; Refresh</button>
+            <button class="btn-apply" onclick="renderBalanceSummary()">&#8635; Refresh</button>
           </div>
         </div>
       </div>
@@ -539,8 +539,6 @@ const EEV_CODES = [
    DATA CACHE
 ══════════════════════════════════════════════ */
 let masterData  = [];  // rows from Master File sheet (after header)
-let ledgeData   = [];  // rows from EEV Ledge sheet (after header)
-let ledgeHdr    = [];  // EEV Ledge header row
 
 /* ══════════════════════════════════════════════
    SIDEBAR
@@ -566,17 +564,7 @@ function showSection(name) {
   if (navBtn) navBtn.classList.add('active');
   const titles = {form:'Employee Expense Voucher', ledger:'EEV Ledger', statement:'Employee Statement', balance:'Balance Summary'};
   document.getElementById('page-title').textContent = titles[name] || 'EEV Module';
-  if (name === 'ledger') {
-    if (!ledgeLoaded) {
-      document.getElementById('lg-tbody').innerHTML = '<tr><td colspan="6" class="no-data" style="color:var(--text-muted,#888);padding:18px">Set filters above and click <strong>Apply</strong> to load records</td></tr>';
-      document.getElementById('lg-tfoot').innerHTML = '';
-      document.getElementById('lg-count').textContent = '—';
-      document.getElementById('lg-emp-info').textContent = '';
-    } else {
-      renderLedger();
-    }
-  }
-  if (name === 'balance') ensureLedgeData().then(renderBalanceSummary);
+  if (name === 'balance') renderBalanceSummary();
 }
 
 /* ══════════════════════════════════════════════
@@ -595,30 +583,11 @@ function logout() {
 /* ══════════════════════════════════════════════
    DATA LOADING
 ══════════════════════════════════════════════ */
-let ledgeLoaded = false;
-
 async function loadAllData() {
-  // Load Master File only (fast — employee/name data for dropdowns)
   showLoading(true);
   try {
     const mf = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${GS_ID}/values/Master%20File?key=${GS_KEY}`).then(r => r.json());
-    const mfRows = mf.values || [];
-    masterData = mfRows.slice(1).filter(r => r[0]);
-  } catch (e) {
-    showToast('Data load error: ' + e.message, 'error');
-  }
-  showLoading(false);
-}
-
-async function ensureLedgeData(forceReload) {
-  if (ledgeLoaded && !forceReload) return;
-  showLoading(true);
-  try {
-    const lg = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${GS_ID}/values/EEV%20Ledge?key=${GS_KEY}`).then(r => r.json());
-    const lgRows = lg.values || [];
-    ledgeHdr  = lgRows[0] || [];
-    ledgeData = lgRows.slice(1).filter(r => r[1]);
-    ledgeLoaded = true;
+    masterData = (mf.values || []).slice(1).filter(r => r[0]);
     populateEmpDropdowns();
   } catch (e) {
     showToast('Data load error: ' + e.message, 'error');
@@ -730,7 +699,6 @@ async function saveEEV() {
     if (result.ok) {
       showToast(`Saved! Reference: ${result.refNum}`, 'success');
       clearForm();
-      ledgeLoaded = false;
       setTimeout(() => loadAllData(), 1500);
     } else {
       showToast('Error: ' + (result.error || 'Unknown error'), 'error');
@@ -787,42 +755,46 @@ function clearForm() {
    LEDGER SECTION
 ══════════════════════════════════════════════ */
 async function renderLedger() {
-  await ensureLedgeData();
   const from   = document.getElementById('lg-from').value;
   const to     = document.getElementById('lg-to').value;
   const empRaw = document.getElementById('lg-emp').value.trim();
-  const empF   = empRaw.replace(/\s*—.*$/, '').trim(); // extract emp# from "1151 — Name"
+  const empF   = empRaw.replace(/\s*—.*$/, '').trim();
   const typeF  = document.getElementById('lg-type').value;
+  const tbody  = document.getElementById('lg-tbody');
+  const tfoot  = document.getElementById('lg-tfoot');
 
-  const rows = ledgeData.filter(row => {
-    const d = parseEEVDate(row[0]);
-    if (from && d && d < new Date(from)) return false;
-    if (to   && d && d > new Date(to + 'T23:59:59')) return false;
-    if (empF && String(row[1]||'').trim() !== empF) return false;
-    if (typeF && String(row[2]||'').trim() !== typeF) return false;
-    return true;
-  });
+  document.getElementById('lg-emp-info').textContent = empF ? `${empF} — ${getEmpName(empF)}` : '';
+  tbody.innerHTML = '<tr><td colspan="6" class="no-data">Loading…</td></tr>';
+  tfoot.innerHTML = '';
+  document.getElementById('lg-count').textContent = 'Loading…';
 
-  const tbody = document.getElementById('lg-tbody');
-  const tfoot = document.getElementById('lg-tfoot');
+  const params = new URLSearchParams({ action: 'getLedge' });
+  if (empF)  params.append('empNum',   empF);
+  if (from)  params.append('dateFrom', from);
+  if (to)    params.append('dateTo',   to);
+  if (typeF) params.append('type',     typeF);
 
-  const empInfoEl = document.getElementById('lg-emp-info');
-  empInfoEl.textContent = empF ? `${empF} — ${getEmpName(empF)}` : '';
+  let rows = [];
+  try {
+    showLoading(true);
+    const result = await fetch(`${GS_WRITE}?${params}`, { redirect: 'follow' }).then(r => r.json());
+    showLoading(false);
+    if (!result.ok) { showToast('Error: ' + (result.error||'Unknown'), 'error'); return; }
+    rows = result.rows || [];
+  } catch(e) { showLoading(false); showToast('Load error: ' + e.message, 'error'); return; }
 
   if (!rows.length) {
     tbody.innerHTML = '<tr><td colspan="6" class="no-data">No records found</td></tr>';
-    tfoot.innerHTML = '';
     document.getElementById('lg-count').textContent = '0 records';
     return;
   }
 
   let totWF = 0, totEEV = 0;
-  tbody.innerHTML = rows.map((row) => {
+  tbody.innerHTML = rows.map(row => {
     const wf  = parseFloat(row[5]||0) || 0;
     const eev = parseFloat(row[4]||0) || 0;
     const bal = parseFloat(row[6]||0) || 0;
-    totWF  += wf;
-    totEEV += eev;
+    totWF += wf; totEEV += eev;
     const typeVal = String(row[2]||'').trim();
     const typeCls = typeVal === 'Work Fund' ? 'wf' : (typeVal === 'Expenses Voucher' ? 'ev' : '');
     return `<tr>
@@ -841,7 +813,6 @@ async function renderLedger() {
     <td class="num">${fmt(totEEV)}</td>
     <td class="num">${fmt(totWF - totEEV)}</td>
   </tr>`;
-
   document.getElementById('lg-count').textContent = `${rows.length} record${rows.length !== 1 ? 's' : ''}`;
 }
 
@@ -851,31 +822,42 @@ function resetLedgerFilters() {
   document.getElementById('lg-emp').value = '';
   document.getElementById('lg-type').value = '';
   document.getElementById('lg-emp-info').textContent = '';
-  renderLedger();
+  document.getElementById('lg-tbody').innerHTML = '<tr><td colspan="6" class="no-data" style="color:var(--text-muted,#888);padding:18px">Set filters above and click <strong>Apply</strong> to load records</td></tr>';
+  document.getElementById('lg-tfoot').innerHTML = '';
+  document.getElementById('lg-count').textContent = '—';
 }
 
 /* ══════════════════════════════════════════════
    STATEMENT SECTION
 ══════════════════════════════════════════════ */
-function renderStatement() {
+async function renderStatement() {
   const empRaw = document.getElementById('st-emp').value.trim();
   const empNum = empRaw.replace(/\s*—.*$/, '').trim();
   const from   = document.getElementById('st-from').value;
   const to     = document.getElementById('st-to').value;
 
-  if (!empNum) { showToast('Please enter an employee', 'error'); return; }
+  if (!empNum) { showToast('Please select an employee', 'error'); return; }
 
-  const rows = ledgeData.filter(row => {
-    if (String(row[1]||'').trim() !== empNum) return false;
-    const d = parseEEVDate(row[0]);
-    if (from && d && d < new Date(from)) return false;
-    if (to   && d && d > new Date(to + 'T23:59:59')) return false;
-    return true;
-  });
-
-  const empName = getEmpName(empNum);
   const tbody = document.getElementById('st-tbody');
   const tfoot = document.getElementById('st-tfoot');
+  tbody.innerHTML = '<tr><td colspan="6" class="no-data">Loading…</td></tr>';
+  tfoot.innerHTML = '';
+  document.getElementById('st-count').textContent = 'Loading…';
+
+  const params = new URLSearchParams({ action: 'getLedge', empNum });
+  if (from) params.append('dateFrom', from);
+  if (to)   params.append('dateTo',   to);
+
+  let rows = [];
+  try {
+    showLoading(true);
+    const result = await fetch(`${GS_WRITE}?${params}`, { redirect: 'follow' }).then(r => r.json());
+    showLoading(false);
+    if (!result.ok) { showToast('Error: ' + (result.error||'Unknown'), 'error'); return; }
+    rows = result.rows || [];
+  } catch(e) { showLoading(false); showToast('Load error: ' + e.message, 'error'); return; }
+
+  const empName = getEmpName(empNum);
 
   if (!rows.length) {
     tbody.innerHTML = '<tr><td colspan="6" class="no-data">No records for this employee</td></tr>';
@@ -885,12 +867,11 @@ function renderStatement() {
   }
 
   let totWF = 0, totEEV = 0;
-  tbody.innerHTML = rows.map((row) => {
+  tbody.innerHTML = rows.map(row => {
     const wf  = parseFloat(row[5]||0) || 0;
     const eev = parseFloat(row[4]||0) || 0;
     const bal = parseFloat(row[6]||0) || 0;
-    totWF  += wf;
-    totEEV += eev;
+    totWF += wf; totEEV += eev;
     const typeVal = String(row[2]||'').trim();
     const typeCls = typeVal === 'Work Fund' ? 'wf' : (typeVal === 'Expenses Voucher' ? 'ev' : '');
     return `<tr>
@@ -909,7 +890,6 @@ function renderStatement() {
     <td class="num">${fmt(totEEV)}</td>
     <td class="num">${fmt(totWF - totEEV)}</td>
   </tr>`;
-
   document.getElementById('st-count').textContent = `${empName} — ${rows.length} record${rows.length !== 1 ? 's' : ''}`;
 }
 
@@ -1042,23 +1022,28 @@ ${tblHTML}
 /* ══════════════════════════════════════════════
    BALANCE SUMMARY
 ══════════════════════════════════════════════ */
-function renderBalanceSummary() {
+async function renderBalanceSummary() {
   const search = (document.getElementById('bs-search').value || '').trim().toLowerCase();
+  const tbody  = document.getElementById('bs-tbody');
+  const tfoot  = document.getElementById('bs-tfoot');
+  tbody.innerHTML = '<tr><td colspan="6" class="no-data">Loading…</td></tr>';
+  tfoot.innerHTML = '';
 
-  // Aggregate by employee
-  const map = {};
-  ledgeData.forEach(row => {
-    const empNum = String(row[1]||'').trim();
-    if (!empNum) return;
-    if (!map[empNum]) map[empNum] = {empNum, wf:0, eev:0};
-    map[empNum].wf  += parseFloat(row[5]||0) || 0;
-    map[empNum].eev += parseFloat(row[4]||0) || 0;
-  });
+  let rawRows = [];
+  try {
+    showLoading(true);
+    const result = await fetch(`${GS_WRITE}?action=getBalance`, { redirect: 'follow' }).then(r => r.json());
+    showLoading(false);
+    if (!result.ok) { showToast('Error: ' + (result.error||'Unknown'), 'error'); return; }
+    rawRows = result.rows || [];
+  } catch(e) { showLoading(false); showToast('Load error: ' + e.message, 'error'); return; }
 
-  let rows = Object.values(map).map(r => ({
-    ...r,
-    empName: getEmpName(r.empNum),
-    balance: r.wf - r.eev
+  let rows = rawRows.map(r => ({
+    empNum:  String(r.empNum||'').trim(),
+    wf:      r.wf  || 0,
+    eev:     r.eev || 0,
+    empName: getEmpName(String(r.empNum||'').trim()),
+    balance: (r.wf||0) - (r.eev||0)
   }));
 
   if (search) {
@@ -1068,11 +1053,7 @@ function renderBalanceSummary() {
     );
   }
 
-  // Sort by balance descending
   rows.sort((a, b) => b.balance - a.balance);
-
-  const tbody = document.getElementById('bs-tbody');
-  const tfoot = document.getElementById('bs-tfoot');
 
   if (!rows.length) {
     tbody.innerHTML = '<tr><td colspan="6" class="no-data">No data</td></tr>';
@@ -1110,30 +1091,16 @@ function renderBalanceSummary() {
    EMPLOYEE DROPDOWNS
 ══════════════════════════════════════════════ */
 function populateEmpDropdowns() {
-  // Unique employees from ledge data
-  const empSet = new Set();
-  ledgeData.forEach(row => {
-    const e = String(row[1]||'').trim();
-    if (e) empSet.add(e);
-  });
-  const empList = [...empSet].sort();
-
-  // lg-emp is now a text input + datalist
-  const lgList = document.getElementById('lg-emp-list');
-  lgList.innerHTML = '';
-  empList.forEach(e => {
-    const opt = document.createElement('option');
-    opt.value = `${e} — ${getEmpName(e)}`;
-    lgList.appendChild(opt);
-  });
-
-  // st-emp is a text input + datalist
-  const stList = document.getElementById('st-emp-list');
-  stList.innerHTML = '';
-  empList.forEach(e => {
-    const opt = document.createElement('option');
-    opt.value = `${e} — ${getEmpName(e)}`;
-    stList.appendChild(opt);
+  const empList = masterData.map(r => String(r[0]||'').trim()).filter(Boolean).sort();
+  ['lg-emp-list', 'st-emp-list'].forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.innerHTML = '';
+    empList.forEach(e => {
+      const opt = document.createElement('option');
+      opt.value = `${e} — ${getEmpName(e)}`;
+      el.appendChild(opt);
+    });
   });
 }
 
