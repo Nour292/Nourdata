@@ -300,16 +300,16 @@ if (sessionStorage.getItem('ne_sb_collapsed') === '1') {
             <input type="text" id="f-empnum" placeholder="Enter Emp #" oninput="onEmpNumChange()">
           </div>
           <div class="form-field" style="margin:0">
-            <label>Employee Name</label>
-            <input type="text" id="f-empname" readonly placeholder="Auto-filled">
-          </div>
-          <div class="form-field" style="margin:0">
             <label>Project #</label>
             <input type="text" id="f-project" placeholder="Project #">
           </div>
-          <button class="btn-save-eev" style="margin:0" onclick="saveEEV()" id="btn-save">&#128190; Save &amp; Record</button>
-          <button class="btn-print-sheet" style="margin:0" onclick="printSheet()">&#128438; Print Sheet</button>
-          <button class="btn-clear-form" style="margin:0" onclick="clearForm()">&#10005; Clear</button>
+          <div class="form-field" style="margin:0">
+            <label>Employee Name</label>
+            <input type="text" id="f-empname" readonly placeholder="Auto-filled">
+          </div>
+          <button class="btn-save-eev" style="margin:0;white-space:nowrap" onclick="saveEEV()" id="btn-save">&#128190; Save &amp; Record</button>
+          <button class="btn-print-sheet" style="margin:0;white-space:nowrap" onclick="printSheet()">&#128438; Print Sheet</button>
+          <button class="btn-clear-form" style="margin:0;white-space:nowrap" onclick="clearForm()">&#10005; Clear</button>
         </div>
       </div>
 
