@@ -1069,16 +1069,16 @@ tr:nth-child(even) td{background:#f5f8fc;}
 tfoot td{font-weight:700;background:#e8eef5;border-top:2px solid #1a2b3c;}
 .wf{font-weight:600;color:#1a7a3c;}
 .ev{font-weight:600;color:#a93226;}
-.footer{position:fixed;bottom:8mm;left:14mm;right:14mm;display:flex;justify-content:space-between;font-size:8pt;color:#666;border-top:1px solid #ccc;padding-top:4px;}
+@page{@top-right{content:counter(page);font-size:7pt;color:#888;}}
 </style></head><body>
 <div class="ph-title">Expenses Voucher and Work Fund Ledger</div>
 ${empLine}
 ${dateLine}
 <hr class="ph-divider">
 ${tblHTML}
-<div class="footer">
-  <span>Created By: <strong>Qasim</strong></span>
-  <span>Print Date: <strong>${printDate}</strong></span>
+<div style="text-align:right;margin-top:14px;padding-top:6px;border-top:1px solid #ccc;font-size:8pt;color:#444;line-height:1.7">
+  Created By: <strong>Qasim</strong><br>
+  Date: <strong>${printDate}</strong>
 </div>
 </body></html>`;
 
