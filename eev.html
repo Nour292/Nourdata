@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- NourData EEV Module v1.6 - Aug-2026 -->
+<!-- NourData EEV Module v1.7 - Aug-2026 -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -226,7 +226,7 @@ if (sessionStorage.getItem('ne_sb_collapsed') === '1') {
 <aside id="sidebar">
   <div id="sb-header">
     <img id="sb-logo" src="nour_energy_logo.png" alt="Nour Energy" onerror="this.style.display='none'">
-    <div id="sb-title">Nour Energy<small>Expense Voucher &nbsp;·&nbsp; v1.6</small></div>
+    <div id="sb-title">Nour Energy<small>Expense Voucher &nbsp;·&nbsp; v1.7</small></div>
     <button id="sb-toggle" onclick="toggleSidebar()" title="Toggle sidebar">&#9776;</button>
   </div>
   <nav id="sb-nav">
@@ -378,7 +378,7 @@ if (sessionStorage.getItem('ne_sb_collapsed') === '1') {
           <span id="lg-emp-info" style="margin-left:14px;font-size:13px;font-weight:600;color:#2e86c1"></span>
           <div class="tbl-actions">
             <button class="hdr-btn btn-excel" onclick="exportTable('lg-table','EEV_Ledger')">&#128196; Excel</button>
-            <button class="hdr-btn btn-pdf" onclick="printSection('sec-ledger')">&#128438; PDF</button>
+            <button class="hdr-btn btn-pdf" onclick="printLedger()">&#128438; PDF</button>
             <button class="hdr-btn btn-copy" onclick="copyTable('lg-table')">&#128203; Copy</button>
           </div>
         </div>
@@ -1032,6 +1032,61 @@ function printSection(sectionId) {
   document.title = document.getElementById('page-title').textContent;
   window.print();
   document.title = old;
+}
+
+function printLedger() {
+  const empRaw  = document.getElementById('lg-emp').value.trim();
+  const empNum  = empRaw.replace(/\s*—.*$/, '').trim();
+  const empName = empNum ? getEmpName(empNum) : '';
+  const from    = document.getElementById('lg-from').value;
+  const to      = document.getElementById('lg-to').value;
+  const now     = new Date();
+  const printDate = now.toLocaleDateString('en-GB', {day:'2-digit', month:'short', year:'numeric'});
+
+  const empLine  = empNum
+    ? `<div class="ph-line">Employee: <strong>${empNum} &mdash; ${empName}</strong></div>`
+    : `<div class="ph-line">Employee: <strong>All Employees</strong></div>`;
+  const dateLine = (from || to)
+    ? `<div class="ph-line">Date: <strong>${from || '—'} &nbsp;to&nbsp; ${to || '—'}</strong></div>`
+    : '';
+
+  const tbl = document.getElementById('lg-table');
+  const tblHTML = tbl ? tbl.outerHTML : '';
+
+  const html = `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>EEV Ledger</title>
+<style>
+@page{size:A4 portrait;margin:12mm 14mm 18mm;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:Arial,sans-serif;font-size:9pt;color:#111;}
+.ph-title{font-size:13pt;font-weight:700;text-align:center;margin-bottom:4px;}
+.ph-line{font-size:9pt;text-align:center;margin-bottom:2px;}
+.ph-divider{border:none;border-top:2px solid #1a2b3c;margin:8px 0;}
+table{width:100%;border-collapse:collapse;margin-top:6px;}
+th{background:#1a2b3c;color:#fff;padding:5px 6px;font-size:8.5pt;text-align:left;}
+th.num,td.num{text-align:right;}
+td{padding:4px 6px;font-size:8.5pt;border-bottom:1px solid #dde4ed;}
+tr:nth-child(even) td{background:#f5f8fc;}
+tfoot td{font-weight:700;background:#e8eef5;border-top:2px solid #1a2b3c;}
+.wf{font-weight:600;color:#1a7a3c;}
+.ev{font-weight:600;color:#a93226;}
+.footer{position:fixed;bottom:8mm;left:14mm;right:14mm;display:flex;justify-content:space-between;font-size:8pt;color:#666;border-top:1px solid #ccc;padding-top:4px;}
+</style></head><body>
+<div class="ph-title">Expenses Voucher and Work Fund Ledger</div>
+${empLine}
+${dateLine}
+<hr class="ph-divider">
+${tblHTML}
+<div class="footer">
+  <span>Created By: <strong>Qasim</strong></span>
+  <span>Print Date: <strong>${printDate}</strong></span>
+</div>
+</body></html>`;
+
+  const pw = window.open('', '_blank', 'width=900,height=700');
+  pw.document.open();
+  pw.document.write(html);
+  pw.document.close();
+  setTimeout(function() { pw.print(); }, 600);
 }
 
 function copyTable(tableId) {
