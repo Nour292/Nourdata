@@ -281,7 +281,7 @@ body.dark-mode .sug-item:hover{background:#1a2b3c!important;}
 <aside id="sidebar">
   <div id="sb-header">
     <img src="https://nour292.github.io/Nourdata/nour_energy_logo.png" alt="Logo" id="sb-logo">
-    <div id="sb-title">Nour Energy<small>HR System &nbsp;·&nbsp; v1.6</small></div>
+    <div id="sb-title">Nour Energy<small>HR System &nbsp;·&nbsp; v1.7</small></div>
   </div>
   <nav id="sb-nav">
 
@@ -1258,17 +1258,17 @@ async function copyTable() {
   const cols = (isInv ? invCols : poCols).filter(c => c.on);
   if (!data.length) { showToast('No records to copy.', 'err'); return; }
 
-  let html = '<table border="1" cellpadding="6" cellspacing="0" style="border-collapse:collapse;font-family:Calibri,sans-serif;font-size:11pt;">';
+  const cell = 'padding:6px 10px;border:1px solid #000;font-family:Calibri,sans-serif;font-size:11pt;';
+  let html = '<table border="1" cellpadding="0" cellspacing="0" style="border-collapse:collapse;">';
   html += '<thead><tr>';
   cols.forEach(c => {
-    html += `<th style="background:#1a2b3c;color:#ffffff;font-weight:bold;padding:8px 12px;text-align:left;border:1px solid #1a2b3c;">${escHtml(c.label)}</th>`;
+    html += `<th style="${cell}font-weight:bold;">${escHtml(c.label)}</th>`;
   });
   html += '</tr></thead><tbody>';
-  data.forEach((row, idx) => {
-    const bg = idx % 2 === 0 ? '#ffffff' : '#f0f4f8';
-    html += `<tr>`;
+  data.forEach(row => {
+    html += '<tr>';
     cols.forEach(c => {
-      html += `<td style="padding:6px 12px;border:1px solid #d0dce8;background:${bg};">${escHtml(String(row[c.key]||''))}</td>`;
+      html += `<td style="${cell}">${escHtml(String(row[c.key]||''))}</td>`;
     });
     html += '</tr>';
   });
