@@ -461,7 +461,7 @@ if (sessionStorage.getItem('ne_sb_collapsed') === '1') {
             <input type="text" id="bs-search" placeholder="Name or Emp #" oninput="renderBalanceSummary()">
           </div>
           <div class="filter-btns">
-            <button class="btn-apply" onclick="loadAllData().then(renderBalanceSummary)">&#8635; Refresh</button>
+            <button class="btn-apply" onclick="ensureLedgeData(true).then(renderBalanceSummary)">&#8635; Refresh</button>
           </div>
         </div>
       </div>
@@ -566,8 +566,17 @@ function showSection(name) {
   if (navBtn) navBtn.classList.add('active');
   const titles = {form:'Employee Expense Voucher', ledger:'EEV Ledger', statement:'Employee Statement', balance:'Balance Summary'};
   document.getElementById('page-title').textContent = titles[name] || 'EEV Module';
-  if (name === 'ledger') renderLedger();
-  if (name === 'balance') renderBalanceSummary();
+  if (name === 'ledger') {
+    if (!ledgeLoaded) {
+      document.getElementById('lg-tbody').innerHTML = '<tr><td colspan="6" class="no-data" style="color:var(--text-muted,#888);padding:18px">Set filters above and click <strong>Apply</strong> to load records</td></tr>';
+      document.getElementById('lg-tfoot').innerHTML = '';
+      document.getElementById('lg-count').textContent = '—';
+      document.getElementById('lg-emp-info').textContent = '';
+    } else {
+      renderLedger();
+    }
+  }
+  if (name === 'balance') ensureLedgeData().then(renderBalanceSummary);
 }
 
 /* ══════════════════════════════════════════════
@@ -586,18 +595,30 @@ function logout() {
 /* ══════════════════════════════════════════════
    DATA LOADING
 ══════════════════════════════════════════════ */
+let ledgeLoaded = false;
+
 async function loadAllData() {
+  // Load Master File only (fast — employee/name data for dropdowns)
   showLoading(true);
   try {
-    const [mf, lg] = await Promise.all([
-      fetch(`https://sheets.googleapis.com/v4/spreadsheets/${GS_ID}/values/Master%20File?key=${GS_KEY}`).then(r => r.json()),
-      fetch(`https://sheets.googleapis.com/v4/spreadsheets/${GS_ID}/values/EEV%20Ledge?key=${GS_KEY}`).then(r => r.json())
-    ]);
+    const mf = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${GS_ID}/values/Master%20File?key=${GS_KEY}`).then(r => r.json());
     const mfRows = mf.values || [];
     masterData = mfRows.slice(1).filter(r => r[0]);
+  } catch (e) {
+    showToast('Data load error: ' + e.message, 'error');
+  }
+  showLoading(false);
+}
+
+async function ensureLedgeData(forceReload) {
+  if (ledgeLoaded && !forceReload) return;
+  showLoading(true);
+  try {
+    const lg = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${GS_ID}/values/EEV%20Ledge?key=${GS_KEY}`).then(r => r.json());
     const lgRows = lg.values || [];
     ledgeHdr  = lgRows[0] || [];
     ledgeData = lgRows.slice(1).filter(r => r[1]);
+    ledgeLoaded = true;
     populateEmpDropdowns();
   } catch (e) {
     showToast('Data load error: ' + e.message, 'error');
@@ -709,6 +730,7 @@ async function saveEEV() {
     if (result.ok) {
       showToast(`Saved! Reference: ${result.refNum}`, 'success');
       clearForm();
+      ledgeLoaded = false;
       setTimeout(() => loadAllData(), 1500);
     } else {
       showToast('Error: ' + (result.error || 'Unknown error'), 'error');
@@ -764,7 +786,8 @@ function clearForm() {
 /* ══════════════════════════════════════════════
    LEDGER SECTION
 ══════════════════════════════════════════════ */
-function renderLedger() {
+async function renderLedger() {
+  await ensureLedgeData();
   const from   = document.getElementById('lg-from').value;
   const to     = document.getElementById('lg-to').value;
   const empRaw = document.getElementById('lg-emp').value.trim();
