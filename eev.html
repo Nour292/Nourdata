@@ -798,7 +798,7 @@ async function renderLedger() {
     const typeVal = String(row[2]||'').trim();
     const typeCls = typeVal === 'Work Fund' ? 'wf' : (typeVal === 'Expenses Voucher' ? 'ev' : '');
     return `<tr>
-      <td>${row[0]||''}</td>
+      <td>${fmtDate(row[0])}</td>
       <td class="${typeCls}">${typeVal}</td>
       <td>${row[3]||''}</td>
       <td class="num wf">${wf ? fmt(wf) : '—'}</td>
@@ -875,7 +875,7 @@ async function renderStatement() {
     const typeVal = String(row[2]||'').trim();
     const typeCls = typeVal === 'Work Fund' ? 'wf' : (typeVal === 'Expenses Voucher' ? 'ev' : '');
     return `<tr>
-      <td>${row[0]||''}</td>
+      <td>${fmtDate(row[0])}</td>
       <td class="${typeCls}">${typeVal}</td>
       <td>${row[3]||''}</td>
       <td class="num wf">${wf ? fmt(wf) : '—'}</td>
@@ -1244,6 +1244,13 @@ function copyTable(tableId) {
 function fmt(n) {
   const v = parseFloat(n) || 0;
   return v.toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2});
+}
+
+function fmtDate(val) {
+  if (!val) return '';
+  if (typeof val === 'string' && /^\d{2}-[A-Za-z]{3}-\d{4}$/.test(val)) return val;
+  const d = new Date(val);
+  return isNaN(d) ? String(val) : d.toLocaleDateString('en-GB', {day:'2-digit', month:'short', year:'numeric'});
 }
 
 function parseEEVDate(str) {
