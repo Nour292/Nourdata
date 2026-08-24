@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- NourData EEV Module v1.4 - Aug-2026 -->
+<!-- NourData EEV Module v1.5 - Aug-2026 -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -225,7 +225,7 @@ if (sessionStorage.getItem('ne_sb_collapsed') === '1') {
 <aside id="sidebar">
   <div id="sb-header">
     <img id="sb-logo" src="nour_energy_logo.png" alt="Nour Energy" onerror="this.style.display='none'">
-    <div id="sb-title">Nour Energy<small>Expense Voucher &nbsp;·&nbsp; v1.4</small></div>
+    <div id="sb-title">Nour Energy<small>Expense Voucher &nbsp;·&nbsp; v1.5</small></div>
     <button id="sb-toggle" onclick="toggleSidebar()" title="Toggle sidebar">&#9776;</button>
   </div>
   <nav id="sb-nav">
@@ -292,28 +292,34 @@ if (sessionStorage.getItem('ne_sb_collapsed') === '1') {
     <!-- ────────── SECTION: EEV FORM ────────── -->
     <div id="sec-form" class="section active">
 
-      <!-- Header Info Card -->
-      <div class="form-card">
-        <div class="form-card-title">&#128221; Voucher Information</div>
-        <div class="form-grid" style="grid-template-columns:repeat(3,1fr);">
-          <div class="form-field">
-            <label>Employee # *</label>
-            <input type="text" id="f-empnum" placeholder="Enter Emp #" oninput="onEmpNumChange()">
+      <!-- Top bar: Voucher Info + Actions -->
+      <div class="form-card" style="margin-bottom:8px;padding:10px 14px">
+        <div style="display:flex;gap:14px;align-items:flex-end">
+          <div style="flex:1;display:grid;grid-template-columns:repeat(3,1fr);gap:10px">
+            <div class="form-field" style="margin:0">
+              <label>Employee # *</label>
+              <input type="text" id="f-empnum" placeholder="Enter Emp #" oninput="onEmpNumChange()">
+            </div>
+            <div class="form-field" style="margin:0">
+              <label>Employee Name</label>
+              <input type="text" id="f-empname" readonly placeholder="Auto-filled from Master File">
+            </div>
+            <div class="form-field" style="margin:0">
+              <label>Project #</label>
+              <input type="text" id="f-project" placeholder="Project #">
+            </div>
           </div>
-          <div class="form-field">
-            <label>Employee Name</label>
-            <input type="text" id="f-empname" readonly placeholder="Auto-filled from Master File">
-          </div>
-          <div class="form-field">
-            <label>Project #</label>
-            <input type="text" id="f-project" placeholder="Project #">
+          <div style="display:flex;flex-direction:column;gap:6px;min-width:160px">
+            <button class="btn-save-eev" style="margin:0" onclick="saveEEV()" id="btn-save">&#128190; Save &amp; Record</button>
+            <button class="btn-print-sheet" style="margin:0" onclick="printSheet()">&#128438; Print Sheet</button>
+            <button class="btn-clear-form" style="margin:0" onclick="clearForm()">&#10005; Clear</button>
           </div>
         </div>
       </div>
 
       <!-- Expense Items Card -->
-      <div class="form-card">
-        <div class="form-card-title">&#128181; Expense Items</div>
+      <div class="form-card" style="padding:10px 14px">
+        <div class="form-card-title" style="margin-bottom:6px">&#128181; Expense Items</div>
         <div class="exp-table-wrap">
           <table class="exp-table">
             <thead>
@@ -335,14 +341,6 @@ if (sessionStorage.getItem('ne_sb_collapsed') === '1') {
             </tfoot>
           </table>
         </div>
-        <div class="words-row" id="f-words">Amount in words: —</div>
-      </div>
-
-      <!-- Form Actions -->
-      <div class="form-actions" style="margin-top:12px">
-        <button class="btn-save-eev" onclick="saveEEV()" id="btn-save">&#128190; Save &amp; Record</button>
-        <button class="btn-print-sheet" onclick="printSheet()">&#128438; Print Sheet</button>
-        <button class="btn-clear-form" onclick="clearForm()">&#10005; Clear</button>
       </div>
     </div><!-- /sec-form -->
 
@@ -658,7 +656,6 @@ function calcTotal() {
     total += parseFloat(document.getElementById('amt-' + i).value) || 0;
   });
   document.getElementById('f-total').textContent = fmt(total);
-  document.getElementById('f-words').textContent = 'Amount in words: ' + amountToWords(total);
   return total;
 }
 
@@ -769,7 +766,6 @@ function clearForm() {
   document.getElementById('f-empname').value = '';
   document.getElementById('f-project').value = '';
   document.getElementById('f-total').textContent = '0.00';
-  document.getElementById('f-words').textContent = 'Amount in words: —';
   EEV_CODES.forEach((_, i) => {
     const el = document.getElementById('amt-' + i);
     if (el) el.value = '';
