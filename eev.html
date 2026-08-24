@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- NourData EEV Module v1.3 - Aug-2026 -->
+<!-- NourData EEV Module v1.4 - Aug-2026 -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -225,7 +225,7 @@ if (sessionStorage.getItem('ne_sb_collapsed') === '1') {
 <aside id="sidebar">
   <div id="sb-header">
     <img id="sb-logo" src="nour_energy_logo.png" alt="Nour Energy" onerror="this.style.display='none'">
-    <div id="sb-title">Nour Energy<small>Expense Voucher &nbsp;·&nbsp; v1.3</small></div>
+    <div id="sb-title">Nour Energy<small>Expense Voucher &nbsp;·&nbsp; v1.4</small></div>
     <button id="sb-toggle" onclick="toggleSidebar()" title="Toggle sidebar">&#9776;</button>
   </div>
   <nav id="sb-nav">
@@ -318,15 +318,18 @@ if (sessionStorage.getItem('ne_sb_collapsed') === '1') {
           <table class="exp-table">
             <thead>
               <tr>
-                <th style="width:33%">Code</th>
-                <th style="width:34%">Description</th>
-                <th style="width:33%;text-align:right">Amount (SAR)</th>
+                <th style="width:8%">Code</th>
+                <th style="width:25%">Description</th>
+                <th style="width:17%;text-align:right">Amount (SAR)</th>
+                <th style="width:8%">Code</th>
+                <th style="width:25%">Description</th>
+                <th style="width:17%;text-align:right">Amount (SAR)</th>
               </tr>
             </thead>
             <tbody id="exp-tbody"></tbody>
             <tfoot>
               <tr>
-                <td colspan="2" style="font-weight:700;color:#1a2b3c;text-align:right;padding-right:10px">TOTAL</td>
+                <td colspan="5" style="font-weight:700;color:#1a2b3c;text-align:right;padding-right:10px">TOTAL</td>
                 <td class="total-amt" id="f-total">0.00</td>
               </tr>
             </tfoot>
@@ -627,17 +630,23 @@ function getEmpName(empNum) {
 function buildExpenseRows() {
   const tbody = document.getElementById('exp-tbody');
   tbody.innerHTML = '';
-  EEV_CODES.forEach((item, i) => {
+  for (let i = 0; i < EEV_CODES.length; i += 2) {
+    const a = EEV_CODES[i];
+    const b = EEV_CODES[i + 1];
     const tr = document.createElement('tr');
     tr.innerHTML = `
-      <td class="code">${item.code}</td>
-      <td>${item.desc}</td>
+      <td class="code">${a.code}</td>
+      <td>${a.desc}</td>
       <td style="text-align:right">
-        <input class="amt-inp" type="number" id="amt-${i}" value="" min="0" step="0.01"
-          placeholder="0.00" oninput="calcTotal()">
+        <input class="amt-inp" type="number" id="amt-${i}" value="" min="0" step="0.01" placeholder="0.00" oninput="calcTotal()">
+      </td>
+      <td class="code">${b ? b.code : ''}</td>
+      <td>${b ? b.desc : ''}</td>
+      <td style="text-align:right">
+        ${b ? `<input class="amt-inp" type="number" id="amt-${i+1}" value="" min="0" step="0.01" placeholder="0.00" oninput="calcTotal()">` : ''}
       </td>`;
     tbody.appendChild(tr);
-  });
+  }
 }
 
 /* ══════════════════════════════════════════════
