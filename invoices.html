@@ -9,7 +9,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<title>Nour Energy — Submitted Invoices</title>
+<title>Nour Energy — Submit to Account</title>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 html,body{font-family:'Calibri',sans-serif;background:#f0f4f8;min-height:100vh;}
@@ -75,6 +75,11 @@ body.sb-collapsed #main-content{margin-left:52px;}
 .col-check:hover{border-color:#2e86c1;background:#f0f8ff;}
 .col-check input{width:13px;height:13px;cursor:pointer;accent-color:#2e86c1;}
 .filter-divider{border:none;border-top:1px solid #e8f0f8;margin:12px 0;}
+#mp-body{transition:max-height 0.25s ease,opacity 0.2s ease;overflow:hidden;max-height:600px;opacity:1;}
+#mp-body.collapsed{max-height:0;opacity:0;}
+#mp-toggle{width:28px;height:28px;background:rgba(46,134,193,0.1);border:1.5px solid #d0dce8;border-radius:6px;color:#2e86c1;font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:background 0.15s;}
+#mp-toggle:hover{background:rgba(46,134,193,0.2);}
+body.dark-mode #mp-toggle{background:rgba(46,134,193,0.15);border-color:#2a3f54;color:#7ec8f0;}
 .filter-row{display:flex;flex-wrap:nowrap;gap:10px;align-items:flex-end;}
 .filter-field{display:flex;flex-direction:column;gap:4px;flex:1;min-width:0;}
 .filter-field label{font-size:11px;font-weight:700;color:#5a7a9a;text-transform:uppercase;letter-spacing:0.4px;}
@@ -272,7 +277,7 @@ body.dark-mode .sug-item:hover{background:#1a2b3c!important;}
 <aside id="sidebar">
   <div id="sb-header">
     <img src="https://nour292.github.io/Nourdata/nour_energy_logo.png" alt="Logo" id="sb-logo">
-    <div id="sb-title">Nour Energy<small>HR System</small></div>
+    <div id="sb-title">Nour Energy<small>HR System &nbsp;·&nbsp; v1.1</small></div>
   </div>
   <nav id="sb-nav">
 
@@ -304,7 +309,7 @@ body.dark-mode .sug-item:hover{background:#1a2b3c!important;}
     <div class="sb-group">
       <div class="sb-group-hdr active-group">
         <span class="sb-icon">🧾</span>
-        <span class="sb-label">Submitted Invoices</span>
+        <span class="sb-label">Submit to Account</span>
       </div>
       <div class="sb-group-items" style="display:block;">
         <button class="sb-item active" id="sb-inv" onclick="setView('invoices')"><span class="sb-icon">🧾</span><span class="sb-label">Invoice List</span></button>
@@ -326,7 +331,7 @@ body.dark-mode .sug-item:hover{background:#1a2b3c!important;}
 <!-- ── Main ── -->
 <div id="main-content">
   <div id="top-header">
-    <div id="page-title">🧾 Submitted Invoices</div>
+    <div id="page-title">🧾 Submit to Account</div>
     <div id="header-actions">
       <button class="hdr-btn" id="btn-bulk-add" onclick="openBulkModal()" style="background:#1a7a4a;color:#fff;border-color:#15623b;">📋 Bulk Add</button>
       <button class="hdr-btn btn-copy" onclick="copyTable()">📋 Copy</button>
@@ -339,26 +344,34 @@ body.dark-mode .sug-item:hover{background:#1a2b3c!important;}
 
     <!-- ── Module Panel ── -->
     <div id="module-panel">
-      <!-- Columns -->
-      <div class="mp-section-hdr">
-        <span>📋 Columns</span>
-        <div class="mp-btn-group">
-          <button class="mp-sm-btn" onclick="selectAllCols()">Select All</button>
-          <button class="mp-sm-btn" onclick="clearAllCols()">Clear All</button>
+      <!-- Panel header with collapse toggle -->
+      <div class="mp-section-hdr" style="margin-bottom:0">
+        <span style="font-size:13px;font-weight:700;color:#1a2b3c">📋 Columns &amp; Filters</span>
+        <button id="mp-toggle" onclick="toggleModulePanel()" title="Collapse / Expand">▲</button>
+      </div>
+      <div id="mp-body">
+        <div style="height:10px"></div>
+        <!-- Columns -->
+        <div class="mp-section-hdr">
+          <span>📋 Columns</span>
+          <div class="mp-btn-group">
+            <button class="mp-sm-btn" onclick="selectAllCols()">Select All</button>
+            <button class="mp-sm-btn" onclick="clearAllCols()">Clear All</button>
+          </div>
         </div>
-      </div>
-      <div id="col-checks"></div>
+        <div id="col-checks"></div>
 
-      <hr class="filter-divider">
+        <hr class="filter-divider">
 
-      <!-- Filters -->
-      <div class="mp-section-hdr" style="margin-bottom:10px;">
-        <span>🔽 Filters</span>
-      </div>
-      <div id="filter-panel"></div>
-      <div class="filter-btns" style="margin-top:12px;">
-        <button class="btn-generate" onclick="applyFilters()">🔍 Generate</button>
-        <button class="btn-reset" onclick="resetFilters()">✕ Reset</button>
+        <!-- Filters -->
+        <div class="mp-section-hdr" style="margin-bottom:10px;">
+          <span>🔽 Filters</span>
+        </div>
+        <div id="filter-panel"></div>
+        <div class="filter-btns" style="margin-top:12px;">
+          <button class="btn-generate" onclick="applyFilters()">🔍 Generate</button>
+          <button class="btn-reset" onclick="resetFilters()">✕ Reset</button>
+        </div>
       </div>
     </div>
 
@@ -972,6 +985,13 @@ function clearSearch() {
   renderTable();
 }
 
+function toggleModulePanel() {
+  const body = document.getElementById('mp-body');
+  const btn  = document.getElementById('mp-toggle');
+  const collapsed = body.classList.toggle('collapsed');
+  btn.textContent = collapsed ? '▼' : '▲';
+}
+
 function applyFilters() {
   generated = true;
   const g = id => document.getElementById(id)?.value || '';
@@ -1198,7 +1218,7 @@ function setView(v) {
   document.getElementById('sb-inv').classList.toggle('active', v==='invoices');
   document.getElementById('sb-po').classList.toggle('active', v==='pos');
 
-  document.getElementById('page-title').textContent = v==='invoices' ? '🧾 Submitted Invoices' : '📄 Purchase Orders';
+  document.getElementById('page-title').textContent = v==='invoices' ? '🧾 Submit to Account' : '📄 Purchase Orders';
 
   renderColSelector();
   renderFilterPanel();
