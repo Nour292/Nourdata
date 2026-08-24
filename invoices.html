@@ -33,7 +33,11 @@ html,body{font-family:'Calibri',sans-serif;background:#f0f4f8;min-height:100vh;}
 .sb-group-hdr{display:flex;align-items:center;gap:10px;width:100%;padding:11px 16px;background:none;border:none;color:#8fa8c0;font-size:13px;font-weight:700;cursor:pointer;text-align:left;white-space:nowrap;transition:background 0.15s,color 0.15s;}
 .sb-group-hdr:hover{background:rgba(255,255,255,0.05);color:#fff;}
 .sb-group-hdr.active-group{color:#fff;}
-.sb-group-items{background:rgba(0,0,0,0.15);}
+.sb-group-items{background:rgba(0,0,0,0.15);overflow:hidden;transition:max-height 0.25s ease;}
+.sb-group-items.sg-open{max-height:200px;}
+.sb-group-items.sg-closed{max-height:0;}
+.sb-chevron{margin-left:auto;font-size:10px;color:#8fa8c0;transition:transform 0.25s;flex-shrink:0;}
+.sb-group-hdr.active-group .sb-chevron{color:#fff;}
 .sb-item{display:flex;align-items:center;gap:12px;padding:9px 16px 9px 32px;cursor:pointer;color:#b8cfe0;font-size:13px;font-weight:600;border:none;background:none;width:100%;text-align:left;white-space:nowrap;transition:background 0.15s,color 0.15s;}
 .sb-item:hover{background:rgba(255,255,255,0.07);color:#fff;}
 .sb-item.active{background:rgba(46,134,193,0.22);color:#fff;border-left:3px solid #2e86c1;}
@@ -305,13 +309,14 @@ body.dark-mode .sug-item:hover{background:#1a2b3c!important;}
       </button>
     </div>
 
-    <!-- Submitted Invoices -->
+    <!-- Submit to Account -->
     <div class="sb-group">
-      <div class="sb-group-hdr active-group">
+      <div class="sb-group-hdr active-group" id="sb-sta-hdr" onclick="toggleSbGroup()" style="cursor:pointer;">
         <span class="sb-icon">🧾</span>
         <span class="sb-label">Submit to Account</span>
+        <span class="sb-chevron" id="sb-sta-chevron">▲</span>
       </div>
-      <div class="sb-group-items" style="display:block;">
+      <div class="sb-group-items sg-open" id="sb-sta-items">
         <button class="sb-item active" id="sb-inv" onclick="setView('invoices')"><span class="sb-icon">🧾</span><span class="sb-label">Invoice List</span></button>
         <button class="sb-item" id="sb-po" onclick="setView('pos')"><span class="sb-icon">📄</span><span class="sb-label">Purchase Orders</span></button>
       </div>
@@ -983,6 +988,15 @@ function clearSearch() {
   if (clearBtn) clearBtn.style.display = 'none';
   document.getElementById('rec-count').textContent = '';
   renderTable();
+}
+
+function toggleSbGroup() {
+  const items   = document.getElementById('sb-sta-items');
+  const chevron = document.getElementById('sb-sta-chevron');
+  const isOpen  = items.classList.contains('sg-open');
+  items.classList.toggle('sg-open',   !isOpen);
+  items.classList.toggle('sg-closed',  isOpen);
+  chevron.style.transform = isOpen ? 'rotate(180deg)' : '';
 }
 
 function toggleModulePanel() {
