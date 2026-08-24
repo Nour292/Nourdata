@@ -123,12 +123,12 @@ tfoot td.num{text-align:right;font-variant-numeric:tabular-nums;}
 .exp-table-wrap{overflow-x:auto;border:1px solid #e0e8f0;border-radius:8px;}
 .exp-table{width:100%;border-collapse:collapse;font-size:13px;}
 .exp-table thead th{background:#1a2b3c;color:#e0e8f0;padding:8px 10px;text-align:left;font-weight:700;font-size:12px;}
-.exp-table thead th:last-child{text-align:right;min-width:120px;}
+.exp-table thead th:last-child{text-align:right;}
 .exp-table tbody tr:nth-child(even){background:#f8fafc;}
 .exp-table tbody tr:hover{background:#e8f4fd;}
 .exp-table tbody td{padding:5px 10px;border-bottom:1px solid #eef2f8;color:#2c3e50;}
-.exp-table tbody td.code{font-weight:700;color:#2e86c1;width:50px;}
-.exp-table .amt-inp{width:110px;padding:4px 8px;font-size:13px;border:1.5px solid #d0dce8;border-radius:5px;font-family:'Calibri',sans-serif;text-align:right;background:#fff;outline:none;}
+.exp-table tbody td.code{font-weight:700;color:#2e86c1;}
+.exp-table .amt-inp{width:100%;padding:4px 8px;font-size:13px;border:1.5px solid #d0dce8;border-radius:5px;font-family:'Calibri',sans-serif;text-align:right;background:#fff;outline:none;box-sizing:border-box;}
 .exp-table .amt-inp:focus{border-color:#2e86c1;}
 .exp-table tfoot td{background:#edf2f7;padding:8px 10px;font-weight:700;border-top:2px solid #c8d8e8;}
 .exp-table tfoot td.total-amt{text-align:right;color:#1a2b3c;font-size:14px;}
@@ -318,9 +318,9 @@ if (sessionStorage.getItem('ne_sb_collapsed') === '1') {
           <table class="exp-table">
             <thead>
               <tr>
-                <th style="width:54px">Code</th>
-                <th>Description</th>
-                <th style="width:130px;text-align:right">Amount (SAR)</th>
+                <th style="width:33%">Code</th>
+                <th style="width:34%">Description</th>
+                <th style="width:33%;text-align:right">Amount (SAR)</th>
               </tr>
             </thead>
             <tbody id="exp-tbody"></tbody>
