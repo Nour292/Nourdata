@@ -281,7 +281,7 @@ body.dark-mode .sug-item:hover{background:#1a2b3c!important;}
 <aside id="sidebar">
   <div id="sb-header">
     <img src="https://nour292.github.io/Nourdata/nour_energy_logo.png" alt="Logo" id="sb-logo">
-    <div id="sb-title">Nour Energy<small>HR System &nbsp;·&nbsp; v1.2</small></div>
+    <div id="sb-title">Nour Energy<small>HR System &nbsp;·&nbsp; v1.3</small></div>
   </div>
   <nav id="sb-nav">
 
@@ -921,13 +921,16 @@ function renderFilterPanel() {
       </div>
       <div class="filter-field"><label>Batch Number</label>
         <div class="multi-select-wrap">
-          <button type="button" class="multi-select-btn" id="batch-ms-btn" onclick="toggleBatchPanel(event)">
-            <span id="batch-ms-label">${getBatchBtnLabel()}</span><span style="font-size:10px;margin-left:4px;">▾</span>
-          </button>
+          <div style="position:relative;">
+            <input type="text" class="multi-select-btn" id="batch-ms-btn"
+                   value="${getBatchBtnLabel()}"
+                   onfocus="openBatchPanel(this)"
+                   oninput="filterBatchOptions(this.value)"
+                   onblur="closeBatchPanel()"
+                   autocomplete="off" style="cursor:text;padding-right:26px;">
+            <span style="position:absolute;right:8px;top:50%;transform:translateY(-50%);font-size:10px;pointer-events:none;opacity:0.6;">▾</span>
+          </div>
           <div class="multi-select-panel" id="batch-ms-panel" style="display:none;">
-            <div style="padding:6px 8px;border-bottom:1px solid #edf3f8;">
-              <input class="ms-search-inp" id="batch-ms-search" type="text" placeholder="Search batch…" oninput="filterBatchOptions(this.value)">
-            </div>
             <label class="ms-opt" style="border-bottom:1px solid #edf3f8;">
               <input type="checkbox" id="batch-select-all" onchange="toggleAllBatches(this.checked)"> Select All
             </label>
@@ -1153,7 +1156,7 @@ function getUniqueBatches() {
   return invoices
     .filter(inv => inv.batchNumber && !seen.has(String(inv.batchNumber)) && seen.add(String(inv.batchNumber)))
     .map(inv => String(inv.batchNumber))
-    .sort((a, b) => (Number(a) - Number(b)) || a.localeCompare(b));
+    .sort((a, b) => (Number(b) - Number(a)) || b.localeCompare(a));
 }
 
 function getBatchBtnLabel() {
@@ -1163,15 +1166,21 @@ function getBatchBtnLabel() {
   return n === total ? 'All batches' : `${n} selected`;
 }
 
-function toggleBatchPanel(e) {
-  if (e) e.stopPropagation();
+function openBatchPanel(inp) {
+  inp.value = '';
   const panel = document.getElementById('batch-ms-panel');
-  if (!panel) return;
-  const isOpen = panel.style.display !== 'none';
   const descPanel = document.getElementById('desc-ms-panel');
   if (descPanel) descPanel.style.display = 'none';
-  panel.style.display = isOpen ? 'none' : 'block';
-  if (!isOpen) populateBatchOptions('');
+  if (panel) panel.style.display = 'block';
+  populateBatchOptions('');
+}
+
+function closeBatchPanel() {
+  setTimeout(() => {
+    const panel = document.getElementById('batch-ms-panel');
+    if (panel) panel.style.display = 'none';
+    updateBatchLabel();
+  }, 200);
 }
 
 function populateBatchOptions(search) {
@@ -1198,14 +1207,13 @@ function onBatchCheck(cb) {
 
 function toggleAllBatches(checked) {
   invFilters.batchNumbers = checked ? [...getUniqueBatches()] : [];
-  const searchEl = document.getElementById('batch-ms-search');
-  populateBatchOptions(searchEl ? searchEl.value : '');
+  populateBatchOptions('');
   updateBatchLabel();
 }
 
 function updateBatchLabel() {
-  const lbl = document.getElementById('batch-ms-label');
-  if (lbl) lbl.textContent = getBatchBtnLabel();
+  const inp = document.getElementById('batch-ms-btn');
+  if (inp) inp.value = getBatchBtnLabel();
 }
 
 function updateBatchSelectAll() {
