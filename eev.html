@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- NourData EEV Module v1.9 - Aug-2026 -->
+<!-- NourData EEV Module v2.0 - Aug-2026 -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -227,28 +227,10 @@ if (sessionStorage.getItem('ne_sb_collapsed') === '1') {
 <aside id="sidebar">
   <div id="sb-header">
     <img id="sb-logo" src="nour_energy_logo.png" alt="Nour Energy" onerror="this.style.display='none'">
-    <div id="sb-title">Nour Energy<small>Expense Voucher &nbsp;·&nbsp; v1.9</small></div>
+    <div id="sb-title">Nour Energy<small>Expense Voucher &nbsp;·&nbsp; v2.0</small></div>
     <button id="sb-toggle" onclick="toggleSidebar()" title="Toggle sidebar">&#9776;</button>
   </div>
   <nav id="sb-nav">
-    <!-- Employee Data -->
-    <div class="sb-group no-hover">
-      <a class="sb-group-hdr" href="index.html" style="text-decoration:none;font-size:13px;text-transform:none;letter-spacing:0;">
-        <span>&#128100;</span><span class="sb-label">Employee Data</span>
-      </a>
-    </div>
-    <!-- Job Tracker -->
-    <div class="sb-group no-hover">
-      <a class="sb-group-hdr" href="tracker.html" style="text-decoration:none;font-size:13px;text-transform:none;letter-spacing:0;">
-        <span>&#128736;</span><span class="sb-label">Job Tracker</span>
-      </a>
-    </div>
-    <!-- Submit to Account -->
-    <div class="sb-group no-hover">
-      <a class="sb-group-hdr" href="invoices.html" style="text-decoration:none;font-size:13px;text-transform:none;letter-spacing:0;">
-        <span>&#128196;</span><span class="sb-label">Submit to Account</span>
-      </a>
-    </div>
     <!-- Expenses Vouchers -->
     <div class="sb-group">
       <button class="sb-group-hdr" onclick="toggleGroup(this)">
@@ -269,6 +251,24 @@ if (sessionStorage.getItem('ne_sb_collapsed') === '1') {
           <span class="sb-icon">&#9878;</span><span class="sb-label">Balance Summary</span>
         </button>
       </div>
+    </div>
+    <!-- Employee Data -->
+    <div class="sb-group no-hover">
+      <a class="sb-group-hdr" href="index.html" style="text-decoration:none;font-size:13px;text-transform:none;letter-spacing:0;">
+        <span>&#128100;</span><span class="sb-label">Employee Data</span>
+      </a>
+    </div>
+    <!-- Job Tracker -->
+    <div class="sb-group no-hover">
+      <a class="sb-group-hdr" href="tracker.html" style="text-decoration:none;font-size:13px;text-transform:none;letter-spacing:0;">
+        <span>&#128736;</span><span class="sb-label">Job Tracker</span>
+      </a>
+    </div>
+    <!-- Submit to Account -->
+    <div class="sb-group no-hover">
+      <a class="sb-group-hdr" href="invoices.html" style="text-decoration:none;font-size:13px;text-transform:none;letter-spacing:0;">
+        <span>&#128196;</span><span class="sb-label">Submit to Account</span>
+      </a>
     </div>
   </nav>
   <div id="sb-footer">

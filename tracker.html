@@ -255,24 +255,10 @@ body.user-mode .admin-only { display: none !important; }
 <aside id="sidebar">
   <div id="sb-header">
     <img src="https://nour292.github.io/Nourdata/nour_energy_logo.png" alt="Logo" id="sb-logo">
-    <div id="sb-title">Nour Energy<small>HR System</small></div>
+    <div id="sb-title">Nour Energy<small>HR System &nbsp;·&nbsp; v1.1</small></div>
     <button id="sb-toggle" onclick="toggleSidebar()" aria-label="Toggle sidebar">&#9776;</button>
   </div>
   <nav id="sb-nav">
-
-    <!-- Employee Data -->
-    <div class="sb-group">
-      <button class="sb-group-hdr" id="btn-grp-emp" onclick="window.location.href='index.html'">
-        <span class="sb-icon">👤</span>
-        <span class="sb-label">Employee Data</span>
-      </button>
-      <div class="sb-group-items" id="grp-emp" style="display:none;">
-        <button class="sb-item" onclick="window.location.href='index.html'"><span class="sb-icon">🔎</span><span class="sb-label">Employee Search</span></button>
-        <button class="sb-item" onclick="window.location.href='index.html'"><span class="sb-icon">📊</span><span class="sb-label">Dashboard</span></button>
-        <button class="sb-item" onclick="window.location.href='index.html'"><span class="sb-icon">🔍</span><span class="sb-label">Deep Search</span></button>
-        <button class="sb-item" onclick="window.location.href='index.html'"><span class="sb-icon">📋</span><span class="sb-label">Smart Lists</span></button>
-      </div>
-    </div>
 
     <!-- Job Tracker -->
     <div class="sb-group">
@@ -287,6 +273,14 @@ body.user-mode .admin-only { display: none !important; }
         <button class="sb-item" id="sb-alljobs" onclick="setView('all')"><span class="sb-icon">📊</span><span class="sb-label">List of All Jobs</span></button>
         <button class="sb-item" onclick="openAddModal()"><span class="sb-icon">➕</span><span class="sb-label">Add New Job</span></button>
       </div>
+    </div>
+
+    <!-- Employee Data -->
+    <div class="sb-group">
+      <button class="sb-group-hdr" id="btn-grp-emp" onclick="window.location.href='index.html'">
+        <span class="sb-icon">👤</span>
+        <span class="sb-label">Employee Data</span>
+      </button>
     </div>
 
     <!-- Submit to Account -->

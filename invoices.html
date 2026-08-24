@@ -281,9 +281,22 @@ body.dark-mode .sug-item:hover{background:#1a2b3c!important;}
 <aside id="sidebar">
   <div id="sb-header">
     <img src="https://nour292.github.io/Nourdata/nour_energy_logo.png" alt="Logo" id="sb-logo">
-    <div id="sb-title">Nour Energy<small>HR System &nbsp;·&nbsp; v1.1</small></div>
+    <div id="sb-title">Nour Energy<small>HR System &nbsp;·&nbsp; v1.2</small></div>
   </div>
   <nav id="sb-nav">
+
+    <!-- Submit to Account -->
+    <div class="sb-group">
+      <div class="sb-group-hdr active-group" id="sb-sta-hdr" onclick="toggleSbGroup()" style="cursor:pointer;">
+        <span class="sb-icon">🧾</span>
+        <span class="sb-label">Submit to Account</span>
+        <span class="sb-chevron" id="sb-sta-chevron">▲</span>
+      </div>
+      <div class="sb-group-items sg-open" id="sb-sta-items">
+        <button class="sb-item active" id="sb-inv" onclick="setView('invoices')"><span class="sb-icon">🧾</span><span class="sb-label">Invoice List</span></button>
+        <button class="sb-item" id="sb-po" onclick="setView('pos')"><span class="sb-icon">📄</span><span class="sb-label">Purchase Orders</span></button>
+      </div>
+    </div>
 
     <!-- Employee Data -->
     <div class="sb-group">
@@ -299,19 +312,6 @@ body.dark-mode .sug-item:hover{background:#1a2b3c!important;}
         <span class="sb-icon">📌</span>
         <span class="sb-label">Job Tracker</span>
       </button>
-    </div>
-
-    <!-- Submit to Account -->
-    <div class="sb-group">
-      <div class="sb-group-hdr active-group" id="sb-sta-hdr" onclick="toggleSbGroup()" style="cursor:pointer;">
-        <span class="sb-icon">🧾</span>
-        <span class="sb-label">Submit to Account</span>
-        <span class="sb-chevron" id="sb-sta-chevron">▲</span>
-      </div>
-      <div class="sb-group-items sg-open" id="sb-sta-items">
-        <button class="sb-item active" id="sb-inv" onclick="setView('invoices')"><span class="sb-icon">🧾</span><span class="sb-label">Invoice List</span></button>
-        <button class="sb-item" id="sb-po" onclick="setView('pos')"><span class="sb-icon">📄</span><span class="sb-label">Purchase Orders</span></button>
-      </div>
     </div>
 
     <!-- Expenses Vouchers -->
