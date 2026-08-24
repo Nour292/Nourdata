@@ -286,7 +286,7 @@ body.dark-mode .max-emp-name{color:#e0e0e0!important;}
 <aside id="sidebar">
   <div id="sb-header">
     <img src="https://nour292.github.io/Nourdata/nour_energy_logo.png" alt="Logo" id="sb-logo">
-    <div id="sb-title">Nour Energy<small>HR System &nbsp;·&nbsp; v1.3</small></div>
+    <div id="sb-title">Nour Energy<small>HR System &nbsp;·&nbsp; v1.4</small></div>
     <button id="sb-toggle" onclick="toggleSidebar()" aria-label="Toggle sidebar">&#9776;</button>
   </div>
   <nav id="sb-nav">
@@ -957,7 +957,7 @@ function renderCard(job) {
   if(job.pafNewStatus) body+=fld('New Status',job.pafNewStatus);
   if(job.pafEffDate) body+=fld('Effective Date',fmtDisplay(job.pafEffDate));
   if(job.iqama) body+=fld('Iqama Expiry',fmtDisplay(job.iqama));
-  if(job.notes) body+=fld('Notes',job.notes);
+  if(job.notes) body+=fld('Notes',job.notes,'red');
   if(!body) body='<div style="color:#bbb;font-size:12px;text-align:center;padding:8px 0;">No details added</div>';
   if(job.createdAt) body+=`<div class="card-field" style="border-top:1px dashed #e0e8f0;margin-top:4px;"><span class="field-label" style="color:#aaa;">Created</span><span class="field-value" style="color:#aaa;font-size:11px;">${fmtDisplay(job.createdAt)}</span></div>`;
 
@@ -1037,7 +1037,7 @@ function buildMaxContent(job) {
   if(job.pafNewStatus) fields+=mfld('New Status',job.pafNewStatus);
   if(job.pafEffDate)  fields+=mfld('Effective Date',fmtDisplay(job.pafEffDate));
   if(job.iqama)       fields+=mfld('Iqama Expiry',fmtDisplay(job.iqama));
-  if(job.notes)       fields+=`<div class="max-field" style="grid-column:1/-1;"><span class="max-flabel">Notes</span><span class="max-fval">${escHtml(job.notes)}</span></div>`;
+  if(job.notes)       fields+=`<div class="max-field" style="grid-column:1/-1;"><span class="max-flabel">Notes</span><span class="max-fval red">${escHtml(job.notes)}</span></div>`;
   if(job.createdAt)   fields+=`<div class="max-field" style="grid-column:1/-1;"><span class="max-flabel" style="color:#aaa;">Created</span><span class="max-fval" style="color:#aaa;font-size:12px;">${fmtDisplay(job.createdAt)}</span></div>`;
 
   const holdHtml = getStatuses(job).includes('On Hold')&&job.holdReason ? `<div class="hold-reason" style="margin:12px 0;">⚠️ ${escHtml(job.holdReason)}</div>` : '';
