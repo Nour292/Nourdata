@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- NourData EEV Module v1.7 - Aug-2026 -->
+<!-- NourData EEV Module v1.8 - Aug-2026 -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -226,7 +226,7 @@ if (sessionStorage.getItem('ne_sb_collapsed') === '1') {
 <aside id="sidebar">
   <div id="sb-header">
     <img id="sb-logo" src="nour_energy_logo.png" alt="Nour Energy" onerror="this.style.display='none'">
-    <div id="sb-title">Nour Energy<small>Expense Voucher &nbsp;·&nbsp; v1.7</small></div>
+    <div id="sb-title">Nour Energy<small>Expense Voucher &nbsp;·&nbsp; v1.8</small></div>
     <button id="sb-toggle" onclick="toggleSidebar()" title="Toggle sidebar">&#9776;</button>
   </div>
   <nav id="sb-nav">
@@ -1037,29 +1037,51 @@ function printSection(sectionId) {
 function printLedger() {
   const empRaw  = document.getElementById('lg-emp').value.trim();
   const empNum  = empRaw.replace(/\s*—.*$/, '').trim();
-  const empName = empNum ? getEmpName(empNum) : '';
-  const from    = document.getElementById('lg-from').value;
-  const to      = document.getElementById('lg-to').value;
+  const empName = empNum ? getEmpName(empNum) : 'All Employees';
   const now     = new Date();
   const printDate = now.toLocaleDateString('en-GB', {day:'2-digit', month:'short', year:'numeric'});
 
-  const empLine  = empNum
-    ? `<div class="ph-line">Employee: <strong>${empNum} &mdash; ${empName}</strong></div>`
-    : `<div class="ph-line">Employee: <strong>All Employees</strong></div>`;
-  const dateLine = (from || to)
-    ? `<div class="ph-line">Date: <strong>${from || '—'} &nbsp;to&nbsp; ${to || '—'}</strong></div>`
-    : '';
-
+  // Auto-detect period from actual rendered rows (first-col dates)
   const tbl = document.getElementById('lg-table');
   const tblHTML = tbl ? tbl.outerHTML : '';
+  let minDate = null, maxDate = null;
+  if (tbl) {
+    tbl.querySelectorAll('tbody tr').forEach(tr => {
+      const cell = tr.querySelector('td');
+      if (!cell) return;
+      const raw = (cell.textContent || '').trim();
+      if (!raw) return;
+      // Try direct, then DD/MM/YYYY, then DD-MMM-YYYY
+      let d = new Date(raw);
+      if (isNaN(d)) {
+        const p = raw.split(/[\/\-]/);
+        if (p.length === 3) {
+          const mmap = {jan:0,feb:1,mar:2,apr:3,may:4,jun:5,jul:6,aug:7,sep:8,oct:9,nov:10,dec:11};
+          const mi = mmap[p[1].toLowerCase().slice(0,3)];
+          d = mi !== undefined ? new Date(+p[2], mi, +p[0]) : new Date(+p[2], +p[1]-1, +p[0]);
+        }
+      }
+      if (!isNaN(d)) {
+        if (!minDate || d < minDate) minDate = d;
+        if (!maxDate || d > maxDate) maxDate = d;
+      }
+    });
+  }
+  const fmtD = d => d ? d.toLocaleDateString('en-GB', {day:'2-digit', month:'short', year:'numeric'}) : '—';
+  const periodStr = (minDate || maxDate) ? `${fmtD(minDate)} - ${fmtD(maxDate)}` : '—';
 
   const html = `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>EEV Ledger</title>
 <style>
 @page{size:A4 portrait;margin:12mm 14mm 18mm;}
+@page{@top-right{content:counter(page);font-size:7pt;color:#888;}}
 *{box-sizing:border-box;margin:0;padding:0;}
 body{font-family:Arial,sans-serif;font-size:9pt;color:#111;}
-.ph-title{font-size:13pt;font-weight:700;text-align:center;margin-bottom:4px;}
-.ph-line{font-size:9pt;text-align:center;margin-bottom:2px;}
+.ph-header{margin-bottom:8px;}
+.ph-title{font-size:13pt;font-weight:700;margin-bottom:5px;}
+.ph-row{display:flex;align-items:baseline;gap:0;font-size:9pt;line-height:1.8;}
+.ph-label{width:140px;flex-shrink:0;}
+.ph-sep{width:20px;flex-shrink:0;text-align:center;}
+.ph-val{font-weight:600;}
 .ph-divider{border:none;border-top:2px solid #1a2b3c;margin:8px 0;}
 table{width:100%;border-collapse:collapse;margin-top:6px;}
 th{background:#1a2b3c;color:#fff;padding:5px 6px;font-size:8.5pt;text-align:left;}
@@ -1069,11 +1091,13 @@ tr:nth-child(even) td{background:#f5f8fc;}
 tfoot td{font-weight:700;background:#e8eef5;border-top:2px solid #1a2b3c;}
 .wf{font-weight:600;color:#1a7a3c;}
 .ev{font-weight:600;color:#a93226;}
-@page{@top-right{content:counter(page);font-size:7pt;color:#888;}}
 </style></head><body>
-<div class="ph-title">Expenses Voucher and Work Fund Ledger</div>
-${empLine}
-${dateLine}
+<div class="ph-header">
+  <div class="ph-title">Expenses Voucher and Work Fund Ledger</div>
+  <div class="ph-row"><span class="ph-label">Employee Number</span><span class="ph-sep">|</span><span class="ph-val">${empNum || '—'}</span></div>
+  <div class="ph-row"><span class="ph-label">Employee Name</span><span class="ph-sep">|</span><span class="ph-val">${empName}</span></div>
+  <div class="ph-row"><span class="ph-label">Period</span><span class="ph-sep">|</span><span class="ph-val">${periodStr}</span></div>
+</div>
 <hr class="ph-divider">
 ${tblHTML}
 <div style="text-align:right;margin-top:14px;padding-top:6px;border-top:1px solid #ccc;font-size:8pt;color:#444;line-height:1.7">
