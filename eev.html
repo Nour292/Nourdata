@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- NourData EEV Module v1.8 - Aug-2026 -->
+<!-- NourData EEV Module v1.9 - Aug-2026 -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -33,6 +33,7 @@ html,body{font-family:'Calibri',sans-serif;background:#f0f4f8;min-height:100vh;}
 .sb-group-hdr:hover{background:rgba(255,255,255,0.05);color:#fff;}
 .sb-arrow{margin-left:auto;font-size:10px;transition:transform 0.2s;}
 .sb-group-items{background:rgba(0,0,0,0.15);}
+#sb-nav .sb-group:not(.no-hover):hover .sb-group-items{display:block!important;}
 .sb-item{display:flex;align-items:center;gap:12px;padding:9px 16px 9px 28px;cursor:pointer;color:#b8cfe0;font-size:13px;font-weight:600;border:none;background:none;width:100%;text-align:left;white-space:nowrap;transition:background 0.15s,color 0.15s;text-decoration:none;}
 .sb-item:hover{background:rgba(255,255,255,0.07);color:#fff;}
 .sb-item.active{background:rgba(46,134,193,0.22);color:#fff;border-left:3px solid #2e86c1;}
@@ -226,14 +227,32 @@ if (sessionStorage.getItem('ne_sb_collapsed') === '1') {
 <aside id="sidebar">
   <div id="sb-header">
     <img id="sb-logo" src="nour_energy_logo.png" alt="Nour Energy" onerror="this.style.display='none'">
-    <div id="sb-title">Nour Energy<small>Expense Voucher &nbsp;·&nbsp; v1.8</small></div>
+    <div id="sb-title">Nour Energy<small>Expense Voucher &nbsp;·&nbsp; v1.9</small></div>
     <button id="sb-toggle" onclick="toggleSidebar()" title="Toggle sidebar">&#9776;</button>
   </div>
   <nav id="sb-nav">
-    <!-- EEV Group -->
+    <!-- Employee Data -->
+    <div class="sb-group no-hover">
+      <a class="sb-group-hdr" href="index.html" style="text-decoration:none;font-size:13px;text-transform:none;letter-spacing:0;">
+        <span>&#128100;</span><span class="sb-label">Employee Data</span>
+      </a>
+    </div>
+    <!-- Job Tracker -->
+    <div class="sb-group no-hover">
+      <a class="sb-group-hdr" href="tracker.html" style="text-decoration:none;font-size:13px;text-transform:none;letter-spacing:0;">
+        <span>&#128736;</span><span class="sb-label">Job Tracker</span>
+      </a>
+    </div>
+    <!-- Submit to Account -->
+    <div class="sb-group no-hover">
+      <a class="sb-group-hdr" href="invoices.html" style="text-decoration:none;font-size:13px;text-transform:none;letter-spacing:0;">
+        <span>&#128196;</span><span class="sb-label">Submit to Account</span>
+      </a>
+    </div>
+    <!-- Expenses Vouchers -->
     <div class="sb-group">
       <button class="sb-group-hdr" onclick="toggleGroup(this)">
-        <span>&#128196;</span><span class="sb-label">EEV Module</span>
+        <span>&#128196;</span><span class="sb-label">Expenses Vouchers</span>
         <span class="sb-arrow">&#9660;</span>
       </button>
       <div class="sb-group-items">
@@ -249,24 +268,6 @@ if (sessionStorage.getItem('ne_sb_collapsed') === '1') {
         <button class="sb-item" id="nav-balance" onclick="showSection('balance')">
           <span class="sb-icon">&#9878;</span><span class="sb-label">Balance Summary</span>
         </button>
-      </div>
-    </div>
-    <!-- Other Pages Group -->
-    <div class="sb-group">
-      <button class="sb-group-hdr" onclick="toggleGroup(this)">
-        <span>&#128279;</span><span class="sb-label">Other Pages</span>
-        <span class="sb-arrow">&#9660;</span>
-      </button>
-      <div class="sb-group-items">
-        <a class="sb-item" href="index.html">
-          <span class="sb-icon">&#128100;</span><span class="sb-label">Employee Data</span>
-        </a>
-        <a class="sb-item" href="tracker.html">
-          <span class="sb-icon">&#128736;</span><span class="sb-label">Job Tracker</span>
-        </a>
-        <a class="sb-item" href="invoices.html">
-          <span class="sb-icon">&#128196;</span><span class="sb-label">Submitted Invoices</span>
-        </a>
       </div>
     </div>
   </nav>
@@ -555,6 +556,7 @@ function toggleGroup(btn) {
   const hidden = items.style.display === 'none';
   items.style.display = hidden ? '' : 'none';
   if (arrow) arrow.style.transform = hidden ? '' : 'rotate(-90deg)';
+  if (hidden) btn.scrollIntoView({behavior:'smooth', block:'start'});
 }
 function showSection(name) {
   document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
