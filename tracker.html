@@ -109,7 +109,7 @@ body.sb-collapsed #main-content{margin-left:52px;}
 /* ── Cards ── */
 .job-card{background:#fff;border-radius:12px;box-shadow:0 2px 10px rgba(0,0,0,0.07);overflow:hidden;transition:transform 0.15s,box-shadow 0.15s;}
 .job-card:hover{transform:translateY(-2px);box-shadow:0 4px 16px rgba(0,0,0,0.12);}
-.card-top{padding:12px 14px 10px;border-bottom:1px solid #f0f4f8;}
+.card-top{padding:12px 14px 10px;border-bottom:1px solid #f0f4f8;position:relative;}
 .card-emp{display:flex;align-items:center;gap:8px;margin-bottom:6px;}
 .emp-badge{background:#1a2b3c;color:#fff;font-size:11px;font-weight:700;padding:2px 7px;border-radius:4px;}
 .emp-name{font-size:14px;font-weight:700;color:#1a2b3c;}
@@ -244,6 +244,37 @@ body.dark-mode #confirm-msg{color:#e0e0e0!important;}
 body.user-mode .tracker-delete-btn { display: none !important; }
 body.user-mode .admin-only { display: none !important; }
 @media print{#sidebar,#top-header,#smart-search-bar,#stats-bar,.card-footer-bar,#modal-overlay,#status-modal{display:none!important;}#main-content{margin-left:0!important;}.job-card{break-inside:avoid;border:1px solid #ddd;}}
+/* ── Maximize overlay ── */
+.card-max-btn{position:absolute;top:8px;right:8px;background:none;border:1px solid rgba(0,0,0,0.12);cursor:pointer;font-size:13px;color:#7a8c9a;padding:1px 6px;border-radius:5px;line-height:1.5;z-index:1;}
+.card-max-btn:hover{background:rgba(0,0,0,0.07);color:#2c3e50;}
+#job-max-overlay{display:none;position:fixed;left:220px;top:0;right:0;bottom:0;z-index:400;background:#f0f4f8;overflow-y:auto;padding:24px 32px;}
+body.sb-collapsed #job-max-overlay{left:52px;}
+#job-max-overlay.visible{display:block;}
+.max-card{background:#fff;border-radius:14px;padding:24px 28px;box-shadow:0 2px 14px rgba(0,0,0,0.09);}
+.max-top-row{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:20px;gap:12px;}
+.max-title-block{flex:1;}
+.max-emp-row{display:flex;align-items:center;gap:10px;margin-bottom:8px;}
+.max-emp-badge{background:#1a2b3c;color:#fff;font-size:14px;font-weight:700;padding:4px 10px;border-radius:5px;}
+.max-emp-name{font-size:20px;font-weight:700;color:#1a2b3c;}
+.max-type-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+.max-close-btn{background:#e74c3c;color:#fff;border:none;border-radius:8px;padding:8px 18px;font-size:14px;font-weight:700;cursor:pointer;white-space:nowrap;flex-shrink:0;}
+.max-close-btn:hover{background:#c0392b;}
+.max-fields{display:grid;grid-template-columns:1fr 1fr;gap:0 40px;}
+.max-field{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid #f0f4f8;font-size:14px;}
+.max-field:last-child{border-bottom:none;}
+.max-flabel{color:#5a7a9a;font-weight:600;}
+.max-fval{color:#1a2b3c;font-weight:500;text-align:right;}
+.max-fval.red{color:#e74c3c;font-weight:700;}
+.max-fval.highlight{color:#e67e22;font-weight:700;}
+.max-footer{display:flex;gap:10px;margin-top:20px;}
+.max-footer button{flex:1;padding:10px 0;font-size:14px;font-weight:700;border:none;border-radius:8px;cursor:pointer;transition:filter 0.15s;}
+.max-footer button:hover{filter:brightness(0.9);}
+body.dark-mode #job-max-overlay{background:#1a1a2e!important;}
+body.dark-mode .max-card{background:#1e2d3d!important;color:#e0e0e0!important;}
+body.dark-mode .max-field{border-color:#2a3d50!important;}
+body.dark-mode .max-flabel{color:#8fa8c0!important;}
+body.dark-mode .max-fval{color:#c8d8e8!important;}
+body.dark-mode .max-emp-name{color:#e0e0e0!important;}
 </style>
 </head>
 <body>
@@ -255,7 +286,7 @@ body.user-mode .admin-only { display: none !important; }
 <aside id="sidebar">
   <div id="sb-header">
     <img src="https://nour292.github.io/Nourdata/nour_energy_logo.png" alt="Logo" id="sb-logo">
-    <div id="sb-title">Nour Energy<small>HR System &nbsp;·&nbsp; v1.1</small></div>
+    <div id="sb-title">Nour Energy<small>HR System &nbsp;·&nbsp; v1.2</small></div>
     <button id="sb-toggle" onclick="toggleSidebar()" aria-label="Toggle sidebar">&#9776;</button>
   </div>
   <nav id="sb-nav">
@@ -945,6 +976,7 @@ function renderCard(job) {
 
   return `<div class="job-card">
     <div class="card-top">
+      <button class="card-max-btn" onclick="maximizeCard('${job.id}')" title="Maximize">&#x26F6;</button>
       <div class="card-emp"><span class="emp-badge">${escHtml(job.empNum)}</span><span class="emp-name">${escHtml(job.empName)}</span></div>
       <div class="card-type-row">
         <span class="job-type-badge ${tc}">${escHtml(job.type)}</span>
@@ -953,6 +985,92 @@ function renderCard(job) {
     </div>
     <div class="card-body">${body}</div>
     ${holdHtml}${footer}
+  </div>`;
+}
+
+function maximizeCard(id) {
+  const job = jobs.find(j => j.id === id);
+  if (!job) return;
+  const ov = document.getElementById('job-max-overlay');
+  ov.innerHTML = buildMaxContent(job);
+  ov.classList.add('visible');
+  ov.scrollTop = 0;
+}
+
+function minimizeCard() {
+  document.getElementById('job-max-overlay').classList.remove('visible');
+}
+
+function buildMaxContent(job) {
+  const tc  = typeCls(job.type);
+  const sc  = statusCls(job);
+  const statuses = getStatuses(job);
+  const statusHtml = statuses.length
+    ? statuses.map(sv => {
+        const sc2 = sv==='On Hold'?'s-hold':sv==='Done & Closed'?'s-done':'s-inprogress';
+        const si2 = (STATUS_LIST.find(x=>x.val===sv)||{icon:'📋'}).icon;
+        return `<span class="status-dot ${sc2}"></span><span class="status-text ${sc2}">${si2} ${escHtml(sv)}</span>`;
+      }).join(' ')
+    : '<span class="status-dot" style="background:#ccc"></span><span class="status-text" style="color:#aaa">No Status</span>';
+
+  function mfld(label, val, cls='') {
+    if (!val) return '';
+    return `<div class="max-field"><span class="max-flabel">${label}</span><span class="max-fval ${cls}">${escHtml(String(val))}</span></div>`;
+  }
+
+  let fields = '';
+  if(job.leaveDate){const lbl=job.type==='Resignation'?'Resignation Date':job.type==='Termination'?'Termination Date':job.type==='Resign & Rejoin'?'Resign & Rejoin Date':'Start Vacation Date';fields+=mfld(lbl,fmtDisplay(job.leaveDate));}
+  if(job.returnDate)  fields+=mfld('Vacation End Date',fmtDisplay(job.returnDate));
+  if(job.actualReturn) fields+=mfld('Arrival Date',fmtDisplay(job.actualReturn),'highlight');
+  if(job.days)        fields+=mfld('Days',job.days);
+  if(job.depTicket)   fields+=mfld('Departure Ticket',fmtDisplay(job.depTicket));
+  if(job.arrTicket)   fields+=mfld('Arrival Ticket',fmtDisplay(job.arrTicket));
+  if(job.lastDay)     fields+=mfld('Last Working Day',fmtDisplay(job.lastDay),'red');
+  if(job.encashType)  fields+=mfld('Encashment Type',job.encashType,'highlight');
+  if(job.reentry)     fields+=mfld('Reentry Visa',job.reentry,'highlight');
+  if(job.visaExpiry)  fields+=mfld('Visa Expiry',fmtDisplay(job.visaExpiry));
+  if(job.extDate)     fields+=mfld('Extension To',fmtDisplay(job.extDate));
+  if(job.extDays)     fields+=mfld('Ext. Days',job.extDays);
+  if(job.housingStart) fields+=mfld('Housing Start',fmtDisplay(job.housingStart));
+  if(job.housingEnd)  fields+=mfld('Housing End',fmtDisplay(job.housingEnd));
+  if(job.pafOldStatus) fields+=mfld('Old Status',job.pafOldStatus);
+  if(job.pafNewStatus) fields+=mfld('New Status',job.pafNewStatus);
+  if(job.pafEffDate)  fields+=mfld('Effective Date',fmtDisplay(job.pafEffDate));
+  if(job.iqama)       fields+=mfld('Iqama Expiry',fmtDisplay(job.iqama));
+  if(job.notes)       fields+=`<div class="max-field" style="grid-column:1/-1;"><span class="max-flabel">Notes</span><span class="max-fval">${escHtml(job.notes)}</span></div>`;
+  if(job.createdAt)   fields+=`<div class="max-field" style="grid-column:1/-1;"><span class="max-flabel" style="color:#aaa;">Created</span><span class="max-fval" style="color:#aaa;font-size:12px;">${fmtDisplay(job.createdAt)}</span></div>`;
+
+  const holdHtml = getStatuses(job).includes('On Hold')&&job.holdReason ? `<div class="hold-reason" style="margin:12px 0;">⚠️ ${escHtml(job.holdReason)}</div>` : '';
+
+  const footer = job.status!=='Done & Closed'
+    ? `<div class="max-footer">
+        <button class="card-action-btn btn-edit" onclick="minimizeCard();openEditModal('${job.id}')">✏️ Edit</button>
+        <button class="card-action-btn btn-update-status" onclick="minimizeCard();openStatusModal('${job.id}')">🔄 Status</button>
+        <button class="card-action-btn btn-complete" onclick="minimizeCard();quickComplete('${job.id}')">✅ Done</button>
+        <button class="card-action-btn tracker-delete-btn" style="background:#e74c3c;color:#fff;flex:0.5;" onclick="minimizeCard();deleteJob('${job.id}')">🗑</button>
+       </div>`
+    : `<div class="max-footer">
+        <button class="card-action-btn btn-edit" onclick="minimizeCard();openEditModal('${job.id}')">👁 View</button>
+        <button class="card-action-btn tracker-delete-btn" style="background:#e74c3c;color:#fff;" onclick="minimizeCard();deleteJob('${job.id}')">🗑 Delete</button>
+       </div>`;
+
+  return `<div class="max-card">
+    <div class="max-top-row">
+      <div class="max-title-block">
+        <div class="max-emp-row">
+          <span class="emp-badge max-emp-badge">${escHtml(job.empNum)}</span>
+          <span class="max-emp-name">${escHtml(job.empName)}</span>
+        </div>
+        <div class="max-type-row">
+          <span class="job-type-badge ${tc}">${escHtml(job.type)}</span>
+          ${statusHtml}
+        </div>
+      </div>
+      <button class="max-close-btn" onclick="minimizeCard()">&#x26F6; Minimize</button>
+    </div>
+    ${holdHtml}
+    <div class="max-fields">${fields}</div>
+    ${footer}
   </div>`;
 }
 
@@ -1567,5 +1685,9 @@ async function doAdminLogin() {
     </div>
   </div>
 </div>
+
+<!-- ── Maximize overlay ── -->
+<div id="job-max-overlay"></div>
+
 </body>
 </html>
