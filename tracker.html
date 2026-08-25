@@ -77,17 +77,17 @@ body.sb-collapsed #main-content{margin-left:52px;}
 .stat-label{font-size:11px;color:#888;margin-top:3px;font-weight:600;}
 
 /* ── Smart Search Bar ── */
-#smart-search-bar{background:#fff;border-radius:12px;padding:12px 16px;margin-bottom:18px;box-shadow:0 1px 8px rgba(0,0,0,0.08);border:1px solid #e0e8f0;display:flex;align-items:center;gap:10px;}
-#ssb-icon{font-size:16px;color:#5a7a9a;flex-shrink:0;}
-#filter-search{flex:1;min-width:0;border:1.5px solid #d0dce8;border-radius:8px;padding:9px 14px;font-size:14px;font-family:'Calibri',sans-serif;background:#f7fafd;outline:none;transition:border-color 0.2s,box-shadow 0.2s;}
+#smart-search-bar{background:#fff;border-radius:12px;padding:10px 12px;margin-bottom:18px;box-shadow:0 1px 8px rgba(0,0,0,0.08);border:1px solid #e0e8f0;display:flex;align-items:center;gap:6px;flex-wrap:nowrap;overflow:visible;}
+#ssb-icon{font-size:15px;color:#5a7a9a;flex-shrink:0;}
+#filter-search{flex:1;min-width:0;max-width:200px;border:1.5px solid #d0dce8;border-radius:8px;padding:7px 10px;font-size:12px;font-family:'Calibri',sans-serif;background:#f7fafd;outline:none;transition:border-color 0.2s,box-shadow 0.2s;}
 #filter-search:focus{border-color:#2e86c1;background:#fff;box-shadow:0 0 0 3px rgba(46,134,193,0.12);}
-#filter-type{border:1.5px solid #d0dce8;border-radius:8px;padding:9px 12px;font-size:13px;font-family:'Calibri',sans-serif;background:#f7fafd;color:#1a2b3c;outline:none;cursor:pointer;flex-shrink:0;transition:border-color 0.2s;}
+#filter-type{border:1.5px solid #d0dce8;border-radius:8px;padding:7px 8px;font-size:12px;font-family:'Calibri',sans-serif;background:#f7fafd;color:#1a2b3c;outline:none;cursor:pointer;flex-shrink:0;transition:border-color 0.2s;}
 #filter-type:focus{border-color:#2e86c1;}
-#filter-location{border:1.5px solid #d0dce8;border-radius:8px;padding:9px 12px;font-size:13px;font-family:'Calibri',sans-serif;background:#f7fafd;color:#1a2b3c;outline:none;cursor:pointer;flex-shrink:0;transition:border-color 0.2s;}
+#filter-location{border:1.5px solid #d0dce8;border-radius:8px;padding:7px 8px;font-size:12px;font-family:'Calibri',sans-serif;background:#f7fafd;color:#1a2b3c;outline:none;cursor:pointer;flex-shrink:0;transition:border-color 0.2s;}
 #filter-location:focus{border-color:#2e86c1;}
-#all-sort-by{display:none;border:1.5px solid #2e86c1;border-radius:8px;padding:9px 12px;font-size:13px;font-family:'Calibri',sans-serif;background:#eaf4fb;color:#1a2b3c;outline:none;cursor:pointer;flex-shrink:0;transition:border-color 0.2s;}
+#all-sort-by{display:none;border:1.5px solid #2e86c1;border-radius:8px;padding:7px 8px;font-size:12px;font-family:'Calibri',sans-serif;background:#eaf4fb;color:#1a2b3c;outline:none;cursor:pointer;flex-shrink:0;transition:border-color 0.2s;}
 #all-sort-by:focus{border-color:#1a6fa8;}
-#ssb-clear-btn{display:none;align-items:center;gap:5px;padding:8px 14px;border:1.5px solid #e0e8f0;border-radius:8px;background:#fff;color:#888;font-size:13px;font-weight:600;font-family:'Calibri',sans-serif;cursor:pointer;white-space:nowrap;transition:all 0.15s;flex-shrink:0;}
+#ssb-clear-btn{display:none;align-items:center;gap:4px;padding:6px 10px;border:1.5px solid #e0e8f0;border-radius:8px;background:#fff;color:#888;font-size:12px;font-weight:600;font-family:'Calibri',sans-serif;cursor:pointer;white-space:nowrap;transition:all 0.15s;flex-shrink:0;}
 #ssb-clear-btn:hover{border-color:#e74c3c;color:#e74c3c;background:#fff8f8;}
 
 /* ── All Jobs table view ── */
@@ -389,11 +389,11 @@ body.dark-mode .max-emp-name{color:#e0e0e0!important;}
         <option value="actualReturn">↓ Arrival Date</option>
         <option value="lastDay">↓ Last Working Day</option>
       </select>
-      <span id="arr-date-filter" style="display:none;align-items:center;gap:4px;flex-shrink:0;">
+      <span id="arr-date-filter" style="display:none;align-items:center;gap:3px;flex-shrink:0;">
         <span style="font-size:11px;font-weight:700;color:#5a7a9a;white-space:nowrap;">Arrival:</span>
-        <input type="date" id="filter-arr-from" title="Arrival Date From" onchange="onArrDateChange()" style="border:1.5px solid #d0dce8;border-radius:8px;padding:7px 8px;font-size:12px;font-family:'Calibri',sans-serif;background:#f7fafd;color:#1a2b3c;outline:none;cursor:pointer;">
+        <input type="date" id="filter-arr-from" title="Arrival Date From" onchange="onArrDateChange()" style="border:1.5px solid #d0dce8;border-radius:8px;padding:5px 5px;font-size:11px;font-family:'Calibri',sans-serif;background:#f7fafd;color:#1a2b3c;outline:none;cursor:pointer;max-width:130px;">
         <span style="font-size:11px;color:#888;">—</span>
-        <input type="date" id="filter-arr-to" title="Arrival Date To" onchange="onArrDateChange()" style="border:1.5px solid #d0dce8;border-radius:8px;padding:7px 8px;font-size:12px;font-family:'Calibri',sans-serif;background:#f7fafd;color:#1a2b3c;outline:none;cursor:pointer;">
+        <input type="date" id="filter-arr-to" title="Arrival Date To" onchange="onArrDateChange()" style="border:1.5px solid #d0dce8;border-radius:8px;padding:5px 5px;font-size:11px;font-family:'Calibri',sans-serif;background:#f7fafd;color:#1a2b3c;outline:none;cursor:pointer;max-width:130px;">
       </span>
       <button id="ssb-clear-btn" onclick="clearSmartSearch()" title="Clear">✕ Clear</button>
     </div>
