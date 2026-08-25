@@ -64,6 +64,7 @@ body.sb-collapsed #main-content{margin-left:52px;}
 .hdr-btn:hover{filter:brightness(1.1);}
 .btn-add{background:#2e86c1;color:#fff;}
 .btn-print{background:#117a65;color:#fff;}
+.btn-copy{background:#6c5ce7;color:#fff;}
 #page-body{padding:20px 24px;flex:1;}
 
 /* ── Stats ── */
@@ -347,6 +348,7 @@ body.dark-mode .max-emp-name{color:#e0e0e0!important;}
     <div id="page-title">📋 Active Jobs</div>
     <div id="header-actions">
       <button class="hdr-btn btn-add" onclick="openAddModal()">➕ Add Job</button>
+      <button class="hdr-btn btn-copy" id="hdr-copy-btn" style="display:none;" onclick="copyAllJobsTable()">📋 Copy</button>
       <button class="hdr-btn btn-print" onclick="window.print()">🖨 Print</button>
     </div>
   </div>
@@ -387,6 +389,12 @@ body.dark-mode .max-emp-name{color:#e0e0e0!important;}
         <option value="actualReturn">↓ Arrival Date</option>
         <option value="lastDay">↓ Last Working Day</option>
       </select>
+      <span id="arr-date-filter" style="display:none;align-items:center;gap:4px;flex-shrink:0;">
+        <span style="font-size:11px;font-weight:700;color:#5a7a9a;white-space:nowrap;">Arrival:</span>
+        <input type="date" id="filter-arr-from" title="Arrival Date From" onchange="onArrDateChange()" style="border:1.5px solid #d0dce8;border-radius:8px;padding:7px 8px;font-size:12px;font-family:'Calibri',sans-serif;background:#f7fafd;color:#1a2b3c;outline:none;cursor:pointer;">
+        <span style="font-size:11px;color:#888;">—</span>
+        <input type="date" id="filter-arr-to" title="Arrival Date To" onchange="onArrDateChange()" style="border:1.5px solid #d0dce8;border-radius:8px;padding:7px 8px;font-size:12px;font-family:'Calibri',sans-serif;background:#f7fafd;color:#1a2b3c;outline:none;cursor:pointer;">
+      </span>
       <button id="ssb-clear-btn" onclick="clearSmartSearch()" title="Clear">✕ Clear</button>
     </div>
     <div id="loading-indicator" style="display:none;text-align:center;padding:40px;color:#888;font-size:15px;">⏳ Loading jobs from Google Sheets...</div>
@@ -707,6 +715,8 @@ function clearSmartSearch() {
   document.getElementById('filter-location').value = '';
   const sortEl = document.getElementById('all-sort-by');
   if (sortEl) sortEl.value = '';
+  const af = document.getElementById('filter-arr-from'); if (af) af.value = '';
+  const at = document.getElementById('filter-arr-to');   if (at) at.value = '';
   updateClearBtn();
   filterLocation('All');
 }
@@ -715,8 +725,15 @@ function updateClearBtn() {
   const hasSearch = document.getElementById('filter-search').value   !== '';
   const hasType   = document.getElementById('filter-type').value     !== '';
   const hasLoc    = document.getElementById('filter-location').value !== '';
+  const hasArrFrom = (document.getElementById('filter-arr-from')?.value||'') !== '';
+  const hasArrTo   = (document.getElementById('filter-arr-to')?.value||'')   !== '';
   const btn = document.getElementById('ssb-clear-btn');
-  btn.style.display = (hasSearch || hasType || hasLoc) ? 'flex' : 'none';
+  btn.style.display = (hasSearch || hasType || hasLoc || hasArrFrom || hasArrTo) ? 'flex' : 'none';
+}
+
+function onArrDateChange() {
+  updateClearBtn();
+  renderAllJobsTable();
 }
 
 function onLocationDropdown() {
@@ -733,6 +750,10 @@ function setView(v) {
   document.getElementById('sb-alljobs').classList.toggle('active', v==='all');
   const sortEl = document.getElementById('all-sort-by');
   if (sortEl) sortEl.style.display = v === 'all' ? 'inline-block' : 'none';
+  const arrFilter = document.getElementById('arr-date-filter');
+  if (arrFilter) arrFilter.style.display = v === 'all' ? 'flex' : 'none';
+  const copyBtn = document.getElementById('hdr-copy-btn');
+  if (copyBtn) copyBtn.style.display = v === 'all' ? 'flex' : 'none';
   if (v === 'all') { renderAllJobsTable(); return; }
   document.getElementById('jobs-container').innerHTML = '';
   renderJobs();
@@ -777,6 +798,11 @@ function renderAllJobsTable() {
   const sortBy = document.getElementById('all-sort-by')?.value || '';
   const pd = s => parseDate(s) || new Date(0);
 
+  const arrFromStr = document.getElementById('filter-arr-from')?.value || '';
+  const arrToStr   = document.getElementById('filter-arr-to')?.value   || '';
+  const arrFromMs  = arrFromStr ? new Date(arrFromStr).setHours(0,0,0,0)       : null;
+  const arrToMs    = arrToStr   ? new Date(arrToStr).setHours(23,59,59,999)     : null;
+
   let filtered = jobs.filter(j => {
     if (locF !== 'All' && j.location !== locF) return false;
     if (search) {
@@ -785,6 +811,15 @@ function renderAllJobsTable() {
       if (!nm && !nu) return false;
     }
     if (typeF && j.type !== typeF) return false;
+    if (arrFromMs !== null || arrToMs !== null) {
+      const arrDate = parseDate(j.actualReturn);
+      if (arrDate) {
+        const arrMs = arrDate.getTime();
+        if (arrFromMs !== null && arrMs < arrFromMs) return false;
+        if (arrToMs   !== null && arrMs > arrToMs)   return false;
+      }
+      // no arrival date → always include
+    }
     return true;
   });
 
@@ -843,6 +878,47 @@ function renderAllJobsTable() {
     <p style="font-size:12px;color:#888;margin-top:8px;">${filtered.length} job${filtered.length!==1?'s':''} total</p>
   </div>`;
   applyAccessLevel();
+}
+
+function copyAllJobsTable() {
+  const wrap = document.getElementById('all-jobs-table-wrap');
+  const tbl  = wrap ? wrap.querySelector('table') : null;
+  if (!tbl) { showToast('Nothing to copy', 'err'); return; }
+
+  const th = 'padding:4px 8px;border:1px solid #000;font-family:Calibri,sans-serif;font-size:10pt;font-weight:bold;vertical-align:top;';
+  const td = 'padding:4px 8px;border:1px solid #000;font-family:Calibri,sans-serif;font-size:10pt;vertical-align:top;';
+
+  const rows = [...tbl.querySelectorAll('tr')];
+  const html = '<table border="1" cellpadding="0" cellspacing="0" style="border-collapse:collapse;font-family:Calibri,sans-serif;font-size:10pt;">' +
+    rows.map(tr => {
+      const cells = [...tr.querySelectorAll('th,td')];
+      // Skip the last cell if it's an action button column (contains a button)
+      const hasBtnOnly = (c) => c.querySelector('button') && !(c.innerText||c.textContent).trim();
+      return '<tr>' + cells.filter(c => !hasBtnOnly(c)).map(c => {
+        const t = (c.innerText || c.textContent).trim();
+        return c.tagName === 'TH'
+          ? `<th style="${th}">${t}</th>`
+          : `<td style="${td}">${t}</td>`;
+      }).join('') + '</tr>';
+    }).join('') + '</table>';
+
+  const plain = rows.map(tr =>
+    [...tr.querySelectorAll('th,td')]
+      .filter(c => !(c.querySelector('button') && !(c.innerText||c.textContent).trim()))
+      .map(c => (c.innerText||c.textContent).trim())
+      .join('\t')
+  ).join('\n');
+
+  try {
+    navigator.clipboard.write([new ClipboardItem({
+      'text/html':  new Blob([html],  {type:'text/html'}),
+      'text/plain': new Blob([plain], {type:'text/plain'})
+    })]).then(() => showToast('Table copied ✓')).catch(() => {
+      navigator.clipboard.writeText(plain).then(() => showToast('Copied as text ✓'));
+    });
+  } catch(e) {
+    navigator.clipboard.writeText(plain).then(() => showToast('Copied as text ✓'));
+  }
 }
 
 const STATUS_LIST = [
