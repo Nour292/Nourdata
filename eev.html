@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- NourData EEV Module v2.6 - Aug-2026 -->
+<!-- NourData EEV Module v2.7 - Aug-2026 -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -266,7 +266,7 @@ if (sessionStorage.getItem('ne_sb_collapsed') === '1') {
 <aside id="sidebar">
   <div id="sb-header">
     <img id="sb-logo" src="nour_energy_logo.png" alt="Nour Energy" onerror="this.style.display='none'">
-    <div id="sb-title">Nour Energy<small>Expense Voucher &nbsp;·&nbsp; v2.6</small></div>
+    <div id="sb-title">Nour Energy<small>Expense Voucher &nbsp;·&nbsp; v2.7</small></div>
     <button id="sb-toggle" onclick="toggleSidebar()" title="Toggle sidebar">&#9776;</button>
   </div>
   <nav id="sb-nav">
@@ -1547,7 +1547,9 @@ async function saveSntBulk() {
   if (saved) {
     closeSntBulk();
     sentLoaded = false; sntGenerated = false; sntDisplayRows = []; sntLedgeData = [];
-    await sntGenerate();
+    document.getElementById('snt-tbody').innerHTML = '';
+    document.getElementById('snt-count').textContent = '';
+    await loadSentBatches();
   }
 }
 
