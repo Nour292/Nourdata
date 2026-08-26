@@ -287,7 +287,7 @@ body.dark-mode .max-emp-name{color:#e0e0e0!important;}
 <aside id="sidebar">
   <div id="sb-header">
     <img src="https://nour292.github.io/Nourdata/nour_energy_logo.png" alt="Logo" id="sb-logo">
-    <div id="sb-title">Nour Energy<small>HR System &nbsp;·&nbsp; v1.7</small></div>
+    <div id="sb-title">Nour Energy<small>HR System &nbsp;·&nbsp; v1.8</small></div>
     <button id="sb-toggle" onclick="toggleSidebar()" aria-label="Toggle sidebar">&#9776;</button>
   </div>
   <nav id="sb-nav">
@@ -620,10 +620,28 @@ function saveJobs() {
   const snapshot = JSON.stringify(jobs);
   saveQueue = saveQueue.then(async () => {
     localStorage.setItem('ne_tracker_jobs', snapshot);
-    showToast('Saved ✓');
     try {
-      await fetch(GS_WRITE_URL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain' }, body: JSON.stringify({ action: 'saveJobs', jobs: JSON.parse(snapshot) }) });
-    } catch(e) { console.error('Sheets sync error:', e); }
+      const payload = JSON.parse(snapshot);
+      // Normalize status: always send as string to Apps Script
+      payload.forEach(j => { if (Array.isArray(j.status)) j.status = j.status.join(', '); });
+      const res = await fetch(GS_WRITE_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain' },
+        body: JSON.stringify({ action: 'saveJobs', jobs: payload })
+      });
+      const text = await res.text();
+      let resp;
+      try { resp = JSON.parse(text); } catch(e) { resp = {}; }
+      if (resp && resp.status === 'ok') {
+        showToast('Saved ✓');
+      } else {
+        showToast('Sheet sync failed: ' + (resp.message || text || 'unknown error'), 'err');
+        console.error('saveJobs response:', text);
+      }
+    } catch(e) {
+      showToast('Sheet sync error — saved locally only', 'err');
+      console.error('Sheets sync error:', e);
+    }
   });
   return saveQueue;
 }
