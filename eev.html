@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- NourData EEV Module v2.7 - Aug-2026 -->
+<!-- NourData EEV Module v2.8 - Aug-2026 -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -74,6 +74,10 @@ body.sb-collapsed #main-content{margin-left:52px;}
 /* ── EEV Sent: search bar ── */
 #snt-search-wrap{display:flex;align-items:center;gap:8px;background:#fff;border:1.5px solid #d0dce8;border-radius:8px;padding:7px 12px;margin-bottom:12px;box-shadow:0 1px 4px rgba(0,0,0,0.04);}
 body.dark-mode #snt-search-wrap{background:#162232;border-color:#2a4060;}
+body.dark-mode #snt-batch-inp{background:#1e3048 !important;border-color:#2a4060 !important;color:#e0e8f0 !important;}
+body.dark-mode .snt-ms-panel{background:#1e3048;border-color:#2a4060;color:#e0e8f0;}
+body.dark-mode .snt-ms-opt{color:#e0e8f0;}
+body.dark-mode .snt-ms-opt:hover{background:#162232;}
 #snt-search-wrap input{flex:1;border:none;outline:none;font-size:13px;background:transparent;color:#1a2b3c;font-family:'Calibri',sans-serif;}
 body.dark-mode #snt-search-wrap input{color:#e0e8f0;}
 #snt-search-wrap input::placeholder{color:#a0b4c8;}
@@ -266,7 +270,7 @@ if (sessionStorage.getItem('ne_sb_collapsed') === '1') {
 <aside id="sidebar">
   <div id="sb-header">
     <img id="sb-logo" src="nour_energy_logo.png" alt="Nour Energy" onerror="this.style.display='none'">
-    <div id="sb-title">Nour Energy<small>Expense Voucher &nbsp;·&nbsp; v2.7</small></div>
+    <div id="sb-title">Nour Energy<small>Expense Voucher &nbsp;·&nbsp; v2.8</small></div>
     <button id="sb-toggle" onclick="toggleSidebar()" title="Toggle sidebar">&#9776;</button>
   </div>
   <nav id="sb-nav">
