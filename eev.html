@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- NourData EEV Module v2.8 - Aug-2026 -->
+<!-- NourData EEV Module v2.9 - Aug-2026 -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -270,7 +270,7 @@ if (sessionStorage.getItem('ne_sb_collapsed') === '1') {
 <aside id="sidebar">
   <div id="sb-header">
     <img id="sb-logo" src="nour_energy_logo.png" alt="Nour Energy" onerror="this.style.display='none'">
-    <div id="sb-title">Nour Energy<small>Expense Voucher &nbsp;·&nbsp; v2.8</small></div>
+    <div id="sb-title">Nour Energy<small>Expense Voucher &nbsp;·&nbsp; v2.9</small></div>
     <button id="sb-toggle" onclick="toggleSidebar()" title="Toggle sidebar">&#9776;</button>
   </div>
   <nav id="sb-nav">
@@ -335,7 +335,7 @@ if (sessionStorage.getItem('ne_sb_collapsed') === '1') {
       <div id="snt-header-actions" style="display:none;align-items:center;gap:8px;">
         <button class="hdr-btn btn-bulk-add" onclick="openSntBulk()">&#43; Bulk Add</button>
         <button class="hdr-btn btn-copy" onclick="copyTable('snt-table')">&#128203; Copy</button>
-        <button class="hdr-btn btn-excel" onclick="exportTable('snt-table',getSntExportName())">&#128196; Excel</button>
+        <button class="hdr-btn btn-excel" onclick="exportSntTable()">&#128196; Excel</button>
         <button class="hdr-btn btn-pdf" onclick="printSentTable()">&#128438; PDF</button>
       </div>
     </div>
@@ -1571,18 +1571,28 @@ function printSentTable() {
     showToast('No data to print — use Search or Generate first', 'info'); return;
   }
   const title   = getSntExportName();
+  const now     = new Date();
+  const dateStr = now.toLocaleDateString('en-GB', {day:'2-digit', month:'short', year:'numeric'});
   const printTbl = `<table><thead>${thead.innerHTML}</thead><tbody>${tbody.innerHTML}</tbody></table>`;
   const pw = window.open('', '_blank');
   pw.document.write(`<!DOCTYPE html><html><head><title>${title}</title>
   <style>
-  body{font-family:Calibri,sans-serif;font-size:11pt;margin:15mm;}
+  body{font-family:Calibri,sans-serif;font-size:11pt;margin:15mm 15mm 25mm 15mm;}
   table{width:100%;border-collapse:collapse;margin-top:6px;}
   th,td{border:1px solid #999;padding:4px 8px;}
   th{background:#1a2b3c;color:#fff;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
   .num{text-align:right;}
   td[style*="color:#888"]{color:#888!important;}
   .no-data{display:none;}
+  .print-hdr{position:fixed;top:0;right:0;font-size:9pt;color:#555;padding:4px 0;}
+  .print-ftr{position:fixed;bottom:0;left:0;right:0;border-top:1px solid #bbb;display:flex;justify-content:space-between;font-size:9pt;color:#555;padding:4px 0;}
+  @page{counter-increment:page;margin:15mm 15mm 25mm 15mm;}
   </style></head><body>
+  <div class="print-hdr">Page <span id="pgn"></span></div>
+  <div class="print-ftr">
+    <span>Prepared by: Qasim</span>
+    <span>Date: ${dateStr}</span>
+  </div>
   <h3 style="margin-bottom:4px;">${title}</h3>
   ${printTbl}
   </body></html>`);
@@ -1607,6 +1617,26 @@ function exportTable(tableId, filename) {
   const url  = URL.createObjectURL(blob);
   const a    = document.createElement('a');
   a.href = url; a.download = filename + '.csv'; a.click();
+  URL.revokeObjectURL(url);
+}
+
+function exportSntTable() {
+  const tbl = document.getElementById('snt-table');
+  if (!tbl) return;
+  const rows = [...tbl.querySelectorAll('tr')];
+  const dateStr = new Date().toLocaleDateString('en-GB', {day:'2-digit', month:'short', year:'numeric'});
+  const data = rows.map(tr =>
+    [...tr.querySelectorAll('th,td')].map(td => {
+      const t = (td.innerText || td.textContent).replace(/"/g, '""').trim();
+      return `"${t}"`;
+    }).join(',')
+  );
+  data.push('');
+  data.push(`"Prepared by: Qasim","Date: ${dateStr}"`);
+  const blob = new Blob(['﻿' + data.join('\n')], {type:'text/csv;charset=utf-8;'});
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href = url; a.download = getSntExportName() + '.csv'; a.click();
   URL.revokeObjectURL(url);
 }
 
