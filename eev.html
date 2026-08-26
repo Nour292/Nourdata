@@ -227,7 +227,7 @@ if (sessionStorage.getItem('ne_sb_collapsed') === '1') {
 <aside id="sidebar">
   <div id="sb-header">
     <img id="sb-logo" src="nour_energy_logo.png" alt="Nour Energy" onerror="this.style.display='none'">
-    <div id="sb-title">Nour Energy<small>Expense Voucher &nbsp;·&nbsp; v2.1</small></div>
+    <div id="sb-title">Nour Energy<small>Expense Voucher &nbsp;·&nbsp; v2.2</small></div>
     <button id="sb-toggle" onclick="toggleSidebar()" title="Toggle sidebar">&#9776;</button>
   </div>
   <nav id="sb-nav">
@@ -241,11 +241,14 @@ if (sessionStorage.getItem('ne_sb_collapsed') === '1') {
         <button class="sb-item active" id="nav-form" onclick="showSection('form')">
           <span class="sb-icon">&#128221;</span><span class="sb-label">EEV Form</span>
         </button>
-        <button class="sb-item" id="nav-ledger" onclick="showSection('ledger')">
-          <span class="sb-icon">&#128202;</span><span class="sb-label">EEV Ledger</span>
-        </button>
         <button class="sb-item" id="nav-statement" onclick="showSection('statement')">
           <span class="sb-icon">&#128203;</span><span class="sb-label">Employee Statement</span>
+        </button>
+        <button class="sb-item" id="nav-sent" onclick="showSection('sent')">
+          <span class="sb-icon">&#9989;</span><span class="sb-label">EEV Sent Account</span>
+        </button>
+        <button class="sb-item" id="nav-ledger" onclick="showSection('ledger')">
+          <span class="sb-icon">&#128202;</span><span class="sb-label">EEV Ledger</span>
         </button>
         <button class="sb-item" id="nav-balance" onclick="showSection('balance')">
           <span class="sb-icon">&#9878;</span><span class="sb-label">Balance Summary</span>
@@ -494,6 +497,65 @@ if (sessionStorage.getItem('ne_sb_collapsed') === '1') {
       </div>
     </div><!-- /sec-balance -->
 
+    <!-- ────────── SECTION: EEV SENT ACCOUNT ────────── -->
+    <div id="sec-sent" class="section">
+      <div class="filter-card">
+        <div class="filter-row">
+          <div class="filter-field" style="max-width:140px">
+            <label>Date From</label>
+            <input type="date" id="snt-from">
+          </div>
+          <div class="filter-field" style="max-width:140px">
+            <label>Date To</label>
+            <input type="date" id="snt-to">
+          </div>
+          <div class="filter-field" style="max-width:200px">
+            <label>Employee Number</label>
+            <input type="text" id="snt-emp" placeholder="All employees" autocomplete="off">
+          </div>
+          <div class="filter-field" style="max-width:160px">
+            <label>Ref Number</label>
+            <input type="text" id="snt-ref" placeholder="Partial match…">
+          </div>
+          <div class="filter-field" style="max-width:140px">
+            <label>Batch Number</label>
+            <input type="text" id="snt-batch" placeholder="All batches">
+          </div>
+          <div class="filter-btns">
+            <button class="btn-apply" onclick="renderSentTable()">Apply</button>
+            <button class="btn-reset" onclick="resetSentFilters()">Reset</button>
+          </div>
+        </div>
+      </div>
+      <div class="tbl-wrap">
+        <div class="tbl-toolbar">
+          <span class="tbl-count" id="snt-count">— records</span>
+          <span id="snt-total-info" style="margin-left:14px;font-size:13px;font-weight:600;color:#2e86c1;"></span>
+          <div class="tbl-actions">
+            <button class="hdr-btn btn-excel" onclick="exportTable('snt-table','EEV_Sent_Account')">&#128196; Excel</button>
+            <button class="hdr-btn btn-pdf" onclick="printSentTable()">&#128438; PDF</button>
+            <button class="hdr-btn btn-copy" onclick="copyTable('snt-table')">&#128203; Copy</button>
+          </div>
+        </div>
+        <div class="tbl-scroll">
+          <table id="snt-table">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Date</th>
+                <th>Employee #</th>
+                <th>Ref Number</th>
+                <th class="num">Amount (SAR)</th>
+                <th>Batch #</th>
+              </tr>
+            </thead>
+            <tbody id="snt-tbody"><tr><td colspan="6" class="no-data">Apply filters and click Apply to load records</td></tr></tbody>
+            <tfoot id="snt-tfoot"></tfoot>
+          </table>
+        </div>
+      </div>
+    </div><!-- /sec-sent -->
+
   </div><!-- /page-body -->
 </div><!-- /main-content -->
 </div><!-- /layout -->
@@ -540,6 +602,8 @@ const EEV_CODES = [
    DATA CACHE
 ══════════════════════════════════════════════ */
 let masterData  = [];  // rows from Master File sheet (after header)
+let sentRawData = [];  // rows from EEV Submitted sheet
+let sentLoaded  = false;
 
 /* ══════════════════════════════════════════════
    SIDEBAR
@@ -564,9 +628,10 @@ function showSection(name) {
   document.getElementById('sec-' + name).classList.add('active');
   const navBtn = document.getElementById('nav-' + name);
   if (navBtn) navBtn.classList.add('active');
-  const titles = {form:'Employee Expense Voucher', ledger:'EEV Ledger', statement:'Employee Statement', balance:'Balance Summary'};
+  const titles = {form:'Employee Expense Voucher', ledger:'EEV Ledger', statement:'Employee Statement', balance:'Balance Summary', sent:'EEV Sent Account'};
   document.getElementById('page-title').textContent = titles[name] || 'EEV Module';
   if (name === 'balance') renderBalanceSummary();
+  if (name === 'sent' && !sentLoaded) loadSentData();
 }
 
 /* ══════════════════════════════════════════════
@@ -1104,6 +1169,106 @@ function populateEmpDropdowns() {
       el.appendChild(opt);
     });
   });
+}
+
+/* ══════════════════════════════════════════════
+   EEV SENT ACCOUNT SECTION
+══════════════════════════════════════════════ */
+async function loadSentData() {
+  const tbody = document.getElementById('snt-tbody');
+  tbody.innerHTML = '<tr><td colspan="6" class="no-data">Loading…</td></tr>';
+  document.getElementById('snt-count').textContent = 'Loading…';
+  try {
+    showLoading(true);
+    const range = encodeURIComponent("'EEV Submitted'!A:E");
+    const url   = `https://sheets.googleapis.com/v4/spreadsheets/${GS_ID}/values/${range}?key=${GS_KEY}`;
+    const data  = await fetch(url).then(r => r.json());
+    showLoading(false);
+    sentRawData = (data.values || []).slice(1).filter(r => r[0] || r[1]);
+    sentLoaded  = true;
+    renderSentTable();
+  } catch(e) {
+    showLoading(false);
+    showToast('Load error: ' + e.message, 'error');
+    tbody.innerHTML = '<tr><td colspan="6" class="no-data">Failed to load data</td></tr>';
+  }
+}
+
+function renderSentTable() {
+  if (!sentLoaded) { loadSentData(); return; }
+  const from   = document.getElementById('snt-from').value;
+  const to     = document.getElementById('snt-to').value;
+  const empF   = document.getElementById('snt-emp').value.trim().toLowerCase();
+  const refF   = document.getElementById('snt-ref').value.trim().toLowerCase();
+  const batchF = document.getElementById('snt-batch').value.trim().toLowerCase();
+  const tbody  = document.getElementById('snt-tbody');
+  const tfoot  = document.getElementById('snt-tfoot');
+
+  let rows = sentRawData.filter(r => {
+    const date  = String(r[0]||'');
+    const emp   = String(r[1]||'').toLowerCase();
+    const ref   = String(r[2]||'').toLowerCase();
+    const batch = String(r[4]||'').toLowerCase();
+    if (from || to) {
+      const d = parseEEVDate(date);
+      if (d) {
+        if (from && d < new Date(from + 'T00:00:00')) return false;
+        if (to   && d > new Date(to   + 'T23:59:59')) return false;
+      }
+    }
+    if (empF   && !emp.includes(empF))     return false;
+    if (refF   && !ref.includes(refF))     return false;
+    if (batchF && !batch.includes(batchF)) return false;
+    return true;
+  });
+
+  let total = 0;
+  tbody.innerHTML = rows.map((r, i) => {
+    const amt = parseFloat(r[3]||0) || 0;
+    total += amt;
+    return `<tr>
+      <td style="color:#888;font-size:12px;">${i+1}</td>
+      <td>${fmtDate(r[0])}</td>
+      <td>${r[1]||''}</td>
+      <td>${r[2]||''}</td>
+      <td class="num">${amt ? fmt(amt) : '—'}</td>
+      <td>${r[4]||''}</td>
+    </tr>`;
+  }).join('') || '<tr><td colspan="6" class="no-data">No records match the filters</td></tr>';
+
+  tfoot.innerHTML = rows.length
+    ? `<tr><td colspan="4" style="font-weight:700;text-align:right;">TOTAL</td><td class="num" style="font-weight:700;">${fmt(total)}</td><td></td></tr>`
+    : '';
+
+  document.getElementById('snt-count').textContent = `${rows.length} record${rows.length!==1?'s':''}`;
+  document.getElementById('snt-total-info').textContent = rows.length ? `Total: SAR ${fmt(total)}` : '';
+}
+
+function resetSentFilters() {
+  ['snt-from','snt-to','snt-emp','snt-ref','snt-batch'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = '';
+  });
+  document.getElementById('snt-total-info').textContent = '';
+  if (sentLoaded) renderSentTable();
+}
+
+function printSentTable() {
+  const tbl = document.getElementById('snt-table');
+  if (!tbl) return;
+  const pw = window.open('', '_blank');
+  pw.document.write(`<html><head><title>EEV Sent Account</title>
+  <style>body{font-family:Calibri,sans-serif;font-size:11pt;}
+  table{width:100%;border-collapse:collapse;}
+  th,td{border:1px solid #999;padding:4px 8px;}
+  th{background:#1a2b3c;color:#fff;}
+  .num{text-align:right;}
+  tfoot td{font-weight:700;background:#f0f4f8;}
+  </style></head><body>
+  <h3 style="margin-bottom:8px;">EEV Sent Account</h3>
+  ${tbl.outerHTML}</body></html>`);
+  pw.document.close();
+  setTimeout(() => pw.print(), 600);
 }
 
 /* ══════════════════════════════════════════════
