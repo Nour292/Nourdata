@@ -287,7 +287,7 @@ body.dark-mode .max-emp-name{color:#e0e0e0!important;}
 <aside id="sidebar">
   <div id="sb-header">
     <img src="https://nour292.github.io/Nourdata/nour_energy_logo.png" alt="Logo" id="sb-logo">
-    <div id="sb-title">Nour Energy<small>HR System &nbsp;·&nbsp; v1.9</small></div>
+    <div id="sb-title">Nour Energy<small>HR System &nbsp;·&nbsp; v2.0</small></div>
     <button id="sb-toggle" onclick="toggleSidebar()" aria-label="Toggle sidebar">&#9776;</button>
   </div>
   <nav id="sb-nav">
@@ -1191,27 +1191,22 @@ function getSortDate(j) {
 }
 
 function sortJobsForDisplay(arr) {
-  const today = new Date(); today.setHours(0,0,0,0);
   return arr.slice().sort((a, b) => {
     const aIsDate = SORT_DATE_TYPES.includes(a.type);
     const bIsDate = SORT_DATE_TYPES.includes(b.type);
     // Non-date types go after date types
     if (aIsDate !== bIsDate) return aIsDate ? -1 : 1;
-    if (!aIsDate) return 0; // preserve insertion order for non-date types
+    if (!aIsDate) return 0;
 
     const da = getSortDate(a);
     const db = getSortDate(b);
-    const aNull = da === null, bNull = db === null;
     // No date → bottom
-    if (aNull && bNull) return 0;
-    if (aNull) return 1;
-    if (bNull) return -1;
+    if (!da && !db) return 0;
+    if (!da) return 1;
+    if (!db) return -1;
 
-    const aFuture = da >= today;
-    const bFuture = db >= today;
-    if (aFuture && bFuture) return da - db; // both future: nearest first (ascending)
-    if (!aFuture && !bFuture) return db - da; // both past: nearest past first (descending)
-    return aFuture ? -1 : 1; // future above past
+    // Latest date first (descending) regardless of past/future
+    return db - da;
   });
 }
 
