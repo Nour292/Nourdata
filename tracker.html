@@ -287,7 +287,7 @@ body.dark-mode .max-emp-name{color:#e0e0e0!important;}
 <aside id="sidebar">
   <div id="sb-header">
     <img src="https://nour292.github.io/Nourdata/nour_energy_logo.png" alt="Logo" id="sb-logo">
-    <div id="sb-title">Nour Energy<small>HR System &nbsp;·&nbsp; v1.8</small></div>
+    <div id="sb-title">Nour Energy<small>HR System &nbsp;·&nbsp; v1.9</small></div>
     <button id="sb-toggle" onclick="toggleSidebar()" aria-label="Toggle sidebar">&#9776;</button>
   </div>
   <nav id="sb-nav">
@@ -632,10 +632,10 @@ function saveJobs() {
       const text = await res.text();
       let resp;
       try { resp = JSON.parse(text); } catch(e) { resp = {}; }
-      if (resp && resp.status === 'ok') {
+      if (resp && resp.ok) {
         showToast('Saved ✓');
       } else {
-        showToast('Sheet sync failed: ' + (resp.message || text || 'unknown error'), 'err');
+        showToast('Sheet sync failed: ' + (resp.error || text || 'unknown error'), 'err');
         console.error('saveJobs response:', text);
       }
     } catch(e) {
