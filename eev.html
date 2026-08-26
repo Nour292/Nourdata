@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- NourData EEV Module v3.0 - Aug-2026 -->
+<!-- NourData EEV Module v3.1 - Aug-2026 -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -270,7 +270,7 @@ if (sessionStorage.getItem('ne_sb_collapsed') === '1') {
 <aside id="sidebar">
   <div id="sb-header">
     <img id="sb-logo" src="nour_energy_logo.png" alt="Nour Energy" onerror="this.style.display='none'">
-    <div id="sb-title">Nour Energy<small>Expense Voucher &nbsp;·&nbsp; v3.0</small></div>
+    <div id="sb-title">Nour Energy<small>Expense Voucher &nbsp;·&nbsp; v3.1</small></div>
     <button id="sb-toggle" onclick="toggleSidebar()" title="Toggle sidebar">&#9776;</button>
   </div>
   <nav id="sb-nav">
@@ -1574,15 +1574,15 @@ function printSentTable() {
   const now     = new Date();
   const dateStr = now.toLocaleDateString('en-GB', {day:'2-digit', month:'short', year:'numeric'});
   const printTbl = `
+    <h3 style="margin:0 0 6px 0;font-size:13pt;color:#1a2b3c;">${title}</h3>
     <table>
-      <thead>
-        <tr><th colspan="6" class="rpt-title">${title}</th></tr>
-        ${thead.innerHTML}
-      </thead>
+      <thead>${thead.innerHTML}</thead>
       <tfoot>
-        <tr><td colspan="6" class="rpt-footer">
-          <span>Prepared by: Qasim</span>
-          <span>Date: ${dateStr}</span>
+        <tr><td colspan="6" style="border:none;border-top:1px solid #bbb;padding:5px 0;">
+          <div style="display:flex;justify-content:space-between;font-size:9pt;color:#555;">
+            <span>Prepared by: Qasim</span>
+            <span>Date: ${dateStr}</span>
+          </div>
         </td></tr>
       </tfoot>
       <tbody>${tbody.innerHTML}</tbody>
@@ -1594,12 +1594,10 @@ function printSentTable() {
   table{width:100%;border-collapse:collapse;}
   th,td{border:1px solid #999;padding:4px 8px;}
   th{background:#1a2b3c;color:#fff;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
-  .rpt-title{background:#fff!important;color:#1a2b3c!important;font-size:13pt;border:none!important;text-align:left;padding-bottom:6px;}
   .num{text-align:right;}
   td[style*="color:#888"]{color:#888!important;}
   .no-data{display:none;}
-  tfoot td{border:none;border-top:1px solid #bbb;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
-  .rpt-footer{display:flex;justify-content:space-between;font-size:9pt;color:#555;padding:5px 0;}
+  tfoot td{-webkit-print-color-adjust:exact;print-color-adjust:exact;}
   @page{margin:12mm;@top-right{content:"Page " counter(page);font-size:9pt;color:#555;}}
   </style></head><body>
   ${printTbl}
