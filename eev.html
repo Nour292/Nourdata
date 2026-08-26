@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- NourData EEV Module v2.1 - Aug-2026 -->
+<!-- NourData EEV Module v2.3 - Aug-2026 -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -69,7 +69,40 @@ body.sb-collapsed #main-content{margin-left:52px;}
 .btn-excel{background:#117a65;color:#fff;}
 .btn-pdf{background:#7d3c98;color:#fff;}
 .btn-copy{background:#1a6b8a;color:#fff;}
+.btn-bulk-add{background:#1a7a4a;color:#fff;}
 #page-body{padding:20px 24px;flex:1;}
+/* ── EEV Sent: search bar ── */
+#snt-search-wrap{display:flex;align-items:center;gap:8px;background:#fff;border:1.5px solid #d0dce8;border-radius:8px;padding:7px 12px;margin-bottom:12px;box-shadow:0 1px 4px rgba(0,0,0,0.04);}
+body.dark-mode #snt-search-wrap{background:#162232;border-color:#2a4060;}
+#snt-search-wrap input{flex:1;border:none;outline:none;font-size:13px;background:transparent;color:#1a2b3c;font-family:'Calibri',sans-serif;}
+body.dark-mode #snt-search-wrap input{color:#e0e8f0;}
+#snt-search-wrap input::placeholder{color:#a0b4c8;}
+#snt-clear-btn{padding:3px 8px;border:1px solid #d0dce8;border-radius:5px;background:#f0f4f8;font-size:12px;cursor:pointer;color:#5a7a9a;white-space:nowrap;}
+#snt-rec-count{color:#888;font-size:12px;font-weight:600;white-space:nowrap;}
+/* ── EEV Sent: batch multi-select ── */
+.snt-ms-wrap{position:relative;}
+.snt-ms-panel{position:absolute;top:100%;left:0;min-width:220px;background:#fff;border:1.5px solid #d0dce8;border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,0.14);z-index:400;max-height:260px;overflow-y:auto;margin-top:2px;}
+body.dark-mode .snt-ms-panel{background:#162232;border-color:#2a4060;}
+.snt-ms-opt{display:flex;align-items:center;gap:8px;padding:6px 12px;font-size:13px;cursor:pointer;white-space:nowrap;color:#1a2b3c;}
+body.dark-mode .snt-ms-opt{color:#e0e8f0;}
+.snt-ms-opt:hover{background:#f0f4f8;}
+body.dark-mode .snt-ms-opt:hover{background:#1e3048;}
+/* ── EEV Sent: autocomplete suggestions ── */
+.snt-sug-list{position:absolute;top:100%;left:0;right:0;background:#fff;border:1.5px solid #d0dce8;border-radius:6px;box-shadow:0 4px 12px rgba(0,0,0,0.1);z-index:350;max-height:180px;overflow-y:auto;margin-top:2px;}
+body.dark-mode .snt-sug-list{background:#162232;border-color:#2a4060;}
+.snt-sug-item{padding:6px 12px;font-size:13px;cursor:pointer;color:#1a2b3c;white-space:nowrap;}
+body.dark-mode .snt-sug-item{color:#e0e8f0;}
+.snt-sug-item:hover{background:#f0f4f8;}
+body.dark-mode .snt-sug-item:hover{background:#1e3048;}
+/* ── EEV Sent: bulk modal ── */
+.snt-bulk-box{width:98vw;max-width:900px;max-height:92vh;}
+#snt-bulk-scroll{overflow:auto;flex:1;}
+#snt-bulk-tbl{width:100%;border-collapse:collapse;font-size:13px;table-layout:fixed;}
+#snt-bulk-tbl th{background:#1a2b3c;color:#fff;padding:7px 8px;font-size:12px;font-weight:700;}
+#snt-bulk-tbl td{padding:3px 4px;border-bottom:1px solid #e8f0f8;vertical-align:middle;}
+.snt-bi{width:100%;border:1px solid #d0dce8;border-radius:4px;padding:4px 6px;font-size:13px;font-family:'Calibri',sans-serif;box-sizing:border-box;}
+.snt-bi.err{border-color:#e74c3c;background:#fff5f5;}
+body.dark-mode .snt-bi{background:#1e3048;border-color:#2a4060;color:#e0e8f0;}
 
 /* ── Section visibility ── */
 .section{display:none;}
@@ -227,7 +260,7 @@ if (sessionStorage.getItem('ne_sb_collapsed') === '1') {
 <aside id="sidebar">
   <div id="sb-header">
     <img id="sb-logo" src="nour_energy_logo.png" alt="Nour Energy" onerror="this.style.display='none'">
-    <div id="sb-title">Nour Energy<small>Expense Voucher &nbsp;·&nbsp; v2.2</small></div>
+    <div id="sb-title">Nour Energy<small>Expense Voucher &nbsp;·&nbsp; v2.3</small></div>
     <button id="sb-toggle" onclick="toggleSidebar()" title="Toggle sidebar">&#9776;</button>
   </div>
   <nav id="sb-nav">
@@ -289,7 +322,12 @@ if (sessionStorage.getItem('ne_sb_collapsed') === '1') {
   <div id="top-header">
     <span id="page-title">Employee Expense Voucher</span>
     <div id="header-right">
-      <!-- buttons change per section -->
+      <div id="snt-header-actions" style="display:none;align-items:center;gap:8px;">
+        <button class="hdr-btn btn-bulk-add" onclick="openSntBulk()">&#43; Bulk Add</button>
+        <button class="hdr-btn btn-copy" onclick="copyTable('snt-table')">&#128203; Copy</button>
+        <button class="hdr-btn btn-excel" onclick="exportTable('snt-table','EEV_Sent_Account')">&#128196; Excel</button>
+        <button class="hdr-btn btn-pdf" onclick="printSentTable()">&#128438; PDF</button>
+      </div>
     </div>
   </div>
   <div id="page-body">
@@ -499,49 +537,75 @@ if (sessionStorage.getItem('ne_sb_collapsed') === '1') {
 
     <!-- ────────── SECTION: EEV SENT ACCOUNT ────────── -->
     <div id="sec-sent" class="section">
+
+      <!-- Collapsible filter panel -->
       <div class="filter-card">
-        <div class="filter-row">
-          <div class="filter-field" style="max-width:140px">
-            <label>Date From</label>
-            <input type="date" id="snt-from">
-          </div>
-          <div class="filter-field" style="max-width:140px">
-            <label>Date To</label>
-            <input type="date" id="snt-to">
-          </div>
-          <div class="filter-field" style="max-width:200px">
-            <label>Employee Number</label>
-            <input type="text" id="snt-emp" placeholder="All employees" autocomplete="off">
-          </div>
-          <div class="filter-field" style="max-width:160px">
-            <label>Ref Number</label>
-            <input type="text" id="snt-ref" placeholder="Partial match…">
-          </div>
-          <div class="filter-field" style="max-width:140px">
-            <label>Batch Number</label>
-            <input type="text" id="snt-batch" placeholder="All batches">
-          </div>
-          <div class="filter-btns">
-            <button class="btn-apply" onclick="renderSentTable()">Apply</button>
-            <button class="btn-reset" onclick="resetSentFilters()">Reset</button>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+          <span style="font-size:12px;font-weight:700;color:#5a7a9a;text-transform:uppercase;letter-spacing:0.5px;">Filters</span>
+          <button id="snt-toggle-btn" onclick="toggleSntPanel()" style="background:none;border:none;font-size:13px;cursor:pointer;color:#5a7a9a;padding:0 4px;" title="Collapse">&#9650;</button>
+        </div>
+        <div id="snt-filter-body">
+          <div class="filter-row">
+            <div class="filter-field" style="max-width:140px">
+              <label>Date From</label>
+              <input type="date" id="snt-from">
+            </div>
+            <div class="filter-field" style="max-width:140px">
+              <label>Date To</label>
+              <input type="date" id="snt-to">
+            </div>
+            <div class="filter-field" style="max-width:200px;position:relative;">
+              <label>Employee Number</label>
+              <input type="text" id="snt-emp" placeholder="All employees" autocomplete="off" oninput="onSntEmpInput()" onblur="setTimeout(closeSntSug,200)">
+              <div id="snt-emp-sug" class="snt-sug-list" style="display:none;"></div>
+            </div>
+            <div class="filter-field" style="max-width:160px">
+              <label>Ref Number</label>
+              <input type="text" id="snt-ref" placeholder="Partial match…">
+            </div>
+            <div class="filter-field" style="max-width:200px;">
+              <label>Batch Number</label>
+              <div class="snt-ms-wrap">
+                <input type="text" id="snt-batch-inp" placeholder="All batches" autocomplete="off"
+                  oninput="filterSntBatchOptions()"
+                  onfocus="openSntBatchPanel()"
+                  onblur="setTimeout(closeSntBatchPanel,200)"
+                  style="padding:7px 10px;font-size:13px;border:1.5px solid #d0dce8;border-radius:7px;font-family:'Calibri',sans-serif;background:#f7fafd;outline:none;width:100%;">
+                <div id="snt-batch-panel" class="snt-ms-panel" style="display:none;">
+                  <div class="snt-ms-opt" style="border-bottom:1px solid #e8f0f8;font-weight:700;">
+                    <input type="checkbox" id="snt-batch-all" onchange="toggleAllSntBatches()">
+                    <label for="snt-batch-all" style="cursor:pointer;">Select All</label>
+                  </div>
+                  <div id="snt-batch-opts"></div>
+                </div>
+              </div>
+            </div>
+            <div class="filter-btns">
+              <button class="btn-apply" onclick="sntGenerate()">&#9654; Generate</button>
+              <button class="btn-reset" onclick="resetSntFilters()">Reset</button>
+            </div>
           </div>
         </div>
       </div>
+
+      <!-- Live search bar (shown after Generate) -->
+      <div id="snt-search-wrap" style="display:none;">
+        <span style="color:#a0b4c8;font-size:15px;">&#128269;</span>
+        <input type="text" id="snt-live-search" placeholder="Search in results…" oninput="onSntLiveSearch()">
+        <button id="snt-clear-btn" onclick="clearSntSearch()">&#10005; Clear</button>
+        <span id="snt-rec-count"></span>
+      </div>
+
       <div class="tbl-wrap">
         <div class="tbl-toolbar">
           <span class="tbl-count" id="snt-count">— records</span>
           <span id="snt-total-info" style="margin-left:14px;font-size:13px;font-weight:600;color:#2e86c1;"></span>
-          <div class="tbl-actions">
-            <button class="hdr-btn btn-excel" onclick="exportTable('snt-table','EEV_Sent_Account')">&#128196; Excel</button>
-            <button class="hdr-btn btn-pdf" onclick="printSentTable()">&#128438; PDF</button>
-            <button class="hdr-btn btn-copy" onclick="copyTable('snt-table')">&#128203; Copy</button>
-          </div>
         </div>
         <div class="tbl-scroll">
           <table id="snt-table">
             <thead>
               <tr>
-                <th>#</th>
+                <th style="width:40px;">#</th>
                 <th>Date</th>
                 <th>Employee #</th>
                 <th>Ref Number</th>
@@ -549,12 +613,42 @@ if (sessionStorage.getItem('ne_sb_collapsed') === '1') {
                 <th>Batch #</th>
               </tr>
             </thead>
-            <tbody id="snt-tbody"><tr><td colspan="6" class="no-data">Apply filters and click Apply to load records</td></tr></tbody>
+            <tbody id="snt-tbody"><tr><td colspan="6" class="no-data">Use filters above and click Generate to load records</td></tr></tbody>
             <tfoot id="snt-tfoot"></tfoot>
           </table>
         </div>
       </div>
     </div><!-- /sec-sent -->
+
+    <!-- ────────── MODAL: EEV Sent Bulk Add ────────── -->
+    <div id="snt-bulk-modal" onclick="if(event.target===this)closeSntBulk()"
+      style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:3000;align-items:center;justify-content:center;">
+      <div class="snt-bulk-box" style="background:#fff;border-radius:12px;box-shadow:0 8px 40px rgba(0,0,0,0.22);display:flex;flex-direction:column;overflow:hidden;">
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 18px;background:#1a2b3c;color:#fff;">
+          <span style="font-size:15px;font-weight:700;">Bulk Add — EEV Sent Account</span>
+          <button onclick="closeSntBulk()" style="background:none;border:none;color:#fff;font-size:20px;cursor:pointer;line-height:1;">&#10005;</button>
+        </div>
+        <div id="snt-bulk-scroll">
+          <table id="snt-bulk-tbl">
+            <thead>
+              <tr>
+                <th style="width:36px;">#</th>
+                <th>Date</th>
+                <th>Employee #</th>
+                <th>Ref Number</th>
+                <th>Amount</th>
+                <th>Batch #</th>
+              </tr>
+            </thead>
+            <tbody id="snt-bulk-tbody"></tbody>
+          </table>
+        </div>
+        <div style="display:flex;gap:10px;padding:14px 16px;border-top:1px solid #e8f0f8;justify-content:flex-end;background:#f8fafc;">
+          <button class="hdr-btn btn-bulk-add" onclick="saveSntBulk()">&#128190; Save All</button>
+          <button class="hdr-btn btn-reset" style="height:34px;padding:0 14px;font-size:13px;font-weight:700;border:1.5px solid #d0dce8;border-radius:7px;cursor:pointer;font-family:'Calibri',sans-serif;background:#f0f4f8;color:#1a2b3c;" onclick="closeSntBulk()">Cancel</button>
+        </div>
+      </div>
+    </div>
 
   </div><!-- /page-body -->
 </div><!-- /main-content -->
@@ -630,8 +724,10 @@ function showSection(name) {
   if (navBtn) navBtn.classList.add('active');
   const titles = {form:'Employee Expense Voucher', ledger:'EEV Ledger', statement:'Employee Statement', balance:'Balance Summary', sent:'EEV Sent Account'};
   document.getElementById('page-title').textContent = titles[name] || 'EEV Module';
+  const sntHdr = document.getElementById('snt-header-actions');
+  if (sntHdr) sntHdr.style.display = (name === 'sent') ? 'flex' : 'none';
   if (name === 'balance') renderBalanceSummary();
-  if (name === 'sent' && !sentLoaded) loadSentData();
+  if (name === 'sent' && !sentLoaded) loadSentBatches();
 }
 
 /* ══════════════════════════════════════════════
@@ -1174,59 +1270,80 @@ function populateEmpDropdowns() {
 /* ══════════════════════════════════════════════
    EEV SENT ACCOUNT SECTION
 ══════════════════════════════════════════════ */
-async function loadSentData() {
-  const tbody = document.getElementById('snt-tbody');
-  tbody.innerHTML = '<tr><td colspan="6" class="no-data">Loading…</td></tr>';
-  document.getElementById('snt-count').textContent = 'Loading…';
+let sntBatches         = [];   // all unique batch values
+let sntSelectedBatches = [];   // [] = all selected
+let sntDisplayRows     = [];   // rows after primary filter (before live search)
+let sntGenerated       = false;
+let sntPanelOpen       = true;
+
+async function loadSentBatches() {
+  // Load data silently on first visit just to populate batch dropdown
   try {
-    showLoading(true);
     const range = encodeURIComponent("'EEV Submitted'!A:E");
     const url   = `https://sheets.googleapis.com/v4/spreadsheets/${GS_ID}/values/${range}?key=${GS_KEY}`;
     const data  = await fetch(url).then(r => r.json());
-    showLoading(false);
     sentRawData = (data.values || []).slice(1).filter(r => r[0] || r[1]);
     sentLoaded  = true;
-    renderSentTable();
-  } catch(e) {
-    showLoading(false);
-    showToast('Load error: ' + e.message, 'error');
-    tbody.innerHTML = '<tr><td colspan="6" class="no-data">Failed to load data</td></tr>';
-  }
+    sntBatches  = [...new Set(sentRawData.map(r => String(r[4]||'').trim()).filter(Boolean))].sort();
+    populateSntBatchOpts('');
+  } catch(e) { /* silently ignore — will retry on Generate */ }
 }
 
-function renderSentTable() {
-  if (!sentLoaded) { loadSentData(); return; }
+async function sntGenerate() {
+  if (!sentLoaded) {
+    showLoading(true);
+    try {
+      const range = encodeURIComponent("'EEV Submitted'!A:E");
+      const url   = `https://sheets.googleapis.com/v4/spreadsheets/${GS_ID}/values/${range}?key=${GS_KEY}`;
+      const data  = await fetch(url).then(r => r.json());
+      sentRawData = (data.values || []).slice(1).filter(r => r[0] || r[1]);
+      sentLoaded  = true;
+      sntBatches  = [...new Set(sentRawData.map(r => String(r[4]||'').trim()).filter(Boolean))].sort();
+      populateSntBatchOpts('');
+    } catch(e) {
+      showLoading(false);
+      showToast('Load error: ' + e.message, 'error');
+      return;
+    }
+    showLoading(false);
+  }
+  sntGenerated = true;
   const from   = document.getElementById('snt-from').value;
   const to     = document.getElementById('snt-to').value;
   const empF   = document.getElementById('snt-emp').value.trim().toLowerCase();
   const refF   = document.getElementById('snt-ref').value.trim().toLowerCase();
-  const batchF = document.getElementById('snt-batch').value.trim().toLowerCase();
-  const tbody  = document.getElementById('snt-tbody');
-  const tfoot  = document.getElementById('snt-tfoot');
 
-  let rows = sentRawData.filter(r => {
-    const date  = String(r[0]||'');
-    const emp   = String(r[1]||'').toLowerCase();
-    const ref   = String(r[2]||'').toLowerCase();
-    const batch = String(r[4]||'').toLowerCase();
+  sntDisplayRows = sentRawData.filter(r => {
     if (from || to) {
-      const d = parseEEVDate(date);
+      const d = parseEEVDate(String(r[0]||''));
       if (d) {
         if (from && d < new Date(from + 'T00:00:00')) return false;
         if (to   && d > new Date(to   + 'T23:59:59')) return false;
       }
     }
-    if (empF   && !emp.includes(empF))     return false;
-    if (refF   && !ref.includes(refF))     return false;
-    if (batchF && !batch.includes(batchF)) return false;
+    if (empF && !String(r[1]||'').toLowerCase().includes(empF)) return false;
+    if (refF && !String(r[2]||'').toLowerCase().includes(refF)) return false;
+    if (sntSelectedBatches.length) {
+      const b = String(r[4]||'').trim();
+      if (!sntSelectedBatches.includes(b)) return false;
+    }
     return true;
   });
 
+  document.getElementById('snt-search-wrap').style.display = 'flex';
+  document.getElementById('snt-live-search').value = '';
+  document.getElementById('snt-rec-count').textContent = '';
+  renderSntRows(sntDisplayRows);
+}
+
+function renderSntRows(rows) {
+  const tbody = document.getElementById('snt-tbody');
+  const tfoot = document.getElementById('snt-tfoot');
   let total = 0;
   tbody.innerHTML = rows.map((r, i) => {
     const amt = parseFloat(r[3]||0) || 0;
     total += amt;
-    return `<tr>
+    return `<tr data-idx="${i}">
       <td style="color:#888;font-size:12px;">${i+1}</td>
       <td>${fmtDate(r[0])}</td>
       <td>${r[1]||''}</td>
@@ -1235,27 +1352,170 @@ function renderSentTable() {
       <td>${r[4]||''}</td>
     </tr>`;
   }).join('') || '<tr><td colspan="6" class="no-data">No records match the filters</td></tr>';
-
   tfoot.innerHTML = rows.length
     ? `<tr><td colspan="4" style="font-weight:700;text-align:right;">TOTAL</td><td class="num" style="font-weight:700;">${fmt(total)}</td><td></td></tr>`
     : '';
-
   document.getElementById('snt-count').textContent = `${rows.length} record${rows.length!==1?'s':''}`;
   document.getElementById('snt-total-info').textContent = rows.length ? `Total: SAR ${fmt(total)}` : '';
 }
 
-function resetSentFilters() {
-  ['snt-from','snt-to','snt-emp','snt-ref','snt-batch'].forEach(id => {
-    const el = document.getElementById(id);
-    if (el) el.value = '';
+function onSntLiveSearch() {
+  const q = document.getElementById('snt-live-search').value.trim().toLowerCase();
+  if (!sntGenerated) return;
+  const filtered = q
+    ? sntDisplayRows.filter(r => r.some(c => String(c||'').toLowerCase().includes(q)))
+    : sntDisplayRows;
+  document.getElementById('snt-rec-count').textContent = q ? `${filtered.length} match${filtered.length!==1?'es':''}` : '';
+  renderSntRows(filtered);
+}
+
+function clearSntSearch() {
+  document.getElementById('snt-live-search').value = '';
+  document.getElementById('snt-rec-count').textContent = '';
+  if (sntGenerated) renderSntRows(sntDisplayRows);
+}
+
+function resetSntFilters() {
+  ['snt-from','snt-to','snt-emp','snt-ref','snt-batch-inp'].forEach(id => {
+    const el = document.getElementById(id); if (el) el.value = '';
   });
+  sntSelectedBatches = [];
+  document.getElementById('snt-batch-all').checked = false;
+  document.querySelectorAll('#snt-batch-opts input[type="checkbox"]').forEach(cb => cb.checked = false);
   document.getElementById('snt-total-info').textContent = '';
-  if (sentLoaded) renderSentTable();
+  document.getElementById('snt-search-wrap').style.display = 'none';
+  document.getElementById('snt-live-search').value = '';
+  sntGenerated = false;
+  sntDisplayRows = [];
+  document.getElementById('snt-tbody').innerHTML = '<tr><td colspan="6" class="no-data">Use filters above and click Generate to load records</td></tr>';
+  document.getElementById('snt-tfoot').innerHTML = '';
+  document.getElementById('snt-count').textContent = '— records';
+}
+
+/* ── Batch multi-select ── */
+function openSntBatchPanel() {
+  document.getElementById('snt-batch-panel').style.display = 'block';
+  filterSntBatchOptions();
+}
+function closeSntBatchPanel() {
+  const p = document.getElementById('snt-batch-panel');
+  if (p) p.style.display = 'none';
+}
+function populateSntBatchOpts(search) {
+  const opts = document.getElementById('snt-batch-opts');
+  const q    = search.toLowerCase();
+  const list = sntBatches.filter(b => !q || b.toLowerCase().includes(q));
+  opts.innerHTML = list.map(b => `
+    <div class="snt-ms-opt">
+      <input type="checkbox" id="snt-b-${b}" value="${b}" ${sntSelectedBatches.includes(b)?'checked':''} onchange="onSntBatchCheck()">
+      <label for="snt-b-${b}" style="cursor:pointer;flex:1;">${b}</label>
+    </div>`).join('');
+  const allChk = document.getElementById('snt-batch-all');
+  if (allChk) allChk.checked = sntBatches.length > 0 && sntSelectedBatches.length === sntBatches.length;
+}
+function filterSntBatchOptions() {
+  const q = document.getElementById('snt-batch-inp').value;
+  populateSntBatchOpts(q);
+}
+function onSntBatchCheck() {
+  sntSelectedBatches = [...document.querySelectorAll('#snt-batch-opts input[type="checkbox"]:checked')].map(cb => cb.value);
+  const allChk = document.getElementById('snt-batch-all');
+  if (allChk) allChk.checked = sntSelectedBatches.length === sntBatches.length;
+  document.getElementById('snt-batch-inp').value = getSntBatchLabel();
+}
+function toggleAllSntBatches() {
+  const checked = document.getElementById('snt-batch-all').checked;
+  sntSelectedBatches = checked ? [...sntBatches] : [];
+  populateSntBatchOpts(document.getElementById('snt-batch-inp').value);
+  document.getElementById('snt-batch-inp').value = getSntBatchLabel();
+}
+function getSntBatchLabel() {
+  if (!sntSelectedBatches.length || sntSelectedBatches.length === sntBatches.length) return '';
+  if (sntSelectedBatches.length === 1) return sntSelectedBatches[0];
+  return `${sntSelectedBatches.length} batches selected`;
+}
+
+/* ── Employee autocomplete ── */
+function onSntEmpInput() {
+  const q   = document.getElementById('snt-emp').value.trim().toLowerCase();
+  const sug = document.getElementById('snt-emp-sug');
+  if (!q || !sentLoaded) { sug.style.display='none'; return; }
+  const matches = [...new Set(sentRawData.map(r => String(r[1]||'').trim()))].filter(e => e.toLowerCase().includes(q)).slice(0,8);
+  if (!matches.length) { sug.style.display='none'; return; }
+  sug.innerHTML = matches.map(e => `<div class="snt-sug-item" onmousedown="document.getElementById('snt-emp').value='${e}';closeSntSug();">${e}</div>`).join('');
+  sug.style.display = 'block';
+}
+function closeSntSug() { const s = document.getElementById('snt-emp-sug'); if (s) s.style.display='none'; }
+
+/* ── Toggle filter panel ── */
+function toggleSntPanel() {
+  sntPanelOpen = !sntPanelOpen;
+  document.getElementById('snt-filter-body').style.display = sntPanelOpen ? '' : 'none';
+  document.getElementById('snt-toggle-btn').innerHTML = sntPanelOpen ? '&#9650;' : '&#9660;';
+}
+
+/* ── Bulk Add ── */
+function openSntBulk() {
+  const tbody = document.getElementById('snt-bulk-tbody');
+  const today = new Date().toISOString().slice(0,10);
+  tbody.innerHTML = Array.from({length:30}, (_, i) => `
+    <tr>
+      <td style="text-align:center;color:#888;font-size:12px;">${i+1}</td>
+      <td><input class="snt-bi" type="date" value="${today}"></td>
+      <td><input class="snt-bi" type="text" placeholder="Emp #"></td>
+      <td><input class="snt-bi" type="text" placeholder="Ref #"></td>
+      <td><input class="snt-bi" type="number" placeholder="0.00" min="0" step="0.01"></td>
+      <td><input class="snt-bi" type="text" placeholder="Batch #"></td>
+    </tr>`).join('');
+  const modal = document.getElementById('snt-bulk-modal');
+  modal.style.display = 'flex';
+}
+function closeSntBulk() {
+  document.getElementById('snt-bulk-modal').style.display = 'none';
+}
+async function saveSntBulk() {
+  const rows = [...document.querySelectorAll('#snt-bulk-tbody tr')];
+  const entries = rows.map(tr => {
+    const inputs = tr.querySelectorAll('input');
+    return {
+      date:   inputs[0].value.trim(),
+      emp:    inputs[1].value.trim(),
+      ref:    inputs[2].value.trim(),
+      amount: inputs[3].value.trim(),
+      batch:  inputs[4].value.trim()
+    };
+  }).filter(e => e.emp || e.amount);
+
+  if (!entries.length) { showToast('No data to save', 'error'); return; }
+
+  let saved = 0, errors = 0;
+  showLoading(true);
+  for (const e of entries) {
+    try {
+      const resp = await fetch(GS_WRITE, {
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ action:'addeevsubmitted', data: [e.date, e.emp, e.ref, e.amount, e.batch] })
+      });
+      const result = await resp.json();
+      if (result.ok) saved++; else errors++;
+    } catch { errors++; }
+  }
+  showLoading(false);
+  if (saved)   showToast(`${saved} row${saved!==1?'s':''} saved successfully`, 'success');
+  if (errors)  showToast(`${errors} row${errors!==1?'s':''} failed`, 'error');
+  if (saved) {
+    closeSntBulk();
+    sentLoaded = false;
+    sntGenerated = false;
+    sntDisplayRows = [];
+    await sntGenerate();
+  }
 }
 
 function printSentTable() {
   const tbl = document.getElementById('snt-table');
-  if (!tbl) return;
+  if (!tbl || !sntGenerated) { showToast('Generate data first', 'info'); return; }
   const pw = window.open('', '_blank');
   pw.document.write(`<html><head><title>EEV Sent Account</title>
   <style>body{font-family:Calibri,sans-serif;font-size:11pt;}
