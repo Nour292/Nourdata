@@ -331,7 +331,7 @@ if (sessionStorage.getItem('ne_sb_collapsed') === '1') {
       <div id="snt-header-actions" style="display:none;align-items:center;gap:8px;">
         <button class="hdr-btn btn-bulk-add" onclick="openSntBulk()">&#43; Bulk Add</button>
         <button class="hdr-btn btn-copy" onclick="copyTable('snt-table')">&#128203; Copy</button>
-        <button class="hdr-btn btn-excel" onclick="exportTable('snt-table','EEV_Sent_Account')">&#128196; Excel</button>
+        <button class="hdr-btn btn-excel" onclick="exportTable('snt-table',getSntExportName())">&#128196; Excel</button>
         <button class="hdr-btn btn-pdf" onclick="printSentTable()">&#128438; PDF</button>
       </div>
     </div>
@@ -605,7 +605,6 @@ if (sessionStorage.getItem('ne_sb_collapsed') === '1') {
       <div class="tbl-wrap">
         <div class="tbl-toolbar">
           <span class="tbl-count" id="snt-count">— records</span>
-          <span id="snt-total-info" style="margin-left:14px;font-size:13px;font-weight:600;color:#2e86c1;"></span>
         </div>
         <div class="tbl-scroll">
           <table id="snt-table">
@@ -1347,7 +1346,6 @@ function renderSntRows(rows) {
   }).join('') || '<tr><td colspan="6" class="no-data">No records match the filters</td></tr>';
   document.getElementById('snt-tfoot').innerHTML = '';
   document.getElementById('snt-count').textContent = `${rows.length} record${rows.length!==1?'s':''}`;
-  document.getElementById('snt-total-info').textContent = rows.length ? `Total: SAR ${fmt(total)}` : '';
 }
 
 function onSntLiveSearch() {
@@ -1364,8 +1362,7 @@ function onSntLiveSearch() {
       document.getElementById('snt-tbody').innerHTML = '<tr><td colspan="6" class="no-data">Use filters above and click Generate to load records</td></tr>';
       document.getElementById('snt-tfoot').innerHTML = '';
       document.getElementById('snt-count').textContent = '— records';
-      document.getElementById('snt-total-info').textContent = '';
-    }
+        }
     return;
   }
   const filtered = sentRawData.filter(r => r.some(c => String(c||'').toLowerCase().includes(q)));
@@ -1380,8 +1377,7 @@ function clearSntSearch() {
   else {
     document.getElementById('snt-tbody').innerHTML = '<tr><td colspan="6" class="no-data">Use filters above and click Generate to load records</td></tr>';
     document.getElementById('snt-count').textContent = '— records';
-    document.getElementById('snt-total-info').textContent = '';
-  }
+    }
 }
 
 function resetSntFilters() {
@@ -1392,7 +1388,6 @@ function resetSntFilters() {
   const allChk = document.getElementById('snt-batch-all');
   if (allChk) allChk.checked = false;
   document.querySelectorAll('#snt-batch-opts input[type="checkbox"]').forEach(cb => cb.checked = false);
-  document.getElementById('snt-total-info').textContent = '';
   document.getElementById('snt-live-search').value = '';
   document.getElementById('snt-rec-count').textContent = '';
   sntGenerated = false;
@@ -1535,19 +1530,21 @@ async function saveSntBulk() {
   showLoading(true);
   for (const e of entries) {
     try {
-      const resp   = await fetch(GS_WRITE, {
-        method:'POST',
-        headers:{'Content-Type':'application/json'},
-        body: JSON.stringify({ action:'addeevsubmitted', data: [e.date, e.emp, e.ref, e.amount, e.batch] })
+      const resp = await fetch(GS_WRITE, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'addeevsubmitted', data: [e.date, e.emp, e.ref, e.amount, e.batch] })
       });
-      const result = await resp.json();
+      let result;
+      try { result = await resp.json(); }
+      catch(je) { errors++; lastErr = 'Response not JSON (check Script URL)'; continue; }
       if (result.ok) saved++;
       else { errors++; lastErr = result.error || 'Server error'; }
     } catch(err) { errors++; lastErr = err.message; }
   }
   showLoading(false);
   if (saved)  showToast(`${saved} row${saved!==1?'s':''} saved`, 'success');
-  if (errors) showToast(`${errors} failed: ${lastErr}`, 'error');
+  if (errors) showToast(`${errors} failed — ${lastErr}`, 'error');
   if (saved) {
     closeSntBulk();
     sentLoaded = false; sntGenerated = false; sntDisplayRows = []; sntLedgeData = [];
@@ -1555,17 +1552,23 @@ async function saveSntBulk() {
   }
 }
 
+function getSntExportName() {
+  if (sntSelectedBatches.length === 1) return `EEV - ${sntSelectedBatches[0]}`;
+  if (sntSelectedBatches.length > 1 && sntSelectedBatches.length < sntBatches.length)
+    return `EEV - ${sntSelectedBatches.join('-')}`;
+  return 'EEV - All';
+}
+
 function printSentTable() {
   const thead = document.querySelector('#snt-table thead');
   const tbody = document.getElementById('snt-tbody');
-  if (!thead || !tbody.querySelector('tr:not(.no-data)')) {
+  if (!thead || !tbody.querySelector('tr:not([class="no-data"])')) {
     showToast('No data to print — use Search or Generate first', 'info'); return;
   }
-  const printDate = new Date().toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'});
-  // Build print table without tfoot
+  const title   = getSntExportName();
   const printTbl = `<table><thead>${thead.innerHTML}</thead><tbody>${tbody.innerHTML}</tbody></table>`;
   const pw = window.open('', '_blank');
-  pw.document.write(`<!DOCTYPE html><html><head><title>EEV Sent Account</title>
+  pw.document.write(`<!DOCTYPE html><html><head><title>${title}</title>
   <style>
   body{font-family:Calibri,sans-serif;font-size:11pt;margin:15mm;}
   table{width:100%;border-collapse:collapse;margin-top:6px;}
@@ -1574,16 +1577,9 @@ function printSentTable() {
   .num{text-align:right;}
   td[style*="color:#888"]{color:#888!important;}
   .no-data{display:none;}
-  .footer{display:flex;justify-content:space-between;font-size:9pt;color:#555;border-top:1px solid #ccc;padding-top:4px;margin-top:10px;}
-  @page{margin:15mm;@bottom-left{content:"Created by: Qasim";font-family:Calibri;font-size:9pt;}@bottom-center{content:counter(page)" / "counter(pages);font-family:Calibri;font-size:9pt;}@bottom-right{content:"${printDate}";font-family:Calibri;font-size:9pt;}}
   </style></head><body>
-  <h3 style="margin-bottom:4px;">EEV Sent Account</h3>
+  <h3 style="margin-bottom:4px;">${title}</h3>
   ${printTbl}
-  <div class="footer">
-    <span>Created by: Qasim</span>
-    <span></span>
-    <span>${printDate}</span>
-  </div>
   </body></html>`);
   pw.document.close();
   setTimeout(() => pw.print(), 600);
