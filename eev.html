@@ -81,7 +81,7 @@ body.dark-mode #snt-search-wrap input{color:#e0e8f0;}
 #snt-rec-count{color:#888;font-size:12px;font-weight:600;white-space:nowrap;}
 /* ── EEV Sent: batch multi-select ── */
 .snt-ms-wrap{position:relative;}
-.snt-ms-panel{position:absolute;top:100%;left:0;min-width:220px;background:#fff;border:1.5px solid #d0dce8;border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,0.14);z-index:400;max-height:260px;overflow-y:auto;margin-top:2px;}
+.snt-ms-panel{position:absolute;top:100%;left:0;width:100%;min-width:160px;background:#fff;border:1.5px solid #d0dce8;border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,0.14);z-index:400;max-height:260px;overflow-y:auto;margin-top:2px;}
 body.dark-mode .snt-ms-panel{background:#162232;border-color:#2a4060;}
 .snt-ms-opt{display:flex;align-items:center;gap:8px;padding:6px 12px;font-size:13px;cursor:pointer;white-space:nowrap;color:#1a2b3c;}
 body.dark-mode .snt-ms-opt{color:#e0e8f0;}
@@ -103,6 +103,12 @@ body.dark-mode .snt-sug-item:hover{background:#1e3048;}
 .snt-bi{width:100%;border:1px solid #d0dce8;border-radius:4px;padding:4px 6px;font-size:13px;font-family:'Calibri',sans-serif;box-sizing:border-box;}
 .snt-bi.err{border-color:#e74c3c;background:#fff5f5;}
 body.dark-mode .snt-bi{background:#1e3048;border-color:#2a4060;color:#e0e8f0;}
+/* ── Dark mode: Bulk modal ── */
+body.dark-mode #snt-bulk-modal .snt-bulk-box{background:#162232;}
+body.dark-mode #snt-bulk-modal [style*="background:#1a2b3c"]{background:#0d1a26!important;}
+body.dark-mode #snt-bulk-modal [style*="background:#f8fafc"]{background:#1e3048!important;}
+body.dark-mode #snt-bulk-modal [style*="border-top:1px solid #e8f0f8"]{border-color:#2a4060!important;}
+body.dark-mode #snt-bulk-tbl td{border-color:#2a4060;}
 
 /* ── Section visibility ── */
 .section{display:none;}
@@ -588,8 +594,8 @@ if (sessionStorage.getItem('ne_sb_collapsed') === '1') {
         </div>
       </div>
 
-      <!-- Live search bar (shown after Generate) -->
-      <div id="snt-search-wrap" style="display:none;">
+      <!-- Live search bar -->
+      <div id="snt-search-wrap">
         <span style="color:#a0b4c8;font-size:15px;">&#128269;</span>
         <input type="text" id="snt-live-search" placeholder="Search in results…" oninput="onSntLiveSearch()">
         <button id="snt-clear-btn" onclick="clearSntSearch()">&#10005; Clear</button>
@@ -1270,48 +1276,40 @@ function populateEmpDropdowns() {
 /* ══════════════════════════════════════════════
    EEV SENT ACCOUNT SECTION
 ══════════════════════════════════════════════ */
-let sntBatches         = [];   // all unique batch values
-let sntSelectedBatches = [];   // [] = all selected
-let sntDisplayRows     = [];   // rows after primary filter (before live search)
+let sntBatches         = [];
+let sntSelectedBatches = [];
+let sntDisplayRows     = [];
 let sntGenerated       = false;
 let sntPanelOpen       = true;
+let sntLedgeData       = [];   // cached EEV Ledge rows for amount lookup
+
+async function sntLoadData() {
+  const range = encodeURIComponent("'EEV Submitted'!A:E");
+  const url   = `https://sheets.googleapis.com/v4/spreadsheets/${GS_ID}/values/${range}?key=${GS_KEY}`;
+  const data  = await fetch(url).then(r => r.json());
+  sentRawData = (data.values || []).slice(1).filter(r => r[0] || r[1]);
+  sentLoaded  = true;
+  sntBatches  = [...new Set(sentRawData.map(r => String(r[4]||'').trim()).filter(Boolean))]
+                .sort((a,b) => (parseFloat(b)||0) - (parseFloat(a)||0) || b.localeCompare(a));
+  populateSntBatchOpts('');
+}
 
 async function loadSentBatches() {
-  // Load data silently on first visit just to populate batch dropdown
-  try {
-    const range = encodeURIComponent("'EEV Submitted'!A:E");
-    const url   = `https://sheets.googleapis.com/v4/spreadsheets/${GS_ID}/values/${range}?key=${GS_KEY}`;
-    const data  = await fetch(url).then(r => r.json());
-    sentRawData = (data.values || []).slice(1).filter(r => r[0] || r[1]);
-    sentLoaded  = true;
-    sntBatches  = [...new Set(sentRawData.map(r => String(r[4]||'').trim()).filter(Boolean))].sort();
-    populateSntBatchOpts('');
-  } catch(e) { /* silently ignore — will retry on Generate */ }
+  try { await sntLoadData(); } catch(e) { /* silent — retry on Generate */ }
 }
 
 async function sntGenerate() {
   if (!sentLoaded) {
     showLoading(true);
-    try {
-      const range = encodeURIComponent("'EEV Submitted'!A:E");
-      const url   = `https://sheets.googleapis.com/v4/spreadsheets/${GS_ID}/values/${range}?key=${GS_KEY}`;
-      const data  = await fetch(url).then(r => r.json());
-      sentRawData = (data.values || []).slice(1).filter(r => r[0] || r[1]);
-      sentLoaded  = true;
-      sntBatches  = [...new Set(sentRawData.map(r => String(r[4]||'').trim()).filter(Boolean))].sort();
-      populateSntBatchOpts('');
-    } catch(e) {
-      showLoading(false);
-      showToast('Load error: ' + e.message, 'error');
-      return;
-    }
+    try { await sntLoadData(); }
+    catch(e) { showLoading(false); showToast('Load error: ' + e.message, 'error'); return; }
     showLoading(false);
   }
   sntGenerated = true;
-  const from   = document.getElementById('snt-from').value;
-  const to     = document.getElementById('snt-to').value;
-  const empF   = document.getElementById('snt-emp').value.trim().toLowerCase();
-  const refF   = document.getElementById('snt-ref').value.trim().toLowerCase();
+  const from = document.getElementById('snt-from').value;
+  const to   = document.getElementById('snt-to').value;
+  const empF = document.getElementById('snt-emp').value.trim().toLowerCase();
+  const refF = document.getElementById('snt-ref').value.trim().toLowerCase();
 
   sntDisplayRows = sentRawData.filter(r => {
     if (from || to) {
@@ -1323,14 +1321,10 @@ async function sntGenerate() {
     }
     if (empF && !String(r[1]||'').toLowerCase().includes(empF)) return false;
     if (refF && !String(r[2]||'').toLowerCase().includes(refF)) return false;
-    if (sntSelectedBatches.length) {
-      const b = String(r[4]||'').trim();
-      if (!sntSelectedBatches.includes(b)) return false;
-    }
+    if (sntSelectedBatches.length && !sntSelectedBatches.includes(String(r[4]||'').trim())) return false;
     return true;
   });
 
-  document.getElementById('snt-search-wrap').style.display = 'flex';
   document.getElementById('snt-live-search').value = '';
   document.getElementById('snt-rec-count').textContent = '';
   renderSntRows(sntDisplayRows);
@@ -1338,12 +1332,11 @@ async function sntGenerate() {
 
 function renderSntRows(rows) {
   const tbody = document.getElementById('snt-tbody');
-  const tfoot = document.getElementById('snt-tfoot');
   let total = 0;
   tbody.innerHTML = rows.map((r, i) => {
     const amt = parseFloat(r[3]||0) || 0;
     total += amt;
-    return `<tr data-idx="${i}">
+    return `<tr>
       <td style="color:#888;font-size:12px;">${i+1}</td>
       <td>${fmtDate(r[0])}</td>
       <td>${r[1]||''}</td>
@@ -1352,20 +1345,31 @@ function renderSntRows(rows) {
       <td>${r[4]||''}</td>
     </tr>`;
   }).join('') || '<tr><td colspan="6" class="no-data">No records match the filters</td></tr>';
-  tfoot.innerHTML = rows.length
-    ? `<tr><td colspan="4" style="font-weight:700;text-align:right;">TOTAL</td><td class="num" style="font-weight:700;">${fmt(total)}</td><td></td></tr>`
-    : '';
+  document.getElementById('snt-tfoot').innerHTML = '';
   document.getElementById('snt-count').textContent = `${rows.length} record${rows.length!==1?'s':''}`;
   document.getElementById('snt-total-info').textContent = rows.length ? `Total: SAR ${fmt(total)}` : '';
 }
 
 function onSntLiveSearch() {
   const q = document.getElementById('snt-live-search').value.trim().toLowerCase();
-  if (!sntGenerated) return;
-  const filtered = q
-    ? sntDisplayRows.filter(r => r.some(c => String(c||'').toLowerCase().includes(q)))
-    : sntDisplayRows;
-  document.getElementById('snt-rec-count').textContent = q ? `${filtered.length} match${filtered.length!==1?'es':''}` : '';
+  if (!sentLoaded) {
+    if (!q) { document.getElementById('snt-rec-count').textContent = ''; return; }
+    sntLoadData().then(() => onSntLiveSearch());
+    return;
+  }
+  if (!q) {
+    document.getElementById('snt-rec-count').textContent = '';
+    if (sntGenerated) renderSntRows(sntDisplayRows);
+    else {
+      document.getElementById('snt-tbody').innerHTML = '<tr><td colspan="6" class="no-data">Use filters above and click Generate to load records</td></tr>';
+      document.getElementById('snt-tfoot').innerHTML = '';
+      document.getElementById('snt-count').textContent = '— records';
+      document.getElementById('snt-total-info').textContent = '';
+    }
+    return;
+  }
+  const filtered = sentRawData.filter(r => r.some(c => String(c||'').toLowerCase().includes(q)));
+  document.getElementById('snt-rec-count').textContent = `${filtered.length} match${filtered.length!==1?'es':''}`;
   renderSntRows(filtered);
 }
 
@@ -1373,6 +1377,11 @@ function clearSntSearch() {
   document.getElementById('snt-live-search').value = '';
   document.getElementById('snt-rec-count').textContent = '';
   if (sntGenerated) renderSntRows(sntDisplayRows);
+  else {
+    document.getElementById('snt-tbody').innerHTML = '<tr><td colspan="6" class="no-data">Use filters above and click Generate to load records</td></tr>';
+    document.getElementById('snt-count').textContent = '— records';
+    document.getElementById('snt-total-info').textContent = '';
+  }
 }
 
 function resetSntFilters() {
@@ -1380,11 +1389,12 @@ function resetSntFilters() {
     const el = document.getElementById(id); if (el) el.value = '';
   });
   sntSelectedBatches = [];
-  document.getElementById('snt-batch-all').checked = false;
+  const allChk = document.getElementById('snt-batch-all');
+  if (allChk) allChk.checked = false;
   document.querySelectorAll('#snt-batch-opts input[type="checkbox"]').forEach(cb => cb.checked = false);
   document.getElementById('snt-total-info').textContent = '';
-  document.getElementById('snt-search-wrap').style.display = 'none';
   document.getElementById('snt-live-search').value = '';
+  document.getElementById('snt-rec-count').textContent = '';
   sntGenerated = false;
   sntDisplayRows = [];
   document.getElementById('snt-tbody').innerHTML = '<tr><td colspan="6" class="no-data">Use filters above and click Generate to load records</td></tr>';
@@ -1394,8 +1404,8 @@ function resetSntFilters() {
 
 /* ── Batch multi-select ── */
 function openSntBatchPanel() {
+  populateSntBatchOpts('');
   document.getElementById('snt-batch-panel').style.display = 'block';
-  filterSntBatchOptions();
 }
 function closeSntBatchPanel() {
   const p = document.getElementById('snt-batch-panel');
@@ -1414,7 +1424,8 @@ function populateSntBatchOpts(search) {
   if (allChk) allChk.checked = sntBatches.length > 0 && sntSelectedBatches.length === sntBatches.length;
 }
 function filterSntBatchOptions() {
-  const q = document.getElementById('snt-batch-inp').value;
+  const raw = document.getElementById('snt-batch-inp').value;
+  const q   = raw.replace(/^\d+ selected$|^All batches$/, '');
   populateSntBatchOpts(q);
 }
 function onSntBatchCheck() {
@@ -1426,13 +1437,14 @@ function onSntBatchCheck() {
 function toggleAllSntBatches() {
   const checked = document.getElementById('snt-batch-all').checked;
   sntSelectedBatches = checked ? [...sntBatches] : [];
-  populateSntBatchOpts(document.getElementById('snt-batch-inp').value);
+  populateSntBatchOpts('');
   document.getElementById('snt-batch-inp').value = getSntBatchLabel();
 }
 function getSntBatchLabel() {
-  if (!sntSelectedBatches.length || sntSelectedBatches.length === sntBatches.length) return '';
+  if (!sntSelectedBatches.length) return '';
+  if (sntSelectedBatches.length === sntBatches.length) return 'All batches';
   if (sntSelectedBatches.length === 1) return sntSelectedBatches[0];
-  return `${sntSelectedBatches.length} batches selected`;
+  return `${sntSelectedBatches.length} selected`;
 }
 
 /* ── Employee autocomplete ── */
@@ -1455,20 +1467,51 @@ function toggleSntPanel() {
 }
 
 /* ── Bulk Add ── */
-function openSntBulk() {
-  const tbody = document.getElementById('snt-bulk-tbody');
+async function openSntBulk() {
   const today = new Date().toISOString().slice(0,10);
+  // Determine next batch number from last row of EEV Submitted
+  let nextBatch = '';
+  try {
+    if (!sentLoaded) await sntLoadData();
+    const lastBatch = sentRawData.length ? String(sentRawData[sentRawData.length-1][4]||'').trim() : '';
+    const n = parseFloat(lastBatch);
+    nextBatch = !isNaN(n) && n > 0 ? String(Math.round(n) + 1) : '';
+  } catch(e) {}
+  // Cache EEV Ledge data for amount lookup
+  if (!sntLedgeData.length) {
+    try {
+      const range = encodeURIComponent("'EEV Ledge'!A:E");
+      const url   = `https://sheets.googleapis.com/v4/spreadsheets/${GS_ID}/values/${range}?key=${GS_KEY}`;
+      const res   = await fetch(url).then(r => r.json());
+      sntLedgeData = (res.values||[]).slice(1);
+    } catch(e) {}
+  }
+  const tbody = document.getElementById('snt-bulk-tbody');
   tbody.innerHTML = Array.from({length:30}, (_, i) => `
     <tr>
       <td style="text-align:center;color:#888;font-size:12px;">${i+1}</td>
       <td><input class="snt-bi" type="date" value="${today}"></td>
-      <td><input class="snt-bi" type="text" placeholder="Emp #"></td>
-      <td><input class="snt-bi" type="text" placeholder="Ref #"></td>
+      <td><input class="snt-bi" type="text" placeholder="Emp #" onblur="lookupSntAmt(this)"></td>
+      <td><input class="snt-bi" type="text" placeholder="Ref #" onblur="lookupSntAmt(this)"></td>
       <td><input class="snt-bi" type="number" placeholder="0.00" min="0" step="0.01"></td>
-      <td><input class="snt-bi" type="text" placeholder="Batch #"></td>
+      <td><input class="snt-bi" type="text" value="${nextBatch}" placeholder="Batch #"></td>
     </tr>`).join('');
-  const modal = document.getElementById('snt-bulk-modal');
-  modal.style.display = 'flex';
+  document.getElementById('snt-bulk-modal').style.display = 'flex';
+}
+function lookupSntAmt(changedInput) {
+  const tr     = changedInput.closest('tr');
+  const inputs = tr.querySelectorAll('input');
+  const emp    = inputs[1].value.trim().toLowerCase();
+  const ref    = inputs[2].value.trim().toLowerCase();
+  if (!emp || !ref || !sntLedgeData.length) return;
+  const found = sntLedgeData.find(r =>
+    String(r[1]||'').trim().toLowerCase() === emp &&
+    String(r[3]||'').trim().toLowerCase() === ref
+  );
+  if (found && !inputs[3].value) {
+    const amt = parseFloat(found[4]||0);
+    if (amt) inputs[3].value = amt;
+  }
 }
 function closeSntBulk() {
   document.getElementById('snt-bulk-modal').style.display = 'none';
@@ -1484,49 +1527,64 @@ async function saveSntBulk() {
       amount: inputs[3].value.trim(),
       batch:  inputs[4].value.trim()
     };
-  }).filter(e => e.emp || e.amount);
+  }).filter(e => e.emp.length > 0);
 
-  if (!entries.length) { showToast('No data to save', 'error'); return; }
+  if (!entries.length) { showToast('Enter at least one Employee #', 'error'); return; }
 
-  let saved = 0, errors = 0;
+  let saved = 0, errors = 0, lastErr = '';
   showLoading(true);
   for (const e of entries) {
     try {
-      const resp = await fetch(GS_WRITE, {
+      const resp   = await fetch(GS_WRITE, {
         method:'POST',
         headers:{'Content-Type':'application/json'},
         body: JSON.stringify({ action:'addeevsubmitted', data: [e.date, e.emp, e.ref, e.amount, e.batch] })
       });
       const result = await resp.json();
-      if (result.ok) saved++; else errors++;
-    } catch { errors++; }
+      if (result.ok) saved++;
+      else { errors++; lastErr = result.error || 'Server error'; }
+    } catch(err) { errors++; lastErr = err.message; }
   }
   showLoading(false);
-  if (saved)   showToast(`${saved} row${saved!==1?'s':''} saved successfully`, 'success');
-  if (errors)  showToast(`${errors} row${errors!==1?'s':''} failed`, 'error');
+  if (saved)  showToast(`${saved} row${saved!==1?'s':''} saved`, 'success');
+  if (errors) showToast(`${errors} failed: ${lastErr}`, 'error');
   if (saved) {
     closeSntBulk();
-    sentLoaded = false;
-    sntGenerated = false;
-    sntDisplayRows = [];
+    sentLoaded = false; sntGenerated = false; sntDisplayRows = []; sntLedgeData = [];
     await sntGenerate();
   }
 }
 
 function printSentTable() {
-  const tbl = document.getElementById('snt-table');
-  if (!tbl || !sntGenerated) { showToast('Generate data first', 'info'); return; }
+  const thead = document.querySelector('#snt-table thead');
+  const tbody = document.getElementById('snt-tbody');
+  if (!thead || !tbody.querySelector('tr:not(.no-data)')) {
+    showToast('No data to print — use Search or Generate first', 'info'); return;
+  }
+  const printDate = new Date().toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'});
+  // Build print table without tfoot
+  const printTbl = `<table><thead>${thead.innerHTML}</thead><tbody>${tbody.innerHTML}</tbody></table>`;
   const pw = window.open('', '_blank');
-  pw.document.write(`<html><head><title>EEV Sent Account</title>
-  <style>body{font-family:Calibri,sans-serif;font-size:11pt;}
-  table{width:100%;border-collapse:collapse;}
+  pw.document.write(`<!DOCTYPE html><html><head><title>EEV Sent Account</title>
+  <style>
+  body{font-family:Calibri,sans-serif;font-size:11pt;margin:15mm;}
+  table{width:100%;border-collapse:collapse;margin-top:6px;}
   th,td{border:1px solid #999;padding:4px 8px;}
-  th{background:#1a2b3c;color:#fff;}
+  th{background:#1a2b3c;color:#fff;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
   .num{text-align:right;}
-  tfoot td{font-weight:700;background:#f0f4f8;}
+  td[style*="color:#888"]{color:#888!important;}
+  .no-data{display:none;}
+  .footer{display:flex;justify-content:space-between;font-size:9pt;color:#555;border-top:1px solid #ccc;padding-top:4px;margin-top:10px;}
+  @page{margin:15mm;@bottom-left{content:"Created by: Qasim";font-family:Calibri;font-size:9pt;}@bottom-center{content:counter(page)" / "counter(pages);font-family:Calibri;font-size:9pt;}@bottom-right{content:"${printDate}";font-family:Calibri;font-size:9pt;}}
   </style></head><body>
-  <h3 style="margin-bottom:8px;">EEV Sent Account</h3>
-  ${tbl.outerHTML}</body></html>`);
+  <h3 style="margin-bottom:4px;">EEV Sent Account</h3>
+  ${printTbl}
+  <div class="footer">
+    <span>Created by: Qasim</span>
+    <span></span>
+    <span>${printDate}</span>
+  </div>
+  </body></html>`);
   pw.document.close();
   setTimeout(() => pw.print(), 600);
 }
