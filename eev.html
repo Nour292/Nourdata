@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- NourData EEV Module v2.9 - Aug-2026 -->
+<!-- NourData EEV Module v3.0 - Aug-2026 -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -270,7 +270,7 @@ if (sessionStorage.getItem('ne_sb_collapsed') === '1') {
 <aside id="sidebar">
   <div id="sb-header">
     <img id="sb-logo" src="nour_energy_logo.png" alt="Nour Energy" onerror="this.style.display='none'">
-    <div id="sb-title">Nour Energy<small>Expense Voucher &nbsp;·&nbsp; v2.9</small></div>
+    <div id="sb-title">Nour Energy<small>Expense Voucher &nbsp;·&nbsp; v3.0</small></div>
     <button id="sb-toggle" onclick="toggleSidebar()" title="Toggle sidebar">&#9776;</button>
   </div>
   <nav id="sb-nav">
@@ -1573,27 +1573,35 @@ function printSentTable() {
   const title   = getSntExportName();
   const now     = new Date();
   const dateStr = now.toLocaleDateString('en-GB', {day:'2-digit', month:'short', year:'numeric'});
-  const printTbl = `<table><thead>${thead.innerHTML}</thead><tbody>${tbody.innerHTML}</tbody></table>`;
+  const printTbl = `
+    <table>
+      <thead>
+        <tr><th colspan="6" class="rpt-title">${title}</th></tr>
+        ${thead.innerHTML}
+      </thead>
+      <tfoot>
+        <tr><td colspan="6" class="rpt-footer">
+          <span>Prepared by: Qasim</span>
+          <span>Date: ${dateStr}</span>
+        </td></tr>
+      </tfoot>
+      <tbody>${tbody.innerHTML}</tbody>
+    </table>`;
   const pw = window.open('', '_blank');
   pw.document.write(`<!DOCTYPE html><html><head><title>${title}</title>
   <style>
-  body{font-family:Calibri,sans-serif;font-size:11pt;margin:15mm 15mm 25mm 15mm;}
-  table{width:100%;border-collapse:collapse;margin-top:6px;}
+  body{font-family:Calibri,sans-serif;font-size:11pt;margin:12mm;}
+  table{width:100%;border-collapse:collapse;}
   th,td{border:1px solid #999;padding:4px 8px;}
   th{background:#1a2b3c;color:#fff;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+  .rpt-title{background:#fff!important;color:#1a2b3c!important;font-size:13pt;border:none!important;text-align:left;padding-bottom:6px;}
   .num{text-align:right;}
   td[style*="color:#888"]{color:#888!important;}
   .no-data{display:none;}
-  .print-hdr{position:fixed;top:0;right:0;font-size:9pt;color:#555;padding:4px 0;}
-  .print-ftr{position:fixed;bottom:0;left:0;right:0;border-top:1px solid #bbb;display:flex;justify-content:space-between;font-size:9pt;color:#555;padding:4px 0;}
-  @page{counter-increment:page;margin:15mm 15mm 25mm 15mm;}
+  tfoot td{border:none;border-top:1px solid #bbb;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+  .rpt-footer{display:flex;justify-content:space-between;font-size:9pt;color:#555;padding:5px 0;}
+  @page{margin:12mm;@top-right{content:"Page " counter(page);font-size:9pt;color:#555;}}
   </style></head><body>
-  <div class="print-hdr">Page <span id="pgn"></span></div>
-  <div class="print-ftr">
-    <span>Prepared by: Qasim</span>
-    <span>Date: ${dateStr}</span>
-  </div>
-  <h3 style="margin-bottom:4px;">${title}</h3>
   ${printTbl}
   </body></html>`);
   pw.document.close();
