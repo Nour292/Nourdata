@@ -281,7 +281,7 @@ body.dark-mode .sug-item:hover{background:#1a2b3c!important;}
 <aside id="sidebar">
   <div id="sb-header">
     <img src="https://nour292.github.io/Nourdata/nour_energy_logo.png" alt="Logo" id="sb-logo">
-    <div id="sb-title">Nour Energy<small>HR System &nbsp;·&nbsp; v1.9</small></div>
+    <div id="sb-title">Nour Energy<small>HR System &nbsp;·&nbsp; v2.0</small></div>
   </div>
   <nav id="sb-nav">
 
@@ -682,7 +682,7 @@ function doLogout() {
 
 // ─── Data loading ─────────────────────────────────────────────────────────────
 async function loadInvoices() {
-  const range = encodeURIComponent("'Submitted Invoices'!A:H");
+  const range = encodeURIComponent("'Submitted Invoices'!A:G");
   const url = `https://sheets.googleapis.com/v4/spreadsheets/${GS_ID}/values/${range}?key=${GS_KEY}`;
   const res = await fetch(url);
   const data = await res.json();
@@ -695,8 +695,7 @@ async function loadInvoices() {
     amount:        r[3]||'',
     currency:      r[4]||'',
     purchaseOrder: r[5]||'',
-    batchNumber:   r[6]||'',
-    status:        r[7]||''
+    batchNumber:   r[6]||''
   }));
   computeDupInvNos();
 }
