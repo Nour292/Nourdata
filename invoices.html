@@ -1659,20 +1659,21 @@ async function saveBulkInvoices() {
   const prog = document.getElementById('bulk-progress');
   btn.disabled = true; prog.style.display = 'inline';
 
-  let saved = 0, failed = 0;
+  let saved = 0, failed = 0, lastErr = '';
   for (const inv of toSave) {
     prog.textContent = `Saving ${saved + failed + 1} / ${toSave.length}…`;
     try {
-      await fetch(GS_WRITE_URL, { method:'POST', redirect:'follow', body: JSON.stringify({ action:'addInvoice', data: inv }) });
-      saved++;
-    } catch { failed++; }
+      const resp = await fetch(GS_WRITE_URL, { method:'POST', redirect:'follow', body: JSON.stringify({ action:'addInvoice', data: inv }) });
+      let result;
+      try { result = await resp.json(); } catch(je) { failed++; lastErr = 'Response not JSON (check Script URL)'; continue; }
+      if (result.ok) saved++;
+      else { failed++; lastErr = result.error || 'Server error'; }
+    } catch(err) { failed++; lastErr = err.message; }
   }
 
   btn.disabled = false; prog.style.display = 'none';
-  closeBulkModal();
-  await loadInvoices();
-  renderTable();
-  showToast(failed ? `Saved ${saved}, ${failed} failed` : `${saved} invoice${saved!==1?'s':''} saved ✓`);
+  if (saved) { closeBulkModal(); await loadInvoices(); renderTable(); }
+  showToast(failed ? `Saved ${saved}, ${failed} failed — ${lastErr}` : `${saved} invoice${saved!==1?'s':''} saved ✓`, failed ? 'err' : '');
 }
 
 // ─── Toast ────────────────────────────────────────────────────────────────────
