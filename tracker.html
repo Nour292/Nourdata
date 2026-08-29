@@ -286,7 +286,7 @@ body.dark-mode .max-emp-name{color:#e0e0e0!important;}
 <aside id="sidebar">
   <div id="sb-header">
     <img src="https://nour292.github.io/Nourdata/nour_energy_logo.png" alt="Logo" id="sb-logo">
-    <div id="sb-title">Nour Energy<small>HR System &nbsp;·&nbsp; v2.3</small></div>
+    <div id="sb-title">Nour Energy<small>HR System &nbsp;·&nbsp; v2.4</small></div>
     <button id="sb-toggle" onclick="toggleSidebar()" aria-label="Toggle sidebar">&#9776;</button>
   </div>
   <nav id="sb-nav">
@@ -1140,7 +1140,7 @@ function buildMaxContent(job) {
   if(job.pafEffDate)   fieldsArr.push(mfld('Effective Date',fmtDisplay(job.pafEffDate)));
   if(job.iqama)        fieldsArr.push(mfld('Iqama Expiry',fmtDisplay(job.iqama)));
   if(job.notes)        fieldsArr.push(`<div class="max-field"><span class="max-flabel">Notes</span><span class="max-fval red">${escHtml(job.notes)}</span></div>`);
-  let fields = fieldsArr.slice(0,5).join('');
+  let fields = fieldsArr.join('');
   if(job.createdAt)    fields+=`<div class="max-field"><span class="max-flabel" style="color:#aaa;">Created</span><span class="max-fval" style="color:#aaa;font-size:11px;">${fmtDisplay(job.createdAt)}</span></div>`;
 
   const holdHtml = getStatuses(job).includes('On Hold')&&job.holdReason ? `<div class="hold-reason" style="margin:12px 0;">⚠️ ${escHtml(job.holdReason)}</div>` : '';
