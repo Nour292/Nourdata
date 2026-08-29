@@ -248,9 +248,9 @@ body.user-mode .admin-only { display: none !important; }
 /* ── Maximize overlay ── */
 .card-max-btn{position:absolute;top:8px;right:8px;background:none;border:1px solid rgba(0,0,0,0.12);cursor:pointer;font-size:13px;color:#7a8c9a;padding:1px 6px;border-radius:5px;line-height:1.5;z-index:1;}
 .card-max-btn:hover{background:rgba(0,0,0,0.07);color:#2c3e50;}
-#job-max-overlay{display:none;position:fixed;right:0;top:0;bottom:0;width:50%;z-index:400;background:#f0f4f8;padding:20px 20px;flex-direction:column;overflow-y:auto;box-shadow:-6px 0 28px rgba(0,0,0,0.18);}
+#job-max-overlay{display:none;position:fixed;right:0;top:0;bottom:0;width:50%;z-index:400;background:#f0f4f8;padding:16px;flex-direction:column;box-shadow:-6px 0 28px rgba(0,0,0,0.18);}
 #job-max-overlay.visible{display:flex;}
-.max-card{background:#fff;border-radius:12px;padding:16px 18px;box-shadow:0 2px 10px rgba(0,0,0,0.07);display:flex;flex-direction:column;}
+.max-card{background:#fff;border-radius:12px;padding:16px 18px;box-shadow:0 2px 10px rgba(0,0,0,0.07);display:flex;flex-direction:column;flex:1;}
 .max-top-row{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:14px;gap:10px;}
 .max-title-block{flex:1;}
 .max-emp-row{display:flex;align-items:center;gap:8px;margin-bottom:6px;}
@@ -259,7 +259,7 @@ body.user-mode .admin-only { display: none !important; }
 .max-type-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
 .max-close-btn{background:#e74c3c;color:#fff;border:none;border-radius:7px;padding:6px 14px;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap;flex-shrink:0;}
 .max-close-btn:hover{background:#c0392b;}
-.max-fields{display:grid;grid-template-columns:1fr;align-content:start;}
+.max-fields{display:grid;grid-template-columns:1fr;align-content:start;flex:1;}
 .max-field{display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid #f0f4f8;font-size:12px;}
 .max-field:last-child{border-bottom:none;}
 .max-flabel{color:#888;font-weight:600;}
@@ -286,7 +286,7 @@ body.dark-mode .max-emp-name{color:#e0e0e0!important;}
 <aside id="sidebar">
   <div id="sb-header">
     <img src="https://nour292.github.io/Nourdata/nour_energy_logo.png" alt="Logo" id="sb-logo">
-    <div id="sb-title">Nour Energy<small>HR System &nbsp;·&nbsp; v2.4</small></div>
+    <div id="sb-title">Nour Energy<small>HR System &nbsp;·&nbsp; v2.5</small></div>
     <button id="sb-toggle" onclick="toggleSidebar()" aria-label="Toggle sidebar">&#9776;</button>
   </div>
   <nav id="sb-nav">
