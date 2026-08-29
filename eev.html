@@ -1,11 +1,11 @@
-<!DOCTYPE html>
-<!-- NourData EEV Module v3.2 - Aug-2026 -->
+﻿<!DOCTYPE html>
+<!-- NourData EEV Module v3.3 - Aug-2026 -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<link rel="icon" type="image/png" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAVtElEQVR42u2beXRd1ZXmf3d47977Bg1PA5IsWcLtseMRDHEY7HggjgkVBuN46oiYYJPExqFpGigWKyEVzMoqcLqAihNiGw9xIEwLBzBFlQeagCsYG8/gASGENVjz8OY7nv7j6b2YNHRbtkxSK3W03h9Pujr3nr332d93vr2vJIQQXKDhui6fNb0kSZ95/eddqyjKhXpEpAtlACHE5y70r2G+7FAHe9HpdBrTNCkoKGDTpk3s3bsXwzCQJAlVVZFlOffJ2l4Iged5n/rEYjHS6TSVlZXcdNNNjB8/HkmSkGX5rzMCXNdFURS2bt3KqFGjGDNmDFOmTGHPnj3ouo7P50PXdfx+Pz6fiqKoSJKEEALXdXEcB8dxiEb7SCZTDBkyhCVLljBv3jxGjRqFpmkXZAuog+V5WZaJxWJs2bKFzZs347ousiwzdOhQiouLMQwDwzBQVT+KqqDIMiABAgTYjkNPTzfFxcUsWDCfuXPnout67h7vvfceI0aMIBwO/z/zyECHPFielySJDRs20NzcTCAQoKenF0mSKCuvoKi4hMKCCKFgmGAwSMAIoBsBDMMgGAwhyQqapnHrrd9ly5YtLF68GF3XEULw5ptvsmDBAiZPnszGjRuRJAnP8/56toAQAiEEjuMwYsQIZs2axfr16/nkk0+4/fbb8fn8+DUdxafi8/nwKSqyoiDLErKiEI/Hqa6q4pbaWkaPHpWb98SJE2zcuIFt216jq6uLRCJBSUkJ+/fvJxQKDVoUqIPhfVVVef755zl16hRjx44FwDRNdN3A0AP4NT+K5kdVMwZQVBVFlkmmkmzdeipLF8zHQCfXi/wBqXi7IIvwAAAAASUVORK5CYII=">
+<link rel="icon" type="image/png" href="nour_energy_logo.png">
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#1a6fa8">
 <title>Nour Energy — EEV Module</title>
@@ -14,7 +14,7 @@
 html,body{font-family:'Calibri',sans-serif;background:#f0f4f8;min-height:100vh;}
 #layout{display:flex;min-height:100vh;}
 
-/* ── Sidebar ── */
+/* â”€â”€ Sidebar â”€â”€ */
 #sidebar{width:220px;min-width:220px;background:#1a2b3c;display:flex;flex-direction:column;position:fixed;top:0;left:0;bottom:0;z-index:200;transition:width 0.25s ease,min-width 0.25s ease;overflow:hidden;}
 #sidebar.collapsed{width:52px;min-width:52px;}
 #sb-header{display:flex;align-items:center;gap:10px;padding:14px 12px;border-bottom:1px solid rgba(255,255,255,0.08);min-height:58px;}
@@ -33,7 +33,6 @@ html,body{font-family:'Calibri',sans-serif;background:#f0f4f8;min-height:100vh;}
 .sb-group-hdr:hover{background:rgba(255,255,255,0.05);color:#fff;}
 .sb-arrow{margin-left:auto;font-size:10px;transition:transform 0.2s;}
 .sb-group-items{background:rgba(0,0,0,0.15);}
-#sb-nav .sb-group:not(.no-hover):hover .sb-group-items{display:block!important;}
 .sb-item{display:flex;align-items:center;gap:12px;padding:9px 16px 9px 28px;cursor:pointer;color:#b8cfe0;font-size:13px;font-weight:600;border:none;background:none;width:100%;text-align:left;white-space:nowrap;transition:background 0.15s,color 0.15s;text-decoration:none;}
 .sb-item:hover{background:rgba(255,255,255,0.07);color:#fff;}
 .sb-item.active{background:rgba(46,134,193,0.22);color:#fff;border-left:3px solid #2e86c1;}
@@ -55,7 +54,7 @@ html,body{font-family:'Calibri',sans-serif;background:#f0f4f8;min-height:100vh;}
 #sidebar.collapsed #sb-logout{justify-content:center;padding:8px;}
 #sidebar.collapsed #sb-logout-label{display:none;}
 
-/* ── Main ── */
+/* â”€â”€ Main â”€â”€ */
 #main-content{margin-left:220px;flex:1;display:flex;flex-direction:column;min-height:100vh;transition:margin-left 0.25s;background:#f0f4f8;}
 body.sb-collapsed #main-content{margin-left:52px;}
 #top-header{background:#fff;border-bottom:1px solid #e0e8f0;padding:12px 24px;display:flex;align-items:center;gap:16px;position:sticky;top:0;z-index:100;box-shadow:0 1px 4px rgba(0,0,0,0.06);}
@@ -71,7 +70,7 @@ body.sb-collapsed #main-content{margin-left:52px;}
 .btn-copy{background:#1a6b8a;color:#fff;}
 .btn-bulk-add{background:#1a7a4a;color:#fff;}
 #page-body{padding:20px 24px;flex:1;}
-/* ── EEV Sent: search bar ── */
+/* â”€â”€ EEV Sent: search bar â”€â”€ */
 #snt-search-wrap{display:flex;align-items:center;gap:8px;background:#fff;border:1.5px solid #d0dce8;border-radius:8px;padding:7px 12px;margin-bottom:12px;box-shadow:0 1px 4px rgba(0,0,0,0.04);}
 body.dark-mode #snt-search-wrap{background:#162232;border-color:#2a4060;}
 body.dark-mode #snt-batch-inp{background:#1e3048 !important;border-color:#2a4060 !important;color:#e0e8f0 !important;}
@@ -83,7 +82,7 @@ body.dark-mode #snt-search-wrap input{color:#e0e8f0;}
 #snt-search-wrap input::placeholder{color:#a0b4c8;}
 #snt-clear-btn{padding:3px 8px;border:1px solid #d0dce8;border-radius:5px;background:#f0f4f8;font-size:12px;cursor:pointer;color:#5a7a9a;white-space:nowrap;}
 #snt-rec-count{color:#888;font-size:12px;font-weight:600;white-space:nowrap;}
-/* ── EEV Sent: batch multi-select ── */
+/* â”€â”€ EEV Sent: batch multi-select â”€â”€ */
 .snt-ms-wrap{position:relative;}
 .snt-ms-panel{position:absolute;top:100%;left:0;width:100%;min-width:160px;background:#fff;border:1.5px solid #d0dce8;border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,0.14);z-index:400;max-height:260px;overflow-y:auto;margin-top:2px;}
 body.dark-mode .snt-ms-panel{background:#162232;border-color:#2a4060;}
@@ -91,14 +90,14 @@ body.dark-mode .snt-ms-panel{background:#162232;border-color:#2a4060;}
 body.dark-mode .snt-ms-opt{color:#e0e8f0;}
 .snt-ms-opt:hover{background:#f0f4f8;}
 body.dark-mode .snt-ms-opt:hover{background:#1e3048;}
-/* ── EEV Sent: autocomplete suggestions ── */
+/* â”€â”€ EEV Sent: autocomplete suggestions â”€â”€ */
 .snt-sug-list{position:absolute;top:100%;left:0;right:0;background:#fff;border:1.5px solid #d0dce8;border-radius:6px;box-shadow:0 4px 12px rgba(0,0,0,0.1);z-index:350;max-height:180px;overflow-y:auto;margin-top:2px;}
 body.dark-mode .snt-sug-list{background:#162232;border-color:#2a4060;}
 .snt-sug-item{padding:6px 12px;font-size:13px;cursor:pointer;color:#1a2b3c;white-space:nowrap;}
 body.dark-mode .snt-sug-item{color:#e0e8f0;}
 .snt-sug-item:hover{background:#f0f4f8;}
 body.dark-mode .snt-sug-item:hover{background:#1e3048;}
-/* ── EEV Sent: bulk modal ── */
+/* â”€â”€ EEV Sent: bulk modal â”€â”€ */
 .snt-bulk-box{width:98vw;max-width:900px;max-height:92vh;}
 #snt-bulk-scroll{overflow:auto;flex:1;}
 #snt-bulk-tbl{width:100%;border-collapse:collapse;font-size:13px;table-layout:fixed;}
@@ -107,18 +106,18 @@ body.dark-mode .snt-sug-item:hover{background:#1e3048;}
 .snt-bi{width:100%;border:1px solid #d0dce8;border-radius:4px;padding:4px 6px;font-size:13px;font-family:'Calibri',sans-serif;box-sizing:border-box;}
 .snt-bi.err{border-color:#e74c3c;background:#fff5f5;}
 body.dark-mode .snt-bi{background:#1e3048;border-color:#2a4060;color:#e0e8f0;}
-/* ── Dark mode: Bulk modal ── */
+/* â”€â”€ Dark mode: Bulk modal â”€â”€ */
 body.dark-mode #snt-bulk-modal .snt-bulk-box{background:#162232;}
 body.dark-mode #snt-bulk-modal [style*="background:#1a2b3c"]{background:#0d1a26!important;}
 body.dark-mode #snt-bulk-modal [style*="background:#f8fafc"]{background:#1e3048!important;}
 body.dark-mode #snt-bulk-modal [style*="border-top:1px solid #e8f0f8"]{border-color:#2a4060!important;}
 body.dark-mode #snt-bulk-tbl td{border-color:#2a4060;}
 
-/* ── Section visibility ── */
+/* â”€â”€ Section visibility â”€â”€ */
 .section{display:none;}
 .section.active{display:block;}
 
-/* ── Filter bar ── */
+/* â”€â”€ Filter bar â”€â”€ */
 .filter-card{background:#fff;border-radius:10px;padding:14px 18px;margin-bottom:14px;box-shadow:0 1px 6px rgba(0,0,0,0.07);border:1px solid #e0e8f0;}
 .filter-row{display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end;}
 .filter-field{display:flex;flex-direction:column;gap:3px;flex:1;min-width:120px;}
@@ -131,7 +130,7 @@ body.dark-mode #snt-bulk-tbl td{border-color:#2a4060;}
 .btn-reset{padding:7px 14px;background:#f0f4f8;color:#1a2b3c;border:1.5px solid #d0dce8;border-radius:7px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Calibri',sans-serif;}
 .btn-reset:hover{background:#e8eef5;}
 
-/* ── Table ── */
+/* â”€â”€ Table â”€â”€ */
 .tbl-wrap{background:#fff;border-radius:10px;box-shadow:0 1px 6px rgba(0,0,0,0.07);border:1px solid #e0e8f0;overflow:hidden;}
 .tbl-toolbar{display:flex;align-items:center;justify-content:space-between;padding:10px 16px;border-bottom:1px solid #e8f0f8;}
 .tbl-count{font-size:13px;font-weight:700;color:#1a2b3c;}
@@ -151,7 +150,7 @@ tfoot td{padding:9px 10px;background:#edf2f7;font-weight:700;color:#1a2b3c;font-
 tfoot td.num{text-align:right;font-variant-numeric:tabular-nums;}
 .no-data{text-align:center;padding:32px;color:#8fa8c0;font-size:14px;}
 
-/* ── EEV Form ── */
+/* â”€â”€ EEV Form â”€â”€ */
 .form-card{background:#fff;border-radius:10px;padding:18px 20px;margin-bottom:14px;box-shadow:0 1px 6px rgba(0,0,0,0.07);border:1px solid #e0e8f0;}
 .form-card-title{font-size:13px;font-weight:700;color:#1a2b3c;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid #e8f0f8;}
 .form-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px 14px;}
@@ -200,19 +199,19 @@ tfoot td.num{text-align:right;font-variant-numeric:tabular-nums;}
 .btn-clear-form{padding:10px 20px;background:#f0f4f8;color:#1a2b3c;border:1.5px solid #d0dce8;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;font-family:'Calibri',sans-serif;}
 .btn-clear-form:hover{background:#e8eef5;}
 
-/* ── Toast ── */
+/* â”€â”€ Toast â”€â”€ */
 #toast{position:fixed;bottom:24px;right:24px;background:#1a2b3c;color:#fff;padding:12px 20px;border-radius:10px;font-size:14px;font-weight:600;z-index:9999;opacity:0;transform:translateY(12px);transition:all 0.3s;pointer-events:none;max-width:380px;box-shadow:0 4px 20px rgba(0,0,0,0.25);}
 #toast.show{opacity:1;transform:translateY(0);}
 #toast.success{background:#117a65;}
 #toast.error{background:#c0392b;}
 #toast.info{background:#2e86c1;}
 
-/* ── Loading ── */
+/* â”€â”€ Loading â”€â”€ */
 #loading-overlay{position:fixed;inset:0;background:rgba(255,255,255,0.7);display:flex;align-items:center;justify-content:center;z-index:5000;display:none;}
 .spinner{width:40px;height:40px;border:4px solid #d0dce8;border-top-color:#2e86c1;border-radius:50%;animation:spin 0.7s linear infinite;}
 @keyframes spin{to{transform:rotate(360deg);}}
 
-/* ── Dark mode ── */
+/* â”€â”€ Dark mode â”€â”€ */
 body.dark-mode{background:#0f1824;}
 body.dark-mode #sidebar{background:#0d1a26;}
 body.dark-mode #main-content{background:#0f1824;}
@@ -266,11 +265,11 @@ if (sessionStorage.getItem('ne_sb_collapsed') === '1') {
 <div id="toast"></div>
 
 <div id="layout">
-<!-- ══════════ SIDEBAR ══════════ -->
+<!-- â•â•â•â•â•â•â•â•â•â• SIDEBAR â•â•â•â•â•â•â•â•â•â• -->
 <aside id="sidebar">
   <div id="sb-header">
     <img id="sb-logo" src="nour_energy_logo.png" alt="Nour Energy" onerror="this.style.display='none'">
-    <div id="sb-title">Nour Energy<small>Expense Voucher &nbsp;·&nbsp; v3.2</small></div>
+    <div id="sb-title">Nour Energy<small>Expense Voucher &nbsp;Â·&nbsp; v3.3</small></div>
     <button id="sb-toggle" onclick="toggleSidebar()" title="Toggle sidebar">&#9776;</button>
   </div>
   <nav id="sb-nav">
@@ -327,7 +326,7 @@ if (sessionStorage.getItem('ne_sb_collapsed') === '1') {
   </div>
 </aside>
 
-<!-- ══════════ MAIN CONTENT ══════════ -->
+<!-- â•â•â•â•â•â•â•â•â•â• MAIN CONTENT â•â•â•â•â•â•â•â•â•â• -->
 <div id="main-content">
   <div id="top-header">
     <span id="page-title">Employee Expense Voucher</span>
@@ -342,10 +341,10 @@ if (sessionStorage.getItem('ne_sb_collapsed') === '1') {
   </div>
   <div id="page-body">
 
-    <!-- ────────── SECTION: EEV FORM ────────── -->
+    <!-- â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ SECTION: EEV FORM â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ -->
     <div id="sec-form" class="section active">
 
-      <!-- Top bar: Voucher Info + Actions (3×2 grid) -->
+      <!-- Top bar: Voucher Info + Actions (3Ã—2 grid) -->
       <div class="form-card" style="margin-bottom:8px;padding:10px 14px">
         <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:8px;align-items:flex-end">
           <div class="form-field" style="margin:0">
@@ -393,7 +392,7 @@ if (sessionStorage.getItem('ne_sb_collapsed') === '1') {
       </div>
     </div><!-- /sec-form -->
 
-    <!-- ────────── SECTION: EEV LEDGER ────────── -->
+    <!-- â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ SECTION: EEV LEDGER â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ -->
     <div id="sec-ledger" class="section">
       <div class="filter-card">
         <div class="filter-row">
@@ -446,14 +445,14 @@ if (sessionStorage.getItem('ne_sb_collapsed') === '1') {
                 <th class="num">Balance</th>
               </tr>
             </thead>
-            <tbody id="lg-tbody"><tr><td colspan="6" class="no-data">Loading data…</td></tr></tbody>
+            <tbody id="lg-tbody"><tr><td colspan="6" class="no-data">Loading dataâ€¦</td></tr></tbody>
             <tfoot id="lg-tfoot"></tfoot>
           </table>
         </div>
       </div>
     </div><!-- /sec-ledger -->
 
-    <!-- ────────── SECTION: EMPLOYEE STATEMENT ────────── -->
+    <!-- â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ SECTION: EMPLOYEE STATEMENT â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ -->
     <div id="sec-statement" class="section">
       <div class="filter-card">
         <div class="filter-row">
@@ -504,7 +503,7 @@ if (sessionStorage.getItem('ne_sb_collapsed') === '1') {
       </div>
     </div><!-- /sec-statement -->
 
-    <!-- ────────── SECTION: BALANCE SUMMARY ────────── -->
+    <!-- â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ SECTION: BALANCE SUMMARY â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ -->
     <div id="sec-balance" class="section">
       <div class="filter-card">
         <div class="filter-row">
@@ -538,14 +537,14 @@ if (sessionStorage.getItem('ne_sb_collapsed') === '1') {
                 <th class="num">Current Balance</th>
               </tr>
             </thead>
-            <tbody id="bs-tbody"><tr><td colspan="6" class="no-data">Loading data…</td></tr></tbody>
+            <tbody id="bs-tbody"><tr><td colspan="6" class="no-data">Loading dataâ€¦</td></tr></tbody>
             <tfoot id="bs-tfoot"></tfoot>
           </table>
         </div>
       </div>
     </div><!-- /sec-balance -->
 
-    <!-- ────────── SECTION: EEV SENT ACCOUNT ────────── -->
+    <!-- â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ SECTION: EEV SENT ACCOUNT â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ -->
     <div id="sec-sent" class="section">
 
       <!-- Collapsible filter panel -->
@@ -571,7 +570,7 @@ if (sessionStorage.getItem('ne_sb_collapsed') === '1') {
             </div>
             <div class="filter-field" style="max-width:160px">
               <label>Ref Number</label>
-              <input type="text" id="snt-ref" placeholder="Partial match…">
+              <input type="text" id="snt-ref" placeholder="Partial matchâ€¦">
             </div>
             <div class="filter-field" style="max-width:200px;">
               <label>Batch Number</label>
@@ -601,7 +600,7 @@ if (sessionStorage.getItem('ne_sb_collapsed') === '1') {
       <!-- Live search bar -->
       <div id="snt-search-wrap">
         <span style="color:#a0b4c8;font-size:15px;">&#128269;</span>
-        <input type="text" id="snt-live-search" placeholder="Search in results…" oninput="onSntLiveSearch()">
+        <input type="text" id="snt-live-search" placeholder="Search in resultsâ€¦" oninput="onSntLiveSearch()">
         <button id="snt-clear-btn" onclick="clearSntSearch()">&#10005; Clear</button>
         <span id="snt-rec-count"></span>
       </div>
@@ -629,7 +628,7 @@ if (sessionStorage.getItem('ne_sb_collapsed') === '1') {
       </div>
     </div><!-- /sec-sent -->
 
-    <!-- ────────── MODAL: EEV Sent Bulk Add ────────── -->
+    <!-- â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ MODAL: EEV Sent Bulk Add â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ -->
     <div id="snt-bulk-modal" onclick="if(event.target===this)closeSntBulk()"
       style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:3000;align-items:center;justify-content:center;">
       <div class="snt-bulk-box" style="background:#fff;border-radius:12px;box-shadow:0 8px 40px rgba(0,0,0,0.22);display:flex;flex-direction:column;overflow:hidden;">
@@ -664,9 +663,9 @@ if (sessionStorage.getItem('ne_sb_collapsed') === '1') {
 </div><!-- /layout -->
 
 <script>
-/* ══════════════════════════════════════════════
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
    CONSTANTS
-══════════════════════════════════════════════ */
+â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 const GS_ID    = '16QYl00ATXVIlQKkqRxdAIdU6J3u7lDfg0PIoJfaDBpo';
 const GS_KEY   = 'AIzaSyBfjtlvDvGxmS1OcqFVGNMMadqza1ofCrI';
 const GS_WRITE = 'https://script.google.com/macros/s/AKfycbzGXoDV-fdif6qiP_wFjmoULC0pXoRDVsH1P_-LptWEAIwYC3NBzDo-aWwOr4OXoaVuxQ/exec';
@@ -701,16 +700,16 @@ const EEV_CODES = [
   {code:'000', desc:'Assets & Emp. Accts.'}
 ];
 
-/* ══════════════════════════════════════════════
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
    DATA CACHE
-══════════════════════════════════════════════ */
+â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 let masterData  = [];  // rows from Master File sheet (after header)
 let sentRawData = [];  // rows from EEV Submitted sheet
 let sentLoaded  = false;
 
-/* ══════════════════════════════════════════════
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
    SIDEBAR
-══════════════════════════════════════════════ */
+â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 function toggleSidebar() {
   const sb = document.getElementById('sidebar');
   sb.classList.toggle('collapsed');
@@ -742,9 +741,9 @@ function showSection(name) {
   }
 }
 
-/* ══════════════════════════════════════════════
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
    DARK MODE / LOGOUT
-══════════════════════════════════════════════ */
+â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 function toggleDark() {
   document.body.classList.toggle('dark-mode');
   sessionStorage.setItem('ne_dark', document.body.classList.contains('dark-mode') ? '1' : '0');
@@ -755,9 +754,9 @@ function logout() {
   location.href = 'index.html';
 }
 
-/* ══════════════════════════════════════════════
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
    DATA LOADING
-══════════════════════════════════════════════ */
+â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 async function loadAllData() {
   showLoading(true);
   try {
@@ -776,9 +775,9 @@ function getEmpName(empNum) {
   return row ? String(row[1]||'').trim() : '';
 }
 
-/* ══════════════════════════════════════════════
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
    EEV FORM — BUILD EXPENSE ROWS
-══════════════════════════════════════════════ */
+â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 function buildExpenseRows() {
   const tbody = document.getElementById('exp-tbody');
   tbody.innerHTML = '';
@@ -801,9 +800,9 @@ function buildExpenseRows() {
   }
 }
 
-/* ══════════════════════════════════════════════
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
    EEV FORM — CALCULATIONS
-══════════════════════════════════════════════ */
+â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 function calcTotal() {
   let total = 0;
   EEV_CODES.forEach((_, i) => {
@@ -837,9 +836,9 @@ function getEmpBalance(empNum) {
   return wf - eev;
 }
 
-/* ══════════════════════════════════════════════
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
    EEV FORM — SAVE
-══════════════════════════════════════════════ */
+â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 async function saveEEV() {
   const empNum = document.getElementById('f-empnum').value.trim();
   if (!empNum) { showToast('Please enter Employee #', 'error'); return; }
@@ -862,7 +861,7 @@ async function saveEEV() {
 
   const btn = document.getElementById('btn-save');
   btn.disabled = true;
-  btn.textContent = 'Saving…';
+  btn.textContent = 'Savingâ€¦';
 
   try {
     const resp = await fetch(GS_WRITE, {
@@ -902,7 +901,7 @@ async function printSheet() {
     amounts
   };
 
-  showToast('Writing to sheet…', 'info');
+  showToast('Writing to sheetâ€¦', 'info');
 
   try {
     const resp   = await fetch(GS_WRITE, { method: 'POST', redirect: 'follow', body: JSON.stringify(payload) });
@@ -926,9 +925,9 @@ function clearForm() {
   });
 }
 
-/* ══════════════════════════════════════════════
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
    LEDGER SECTION
-══════════════════════════════════════════════ */
+â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 async function renderLedger() {
   const from   = document.getElementById('lg-from').value;
   const to     = document.getElementById('lg-to').value;
@@ -939,9 +938,9 @@ async function renderLedger() {
   const tfoot  = document.getElementById('lg-tfoot');
 
   document.getElementById('lg-emp-info').textContent = empF ? `${empF} — ${getEmpName(empF)}` : '';
-  tbody.innerHTML = '<tr><td colspan="6" class="no-data">Loading…</td></tr>';
+  tbody.innerHTML = '<tr><td colspan="6" class="no-data">Loadingâ€¦</td></tr>';
   tfoot.innerHTML = '';
-  document.getElementById('lg-count').textContent = 'Loading…';
+  document.getElementById('lg-count').textContent = 'Loadingâ€¦';
 
   const params = new URLSearchParams({ action: 'getLedge' });
   if (empF)  params.append('empNum',   empF);
@@ -1002,9 +1001,9 @@ function resetLedgerFilters() {
   document.getElementById('lg-count').textContent = '—';
 }
 
-/* ══════════════════════════════════════════════
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
    STATEMENT SECTION
-══════════════════════════════════════════════ */
+â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 async function renderStatement() {
   const empRaw = document.getElementById('st-emp').value.trim();
   const empNum = empRaw.replace(/\s*—.*$/, '').trim();
@@ -1015,9 +1014,9 @@ async function renderStatement() {
 
   const tbody = document.getElementById('st-tbody');
   const tfoot = document.getElementById('st-tfoot');
-  tbody.innerHTML = '<tr><td colspan="6" class="no-data">Loading…</td></tr>';
+  tbody.innerHTML = '<tr><td colspan="6" class="no-data">Loadingâ€¦</td></tr>';
   tfoot.innerHTML = '';
-  document.getElementById('st-count').textContent = 'Loading…';
+  document.getElementById('st-count').textContent = 'Loadingâ€¦';
 
   const params = new URLSearchParams({ action: 'getLedge', empNum });
   if (from) params.append('dateFrom', from);
@@ -1194,14 +1193,14 @@ ${tblHTML}
   setTimeout(function() { pw.print(); }, 600);
 }
 
-/* ══════════════════════════════════════════════
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
    BALANCE SUMMARY
-══════════════════════════════════════════════ */
+â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 async function renderBalanceSummary() {
   const search = (document.getElementById('bs-search').value || '').trim().toLowerCase();
   const tbody  = document.getElementById('bs-tbody');
   const tfoot  = document.getElementById('bs-tfoot');
-  tbody.innerHTML = '<tr><td colspan="6" class="no-data">Loading…</td></tr>';
+  tbody.innerHTML = '<tr><td colspan="6" class="no-data">Loadingâ€¦</td></tr>';
   tfoot.innerHTML = '';
 
   let rawRows = [];
@@ -1262,9 +1261,9 @@ async function renderBalanceSummary() {
   document.getElementById('bs-count').textContent = `${rows.length} employee${rows.length !== 1 ? 's' : ''}`;
 }
 
-/* ══════════════════════════════════════════════
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
    EMPLOYEE DROPDOWNS
-══════════════════════════════════════════════ */
+â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 function populateEmpDropdowns() {
   const empList = masterData.map(r => String(r[0]||'').trim()).filter(Boolean).sort();
   ['lg-emp-list', 'st-emp-list'].forEach(id => {
@@ -1279,9 +1278,9 @@ function populateEmpDropdowns() {
   });
 }
 
-/* ══════════════════════════════════════════════
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
    EEV SENT ACCOUNT SECTION
-══════════════════════════════════════════════ */
+â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 let sntBatches         = [];
 let sntSelectedBatches = [];
 let sntDisplayRows     = [];
@@ -1310,9 +1309,9 @@ async function loadAndShowNotSent() {
   sntViewMode = 'not-sent';
   const tbody = document.getElementById('snt-tbody');
   const tfoot = document.getElementById('snt-tfoot');
-  tbody.innerHTML = '<tr><td colspan="6" class="no-data">Loading pending items…</td></tr>';
+  tbody.innerHTML = '<tr><td colspan="6" class="no-data">Loading pending itemsâ€¦</td></tr>';
   tfoot.innerHTML = '';
-  document.getElementById('snt-count').textContent = 'Loading…';
+  document.getElementById('snt-count').textContent = 'Loadingâ€¦';
   try {
     showLoading(true);
     const range = encodeURIComponent("'EEV Ledge'!A:AK");
@@ -1345,7 +1344,7 @@ function renderNotSentRows() {
       <td class="num">${amt ? fmt(amt) : '—'}</td>
       <td style="color:#c0392b;font-weight:600;font-size:11px;">Not Sent</td>
     </tr>`;
-  }).join('') || '<tr><td colspan="6" class="no-data">All records have been sent ✓</td></tr>';
+  }).join('') || '<tr><td colspan="6" class="no-data">All records have been sent âœ“</td></tr>';
   if (sntNotSentData.length) {
     tfoot.innerHTML = `<tr>
       <td colspan="4" style="font-weight:700;text-align:right">TOTAL</td>
@@ -1471,7 +1470,7 @@ function resetSntFilters() {
   loadAndShowNotSent();
 }
 
-/* ── Batch multi-select ── */
+/* â”€â”€ Batch multi-select â”€â”€ */
 function openSntBatchPanel() {
   populateSntBatchOpts('');
   document.getElementById('snt-batch-panel').style.display = 'block';
@@ -1516,7 +1515,7 @@ function getSntBatchLabel() {
   return `${sntSelectedBatches.length} selected`;
 }
 
-/* ── Employee autocomplete ── */
+/* â”€â”€ Employee autocomplete â”€â”€ */
 function onSntEmpInput() {
   const q   = document.getElementById('snt-emp').value.trim().toLowerCase();
   const sug = document.getElementById('snt-emp-sug');
@@ -1528,14 +1527,14 @@ function onSntEmpInput() {
 }
 function closeSntSug() { const s = document.getElementById('snt-emp-sug'); if (s) s.style.display='none'; }
 
-/* ── Toggle filter panel ── */
+/* â”€â”€ Toggle filter panel â”€â”€ */
 function toggleSntPanel() {
   sntPanelOpen = !sntPanelOpen;
   document.getElementById('snt-filter-body').style.display = sntPanelOpen ? '' : 'none';
   document.getElementById('snt-toggle-btn').innerHTML = sntPanelOpen ? '&#9650;' : '&#9660;';
 }
 
-/* ── Bulk Add ── */
+/* â”€â”€ Bulk Add â”€â”€ */
 async function openSntBulk() {
   const today = new Date().toISOString().slice(0,10);
   // Determine next batch number from last row of EEV Submitted
@@ -1676,9 +1675,9 @@ function printSentTable() {
   setTimeout(() => pw.print(), 600);
 }
 
-/* ══════════════════════════════════════════════
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
    EXPORT FUNCTIONS
-══════════════════════════════════════════════ */
+â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 function exportTable(tableId, filename) {
   const tbl = document.getElementById(tableId);
   if (!tbl) return;
@@ -1689,7 +1688,7 @@ function exportTable(tableId, filename) {
       return `"${t}"`;
     }).join(',')
   ).join('\n');
-  const blob = new Blob(['﻿' + csv], {type:'text/csv;charset=utf-8;'});
+  const blob = new Blob(['ï»¿' + csv], {type:'text/csv;charset=utf-8;'});
   const url  = URL.createObjectURL(blob);
   const a    = document.createElement('a');
   a.href = url; a.download = filename + '.csv'; a.click();
@@ -1709,7 +1708,7 @@ function exportSntTable() {
   );
   data.push('');
   data.push(`"Prepared by: Qasim","Date: ${dateStr}"`);
-  const blob = new Blob(['﻿' + data.join('\n')], {type:'text/csv;charset=utf-8;'});
+  const blob = new Blob(['ï»¿' + data.join('\n')], {type:'text/csv;charset=utf-8;'});
   const url  = URL.createObjectURL(blob);
   const a    = document.createElement('a');
   a.href = url; a.download = getSntExportName() + '.csv'; a.click();
@@ -1831,9 +1830,9 @@ function copyTable(tableId) {
   }
 }
 
-/* ══════════════════════════════════════════════
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
    HELPERS
-══════════════════════════════════════════════ */
+â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 function fmt(n) {
   const v = parseFloat(n) || 0;
   return v.toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2});
@@ -1887,9 +1886,9 @@ function showLoading(on) {
   document.getElementById('loading-overlay').style.display = on ? 'flex' : 'none';
 }
 
-/* ══════════════════════════════════════════════
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
    INIT
-══════════════════════════════════════════════ */
+â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 document.addEventListener('DOMContentLoaded', () => {
   // Restore sidebar state
   if (sessionStorage.getItem('ne_sb_collapsed') === '1') {
@@ -1903,3 +1902,4 @@ document.addEventListener('DOMContentLoaded', () => {
 </script>
 </body>
 </html>
+
