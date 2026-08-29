@@ -1,17 +1,21 @@
 {
   "name": "Nour Energy HR System",
-  "short_name": "Nour HR",
-  "description": "Human Resources Management System",
-  "start_url": "./tracker.html",
+  "short_name": "NourData",
+  "description": "HR System for Nour Energy",
+  "start_url": "/Nourdata/index.html",
   "display": "standalone",
-  "background_color": "#0d1f2d",
+  "background_color": "#1a2b3c",
   "theme_color": "#1a6fa8",
   "icons": [
     {
       "src": "nour_energy_logo.png",
       "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "any maskable"
+      "type": "image/png"
+    },
+    {
+      "src": "nour_energy_logo.png",
+      "sizes": "512x512",
+      "type": "image/png"
     }
   ]
 }
