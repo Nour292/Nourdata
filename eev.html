@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- NourData EEV Module v3.1 - Aug-2026 -->
+<!-- NourData EEV Module v3.2 - Aug-2026 -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -270,7 +270,7 @@ if (sessionStorage.getItem('ne_sb_collapsed') === '1') {
 <aside id="sidebar">
   <div id="sb-header">
     <img id="sb-logo" src="nour_energy_logo.png" alt="Nour Energy" onerror="this.style.display='none'">
-    <div id="sb-title">Nour Energy<small>Expense Voucher &nbsp;·&nbsp; v3.1</small></div>
+    <div id="sb-title">Nour Energy<small>Expense Voucher &nbsp;·&nbsp; v3.2</small></div>
     <button id="sb-toggle" onclick="toggleSidebar()" title="Toggle sidebar">&#9776;</button>
   </div>
   <nav id="sb-nav">
@@ -736,7 +736,10 @@ function showSection(name) {
   const sntHdr = document.getElementById('snt-header-actions');
   if (sntHdr) sntHdr.style.display = (name === 'sent') ? 'flex' : 'none';
   if (name === 'balance') renderBalanceSummary();
-  if (name === 'sent' && !sentLoaded) loadSentBatches();
+  if (name === 'sent') {
+    if (!sentLoaded) loadSentBatches();
+    loadAndShowNotSent();
+  }
 }
 
 /* ══════════════════════════════════════════════
@@ -1285,6 +1288,8 @@ let sntDisplayRows     = [];
 let sntGenerated       = false;
 let sntPanelOpen       = true;
 let sntLedgeData       = [];   // cached EEV Ledge rows for amount lookup
+let sntNotSentData     = [];   // EEV Ledge rows where AK = "Not Sent"
+let sntViewMode        = 'not-sent'; // 'not-sent' | 'generated'
 
 async function sntLoadData() {
   const range = encodeURIComponent("'EEV Submitted'!A:E");
@@ -1301,6 +1306,58 @@ async function loadSentBatches() {
   try { await sntLoadData(); } catch(e) { /* silent — retry on Generate */ }
 }
 
+async function loadAndShowNotSent() {
+  sntViewMode = 'not-sent';
+  const tbody = document.getElementById('snt-tbody');
+  const tfoot = document.getElementById('snt-tfoot');
+  tbody.innerHTML = '<tr><td colspan="6" class="no-data">Loading pending items…</td></tr>';
+  tfoot.innerHTML = '';
+  document.getElementById('snt-count').textContent = 'Loading…';
+  try {
+    showLoading(true);
+    const range = encodeURIComponent("'EEV Ledge'!A:AK");
+    const url = `https://sheets.googleapis.com/v4/spreadsheets/${GS_ID}/values/${range}?key=${GS_KEY}`;
+    const data = await fetch(url).then(r => r.json());
+    showLoading(false);
+    const allRows = (data.values || []).slice(1).filter(r => r[0]);
+    sntNotSentData = allRows.filter(r => String(r[36]||'').trim() === 'Not Sent');
+  } catch(e) {
+    showLoading(false);
+    document.getElementById('snt-count').textContent = '—';
+    tbody.innerHTML = '<tr><td colspan="6" class="no-data">Failed to load — check connection</td></tr>';
+    return;
+  }
+  renderNotSentRows();
+}
+
+function renderNotSentRows() {
+  const tbody = document.getElementById('snt-tbody');
+  const tfoot = document.getElementById('snt-tfoot');
+  let total = 0;
+  tbody.innerHTML = sntNotSentData.map((r, i) => {
+    const amt = parseFloat(r[4]||0) || 0;
+    total += amt;
+    return `<tr>
+      <td style="color:#888;font-size:12px;">${i+1}</td>
+      <td>${fmtDate(r[0])}</td>
+      <td>${r[1]||''}</td>
+      <td>${r[3]||''}</td>
+      <td class="num">${amt ? fmt(amt) : '—'}</td>
+      <td style="color:#c0392b;font-weight:600;font-size:11px;">Not Sent</td>
+    </tr>`;
+  }).join('') || '<tr><td colspan="6" class="no-data">All records have been sent ✓</td></tr>';
+  if (sntNotSentData.length) {
+    tfoot.innerHTML = `<tr>
+      <td colspan="4" style="font-weight:700;text-align:right">TOTAL</td>
+      <td class="num">${fmt(total)}</td>
+      <td></td>
+    </tr>`;
+  } else {
+    tfoot.innerHTML = '';
+  }
+  document.getElementById('snt-count').textContent = `${sntNotSentData.length} Not Sent`;
+}
+
 async function sntGenerate() {
   if (!sentLoaded) {
     showLoading(true);
@@ -1309,6 +1366,7 @@ async function sntGenerate() {
     showLoading(false);
   }
   sntGenerated = true;
+  sntViewMode  = 'generated';
   const from = document.getElementById('snt-from').value;
   const to   = document.getElementById('snt-to').value;
   const empF = document.getElementById('snt-emp').value.trim().toLowerCase();
@@ -1354,19 +1412,36 @@ function renderSntRows(rows) {
 
 function onSntLiveSearch() {
   const q = document.getElementById('snt-live-search').value.trim().toLowerCase();
-  if (!sentLoaded) {
-    if (!q) { document.getElementById('snt-rec-count').textContent = ''; return; }
-    sntLoadData().then(() => onSntLiveSearch());
-    return;
-  }
   if (!q) {
     document.getElementById('snt-rec-count').textContent = '';
     if (sntGenerated) renderSntRows(sntDisplayRows);
-    else {
-      document.getElementById('snt-tbody').innerHTML = '<tr><td colspan="6" class="no-data">Use filters above and click Generate to load records</td></tr>';
-      document.getElementById('snt-tfoot').innerHTML = '';
-      document.getElementById('snt-count').textContent = '— records';
-        }
+    else renderNotSentRows();
+    return;
+  }
+  if (sntViewMode === 'not-sent') {
+    const filtered = sntNotSentData.filter(r =>
+      [r[0], r[1], r[3], r[4]].some(c => String(c||'').toLowerCase().includes(q))
+    );
+    const tbody = document.getElementById('snt-tbody');
+    let total = 0;
+    tbody.innerHTML = filtered.map((r, i) => {
+      const amt = parseFloat(r[4]||0) || 0;
+      total += amt;
+      return `<tr>
+        <td style="color:#888;font-size:12px;">${i+1}</td>
+        <td>${fmtDate(r[0])}</td>
+        <td>${r[1]||''}</td>
+        <td>${r[3]||''}</td>
+        <td class="num">${amt ? fmt(amt) : '—'}</td>
+        <td style="color:#c0392b;font-weight:600;font-size:11px;">Not Sent</td>
+      </tr>`;
+    }).join('') || '<tr><td colspan="6" class="no-data">No matches</td></tr>';
+    document.getElementById('snt-tfoot').innerHTML = '';
+    document.getElementById('snt-rec-count').textContent = `${filtered.length} match${filtered.length!==1?'es':''}`;
+    return;
+  }
+  if (!sentLoaded) {
+    sntLoadData().then(() => onSntLiveSearch());
     return;
   }
   const filtered = sentRawData.filter(r => r.some(c => String(c||'').toLowerCase().includes(q)));
@@ -1378,10 +1453,7 @@ function clearSntSearch() {
   document.getElementById('snt-live-search').value = '';
   document.getElementById('snt-rec-count').textContent = '';
   if (sntGenerated) renderSntRows(sntDisplayRows);
-  else {
-    document.getElementById('snt-tbody').innerHTML = '<tr><td colspan="6" class="no-data">Use filters above and click Generate to load records</td></tr>';
-    document.getElementById('snt-count').textContent = '— records';
-    }
+  else renderNotSentRows();
 }
 
 function resetSntFilters() {
@@ -1396,9 +1468,7 @@ function resetSntFilters() {
   document.getElementById('snt-rec-count').textContent = '';
   sntGenerated = false;
   sntDisplayRows = [];
-  document.getElementById('snt-tbody').innerHTML = '<tr><td colspan="6" class="no-data">Use filters above and click Generate to load records</td></tr>';
-  document.getElementById('snt-tfoot').innerHTML = '';
-  document.getElementById('snt-count').textContent = '— records';
+  loadAndShowNotSent();
 }
 
 /* ── Batch multi-select ── */
