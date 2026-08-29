@@ -446,7 +446,7 @@ if (sessionStorage.getItem('ne_sb_collapsed') === '1') {
                 <th class="num">Balance</th>
               </tr>
             </thead>
-            <tbody id="lg-tbody"><tr><td colspan="6" class="no-data">Loading dataâ€¦</td></tr></tbody>
+            <tbody id="lg-tbody"><tr><td colspan="6" class="no-data">Loading data...</td></tr></tbody>
             <tfoot id="lg-tfoot"></tfoot>
           </table>
         </div>
@@ -538,7 +538,7 @@ if (sessionStorage.getItem('ne_sb_collapsed') === '1') {
                 <th class="num">Current Balance</th>
               </tr>
             </thead>
-            <tbody id="bs-tbody"><tr><td colspan="6" class="no-data">Loading dataâ€¦</td></tr></tbody>
+            <tbody id="bs-tbody"><tr><td colspan="6" class="no-data">Loading data...</td></tr></tbody>
             <tfoot id="bs-tfoot"></tfoot>
           </table>
         </div>
@@ -571,7 +571,7 @@ if (sessionStorage.getItem('ne_sb_collapsed') === '1') {
             </div>
             <div class="filter-field" style="max-width:160px">
               <label>Ref Number</label>
-              <input type="text" id="snt-ref" placeholder="Partial matchâ€¦">
+              <input type="text" id="snt-ref" placeholder="Partial match...">
             </div>
             <div class="filter-field" style="max-width:200px;">
               <label>Batch Number</label>
@@ -601,7 +601,7 @@ if (sessionStorage.getItem('ne_sb_collapsed') === '1') {
       <!-- Live search bar -->
       <div id="snt-search-wrap">
         <span style="color:#a0b4c8;font-size:15px;">&#128269;</span>
-        <input type="text" id="snt-live-search" placeholder="Search in resultsâ€¦" oninput="onSntLiveSearch()">
+        <input type="text" id="snt-live-search" placeholder="Search in results..." oninput="onSntLiveSearch()">
         <button id="snt-clear-btn" onclick="clearSntSearch()">&#10005; Clear</button>
         <span id="snt-rec-count"></span>
       </div>
@@ -862,7 +862,7 @@ async function saveEEV() {
 
   const btn = document.getElementById('btn-save');
   btn.disabled = true;
-  btn.textContent = 'Savingâ€¦';
+  btn.textContent = 'Saving...';
 
   try {
     const resp = await fetch(GS_WRITE, {
@@ -902,7 +902,7 @@ async function printSheet() {
     amounts
   };
 
-  showToast('Writing to sheetâ€¦', 'info');
+  showToast('Writing to sheet...', 'info');
 
   try {
     const resp   = await fetch(GS_WRITE, { method: 'POST', redirect: 'follow', body: JSON.stringify(payload) });
@@ -939,9 +939,9 @@ async function renderLedger() {
   const tfoot  = document.getElementById('lg-tfoot');
 
   document.getElementById('lg-emp-info').textContent = empF ? `${empF} — ${getEmpName(empF)}` : '';
-  tbody.innerHTML = '<tr><td colspan="6" class="no-data">Loadingâ€¦</td></tr>';
+  tbody.innerHTML = '<tr><td colspan="6" class="no-data">Loading...</td></tr>';
   tfoot.innerHTML = '';
-  document.getElementById('lg-count').textContent = 'Loadingâ€¦';
+  document.getElementById('lg-count').textContent = 'Loading...';
 
   const params = new URLSearchParams({ action: 'getLedge' });
   if (empF)  params.append('empNum',   empF);
@@ -1015,9 +1015,9 @@ async function renderStatement() {
 
   const tbody = document.getElementById('st-tbody');
   const tfoot = document.getElementById('st-tfoot');
-  tbody.innerHTML = '<tr><td colspan="6" class="no-data">Loadingâ€¦</td></tr>';
+  tbody.innerHTML = '<tr><td colspan="6" class="no-data">Loading...</td></tr>';
   tfoot.innerHTML = '';
-  document.getElementById('st-count').textContent = 'Loadingâ€¦';
+  document.getElementById('st-count').textContent = 'Loading...';
 
   const params = new URLSearchParams({ action: 'getLedge', empNum });
   if (from) params.append('dateFrom', from);
@@ -1201,7 +1201,7 @@ async function renderBalanceSummary() {
   const search = (document.getElementById('bs-search').value || '').trim().toLowerCase();
   const tbody  = document.getElementById('bs-tbody');
   const tfoot  = document.getElementById('bs-tfoot');
-  tbody.innerHTML = '<tr><td colspan="6" class="no-data">Loadingâ€¦</td></tr>';
+  tbody.innerHTML = '<tr><td colspan="6" class="no-data">Loading...</td></tr>';
   tfoot.innerHTML = '';
 
   let rawRows = [];
@@ -1310,9 +1310,9 @@ async function loadAndShowNotSent() {
   sntViewMode = 'not-sent';
   const tbody = document.getElementById('snt-tbody');
   const tfoot = document.getElementById('snt-tfoot');
-  tbody.innerHTML = '<tr><td colspan="6" class="no-data">Loading pending itemsâ€¦</td></tr>';
+  tbody.innerHTML = '<tr><td colspan="6" class="no-data">Loading pending items...</td></tr>';
   tfoot.innerHTML = '';
-  document.getElementById('snt-count').textContent = 'Loadingâ€¦';
+  document.getElementById('snt-count').textContent = 'Loading...';
   try {
     showLoading(true);
     const range = encodeURIComponent("'EEV Ledge'!A:AK");
