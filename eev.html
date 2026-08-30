@@ -82,14 +82,17 @@ body.dark-mode #snt-search-wrap input{color:#e0e8f0;}
 #snt-search-wrap input::placeholder{color:#a0b4c8;}
 #snt-clear-btn{padding:3px 8px;border:1px solid #d0dce8;border-radius:5px;background:#f0f4f8;font-size:12px;cursor:pointer;color:#5a7a9a;white-space:nowrap;}
 #snt-rec-count{color:#888;font-size:12px;font-weight:600;white-space:nowrap;}
-#snt-col-picker{display:flex;align-items:center;gap:6px 16px;flex-wrap:wrap;padding:8px 14px;background:#eef4fb;border:1px solid #d0dce8;border-radius:8px;margin-bottom:10px;}
-.snt-col-lbl{font-weight:700;color:#5a7a9a;font-size:11px;text-transform:uppercase;letter-spacing:0.5px;white-space:nowrap;margin-right:2px;}
-#snt-col-picker label{display:flex;align-items:center;gap:4px;color:#1a2b3c;cursor:pointer;font-size:12px;font-weight:600;white-space:nowrap;user-select:none;}
-#snt-col-picker input[type="checkbox"]{cursor:pointer;accent-color:#2e86c1;width:14px;height:14px;}
-#snt-col-picker label.col-empty-lbl{border-left:1px solid #c0d0e0;padding-left:14px;color:#117a65;}
-body.dark-mode #snt-col-picker{background:#1a2b3c;border-color:#2a4060;}
-body.dark-mode #snt-col-picker label{color:#b0c4d8;}
+#snt-col-picker{display:flex;align-items:center;gap:6px;padding:0 0 12px 0;border-bottom:1px solid #d0dce8;margin-bottom:12px;}
+.snt-col-lbl{font-weight:700;color:#5a7a9a;font-size:11px;text-transform:uppercase;letter-spacing:0.5px;white-space:nowrap;flex-shrink:0;margin-right:4px;}
+.snt-col-chk{display:none;}
+.snt-col-pill{flex:1;text-align:center;padding:5px 8px;border-radius:20px;border:1.5px solid #2e86c1;background:#2e86c1;color:#fff;font-size:12px;font-weight:700;cursor:pointer;user-select:none;white-space:nowrap;transition:all 0.15s;}
+.snt-col-chk:not(:checked)+.snt-col-pill{background:transparent;color:#8aacc8;border-color:#c0d0e0;text-decoration:line-through;}
+.snt-col-pill-empty{border-color:#117a65!important;background:#117a65!important;}
+.snt-col-chk:not(:checked)+.snt-col-pill-empty{background:transparent!important;color:#117a65!important;border-color:#117a65!important;text-decoration:line-through;}
+body.dark-mode #snt-col-picker{border-bottom-color:#2a4060;}
 body.dark-mode .snt-col-lbl{color:#6a8aaa;}
+body.dark-mode .snt-col-pill{background:#2e86c1;color:#fff;}
+body.dark-mode .snt-col-chk:not(:checked)+.snt-col-pill{background:transparent;color:#3a5a7a;border-color:#2a4060;}
 @media print{#snt-col-picker{display:none!important;}}
 /* â”€â”€ EEV Sent: batch multi-select â”€â”€ */
 .snt-ms-wrap{position:relative;}
@@ -557,24 +560,30 @@ if (sessionStorage.getItem('ne_sb_collapsed') === '1') {
     <!-- â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ SECTION: EEV SENT ACCOUNT â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ -->
     <div id=”sec-sent” class=”section”>
 
-      <!-- Column selector -->
-      <div id=”snt-col-picker”>
-        <span class=”snt-col-lbl”>Columns:</span>
-        <label><input type=”checkbox” id=”col-date” checked onchange=”refreshSntTable()”> Date</label>
-        <label><input type=”checkbox” id=”col-emp” checked onchange=”refreshSntTable()”> Employee #</label>
-        <label><input type=”checkbox” id=”col-ref” checked onchange=”refreshSntTable()”> Ref Number</label>
-        <label><input type=”checkbox” id=”col-amt” checked onchange=”refreshSntTable()”> Amount (SAR)</label>
-        <label><input type=”checkbox” id=”col-batch” checked onchange=”refreshSntTable()”> Batch #</label>
-        <label class=”col-empty-lbl”><input type=”checkbox” id=”col-empty” onchange=”refreshSntTable()”> Empty Column</label>
-      </div>
-
-      <!-- Collapsible filter panel -->
-      <div class="filter-card">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
-          <span style="font-size:12px;font-weight:700;color:#5a7a9a;text-transform:uppercase;letter-spacing:0.5px;">Filters</span>
-          <button id="snt-toggle-btn" onclick="toggleSntPanel()" style="background:none;border:none;font-size:13px;cursor:pointer;color:#5a7a9a;padding:0 4px;" title="Collapse">&#9650;</button>
+      <!-- Combined Columns + Filters card -->
+      <div class=”filter-card”>
+        <!-- Column picker row (always visible) -->
+        <div id=”snt-col-picker”>
+          <span class=”snt-col-lbl”>Columns:</span>
+          <input type=”checkbox” id=”col-date” checked class=”snt-col-chk” onchange=”refreshSntTable()”>
+          <label for=”col-date” class=”snt-col-pill”>Date</label>
+          <input type=”checkbox” id=”col-emp” checked class=”snt-col-chk” onchange=”refreshSntTable()”>
+          <label for=”col-emp” class=”snt-col-pill”>Employee #</label>
+          <input type=”checkbox” id=”col-ref” checked class=”snt-col-chk” onchange=”refreshSntTable()”>
+          <label for=”col-ref” class=”snt-col-pill”>Ref Number</label>
+          <input type=”checkbox” id=”col-amt” checked class=”snt-col-chk” onchange=”refreshSntTable()”>
+          <label for=”col-amt” class=”snt-col-pill”>Amount (SAR)</label>
+          <input type=”checkbox” id=”col-batch” checked class=”snt-col-chk” onchange=”refreshSntTable()”>
+          <label for=”col-batch” class=”snt-col-pill”>Batch #</label>
+          <input type=”checkbox” id=”col-empty” class=”snt-col-chk” onchange=”refreshSntTable()”>
+          <label for=”col-empty” class=”snt-col-pill snt-col-pill-empty”>Empty Column</label>
         </div>
-        <div id="snt-filter-body">
+        <!-- Filters collapse header -->
+        <div style=”display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;”>
+          <span style=”font-size:12px;font-weight:700;color:#5a7a9a;text-transform:uppercase;letter-spacing:0.5px;”>Filters</span>
+          <button id=”snt-toggle-btn” onclick=”toggleSntPanel()” style=”background:none;border:none;font-size:13px;cursor:pointer;color:#5a7a9a;padding:0 4px;” title=”Collapse”>&#9650;</button>
+        </div>
+        <div id=”snt-filter-body”>
           <div class="filter-row">
             <div class="filter-field" style="max-width:140px">
               <label>Date From</label>
@@ -1537,6 +1546,13 @@ function resetSntFilters() {
 
 /* â”€â”€ Batch multi-select â”€â”€ */
 function openSntBatchPanel() {
+  if (!sentLoaded && sntBatches.length === 0) {
+    sntLoadData().then(() => {
+      populateSntBatchOpts('');
+      document.getElementById('snt-batch-panel').style.display = 'block';
+    }).catch(() => {});
+    return;
+  }
   populateSntBatchOpts('');
   document.getElementById('snt-batch-panel').style.display = 'block';
 }
