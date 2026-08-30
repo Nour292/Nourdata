@@ -1,5 +1,5 @@
 ﻿<!DOCTYPE html>
-<!-- NourData EEV Module v3.8 - Aug-2026 -->
+<!-- NourData EEV Module v3.9 - Aug-2026 -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -82,15 +82,24 @@ body.dark-mode #snt-search-wrap input{color:#e0e8f0;}
 #snt-search-wrap input::placeholder{color:#a0b4c8;}
 #snt-clear-btn{padding:3px 8px;border:1px solid #d0dce8;border-radius:5px;background:#f0f4f8;font-size:12px;cursor:pointer;color:#5a7a9a;white-space:nowrap;}
 #snt-rec-count{color:#888;font-size:12px;font-weight:600;white-space:nowrap;}
-#snt-col-picker{display:flex;align-items:center;gap:6px;padding:0 0 12px 0;border-bottom:1px solid #d0dce8;margin-bottom:12px;}
-.snt-col-lbl{font-weight:700;color:#5a7a9a;font-size:11px;text-transform:uppercase;letter-spacing:0.5px;white-space:nowrap;flex-shrink:0;margin-right:4px;}
-.snt-col-pill{flex:1;text-align:center;padding:5px 8px;border-radius:20px;border:1.5px solid #2e86c1;background:#2e86c1;color:#fff;font-size:12px;font-weight:700;cursor:pointer;user-select:none;white-space:nowrap;transition:all 0.15s;font-family:'Calibri',sans-serif;outline:none;}
-.snt-col-pill.snt-pill-off{background:transparent;color:#9ab0c8;border-color:#c0d0e0;text-decoration:line-through;}
-.snt-col-pill-empty{border-color:#117a65!important;background:#117a65!important;}
-.snt-col-pill-empty.snt-pill-off{background:transparent!important;color:#117a65!important;border-color:#c8e6de!important;text-decoration:line-through;}
+#snt-col-picker{padding:0 0 12px 0;border-bottom:1px solid #d0dce8;margin-bottom:12px;}
+.snt-col-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;}
+.snt-col-hdr span{font-size:12px;font-weight:700;color:#1a2b3c;}
+.snt-col-btns{display:flex;gap:6px;}
+.snt-sm-btn{padding:4px 12px;font-size:12px;font-weight:700;border:1.5px solid #d0dce8;border-radius:6px;background:#f7fafd;color:#5a7a9a;cursor:pointer;font-family:'Calibri',sans-serif;}
+.snt-sm-btn:hover{border-color:#2e86c1;color:#2e86c1;}
+#snt-col-checks{display:flex;flex-wrap:nowrap;gap:7px;}
+.col-check{display:flex;align-items:center;justify-content:center;gap:5px;flex:1;font-size:12px;font-weight:600;color:#1a2b3c;cursor:pointer;padding:4px 8px;border:1.5px solid #d0dce8;border-radius:20px;background:#f7fafd;user-select:none;transition:all 0.15s;white-space:nowrap;}
+.col-check:hover{border-color:#2e86c1;background:#f0f8ff;}
+.col-check input[type=checkbox]{width:13px;height:13px;cursor:pointer;accent-color:#2e86c1;flex-shrink:0;}
+.col-empty-check{border-color:#117a65;color:#117a65;}
+.col-empty-check:hover{background:#e8f8f4!important;border-color:#117a65!important;}
 body.dark-mode #snt-col-picker{border-bottom-color:#2a4060;}
-body.dark-mode .snt-col-lbl{color:#6a8aaa;}
-body.dark-mode .snt-col-pill.snt-pill-off{color:#3a5a7a;border-color:#2a4060;}
+body.dark-mode .snt-col-hdr span{color:#e0e0e0;}
+body.dark-mode .snt-sm-btn{background:#162330;border-color:#2a3f54;color:#8fa8c0;}
+body.dark-mode .snt-sm-btn:hover{border-color:#2e86c1;color:#2e86c1;}
+body.dark-mode .col-check{background:#162330;border-color:#2a3f54;color:#c8d8e8;}
+body.dark-mode .col-check:hover{border-color:#2e86c1;background:#1a2b3c;}
 @media print{#snt-col-picker{display:none!important;}}
 /* â"€â"€ EEV Sent: batch multi-select â"€â"€ */
 .snt-ms-wrap{position:relative;}
@@ -280,7 +289,7 @@ if (sessionStorage.getItem('ne_sb_collapsed') === '1') {
 <aside id="sidebar">
   <div id="sb-header">
     <img id="sb-logo" src="nour_energy_logo.png" alt="Nour Energy" onerror="this.style.display='none'">
-    <div id="sb-title">Nour Energy<small>Expense Voucher &nbsp;·&nbsp; v3.8</small></div>
+    <div id="sb-title">Nour Energy<small>Expense Voucher &nbsp;·&nbsp; v3.9</small></div>
     <button id="sb-toggle" onclick="toggleSidebar()" title="Toggle sidebar">&#9776;</button>
   </div>
   <nav id="sb-nav">
@@ -562,13 +571,21 @@ if (sessionStorage.getItem('ne_sb_collapsed') === '1') {
       <div class="filter-card">
         <!-- Column picker row (always visible) -->
         <div id="snt-col-picker">
-          <span class="snt-col-lbl">Columns:</span>
-          <button id="snt-col-btn-date"  class="snt-col-pill"                        onclick="toggleSntCol('date')">Date</button>
-          <button id="snt-col-btn-emp"   class="snt-col-pill"                        onclick="toggleSntCol('emp')">Employee #</button>
-          <button id="snt-col-btn-ref"   class="snt-col-pill"                        onclick="toggleSntCol('ref')">Ref Number</button>
-          <button id="snt-col-btn-amt"   class="snt-col-pill"                        onclick="toggleSntCol('amt')">Amount (SAR)</button>
-          <button id="snt-col-btn-batch" class="snt-col-pill"                        onclick="toggleSntCol('batch')">Batch #</button>
-          <button id="snt-col-btn-empty" class="snt-col-pill snt-col-pill-empty snt-pill-off" onclick="toggleSntCol('empty')">Empty Column</button>
+          <div class="snt-col-hdr">
+            <span>&#128203; Columns</span>
+            <div class="snt-col-btns">
+              <button type="button" class="snt-sm-btn" onclick="selectAllSntCols()">Select All</button>
+              <button type="button" class="snt-sm-btn" onclick="clearAllSntCols()">Clear All</button>
+            </div>
+          </div>
+          <div id="snt-col-checks">
+            <label class="col-check"><input type="checkbox" id="col-date" checked onchange="refreshSntTable()"> Date</label>
+            <label class="col-check"><input type="checkbox" id="col-emp" checked onchange="refreshSntTable()"> Employee #</label>
+            <label class="col-check"><input type="checkbox" id="col-ref" checked onchange="refreshSntTable()"> Ref Number</label>
+            <label class="col-check"><input type="checkbox" id="col-amt" checked onchange="refreshSntTable()"> Amount (SAR)</label>
+            <label class="col-check"><input type="checkbox" id="col-batch" checked onchange="refreshSntTable()"> Batch #</label>
+            <label class="col-check col-empty-check"><input type="checkbox" id="col-empty" onchange="refreshSntTable()"> Empty Column</label>
+          </div>
         </div>
         <!-- Filters collapse header -->
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
@@ -1308,11 +1325,16 @@ let sntSelectedBatches = [];
 let sntDisplayRows     = [];
 let sntGenerated       = false;
 let sntPanelOpen       = true;
-const sntColState = { date:true, emp:true, ref:true, amt:true, batch:true, empty:false };
-function toggleSntCol(id) {
-  sntColState[id] = !sntColState[id];
-  const btn = document.getElementById('snt-col-btn-' + id);
-  if (btn) btn.classList.toggle('snt-pill-off', !sntColState[id]);
+function selectAllSntCols() {
+  ['col-date','col-emp','col-ref','col-amt','col-batch','col-empty'].forEach(id => {
+    const el = document.getElementById(id); if (el) el.checked = true;
+  });
+  refreshSntTable();
+}
+function clearAllSntCols() {
+  ['col-date','col-emp','col-ref','col-amt','col-batch','col-empty'].forEach(id => {
+    const el = document.getElementById(id); if (el) el.checked = false;
+  });
   refreshSntTable();
 }
 let sntLedgeData       = [];   // cached EEV Ledge rows for amount lookup
@@ -1368,8 +1390,11 @@ const SNT_COL_DEFS = [
   { id:'empty', label:'Empty',        th:'<th style="min-width:80px;"></th>' },
 ];
 function getActiveSntCols() {
-  const cols = ['date','emp','ref','amt','batch'].filter(id => sntColState[id]);
-  if (sntColState.empty) cols.push('empty');
+  const cols = ['date','emp','ref','amt','batch'].filter(id => {
+    const el = document.getElementById('col-' + id); return el ? el.checked : true;
+  });
+  const emptyEl = document.getElementById('col-empty');
+  if (emptyEl && emptyEl.checked) cols.push('empty');
   return cols;
 }
 function sntColspan() { return getActiveSntCols().length + 1; } // +1 for # column
