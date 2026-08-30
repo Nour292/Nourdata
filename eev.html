@@ -555,7 +555,18 @@ if (sessionStorage.getItem('ne_sb_collapsed') === '1') {
     </div><!-- /sec-balance -->
 
     <!-- â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ SECTION: EEV SENT ACCOUNT â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ -->
-    <div id="sec-sent" class="section">
+    <div id=”sec-sent” class=”section”>
+
+      <!-- Column selector -->
+      <div id=”snt-col-picker”>
+        <span class=”snt-col-lbl”>Columns:</span>
+        <label><input type=”checkbox” id=”col-date” checked onchange=”refreshSntTable()”> Date</label>
+        <label><input type=”checkbox” id=”col-emp” checked onchange=”refreshSntTable()”> Employee #</label>
+        <label><input type=”checkbox” id=”col-ref” checked onchange=”refreshSntTable()”> Ref Number</label>
+        <label><input type=”checkbox” id=”col-amt” checked onchange=”refreshSntTable()”> Amount (SAR)</label>
+        <label><input type=”checkbox” id=”col-batch” checked onchange=”refreshSntTable()”> Batch #</label>
+        <label class=”col-empty-lbl”><input type=”checkbox” id=”col-empty” onchange=”refreshSntTable()”> Empty Column</label>
+      </div>
 
       <!-- Collapsible filter panel -->
       <div class="filter-card">
@@ -613,17 +624,6 @@ if (sessionStorage.getItem('ne_sb_collapsed') === '1') {
         <input type="text" id="snt-live-search" placeholder="Search in results..." oninput="onSntLiveSearch()">
         <button id="snt-clear-btn" onclick="clearSntSearch()">&#10005; Clear</button>
         <span id="snt-rec-count"></span>
-      </div>
-
-      <!-- Column selector -->
-      <div id="snt-col-picker">
-        <span class="snt-col-lbl">Columns:</span>
-        <label><input type="checkbox" id="col-date" checked onchange="refreshSntTable()"> Date</label>
-        <label><input type="checkbox" id="col-emp" checked onchange="refreshSntTable()"> Employee #</label>
-        <label><input type="checkbox" id="col-ref" checked onchange="refreshSntTable()"> Ref Number</label>
-        <label><input type="checkbox" id="col-amt" checked onchange="refreshSntTable()"> Amount (SAR)</label>
-        <label><input type="checkbox" id="col-batch" checked onchange="refreshSntTable()"> Batch #</label>
-        <label class="col-empty-lbl"><input type="checkbox" id="col-empty" onchange="refreshSntTable()"> Empty Column</label>
       </div>
 
       <div class="tbl-wrap">
