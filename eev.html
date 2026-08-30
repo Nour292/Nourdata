@@ -1,5 +1,5 @@
 ﻿<!DOCTYPE html>
-<!-- NourData EEV Module v3.7 - Aug-2026 -->
+<!-- NourData EEV Module v3.8 - Aug-2026 -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -14,7 +14,7 @@
 html,body{font-family:'Calibri',sans-serif;background:#f0f4f8;min-height:100vh;}
 #layout{display:flex;min-height:100vh;}
 
-/* â”€â”€ Sidebar â”€â”€ */
+/* â"€â"€ Sidebar â"€â"€ */
 #sidebar{width:220px;min-width:220px;background:#1a2b3c;display:flex;flex-direction:column;position:fixed;top:0;left:0;bottom:0;z-index:200;transition:width 0.25s ease,min-width 0.25s ease;overflow:hidden;}
 #sidebar.collapsed{width:52px;min-width:52px;}
 #sb-header{display:flex;align-items:center;gap:10px;padding:14px 12px;border-bottom:1px solid rgba(255,255,255,0.08);min-height:58px;}
@@ -54,7 +54,7 @@ html,body{font-family:'Calibri',sans-serif;background:#f0f4f8;min-height:100vh;}
 #sidebar.collapsed #sb-logout{justify-content:center;padding:8px;}
 #sidebar.collapsed #sb-logout-label{display:none;}
 
-/* â”€â”€ Main â”€â”€ */
+/* â"€â"€ Main â"€â"€ */
 #main-content{margin-left:220px;flex:1;display:flex;flex-direction:column;min-height:100vh;transition:margin-left 0.25s;background:#f0f4f8;}
 body.sb-collapsed #main-content{margin-left:52px;}
 #top-header{background:#fff;border-bottom:1px solid #e0e8f0;padding:12px 24px;display:flex;align-items:center;gap:16px;position:sticky;top:0;z-index:100;box-shadow:0 1px 4px rgba(0,0,0,0.06);}
@@ -70,7 +70,7 @@ body.sb-collapsed #main-content{margin-left:52px;}
 .btn-copy{background:#1a6b8a;color:#fff;}
 .btn-bulk-add{background:#1a7a4a;color:#fff;}
 #page-body{padding:20px 24px;flex:1;}
-/* â”€â”€ EEV Sent: search bar â”€â”€ */
+/* â"€â"€ EEV Sent: search bar â"€â"€ */
 #snt-search-wrap{display:flex;align-items:center;gap:8px;background:#fff;border:1.5px solid #d0dce8;border-radius:8px;padding:7px 12px;margin-bottom:12px;box-shadow:0 1px 4px rgba(0,0,0,0.04);}
 body.dark-mode #snt-search-wrap{background:#162232;border-color:#2a4060;}
 body.dark-mode #snt-batch-inp{background:#1e3048 !important;border-color:#2a4060 !important;color:#e0e8f0 !important;}
@@ -92,7 +92,7 @@ body.dark-mode #snt-col-picker{border-bottom-color:#2a4060;}
 body.dark-mode .snt-col-lbl{color:#6a8aaa;}
 body.dark-mode .snt-col-pill.snt-pill-off{color:#3a5a7a;border-color:#2a4060;}
 @media print{#snt-col-picker{display:none!important;}}
-/* â”€â”€ EEV Sent: batch multi-select â”€â”€ */
+/* â"€â"€ EEV Sent: batch multi-select â"€â"€ */
 .snt-ms-wrap{position:relative;}
 .snt-ms-panel{position:absolute;top:100%;right:0;left:auto;min-width:160px;background:#fff;border:1.5px solid #d0dce8;border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,0.14);z-index:400;max-height:260px;overflow-y:auto;margin-top:2px;}
 body.dark-mode .snt-ms-panel{background:#162232;border-color:#2a4060;}
@@ -101,14 +101,14 @@ body.dark-mode .snt-ms-panel{background:#162232;border-color:#2a4060;}
 body.dark-mode .snt-ms-opt{color:#e0e8f0;}
 .snt-ms-opt:hover{background:#f0f4f8;}
 body.dark-mode .snt-ms-opt:hover{background:#1e3048;}
-/* â”€â”€ EEV Sent: autocomplete suggestions â”€â”€ */
+/* â"€â"€ EEV Sent: autocomplete suggestions â"€â"€ */
 .snt-sug-list{position:absolute;top:100%;left:0;right:0;background:#fff;border:1.5px solid #d0dce8;border-radius:6px;box-shadow:0 4px 12px rgba(0,0,0,0.1);z-index:350;max-height:180px;overflow-y:auto;margin-top:2px;}
 body.dark-mode .snt-sug-list{background:#162232;border-color:#2a4060;}
 .snt-sug-item{padding:6px 12px;font-size:13px;cursor:pointer;color:#1a2b3c;white-space:nowrap;}
 body.dark-mode .snt-sug-item{color:#e0e8f0;}
 .snt-sug-item:hover{background:#f0f4f8;}
 body.dark-mode .snt-sug-item:hover{background:#1e3048;}
-/* â”€â”€ EEV Sent: bulk modal â”€â”€ */
+/* â"€â"€ EEV Sent: bulk modal â"€â"€ */
 .snt-bulk-box{width:98vw;max-width:900px;max-height:92vh;}
 #snt-bulk-scroll{overflow:auto;flex:1;}
 #snt-bulk-tbl{width:100%;border-collapse:collapse;font-size:13px;table-layout:fixed;}
@@ -117,18 +117,18 @@ body.dark-mode .snt-sug-item:hover{background:#1e3048;}
 .snt-bi{width:100%;border:1px solid #d0dce8;border-radius:4px;padding:4px 6px;font-size:13px;font-family:'Calibri',sans-serif;box-sizing:border-box;}
 .snt-bi.err{border-color:#e74c3c;background:#fff5f5;}
 body.dark-mode .snt-bi{background:#1e3048;border-color:#2a4060;color:#e0e8f0;}
-/* â”€â”€ Dark mode: Bulk modal â”€â”€ */
+/* â"€â"€ Dark mode: Bulk modal â"€â"€ */
 body.dark-mode #snt-bulk-modal .snt-bulk-box{background:#162232;}
 body.dark-mode #snt-bulk-modal [style*="background:#1a2b3c"]{background:#0d1a26!important;}
 body.dark-mode #snt-bulk-modal [style*="background:#f8fafc"]{background:#1e3048!important;}
 body.dark-mode #snt-bulk-modal [style*="border-top:1px solid #e8f0f8"]{border-color:#2a4060!important;}
 body.dark-mode #snt-bulk-tbl td{border-color:#2a4060;}
 
-/* â”€â”€ Section visibility â”€â”€ */
+/* â"€â"€ Section visibility â"€â"€ */
 .section{display:none;}
 .section.active{display:block;}
 
-/* â”€â”€ Filter bar â”€â”€ */
+/* â"€â"€ Filter bar â"€â"€ */
 .filter-card{background:#fff;border-radius:10px;padding:14px 18px;margin-bottom:14px;box-shadow:0 1px 6px rgba(0,0,0,0.07);border:1px solid #e0e8f0;}
 .filter-row{display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end;}
 .filter-field{display:flex;flex-direction:column;gap:3px;flex:1;min-width:120px;}
@@ -141,7 +141,7 @@ body.dark-mode #snt-bulk-tbl td{border-color:#2a4060;}
 .btn-reset{padding:7px 14px;background:#f0f4f8;color:#1a2b3c;border:1.5px solid #d0dce8;border-radius:7px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Calibri',sans-serif;}
 .btn-reset:hover{background:#e8eef5;}
 
-/* â”€â”€ Table â”€â”€ */
+/* â"€â"€ Table â"€â"€ */
 .tbl-wrap{background:#fff;border-radius:10px;box-shadow:0 1px 6px rgba(0,0,0,0.07);border:1px solid #e0e8f0;overflow:hidden;}
 .tbl-toolbar{display:flex;align-items:center;justify-content:space-between;padding:10px 16px;border-bottom:1px solid #e8f0f8;}
 .tbl-count{font-size:13px;font-weight:700;color:#1a2b3c;}
@@ -161,7 +161,7 @@ tfoot td{padding:9px 10px;background:#edf2f7;font-weight:700;color:#1a2b3c;font-
 tfoot td.num{text-align:right;font-variant-numeric:tabular-nums;}
 .no-data{text-align:center;padding:32px;color:#8fa8c0;font-size:14px;}
 
-/* â”€â”€ EEV Form â”€â”€ */
+/* â"€â"€ EEV Form â"€â"€ */
 .form-card{background:#fff;border-radius:10px;padding:18px 20px;margin-bottom:14px;box-shadow:0 1px 6px rgba(0,0,0,0.07);border:1px solid #e0e8f0;}
 .form-card-title{font-size:13px;font-weight:700;color:#1a2b3c;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid #e8f0f8;}
 .form-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px 14px;}
@@ -210,19 +210,19 @@ tfoot td.num{text-align:right;font-variant-numeric:tabular-nums;}
 .btn-clear-form{padding:10px 20px;background:#f0f4f8;color:#1a2b3c;border:1.5px solid #d0dce8;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;font-family:'Calibri',sans-serif;}
 .btn-clear-form:hover{background:#e8eef5;}
 
-/* â”€â”€ Toast â”€â”€ */
+/* â"€â"€ Toast â"€â"€ */
 #toast{position:fixed;bottom:24px;right:24px;background:#1a2b3c;color:#fff;padding:12px 20px;border-radius:10px;font-size:14px;font-weight:600;z-index:9999;opacity:0;transform:translateY(12px);transition:all 0.3s;pointer-events:none;max-width:380px;box-shadow:0 4px 20px rgba(0,0,0,0.25);}
 #toast.show{opacity:1;transform:translateY(0);}
 #toast.success{background:#117a65;}
 #toast.error{background:#c0392b;}
 #toast.info{background:#2e86c1;}
 
-/* â”€â”€ Loading â”€â”€ */
+/* â"€â"€ Loading â"€â"€ */
 #loading-overlay{position:fixed;inset:0;background:rgba(255,255,255,0.7);display:flex;align-items:center;justify-content:center;z-index:5000;display:none;}
 .spinner{width:40px;height:40px;border:4px solid #d0dce8;border-top-color:#2e86c1;border-radius:50%;animation:spin 0.7s linear infinite;}
 @keyframes spin{to{transform:rotate(360deg);}}
 
-/* â”€â”€ Dark mode â”€â”€ */
+/* â"€â"€ Dark mode â"€â"€ */
 body.dark-mode{background:#0f1824;}
 body.dark-mode #sidebar{background:#0d1a26;}
 body.dark-mode #main-content{background:#0f1824;}
@@ -280,7 +280,7 @@ if (sessionStorage.getItem('ne_sb_collapsed') === '1') {
 <aside id="sidebar">
   <div id="sb-header">
     <img id="sb-logo" src="nour_energy_logo.png" alt="Nour Energy" onerror="this.style.display='none'">
-    <div id="sb-title">Nour Energy<small>Expense Voucher &nbsp;·&nbsp; v3.7</small></div>
+    <div id="sb-title">Nour Energy<small>Expense Voucher &nbsp;·&nbsp; v3.8</small></div>
     <button id="sb-toggle" onclick="toggleSidebar()" title="Toggle sidebar">&#9776;</button>
   </div>
   <nav id="sb-nav">
@@ -352,7 +352,7 @@ if (sessionStorage.getItem('ne_sb_collapsed') === '1') {
   </div>
   <div id="page-body">
 
-    <!-- â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ SECTION: EEV FORM â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ -->
+    <!-- â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€ SECTION: EEV FORM â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€ -->
     <div id="sec-form" class="section active">
 
       <!-- Top bar: Voucher Info + Actions (3Ã—2 grid) -->
@@ -403,7 +403,7 @@ if (sessionStorage.getItem('ne_sb_collapsed') === '1') {
       </div>
     </div><!-- /sec-form -->
 
-    <!-- â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ SECTION: EEV LEDGER â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ -->
+    <!-- â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€ SECTION: EEV LEDGER â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€ -->
     <div id="sec-ledger" class="section">
       <div class="filter-card">
         <div class="filter-row">
@@ -463,7 +463,7 @@ if (sessionStorage.getItem('ne_sb_collapsed') === '1') {
       </div>
     </div><!-- /sec-ledger -->
 
-    <!-- â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ SECTION: EMPLOYEE STATEMENT â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ -->
+    <!-- â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€ SECTION: EMPLOYEE STATEMENT â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€ -->
     <div id="sec-statement" class="section">
       <div class="filter-card">
         <div class="filter-row">
@@ -514,7 +514,7 @@ if (sessionStorage.getItem('ne_sb_collapsed') === '1') {
       </div>
     </div><!-- /sec-statement -->
 
-    <!-- â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ SECTION: BALANCE SUMMARY â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ -->
+    <!-- â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€ SECTION: BALANCE SUMMARY â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€ -->
     <div id="sec-balance" class="section">
       <div class="filter-card">
         <div class="filter-row">
@@ -555,27 +555,27 @@ if (sessionStorage.getItem('ne_sb_collapsed') === '1') {
       </div>
     </div><!-- /sec-balance -->
 
-    <!-- â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ SECTION: EEV SENT ACCOUNT â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ -->
-    <div id=”sec-sent” class=”section”>
+    <!-- â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€ SECTION: EEV SENT ACCOUNT â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€ -->
+    <div id="sec-sent" class="section">
 
       <!-- Combined Columns + Filters card -->
-      <div class=”filter-card”>
+      <div class="filter-card">
         <!-- Column picker row (always visible) -->
-        <div id=”snt-col-picker”>
-          <span class=”snt-col-lbl”>Columns:</span>
-          <button id=”snt-col-btn-date”  class=”snt-col-pill”                        onclick=”toggleSntCol('date')”>Date</button>
-          <button id=”snt-col-btn-emp”   class=”snt-col-pill”                        onclick=”toggleSntCol('emp')”>Employee #</button>
-          <button id=”snt-col-btn-ref”   class=”snt-col-pill”                        onclick=”toggleSntCol('ref')”>Ref Number</button>
-          <button id=”snt-col-btn-amt”   class=”snt-col-pill”                        onclick=”toggleSntCol('amt')”>Amount (SAR)</button>
-          <button id=”snt-col-btn-batch” class=”snt-col-pill”                        onclick=”toggleSntCol('batch')”>Batch #</button>
-          <button id=”snt-col-btn-empty” class=”snt-col-pill snt-col-pill-empty snt-pill-off” onclick=”toggleSntCol('empty')”>Empty Column</button>
+        <div id="snt-col-picker">
+          <span class="snt-col-lbl">Columns:</span>
+          <button id="snt-col-btn-date"  class="snt-col-pill"                        onclick="toggleSntCol('date')">Date</button>
+          <button id="snt-col-btn-emp"   class="snt-col-pill"                        onclick="toggleSntCol('emp')">Employee #</button>
+          <button id="snt-col-btn-ref"   class="snt-col-pill"                        onclick="toggleSntCol('ref')">Ref Number</button>
+          <button id="snt-col-btn-amt"   class="snt-col-pill"                        onclick="toggleSntCol('amt')">Amount (SAR)</button>
+          <button id="snt-col-btn-batch" class="snt-col-pill"                        onclick="toggleSntCol('batch')">Batch #</button>
+          <button id="snt-col-btn-empty" class="snt-col-pill snt-col-pill-empty snt-pill-off" onclick="toggleSntCol('empty')">Empty Column</button>
         </div>
         <!-- Filters collapse header -->
-        <div style=”display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;”>
-          <span style=”font-size:12px;font-weight:700;color:#5a7a9a;text-transform:uppercase;letter-spacing:0.5px;”>Filters</span>
-          <button id=”snt-toggle-btn” onclick=”toggleSntPanel()” style=”background:none;border:none;font-size:13px;cursor:pointer;color:#5a7a9a;padding:0 4px;” title=”Collapse”>&#9650;</button>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+          <span style="font-size:12px;font-weight:700;color:#5a7a9a;text-transform:uppercase;letter-spacing:0.5px;">Filters</span>
+          <button id="snt-toggle-btn" onclick="toggleSntPanel()" style="background:none;border:none;font-size:13px;cursor:pointer;color:#5a7a9a;padding:0 4px;" title="Collapse">&#9650;</button>
         </div>
-        <div id=”snt-filter-body”>
+        <div id="snt-filter-body">
           <div class="filter-row">
             <div class="filter-field" style="max-width:140px">
               <label>Date From</label>
@@ -650,7 +650,7 @@ if (sessionStorage.getItem('ne_sb_collapsed') === '1') {
       </div>
     </div><!-- /sec-sent -->
 
-    <!-- â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ MODAL: EEV Sent Bulk Add â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ -->
+    <!-- â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€ MODAL: EEV Sent Bulk Add â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€ -->
     <div id="snt-bulk-modal" onclick="if(event.target===this)closeSntBulk()"
       style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:3000;align-items:center;justify-content:center;">
       <div class="snt-bulk-box" style="background:#fff;border-radius:12px;box-shadow:0 8px 40px rgba(0,0,0,0.22);display:flex;flex-direction:column;overflow:hidden;">
@@ -1395,26 +1395,26 @@ function renderNotSentRows() {
   tbody.innerHTML = sntNotSentData.map((r, i) => {
     const amt = parseFloat(r[4]||0) || 0;
     total += amt;
-    let cells = `<td style=”color:#888;font-size:12px;”>${i+1}</td>`;
+    let cells = `<td style="color:#888;font-size:12px;">${i+1}</td>`;
     cols.forEach(c => {
       if (c === 'date')  cells += `<td>${fmtDate(r[0])}</td>`;
       else if (c === 'emp')   cells += `<td>${r[1]||''}</td>`;
       else if (c === 'ref')   cells += `<td>${r[3]||''}</td>`;
-      else if (c === 'amt')   cells += `<td class=”num”>${amt ? fmt(amt) : '—'}</td>`;
-      else if (c === 'batch') cells += `<td style=”color:#c0392b;font-weight:600;font-size:11px;”>Not Sent</td>`;
+      else if (c === 'amt')   cells += `<td class="num">${amt ? fmt(amt) : '—'}</td>`;
+      else if (c === 'batch') cells += `<td style="color:#c0392b;font-weight:600;font-size:11px;">Not Sent</td>`;
       else if (c === 'empty') cells += `<td></td>`;
     });
     return `<tr>${cells}</tr>`;
-  }).join('') || `<tr><td colspan=”${sntColspan()}” class=”no-data”>All records have been sent ✓</td></tr>`;
+  }).join('') || `<tr><td colspan="${sntColspan()}" class="no-data">All records have been sent ✓</td></tr>`;
   if (sntNotSentData.length) {
     const amtIdx = cols.indexOf('amt');
     const preAmt = amtIdx + 1; // +1 for the # column
     const postAmt = cols.length - amtIdx - 1;
     if (amtIdx >= 0) {
       tfoot.innerHTML = `<tr>
-        <td colspan=”${preAmt}” style=”font-weight:700;text-align:right”>TOTAL</td>
-        <td class=”num”>${fmt(total)}</td>
-        ${postAmt > 0 ? `<td colspan=”${postAmt}”></td>` : ''}
+        <td colspan="${preAmt}" style="font-weight:700;text-align:right">TOTAL</td>
+        <td class="num">${fmt(total)}</td>
+        ${postAmt > 0 ? `<td colspan="${postAmt}"></td>` : ''}
       </tr>`;
     } else {
       tfoot.innerHTML = '';
@@ -1543,7 +1543,7 @@ function resetSntFilters() {
   loadAndShowNotSent();
 }
 
-/* â”€â”€ Batch multi-select â”€â”€ */
+/* â"€â"€ Batch multi-select â"€â"€ */
 function openSntBatchPanel() {
   if (!sentLoaded && sntBatches.length === 0) {
     sntLoadData().then(() => {
@@ -1595,7 +1595,7 @@ function getSntBatchLabel() {
   return `${sntSelectedBatches.length} selected`;
 }
 
-/* â”€â”€ Employee autocomplete â”€â”€ */
+/* â"€â"€ Employee autocomplete â"€â"€ */
 function onSntEmpInput() {
   const q   = document.getElementById('snt-emp').value.trim().toLowerCase();
   const sug = document.getElementById('snt-emp-sug');
@@ -1607,14 +1607,14 @@ function onSntEmpInput() {
 }
 function closeSntSug() { const s = document.getElementById('snt-emp-sug'); if (s) s.style.display='none'; }
 
-/* â”€â”€ Toggle filter panel â”€â”€ */
+/* â"€â"€ Toggle filter panel â"€â"€ */
 function toggleSntPanel() {
   sntPanelOpen = !sntPanelOpen;
   document.getElementById('snt-filter-body').style.display = sntPanelOpen ? '' : 'none';
   document.getElementById('snt-toggle-btn').innerHTML = sntPanelOpen ? '&#9650;' : '&#9660;';
 }
 
-/* â”€â”€ Bulk Add â”€â”€ */
+/* â"€â"€ Bulk Add â"€â"€ */
 async function openSntBulk() {
   const today = new Date().toISOString().slice(0,10);
   // Determine next batch number from last row of EEV Submitted
