@@ -1,5 +1,5 @@
 ﻿<!DOCTYPE html>
-<!-- NourData EEV Module v3.4 - Aug-2026 -->
+<!-- NourData EEV Module v3.5 - Aug-2026 -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -82,6 +82,15 @@ body.dark-mode #snt-search-wrap input{color:#e0e8f0;}
 #snt-search-wrap input::placeholder{color:#a0b4c8;}
 #snt-clear-btn{padding:3px 8px;border:1px solid #d0dce8;border-radius:5px;background:#f0f4f8;font-size:12px;cursor:pointer;color:#5a7a9a;white-space:nowrap;}
 #snt-rec-count{color:#888;font-size:12px;font-weight:600;white-space:nowrap;}
+#snt-col-picker{display:flex;align-items:center;gap:6px 16px;flex-wrap:wrap;padding:8px 14px;background:#eef4fb;border:1px solid #d0dce8;border-radius:8px;margin-bottom:10px;}
+.snt-col-lbl{font-weight:700;color:#5a7a9a;font-size:11px;text-transform:uppercase;letter-spacing:0.5px;white-space:nowrap;margin-right:2px;}
+#snt-col-picker label{display:flex;align-items:center;gap:4px;color:#1a2b3c;cursor:pointer;font-size:12px;font-weight:600;white-space:nowrap;user-select:none;}
+#snt-col-picker input[type="checkbox"]{cursor:pointer;accent-color:#2e86c1;width:14px;height:14px;}
+#snt-col-picker label.col-empty-lbl{border-left:1px solid #c0d0e0;padding-left:14px;color:#117a65;}
+body.dark-mode #snt-col-picker{background:#1a2b3c;border-color:#2a4060;}
+body.dark-mode #snt-col-picker label{color:#b0c4d8;}
+body.dark-mode .snt-col-lbl{color:#6a8aaa;}
+@media print{#snt-col-picker{display:none!important;}}
 /* â”€â”€ EEV Sent: batch multi-select â”€â”€ */
 .snt-ms-wrap{position:relative;}
 .snt-ms-panel{position:absolute;top:100%;right:0;left:auto;min-width:160px;background:#fff;border:1.5px solid #d0dce8;border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,0.14);z-index:400;max-height:260px;overflow-y:auto;margin-top:2px;}
@@ -270,7 +279,7 @@ if (sessionStorage.getItem('ne_sb_collapsed') === '1') {
 <aside id="sidebar">
   <div id="sb-header">
     <img id="sb-logo" src="nour_energy_logo.png" alt="Nour Energy" onerror="this.style.display='none'">
-    <div id="sb-title">Nour Energy<small>Expense Voucher &nbsp;·&nbsp; v3.4</small></div>
+    <div id="sb-title">Nour Energy<small>Expense Voucher &nbsp;·&nbsp; v3.5</small></div>
     <button id="sb-toggle" onclick="toggleSidebar()" title="Toggle sidebar">&#9776;</button>
   </div>
   <nav id="sb-nav">
@@ -606,6 +615,17 @@ if (sessionStorage.getItem('ne_sb_collapsed') === '1') {
         <span id="snt-rec-count"></span>
       </div>
 
+      <!-- Column selector -->
+      <div id="snt-col-picker">
+        <span class="snt-col-lbl">Columns:</span>
+        <label><input type="checkbox" id="col-date" checked onchange="refreshSntTable()"> Date</label>
+        <label><input type="checkbox" id="col-emp" checked onchange="refreshSntTable()"> Employee #</label>
+        <label><input type="checkbox" id="col-ref" checked onchange="refreshSntTable()"> Ref Number</label>
+        <label><input type="checkbox" id="col-amt" checked onchange="refreshSntTable()"> Amount (SAR)</label>
+        <label><input type="checkbox" id="col-batch" checked onchange="refreshSntTable()"> Batch #</label>
+        <label class="col-empty-lbl"><input type="checkbox" id="col-empty" onchange="refreshSntTable()"> Empty Column</label>
+      </div>
+
       <div class="tbl-wrap">
         <div class="tbl-toolbar">
           <span class="tbl-count" id="snt-count">— records</span>
@@ -613,7 +633,7 @@ if (sessionStorage.getItem('ne_sb_collapsed') === '1') {
         <div class="tbl-scroll">
           <table id="snt-table">
             <thead>
-              <tr>
+              <tr id="snt-thead-row">
                 <th style="width:40px;">#</th>
                 <th>Date</th>
                 <th>Employee #</th>
@@ -1324,34 +1344,73 @@ async function loadAndShowNotSent() {
   } catch(e) {
     showLoading(false);
     document.getElementById('snt-count').textContent = '—';
-    tbody.innerHTML = '<tr><td colspan="6" class="no-data">Failed to load — check connection</td></tr>';
+    tbody.innerHTML = `<tr><td colspan="${sntColspan()}" class="no-data">Failed to load — check connection</td></tr>`;
     return;
   }
   renderNotSentRows();
 }
 
+// --- Column-selector helpers ---
+const SNT_COL_DEFS = [
+  { id:'date',  label:'Date',         th:'<th>Date</th>' },
+  { id:'emp',   label:'Employee #',   th:'<th>Employee #</th>' },
+  { id:'ref',   label:'Ref Number',   th:'<th>Ref Number</th>' },
+  { id:'amt',   label:'Amount (SAR)', th:'<th class="num">Amount (SAR)</th>' },
+  { id:'batch', label:'Batch #',      th:'<th>Batch #</th>' },
+  { id:'empty', label:'Empty',        th:'<th style="min-width:80px;"></th>' },
+];
+function getActiveSntCols() {
+  const cols = SNT_COL_DEFS.filter(c => c.id !== 'empty' && document.getElementById('col-' + c.id)?.checked).map(c => c.id);
+  if (document.getElementById('col-empty')?.checked) cols.push('empty');
+  return cols;
+}
+function sntColspan() { return getActiveSntCols().length + 1; } // +1 for # column
+function buildSntHeader() {
+  const row = document.getElementById('snt-thead-row');
+  if (!row) return;
+  const cols = getActiveSntCols();
+  row.innerHTML = '<th style="width:40px;">#</th>' + cols.map(id => SNT_COL_DEFS.find(d => d.id === id).th).join('');
+}
+function refreshSntTable() {
+  if (sntViewMode === 'not-sent') renderNotSentRows();
+  else if (sntGenerated) renderSntRows(sntDisplayRows);
+  else { buildSntHeader(); }
+}
+// --- end column helpers ---
+
 function renderNotSentRows() {
+  buildSntHeader();
+  const cols = getActiveSntCols();
   const tbody = document.getElementById('snt-tbody');
   const tfoot = document.getElementById('snt-tfoot');
   let total = 0;
   tbody.innerHTML = sntNotSentData.map((r, i) => {
     const amt = parseFloat(r[4]||0) || 0;
     total += amt;
-    return `<tr>
-      <td style="color:#888;font-size:12px;">${i+1}</td>
-      <td>${fmtDate(r[0])}</td>
-      <td>${r[1]||''}</td>
-      <td>${r[3]||''}</td>
-      <td class="num">${amt ? fmt(amt) : '—'}</td>
-      <td style="color:#c0392b;font-weight:600;font-size:11px;">Not Sent</td>
-    </tr>`;
-  }).join('') || '<tr><td colspan="6" class="no-data">All records have been sent âœ“</td></tr>';
+    let cells = `<td style=”color:#888;font-size:12px;”>${i+1}</td>`;
+    cols.forEach(c => {
+      if (c === 'date')  cells += `<td>${fmtDate(r[0])}</td>`;
+      else if (c === 'emp')   cells += `<td>${r[1]||''}</td>`;
+      else if (c === 'ref')   cells += `<td>${r[3]||''}</td>`;
+      else if (c === 'amt')   cells += `<td class=”num”>${amt ? fmt(amt) : '—'}</td>`;
+      else if (c === 'batch') cells += `<td style=”color:#c0392b;font-weight:600;font-size:11px;”>Not Sent</td>`;
+      else if (c === 'empty') cells += `<td></td>`;
+    });
+    return `<tr>${cells}</tr>`;
+  }).join('') || `<tr><td colspan=”${sntColspan()}” class=”no-data”>All records have been sent ✓</td></tr>`;
   if (sntNotSentData.length) {
-    tfoot.innerHTML = `<tr>
-      <td colspan="4" style="font-weight:700;text-align:right">TOTAL</td>
-      <td class="num">${fmt(total)}</td>
-      <td></td>
-    </tr>`;
+    const amtIdx = cols.indexOf('amt');
+    const preAmt = amtIdx + 1; // +1 for the # column
+    const postAmt = cols.length - amtIdx - 1;
+    if (amtIdx >= 0) {
+      tfoot.innerHTML = `<tr>
+        <td colspan=”${preAmt}” style=”font-weight:700;text-align:right”>TOTAL</td>
+        <td class=”num”>${fmt(total)}</td>
+        ${postAmt > 0 ? `<td colspan=”${postAmt}”></td>` : ''}
+      </tr>`;
+    } else {
+      tfoot.innerHTML = '';
+    }
   } else {
     tfoot.innerHTML = '';
   }
@@ -1392,20 +1451,24 @@ async function sntGenerate() {
 }
 
 function renderSntRows(rows) {
+  buildSntHeader();
+  const cols = getActiveSntCols();
   const tbody = document.getElementById('snt-tbody');
   let total = 0;
   tbody.innerHTML = rows.map((r, i) => {
     const amt = parseFloat(r[3]||0) || 0;
     total += amt;
-    return `<tr>
-      <td style="color:#888;font-size:12px;">${i+1}</td>
-      <td>${fmtDate(r[0])}</td>
-      <td>${r[1]||''}</td>
-      <td>${r[2]||''}</td>
-      <td class="num">${amt ? fmt(amt) : '—'}</td>
-      <td>${r[4]||''}</td>
-    </tr>`;
-  }).join('') || '<tr><td colspan="6" class="no-data">No records match the filters</td></tr>';
+    let cells = `<td style="color:#888;font-size:12px;">${i+1}</td>`;
+    cols.forEach(c => {
+      if (c === 'date')       cells += `<td>${fmtDate(r[0])}</td>`;
+      else if (c === 'emp')   cells += `<td>${r[1]||''}</td>`;
+      else if (c === 'ref')   cells += `<td>${r[2]||''}</td>`;
+      else if (c === 'amt')   cells += `<td class="num">${amt ? fmt(amt) : '—'}</td>`;
+      else if (c === 'batch') cells += `<td>${r[4]||''}</td>`;
+      else if (c === 'empty') cells += `<td></td>`;
+    });
+    return `<tr>${cells}</tr>`;
+  }).join('') || `<tr><td colspan="${sntColspan()}" class="no-data">No records match the filters</td></tr>`;
   document.getElementById('snt-tfoot').innerHTML = '';
   document.getElementById('snt-count').textContent = `${rows.length} record${rows.length!==1?'s':''}`;
 }
@@ -1422,20 +1485,21 @@ function onSntLiveSearch() {
     const filtered = sntNotSentData.filter(r =>
       [r[0], r[1], r[3], r[4]].some(c => String(c||'').toLowerCase().includes(q))
     );
+    const cols = getActiveSntCols();
     const tbody = document.getElementById('snt-tbody');
-    let total = 0;
     tbody.innerHTML = filtered.map((r, i) => {
       const amt = parseFloat(r[4]||0) || 0;
-      total += amt;
-      return `<tr>
-        <td style="color:#888;font-size:12px;">${i+1}</td>
-        <td>${fmtDate(r[0])}</td>
-        <td>${r[1]||''}</td>
-        <td>${r[3]||''}</td>
-        <td class="num">${amt ? fmt(amt) : '—'}</td>
-        <td style="color:#c0392b;font-weight:600;font-size:11px;">Not Sent</td>
-      </tr>`;
-    }).join('') || '<tr><td colspan="6" class="no-data">No matches</td></tr>';
+      let cells = `<td style="color:#888;font-size:12px;">${i+1}</td>`;
+      cols.forEach(c => {
+        if (c === 'date')       cells += `<td>${fmtDate(r[0])}</td>`;
+        else if (c === 'emp')   cells += `<td>${r[1]||''}</td>`;
+        else if (c === 'ref')   cells += `<td>${r[3]||''}</td>`;
+        else if (c === 'amt')   cells += `<td class="num">${amt ? fmt(amt) : '—'}</td>`;
+        else if (c === 'batch') cells += `<td style="color:#c0392b;font-weight:600;font-size:11px;">Not Sent</td>`;
+        else if (c === 'empty') cells += `<td></td>`;
+      });
+      return `<tr>${cells}</tr>`;
+    }).join('') || `<tr><td colspan="${sntColspan()}" class="no-data">No matches</td></tr>`;
     document.getElementById('snt-tfoot').innerHTML = '';
     document.getElementById('snt-rec-count').textContent = `${filtered.length} match${filtered.length!==1?'es':''}`;
     return;
