@@ -1,5 +1,5 @@
 ﻿<!DOCTYPE html>
-<!-- NourData EEV Module v3.11 - Aug-2026 -->
+<!-- NourData EEV Module v3.12 - Aug-2026 -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -289,7 +289,7 @@ if (sessionStorage.getItem('ne_sb_collapsed') === '1') {
 <aside id="sidebar">
   <div id="sb-header">
     <img id="sb-logo" src="nour_energy_logo.png" alt="Nour Energy" onerror="this.style.display='none'">
-    <div id="sb-title">Nour Energy<small>Expense Voucher &nbsp;·&nbsp; v3.11</small></div>
+    <div id="sb-title">Nour Energy<small>Expense Voucher &nbsp;·&nbsp; v3.12</small></div>
     <button id="sb-toggle" onclick="toggleSidebar()" title="Toggle sidebar">&#9776;</button>
   </div>
   <nav id="sb-nav">
@@ -1021,11 +1021,9 @@ async function renderLedger() {
   }).join('');
 
   const lgLastBal = parseFloat(rows[rows.length - 1][6] || 0) || 0;
-  const lgEmpLabel = empF ? `${empF} — ${getEmpName(empF)}` : '';
   if (from || to) {
     tfoot.innerHTML = `<tr>
-      <td colspan="3" style="font-weight:700;text-align:left;">${lgEmpLabel}</td>
-      <td colspan="3" style="font-weight:700;text-align:right;">Remaining Balance &mdash; ${fmt(lgLastBal)}</td>
+      <td colspan="6" style="font-weight:700;text-align:right;">Remaining Balance &mdash; ${fmt(lgLastBal)}</td>
     </tr>`;
   } else {
     tfoot.innerHTML = `<tr>
@@ -1036,6 +1034,10 @@ async function renderLedger() {
     </tr>`;
   }
   document.getElementById('lg-count').textContent = `${rows.length} record${rows.length !== 1 ? 's' : ''}`;
+  document.getElementById('lg-emp').value = '';
+  document.getElementById('lg-from').value = '';
+  document.getElementById('lg-to').value = '';
+  document.getElementById('lg-emp-info').textContent = '';
 }
 
 function resetLedgerFilters() {
@@ -1109,8 +1111,7 @@ async function renderStatement() {
   const lastBal = parseFloat(rows[rows.length - 1][6] || 0) || 0;
   if (from || to) {
     tfoot.innerHTML = `<tr>
-      <td colspan="3" style="font-weight:700;text-align:left;">${empNum} — ${empName}</td>
-      <td colspan="3" style="font-weight:700;text-align:right;">Remaining Balance &mdash; ${fmt(lastBal)}</td>
+      <td colspan="6" style="font-weight:700;text-align:right;">Remaining Balance &mdash; ${fmt(lastBal)}</td>
     </tr>`;
   } else {
     tfoot.innerHTML = `<tr>
@@ -1121,6 +1122,9 @@ async function renderStatement() {
     </tr>`;
   }
   document.getElementById('st-count').textContent = `${empName} — ${rows.length} record${rows.length !== 1 ? 's' : ''}`;
+  document.getElementById('st-emp').value = '';
+  document.getElementById('st-from').value = '';
+  document.getElementById('st-to').value = '';
 }
 
 function resetStatementFilters() {
