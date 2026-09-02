@@ -1,5 +1,5 @@
 ﻿<!DOCTYPE html>
-<!-- NourData EEV Module v3.13 - Aug-2026 -->
+<!-- NourData EEV Module v3.14 - Aug-2026 -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -289,7 +289,7 @@ if (sessionStorage.getItem('ne_sb_collapsed') === '1') {
 <aside id="sidebar">
   <div id="sb-header">
     <img id="sb-logo" src="nour_energy_logo.png" alt="Nour Energy" onerror="this.style.display='none'">
-    <div id="sb-title">Nour Energy<small>Expense Voucher &nbsp;·&nbsp; v3.13</small></div>
+    <div id="sb-title">Nour Energy<small>Expense Voucher &nbsp;·&nbsp; v3.14</small></div>
     <button id="sb-toggle" onclick="toggleSidebar()" title="Toggle sidebar">&#9776;</button>
   </div>
   <nav id="sb-nav">
@@ -745,6 +745,7 @@ const EEV_CODES = [
 let masterData  = [];  // rows from Master File sheet (after header)
 let sentRawData = [];  // rows from EEV Submitted sheet
 let sentLoaded  = false;
+let stLastEmpNum = '', stLastEmpName = '';
 
 /* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
    SIDEBAR
@@ -1131,6 +1132,8 @@ async function renderStatement() {
       <td class="num">${fmt(totWF - totEEV)}</td>
     </tr>`;
   }
+  stLastEmpNum = empNum;
+  stLastEmpName = empName;
   document.getElementById('st-count').textContent = `${empName} — ${rows.length} record${rows.length !== 1 ? 's' : ''}`;
   document.getElementById('st-emp').value = '';
   document.getElementById('st-from').value = '';
@@ -1147,9 +1150,8 @@ function resetStatementFilters() {
 }
 
 function printStatement() {
-  const empRaw = document.getElementById('st-emp').value.trim();
-  const empNum = empRaw.replace(/\s*—.*$/, '').trim();
-  const empName = empNum ? getEmpName(empNum) : '—';
+  const empNum = stLastEmpNum || '';
+  const empName = stLastEmpName || '—';
   const now = new Date();
   const printDate = now.toLocaleDateString('en-GB', {day:'2-digit', month:'short', year:'numeric'});
 
