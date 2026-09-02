@@ -1,5 +1,5 @@
 ﻿<!DOCTYPE html>
-<!-- NourData EEV Module v3.12 - Aug-2026 -->
+<!-- NourData EEV Module v3.13 - Aug-2026 -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -289,7 +289,7 @@ if (sessionStorage.getItem('ne_sb_collapsed') === '1') {
 <aside id="sidebar">
   <div id="sb-header">
     <img id="sb-logo" src="nour_energy_logo.png" alt="Nour Energy" onerror="this.style.display='none'">
-    <div id="sb-title">Nour Energy<small>Expense Voucher &nbsp;·&nbsp; v3.12</small></div>
+    <div id="sb-title">Nour Energy<small>Expense Voucher &nbsp;·&nbsp; v3.13</small></div>
     <button id="sb-toggle" onclick="toggleSidebar()" title="Toggle sidebar">&#9776;</button>
   </div>
   <nav id="sb-nav">
@@ -1108,10 +1108,20 @@ async function renderStatement() {
     </tr>`;
   }).join('');
 
-  const lastBal = parseFloat(rows[rows.length - 1][6] || 0) || 0;
   if (from || to) {
+    // Fetch all rows (no date filter) to get the true current balance
+    let trueBal = totWF - totEEV;
+    try {
+      const allP = new URLSearchParams({ action: 'getLedge', empNum });
+      const allR = await fetch(`${GS_WRITE}?${allP}`, { redirect: 'follow' }).then(r => r.json());
+      if (allR.ok && allR.rows && allR.rows.length) {
+        let aTotWF = 0, aTotEEV = 0;
+        allR.rows.forEach(r => { aTotWF += parseFloat(r[5]||0)||0; aTotEEV += parseFloat(r[4]||0)||0; });
+        trueBal = aTotWF - aTotEEV;
+      }
+    } catch(e) {}
     tfoot.innerHTML = `<tr>
-      <td colspan="6" style="font-weight:700;text-align:right;">Remaining Balance &mdash; ${fmt(lastBal)}</td>
+      <td colspan="6" style="font-weight:700;text-align:right;">Remaining Balance &mdash; ${fmt(trueBal)}</td>
     </tr>`;
   } else {
     tfoot.innerHTML = `<tr>
