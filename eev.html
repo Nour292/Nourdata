@@ -1,5 +1,5 @@
 ﻿<!DOCTYPE html>
-<!-- NourData EEV Module v3.10 - Aug-2026 -->
+<!-- NourData EEV Module v3.11 - Aug-2026 -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -289,7 +289,7 @@ if (sessionStorage.getItem('ne_sb_collapsed') === '1') {
 <aside id="sidebar">
   <div id="sb-header">
     <img id="sb-logo" src="nour_energy_logo.png" alt="Nour Energy" onerror="this.style.display='none'">
-    <div id="sb-title">Nour Energy<small>Expense Voucher &nbsp;·&nbsp; v3.10</small></div>
+    <div id="sb-title">Nour Energy<small>Expense Voucher &nbsp;·&nbsp; v3.11</small></div>
     <button id="sb-toggle" onclick="toggleSidebar()" title="Toggle sidebar">&#9776;</button>
   </div>
   <nav id="sb-nav">
@@ -304,7 +304,7 @@ if (sessionStorage.getItem('ne_sb_collapsed') === '1') {
           <span class="sb-icon">&#128221;</span><span class="sb-label">EEV Form</span>
         </button>
         <button class="sb-item" id="nav-statement" onclick="showSection('statement')">
-          <span class="sb-icon">&#128203;</span><span class="sb-label">Employee Statement</span>
+          <span class="sb-icon">&#128203;</span><span class="sb-label">EEV Statement</span>
         </button>
         <button class="sb-item" id="nav-sent" onclick="showSection('sent')">
           <span class="sb-icon">&#9989;</span><span class="sb-label">EEV Sent Account</span>
@@ -769,7 +769,7 @@ function showSection(name) {
   document.getElementById('sec-' + name).classList.add('active');
   const navBtn = document.getElementById('nav-' + name);
   if (navBtn) navBtn.classList.add('active');
-  const titles = {form:'Employee Expense Voucher', ledger:'EEV Ledger', statement:'Employee Statement', balance:'Balance Summary', sent:'EEV Sent Account'};
+  const titles = {form:'Employee Expense Voucher', ledger:'EEV Ledger', statement:'EEV Statement', balance:'Balance Summary', sent:'EEV Sent Account'};
   document.getElementById('page-title').textContent = titles[name] || 'EEV Module';
   const sntHdr = document.getElementById('snt-header-actions');
   if (sntHdr) sntHdr.style.display = (name === 'sent') ? 'flex' : 'none';
@@ -1020,12 +1020,21 @@ async function renderLedger() {
     </tr>`;
   }).join('');
 
-  tfoot.innerHTML = `<tr>
-    <td colspan="3" style="font-weight:700;text-align:right">TOTAL</td>
-    <td class="num">${fmt(totWF)}</td>
-    <td class="num">${fmt(totEEV)}</td>
-    <td class="num">${fmt(totWF - totEEV)}</td>
-  </tr>`;
+  const lgLastBal = parseFloat(rows[rows.length - 1][6] || 0) || 0;
+  const lgEmpLabel = empF ? `${empF} — ${getEmpName(empF)}` : '';
+  if (from || to) {
+    tfoot.innerHTML = `<tr>
+      <td colspan="3" style="font-weight:700;text-align:left;">${lgEmpLabel}</td>
+      <td colspan="3" style="font-weight:700;text-align:right;">Remaining Balance &mdash; ${fmt(lgLastBal)}</td>
+    </tr>`;
+  } else {
+    tfoot.innerHTML = `<tr>
+      <td colspan="3" style="font-weight:700;text-align:right">TOTAL</td>
+      <td class="num">${fmt(totWF)}</td>
+      <td class="num">${fmt(totEEV)}</td>
+      <td class="num">${fmt(totWF - totEEV)}</td>
+    </tr>`;
+  }
   document.getElementById('lg-count').textContent = `${rows.length} record${rows.length !== 1 ? 's' : ''}`;
 }
 
@@ -1097,12 +1106,20 @@ async function renderStatement() {
     </tr>`;
   }).join('');
 
-  tfoot.innerHTML = `<tr>
-    <td colspan="3" style="font-weight:700;text-align:right">TOTAL — ${empName}</td>
-    <td class="num">${fmt(totWF)}</td>
-    <td class="num">${fmt(totEEV)}</td>
-    <td class="num">${fmt(totWF - totEEV)}</td>
-  </tr>`;
+  const lastBal = parseFloat(rows[rows.length - 1][6] || 0) || 0;
+  if (from || to) {
+    tfoot.innerHTML = `<tr>
+      <td colspan="3" style="font-weight:700;text-align:left;">${empNum} — ${empName}</td>
+      <td colspan="3" style="font-weight:700;text-align:right;">Remaining Balance &mdash; ${fmt(lastBal)}</td>
+    </tr>`;
+  } else {
+    tfoot.innerHTML = `<tr>
+      <td colspan="3" style="font-weight:700;text-align:right">TOTAL — ${empName}</td>
+      <td class="num">${fmt(totWF)}</td>
+      <td class="num">${fmt(totEEV)}</td>
+      <td class="num">${fmt(totWF - totEEV)}</td>
+    </tr>`;
+  }
   document.getElementById('st-count').textContent = `${empName} — ${rows.length} record${rows.length !== 1 ? 's' : ''}`;
 }
 
@@ -1150,7 +1167,7 @@ function printStatement() {
   const fmtD = d => d ? d.toLocaleDateString('en-GB', {day:'2-digit', month:'short', year:'numeric'}) : '—';
   const periodStr = (minDate || maxDate) ? `${fmtD(minDate)} - ${fmtD(maxDate)}` : '—';
 
-  const html = `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Employee Statement</title>
+  const html = `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>EEV Statement</title>
 <style>
 @page{size:A4 portrait;margin:12mm 14mm 18mm;}
 @page{@top-right{content:counter(page);font-size:7pt;color:#888;}}
