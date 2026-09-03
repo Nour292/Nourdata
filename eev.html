@@ -1,5 +1,5 @@
 ﻿<!DOCTYPE html>
-<!-- NourData EEV Module v3.14 - Aug-2026 -->
+<!-- NourData EEV Module v3.15 - Aug-2026 -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -289,7 +289,7 @@ if (sessionStorage.getItem('ne_sb_collapsed') === '1') {
 <aside id="sidebar">
   <div id="sb-header">
     <img id="sb-logo" src="nour_energy_logo.png" alt="Nour Energy" onerror="this.style.display='none'">
-    <div id="sb-title">Nour Energy<small>Expense Voucher &nbsp;·&nbsp; v3.14</small></div>
+    <div id="sb-title">Nour Energy<small>Expense Voucher &nbsp;·&nbsp; v3.15</small></div>
     <button id="sb-toggle" onclick="toggleSidebar()" title="Toggle sidebar">&#9776;</button>
   </div>
   <nav id="sb-nav">
@@ -821,9 +821,10 @@ function getEmpName(empNum) {
 function buildExpenseRows() {
   const tbody = document.getElementById('exp-tbody');
   tbody.innerHTML = '';
-  for (let i = 0; i < EEV_CODES.length; i += 2) {
+  const half = Math.ceil(EEV_CODES.length / 2);
+  for (let i = 0; i < half; i++) {
     const a = EEV_CODES[i];
-    const b = EEV_CODES[i + 1];
+    const b = EEV_CODES[i + half];
     const tr = document.createElement('tr');
     tr.innerHTML = `
       <td class="code">${a.code}</td>
@@ -834,7 +835,7 @@ function buildExpenseRows() {
       <td class="code">${b ? b.code : ''}</td>
       <td>${b ? b.desc : ''}</td>
       <td style="text-align:right">
-        ${b ? `<input class="amt-inp" type="number" id="amt-${i+1}" value="" min="0" step="0.01" placeholder="0.00" oninput="calcTotal()">` : ''}
+        ${b ? `<input class="amt-inp" type="number" id="amt-${i+half}" value="" min="0" step="0.01" placeholder="0.00" oninput="calcTotal()">` : ''}
       </td>`;
     tbody.appendChild(tr);
   }
