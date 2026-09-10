@@ -1,5 +1,5 @@
 ﻿<!DOCTYPE html>
-<!-- NourData EEV Module v3.15 - Aug-2026 -->
+<!-- NourData EEV Module v3.16 - Aug-2026 -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -289,7 +289,7 @@ if (sessionStorage.getItem('ne_sb_collapsed') === '1') {
 <aside id="sidebar">
   <div id="sb-header">
     <img id="sb-logo" src="nour_energy_logo.png" alt="Nour Energy" onerror="this.style.display='none'">
-    <div id="sb-title">Nour Energy<small>Expense Voucher &nbsp;·&nbsp; v3.15</small></div>
+    <div id="sb-title">Nour Energy<small>Expense Voucher &nbsp;·&nbsp; v3.16</small></div>
     <button id="sb-toggle" onclick="toggleSidebar()" title="Toggle sidebar">&#9776;</button>
   </div>
   <nav id="sb-nav">
@@ -1083,7 +1083,8 @@ async function renderStatement() {
     rows = result.rows || [];
   } catch(e) { showLoading(false); showToast('Load error: ' + e.message, 'error'); return; }
 
-  const empName = getEmpName(empNum);
+  const rawNamePart = empRaw.includes('—') ? empRaw.replace(/^[^—]*—\s*/, '').trim() : '';
+  const empName = getEmpName(empNum) || rawNamePart;
 
   if (!rows.length) {
     tbody.innerHTML = '<tr><td colspan="6" class="no-data">No records for this employee</td></tr>';
