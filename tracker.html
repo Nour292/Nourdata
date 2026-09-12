@@ -286,7 +286,7 @@ body.dark-mode .max-emp-name{color:#e0e0e0!important;}
 <aside id="sidebar">
   <div id="sb-header">
     <img src="https://nour292.github.io/Nourdata/nour_energy_logo.png" alt="Logo" id="sb-logo">
-    <div id="sb-title">Nour Energy<small>HR System &nbsp;·&nbsp; v2.6</small></div>
+    <div id="sb-title">Nour Energy<small>HR System &nbsp;·&nbsp; v2.7</small></div>
     <button id="sb-toggle" onclick="toggleSidebar()" aria-label="Toggle sidebar">&#9776;</button>
   </div>
   <nav id="sb-nav">
@@ -447,7 +447,7 @@ body.dark-mode .max-emp-name{color:#e0e0e0!important;}
           <label>Current Status *</label>
           <select id="f-status" onchange="toggleDateFields()">
             <option value="">-- Select --</option>
-            <option>Sent to Admin</option><option>Sent to Accounts</option>
+            <option>Sent to Dammam for Approval</option><option>Sent to Admin</option><option>Sent to Accounts</option>
             <option>Done the Computation</option><option>Visa Processing</option>
             <option>Visa Issued</option><option>Sent Clearance to Fleet / Store</option>
             <option>Submit to IT</option><option>Submitted to Admin</option>
@@ -940,6 +940,7 @@ function copyAllJobsTable() {
 }
 
 const STATUS_LIST = [
+  {val:'Sent to Dammam for Approval',icon:'📨'},
   {val:'Sent to Admin',icon:'🏢'},
   {val:'Sent Clearance to Fleet / Store',icon:'🚚'},
   {val:'Sent to Accounts',icon:'💰'},
