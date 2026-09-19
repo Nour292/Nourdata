@@ -1,5 +1,5 @@
 ﻿<!DOCTYPE html>
-<!-- NourData EEV Module v3.16 - Aug-2026 -->
+<!-- NourData EEV Module v3.17 - Sep-2026 -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -289,7 +289,7 @@ if (sessionStorage.getItem('ne_sb_collapsed') === '1') {
 <aside id="sidebar">
   <div id="sb-header">
     <img id="sb-logo" src="nour_energy_logo.png" alt="Nour Energy" onerror="this.style.display='none'">
-    <div id="sb-title">Nour Energy<small>Expense Voucher &nbsp;·&nbsp; v3.16</small></div>
+    <div id="sb-title">Nour Energy<small>Expense Voucher &nbsp;·&nbsp; v3.17</small></div>
     <button id="sb-toggle" onclick="toggleSidebar()" title="Toggle sidebar">&#9776;</button>
   </div>
   <nav id="sb-nav">
@@ -1783,18 +1783,13 @@ function printSentTable() {
   const title   = getSntExportName();
   const now     = new Date();
   const dateStr = now.toLocaleDateString('en-GB', {day:'2-digit', month:'short', year:'numeric'});
+  const batchNum = sntSelectedBatches.length === 1 ? sntSelectedBatches[0]
+    : sntSelectedBatches.length > 1 ? sntSelectedBatches.join(', ')
+    : 'All';
   const printTbl = `
     <h3 style="margin:0 0 6px 0;font-size:13pt;color:#1a2b3c;">${title}</h3>
     <table>
       <thead>${thead.innerHTML}</thead>
-      <tfoot>
-        <tr><td colspan="6" style="border:none;border-top:1px solid #bbb;padding:5px 0;">
-          <div style="display:flex;justify-content:space-between;font-size:9pt;color:#555;">
-            <span>Prepared by: Qasim</span>
-            <span>Date: ${dateStr}</span>
-          </div>
-        </td></tr>
-      </tfoot>
       <tbody>${tbody.innerHTML}</tbody>
     </table>`;
   const pw = window.open('', '_blank');
@@ -1807,8 +1802,14 @@ function printSentTable() {
   .num{text-align:right;}
   td[style*="color:#888"]{color:#888!important;}
   .no-data{display:none;}
-  tfoot td{-webkit-print-color-adjust:exact;print-color-adjust:exact;}
-  @page{margin:12mm;@top-right{content:"Page " counter(page);font-size:9pt;color:#555;}}
+  @page{
+    size:A4 portrait;margin:22mm 12mm 18mm;
+    @top-left   {content:"Batch Number : ${batchNum}";font-weight:bold;font-family:Calibri,sans-serif;font-size:11pt;}
+    @top-center {content:counter(page) " / " counter(pages);font-weight:bold;font-family:Calibri,sans-serif;font-size:11pt;}
+    @top-right  {content:"To : Accounts Department";font-weight:bold;font-family:Calibri,sans-serif;font-size:11pt;}
+    @bottom-left  {content:"Created by : Qasim";font-family:Calibri,sans-serif;font-size:9pt;color:#333;}
+    @bottom-right {content:"${dateStr}";font-family:Calibri,sans-serif;font-size:9pt;color:#333;}
+  }
   </style></head><body>
   ${printTbl}
   </body></html>`);
