@@ -255,6 +255,12 @@ body.dark-mode #desc-suggestions{background:#1e2d3d!important;border-color:#2a3f
 body.dark-mode .sug-item{border-color:#2a3d50!important;color:#c8d8e8!important;}
 body.dark-mode .sug-item:hover{background:#1a2b3c!important;}
 
+/* ── Print Header ── */
+#print-header{display:none;}
+@media print{
+  #print-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;font-size:12pt;font-family:'Calibri',sans-serif;}
+}
+
 /* ── Print ── */
 @media print{
   #sidebar,#top-header,#module-panel,#search-wrap,.tbl-actions,#confirm-overlay,#save-toast,#inv-modal,#po-modal{display:none!important;}
@@ -281,7 +287,7 @@ body.dark-mode .sug-item:hover{background:#1a2b3c!important;}
 <aside id="sidebar">
   <div id="sb-header">
     <img src="https://nour292.github.io/Nourdata/nour_energy_logo.png" alt="Logo" id="sb-logo">
-    <div id="sb-title">Nour Energy<small>HR System &nbsp;·&nbsp; v2.0</small></div>
+    <div id="sb-title">Nour Energy<small>HR System &nbsp;·&nbsp; v2.1</small></div>
   </div>
   <nav id="sb-nav">
 
@@ -390,6 +396,12 @@ body.dark-mode .sug-item:hover{background:#1a2b3c!important;}
 
     <!-- ── Loading ── -->
     <div id="loading-msg" style="display:none;text-align:center;padding:48px;color:#888;font-size:15px;">⏳ Loading data from Google Sheets…</div>
+
+    <!-- ── Print Header ── -->
+    <div id="print-header">
+      <span id="ph-batch"><strong>Batch Number : </strong><span id="ph-batch-val"></span></span>
+      <span id="ph-to"><strong>To : Accounts Department</strong></span>
+    </div>
 
     <!-- ── Table ── -->
     <div id="table-container">
@@ -1360,6 +1372,14 @@ function exportCSV() {
 function exportPDF() {
   const el = document.getElementById('pf-date');
   if (el) el.textContent = new Date().toLocaleDateString('en-GB');
+  // Set batch number from filter or from visible data
+  const batchEl = document.getElementById('ph-batch-val');
+  if (batchEl) {
+    const filtered = invFilters.batchNumbers && invFilters.batchNumbers.length
+      ? invFilters.batchNumbers.join(', ')
+      : [...new Set(getFilteredInvoices().map(r => r.batchNumber).filter(Boolean))].join(', ') || '—';
+    batchEl.textContent = filtered;
+  }
   window.print();
 }
 
