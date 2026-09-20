@@ -1,5 +1,5 @@
 ﻿<!DOCTYPE html>
-<!-- NourData EEV Module v3.20 - Sep-2026 -->
+<!-- NourData EEV Module v3.21 - Sep-2026 -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -289,7 +289,7 @@ if (sessionStorage.getItem('ne_sb_collapsed') === '1') {
 <aside id="sidebar">
   <div id="sb-header">
     <img id="sb-logo" src="nour_energy_logo.png" alt="Nour Energy" onerror="this.style.display='none'">
-    <div id="sb-title">Nour Energy<small>Expense Voucher &nbsp;·&nbsp; v3.20</small></div>
+    <div id="sb-title">Nour Energy<small>Expense Voucher &nbsp;·&nbsp; v3.21</small></div>
     <button id="sb-toggle" onclick="toggleSidebar()" title="Toggle sidebar">&#9776;</button>
   </div>
   <nav id="sb-nav">
@@ -746,6 +746,7 @@ let masterData  = [];  // rows from Master File sheet (after header)
 let sentRawData = [];  // rows from EEV Submitted sheet
 let sentLoaded  = false;
 let stLastEmpNum = '', stLastEmpName = '';
+let sheetTimeZone = 'America/Los_Angeles'; // loaded at startup from Sheets API
 
 /* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
    SIDEBAR
@@ -800,8 +801,12 @@ function logout() {
 async function loadAllData() {
   showLoading(true);
   try {
-    const mf = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${GS_ID}/values/Master%20File?key=${GS_KEY}`).then(r => r.json());
+    const [mf, meta] = await Promise.all([
+      fetch(`https://sheets.googleapis.com/v4/spreadsheets/${GS_ID}/values/Master%20File?key=${GS_KEY}`).then(r => r.json()),
+      fetch(`https://sheets.googleapis.com/v4/spreadsheets/${GS_ID}?fields=properties.timeZone&key=${GS_KEY}`).then(r => r.json())
+    ]);
     masterData = (mf.values || []).slice(1).filter(r => r[0]);
+    if (meta.properties?.timeZone) sheetTimeZone = meta.properties.timeZone;
     populateEmpDropdowns();
   } catch (e) {
     showToast('Data load error: ' + e.message, 'error');
@@ -1981,15 +1986,12 @@ function fmt(n) {
 
 function fmtDate(val) {
   if (!val) return '';
+  // Already formatted as DD-Mon-YYYY — return as-is
   if (typeof val === 'string' && /^\d{2}-[A-Za-z]{3}-\d{4}$/.test(val)) return val;
-  // Strip time component — prevents UTC↔local offset shifting the date by one day
-  if (typeof val === 'string' && val.length > 10) val = val.slice(0, 10);
-  if (typeof val === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(val)) {
-    const [y, m, d] = val.split('-').map(Number);
-    return new Date(y, m - 1, d).toLocaleDateString('en-GB', {day:'2-digit', month:'short', year:'numeric'});
-  }
   const d = new Date(val);
-  return isNaN(d) ? String(val) : d.toLocaleDateString('en-GB', {day:'2-digit', month:'short', year:'numeric'});
+  if (isNaN(d)) return String(val);
+  // Use the spreadsheet's own timezone so the displayed date matches what the sheet shows
+  return d.toLocaleDateString('en-GB', {day:'2-digit', month:'short', year:'numeric', timeZone: sheetTimeZone});
 }
 
 function parseEEVDate(str) {
