@@ -1,5 +1,5 @@
 ﻿<!DOCTYPE html>
-<!-- NourData EEV Module v3.19 - Sep-2026 -->
+<!-- NourData EEV Module v3.20 - Sep-2026 -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -289,7 +289,7 @@ if (sessionStorage.getItem('ne_sb_collapsed') === '1') {
 <aside id="sidebar">
   <div id="sb-header">
     <img id="sb-logo" src="nour_energy_logo.png" alt="Nour Energy" onerror="this.style.display='none'">
-    <div id="sb-title">Nour Energy<small>Expense Voucher &nbsp;·&nbsp; v3.19</small></div>
+    <div id="sb-title">Nour Energy<small>Expense Voucher &nbsp;·&nbsp; v3.20</small></div>
     <button id="sb-toggle" onclick="toggleSidebar()" title="Toggle sidebar">&#9776;</button>
   </div>
   <nav id="sb-nav">
@@ -1982,6 +1982,12 @@ function fmt(n) {
 function fmtDate(val) {
   if (!val) return '';
   if (typeof val === 'string' && /^\d{2}-[A-Za-z]{3}-\d{4}$/.test(val)) return val;
+  // Strip time component — prevents UTC↔local offset shifting the date by one day
+  if (typeof val === 'string' && val.length > 10) val = val.slice(0, 10);
+  if (typeof val === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(val)) {
+    const [y, m, d] = val.split('-').map(Number);
+    return new Date(y, m - 1, d).toLocaleDateString('en-GB', {day:'2-digit', month:'short', year:'numeric'});
+  }
   const d = new Date(val);
   return isNaN(d) ? String(val) : d.toLocaleDateString('en-GB', {day:'2-digit', month:'short', year:'numeric'});
 }
