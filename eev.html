@@ -274,7 +274,7 @@ body.dark-mode #loading-overlay{background:rgba(15,24,36,0.75);}
 <body>
 <script>
 // Auth check — must run before any DOM
-if (sessionStorage.getItem('ne_role') !== 'admin') location.href = 'index.html';
+if (sessionStorage.getItem('ne_role') !== 'superadmin') location.href = 'index.html';
 if (sessionStorage.getItem('ne_dark') === '1') document.body.classList.add('dark-mode');
 if (sessionStorage.getItem('ne_sb_collapsed') === '1') {
   document.body.classList.add('sb-collapsed');

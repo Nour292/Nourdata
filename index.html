@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- NourData v2.2 Dashboard Build - 27-Jul-2026 -->
+<!-- NourData v2.3 Dashboard Build - 29-Sep-2026 -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -547,6 +547,7 @@ body.user-mode #snav-deepsearch,
 body.user-mode #snav-lists,
 body.user-mode #filterButton { display: none !important; }
 body.user-mode .admin-only { display: none !important; }
+body.admin-mode .admin-only { display: none !important; }
 
 @media print {
   /* Hide everything except the card */
@@ -1540,11 +1541,13 @@ function unlockApp() {
   if (arrowTrk) arrowTrk.textContent = '▸';
   document.getElementById('employeeNumber').focus();
   sidebarNav('search');
-  if (sessionStorage.getItem('ne_role') === 'user') {
+  const _unlockRole = sessionStorage.getItem('ne_role');
+  if (_unlockRole === 'user') {
     currentAccessLevel = 'employee';
     document.body.classList.add('user-mode');
   } else {
     currentAccessLevel = 'admin';
+    if (_unlockRole === 'admin') document.body.classList.add('admin-mode');
   }
 }
 
@@ -3729,7 +3732,7 @@ function installApp(e) {
   document.body.appendChild(m);
 }
 const OTP_URL = 'https://script.google.com/macros/s/AKfycbzGXoDV-fdif6qiP_wFjmoULC0pXoRDVsH1P_-LptWEAIwYC3NBzDo-aWwOr4OXoaVuxQ/exec';
-let _otpTimer = null, _otpExpiry = 0;
+let _otpTimer = null, _otpExpiry = 0, _pendingRole = 'admin';
 
 function doLogin() {
   const pass = (document.getElementById('login-pass').value || '').trim();
@@ -3737,7 +3740,8 @@ function doLogin() {
   if (pass === '4190') {
     sessionStorage.setItem('ne_role', 'user');
     window.location.href = 'tracker.html';
-  } else if (pass === 'Nour-pr') {
+  } else if (pass === 'Nour-pr' || pass === 'Nour-pprr') {
+    _pendingRole = (pass === 'Nour-pprr') ? 'superadmin' : 'admin';
     err.textContent = '';
     document.getElementById('phase-password').style.display = 'none';
     document.getElementById('phase-otp').style.display = 'block';
@@ -3803,7 +3807,7 @@ async function doAdminLogin() {
     const data = await res.json();
     if (data.ok) {
       clearInterval(_otpTimer);
-      sessionStorage.setItem('ne_role', 'admin');
+      sessionStorage.setItem('ne_role', _pendingRole);
       window.location.href = 'tracker.html';
     } else {
       err.textContent = data.error || 'Invalid OTP. Please try again.';

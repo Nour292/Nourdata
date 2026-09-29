@@ -1726,7 +1726,7 @@ function confirmDialog(msg, onOk) {
 // ─── Init ─────────────────────────────────────────────────────────────────────
 window.addEventListener('DOMContentLoaded', async () => {
   // Auth guard
-  if (sessionStorage.getItem('ne_role') !== 'admin') {
+  if (sessionStorage.getItem('ne_role') !== 'superadmin') {
     window.location.href = 'index.html';
     return;
   }

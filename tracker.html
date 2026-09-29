@@ -1661,7 +1661,7 @@ function installApp(e) {
   document.body.appendChild(m);
 }
 const OTP_URL = 'https://script.google.com/macros/s/AKfycbzGXoDV-fdif6qiP_wFjmoULC0pXoRDVsH1P_-LptWEAIwYC3NBzDo-aWwOr4OXoaVuxQ/exec';
-let _otpTimer = null, _otpExpiry = 0;
+let _otpTimer = null, _otpExpiry = 0, _pendingRole = 'admin';
 
 function doLogin() {
   const pass = (document.getElementById('login-pass').value || '').trim();
@@ -1671,7 +1671,8 @@ function doLogin() {
     document.getElementById('login-overlay').style.display = 'none';
     document.body.classList.add('user-mode');
     loadJobs().then(() => { setView('active'); renderJobs(); });
-  } else if (pass === 'Nour-pr') {
+  } else if (pass === 'Nour-pr' || pass === 'Nour-pprr') {
+    _pendingRole = (pass === 'Nour-pprr') ? 'superadmin' : 'admin';
     err.textContent = '';
     document.getElementById('phase-password').style.display = 'none';
     document.getElementById('phase-otp').style.display = 'block';
@@ -1737,7 +1738,7 @@ async function doAdminLogin() {
     const data = await res.json();
     if (data.ok) {
       clearInterval(_otpTimer);
-      sessionStorage.setItem('ne_role', 'admin');
+      sessionStorage.setItem('ne_role', _pendingRole);
       document.getElementById('login-overlay').style.display = 'none';
       loadJobs().then(() => { setView('active'); renderJobs(); });
     } else {
