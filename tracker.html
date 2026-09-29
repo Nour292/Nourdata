@@ -244,6 +244,7 @@ body.dark-mode #confirm-msg{color:#e0e0e0!important;}
 
 body.user-mode .tracker-delete-btn { display: none !important; }
 body.user-mode .admin-only { display: none !important; }
+body.admin-mode .admin-only { display: none !important; }
 @media print{#sidebar,#top-header,#smart-search-bar,#stats-bar,.card-footer-bar,#modal-overlay,#status-modal{display:none!important;}#main-content{margin-left:0!important;}.job-card{break-inside:avoid;border:1px solid #ddd;}}
 /* ── Maximize overlay ── */
 .card-max-btn{position:absolute;top:8px;right:8px;background:none;border:1px solid rgba(0,0,0,0.12);cursor:pointer;font-size:13px;color:#7a8c9a;padding:1px 6px;border-radius:5px;line-height:1.5;z-index:1;}
@@ -1502,6 +1503,7 @@ document.addEventListener('DOMContentLoaded', function() {
   if (role) {
     document.getElementById('login-overlay').style.display = 'none';
     if (role === 'user') document.body.classList.add('user-mode');
+    if (role === 'admin') document.body.classList.add('admin-mode');
     loadJobs().then(() => { setView('active'); renderJobs(); });
   } else {
     setTimeout(() => { const p = document.getElementById('login-pass'); if(p) p.focus(); }, 50);
@@ -1740,6 +1742,7 @@ async function doAdminLogin() {
       clearInterval(_otpTimer);
       sessionStorage.setItem('ne_role', _pendingRole);
       document.getElementById('login-overlay').style.display = 'none';
+      if (_pendingRole === 'admin') document.body.classList.add('admin-mode');
       loadJobs().then(() => { setView('active'); renderJobs(); });
     } else {
       err.textContent = data.error || 'Invalid OTP. Please try again.';
