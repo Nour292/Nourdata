@@ -548,6 +548,9 @@ body.user-mode #snav-lists,
 body.user-mode #filterButton { display: none !important; }
 body.user-mode .admin-only { display: none !important; }
 body.admin-mode .admin-only { display: none !important; }
+body.viewer-mode #snav-add,
+body.viewer-mode #dataFormButton { display: none !important; }
+body.viewer-mode .admin-only { display: none !important; }
 
 @media print {
   /* Hide everything except the card */
@@ -1548,6 +1551,7 @@ function unlockApp() {
   } else {
     currentAccessLevel = 'admin';
     if (_unlockRole === 'admin') document.body.classList.add('admin-mode');
+    if (_unlockRole === 'viewer') document.body.classList.add('viewer-mode');
   }
 }
 
@@ -3740,6 +3744,10 @@ function doLogin() {
   if (pass === '4190') {
     sessionStorage.setItem('ne_role', 'user');
     window.location.href = 'tracker.html';
+  } else if (pass === '108624') {
+    sessionStorage.setItem('ne_role', 'viewer');
+    document.getElementById('login-overlay').style.display = 'none';
+    unlockApp();
   } else if (pass === 'Nour-pr' || pass === 'Nour-pprr') {
     _pendingRole = (pass === 'Nour-pprr') ? 'superadmin' : 'admin';
     err.textContent = '';
