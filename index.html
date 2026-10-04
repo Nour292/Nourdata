@@ -903,8 +903,8 @@ body.view-deepsearch #card-area:empty::after,
 body.view-lists #card-area:empty::after { display: none !important; }
 
 @media print {
-  @page { margin: 10mm; size: A4; }
-  html, body { margin: 0 !important; padding: 0 !important; background: #fff !important; width: 100% !important; }
+  @page { margin: 0; size: A4; }
+  html, body { margin: 0 !important; padding: 10mm !important; background: #fff !important; width: 100% !important; box-sizing: border-box; }
   #app-shell { width: 100% !important; max-width: 100% !important; margin: 0 !important; padding: 0 !important; }
   #main-content { width: 100% !important; }
   #page-body  { width: 100% !important; }
