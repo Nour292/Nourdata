@@ -2153,7 +2153,7 @@ function searchEmployee() {
 
       <div id="df-status-msg"></div>
       <div id="df-actions">
-        <button id="df-submit-btn" onclick="submitForm()">💾 Save to Google Sheets</button>
+        <button id="df-submit-btn" onclick="submitForm()">💾 Save</button>
         <button onclick="clearForm()">🗑 Clear Form</button>
       </div>
     </div>
@@ -2355,7 +2355,8 @@ async function submitForm() {
       if (!addData.ok) throw new Error(addData.error || 'Server returned error');
       rows.push(newRow);
       csvRows = rows;
-      dfStatusMsg('✅ Employee added to Google Sheets!', 'ok');
+      dfStatusMsg('✅ Saved Successfully!', 'ok');
+      setTimeout(() => dfStatusMsg('', ''), 4000);
       clearForm();
 
     } else {
@@ -2376,7 +2377,8 @@ async function submitForm() {
       if (!updData.ok) throw new Error(updData.error || 'Server returned error');
       rows[dfEditRowIdx] = existingRow;
       csvRows = rows;
-      dfStatusMsg('✅ Employee updated in Google Sheets!', 'ok');
+      dfStatusMsg('✅ Saved Successfully!', 'ok');
+      setTimeout(() => dfStatusMsg('', ''), 4000);
     }
   } catch(e) {
     dfStatusMsg(`❌ Error: ${e.message}`, 'err');
