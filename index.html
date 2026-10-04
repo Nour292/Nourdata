@@ -2345,10 +2345,14 @@ async function submitForm() {
       const newRow = new Array(42).fill('');
       Object.entries(colUpdates).forEach(([idx, val]) => { newRow[idx] = val; });
 
-      await fetch(GS_WRITE, {
-        method: 'POST', mode: 'no-cors',
+      const addRes = await fetch(GS_WRITE, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain' },
+        redirect: 'follow',
         body: JSON.stringify({ action: 'add', row: newRow })
       });
+      const addData = await addRes.json();
+      if (!addData.ok) throw new Error(addData.error || 'Server returned error');
       rows.push(newRow);
       csvRows = rows;
       dfStatusMsg('✅ Employee added to Google Sheets!', 'ok');
@@ -2362,10 +2366,14 @@ async function submitForm() {
       Object.entries(colUpdates).forEach(([idx, val]) => { existingRow[Number(idx)] = val; });
       const sheetRow = dfEditRowIdx + 1; // rows[0]=header → employee at dfEditRowIdx is sheet row dfEditRowIdx+1
 
-      await fetch(GS_WRITE, {
-        method: 'POST', mode: 'no-cors',
+      const updRes = await fetch(GS_WRITE, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain' },
+        redirect: 'follow',
         body: JSON.stringify({ action: 'update', row: existingRow, rowNum: sheetRow, skipCols: [...FORMULA_COLS] })
       });
+      const updData = await updRes.json();
+      if (!updData.ok) throw new Error(updData.error || 'Server returned error');
       rows[dfEditRowIdx] = existingRow;
       csvRows = rows;
       dfStatusMsg('✅ Employee updated in Google Sheets!', 'ok');
