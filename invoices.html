@@ -284,7 +284,7 @@ body.dark-mode .sug-item:hover{background:#1a2b3c!important;}
 <aside id="sidebar">
   <div id="sb-header">
     <img src="https://nour292.github.io/Nourdata/nour_energy_logo.png" alt="Logo" id="sb-logo">
-    <div id="sb-title">Nour Energy<small>HR System &nbsp;·&nbsp; v2.4</small></div>
+    <div id="sb-title">Nour Energy<small>HR System &nbsp;·&nbsp; v2.5</small></div>
   </div>
   <nav id="sb-nav">
 
@@ -1389,12 +1389,13 @@ function exportPDF() {
   if (old) old.remove();
   const s = document.createElement('style');
   s.id = 'dyn-print-style';
+  const isInvoiceView = currentView === 'invoices';
   s.textContent = `@page {
     size: A4 portrait;
     margin: 22mm 12mm 18mm;
-    @top-left   { content: "To : Accounts Department"; font-weight: bold; font-family: Calibri; font-size: 11pt; }
+    ${isInvoiceView ? `@top-left   { content: "To : Accounts Department"; font-weight: bold; font-family: Calibri; font-size: 11pt; }` : ''}
     @top-center { content: counter(page) " / " counter(pages); font-weight: bold; font-family: Calibri; font-size: 11pt; }
-    @top-right  { content: "Batch Number : ${batchNum}"; font-weight: bold; font-family: Calibri; font-size: 11pt; }
+    ${isInvoiceView ? `@top-right  { content: "Batch Number : ${batchNum}"; font-weight: bold; font-family: Calibri; font-size: 11pt; }` : ''}
     @bottom-left  { content: "Created by : Qasim"; font-family: Calibri; font-size: 9pt; color: #333; }
     @bottom-right { content: "${dateStr}"; font-family: Calibri; font-size: 9pt; color: #333; }
   }`;
