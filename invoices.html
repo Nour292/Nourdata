@@ -284,7 +284,7 @@ body.dark-mode .sug-item:hover{background:#1a2b3c!important;}
 <aside id="sidebar">
   <div id="sb-header">
     <img src="https://nour292.github.io/Nourdata/nour_energy_logo.png" alt="Logo" id="sb-logo">
-    <div id="sb-title">Nour Energy<small>HR System &nbsp;·&nbsp; v2.3</small></div>
+    <div id="sb-title">Nour Energy<small>HR System &nbsp;·&nbsp; v2.4</small></div>
   </div>
   <nav id="sb-nav">
 
@@ -1372,6 +1372,19 @@ function exportPDF() {
     ? invFilters.batchNumbers.join(', ')
     : [...new Set(getFilteredInvoices().map(r => r.batchNumber).filter(Boolean))].join(', ') || '—';
 
+  // Force height collapse via inline style (beats all CSS) to prevent blank 2nd page
+  const collapseEls = [
+    document.documentElement,
+    document.body,
+    document.getElementById('layout'),
+    document.getElementById('main-content'),
+    document.getElementById('page-body')
+  ].filter(Boolean);
+  collapseEls.forEach(el => {
+    el.style.setProperty('min-height', '0', 'important');
+    el.style.setProperty('height', 'auto', 'important');
+  });
+
   const old = document.getElementById('dyn-print-style');
   if (old) old.remove();
   const s = document.createElement('style');
@@ -1387,7 +1400,13 @@ function exportPDF() {
   }`;
   document.head.appendChild(s);
   window.print();
-  setTimeout(() => s.remove(), 3000);
+  setTimeout(() => {
+    s.remove();
+    collapseEls.forEach(el => {
+      el.style.removeProperty('min-height');
+      el.style.removeProperty('height');
+    });
+  }, 3000);
 }
 
 // ─── Batch number logic ───────────────────────────────────────────────────────
