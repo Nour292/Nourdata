@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- NourData v2.6 Dashboard Build - 04-Oct-2026 -->
+<!-- NourData v2.7 Dashboard Build - 17-Oct-2026 -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -440,6 +440,25 @@ body.sb-collapsed #main-content { margin-left: 56px; }
 /* ── Excel Export button ── */
 #isl-export-btn { background: #1d7a3a; color: #fff; border: none; border-radius: 6px; padding: 8px 16px; font-size: 13px; font-weight: 700; cursor: pointer; font-family: 'Calibri', sans-serif; }
 #isl-export-btn:hover { background: #155d2c; }
+
+/* ── Multi-select dropdown widget (Smart Lists filters) ── */
+.ifl-ms-wrap { position: relative; flex: 1; min-width: 0; }
+.ifl-ms-btn { width: 100%; text-align: left; padding: 6px 10px; font-size: 13px; font-family: 'Calibri', sans-serif; border: 1px solid #c8d8e8; border-radius: 5px; cursor: pointer; background: #fff; color: #1a2b3c; display: flex; justify-content: space-between; align-items: center; gap: 4px; white-space: nowrap; overflow: hidden; }
+.ifl-ms-btn span:first-child { overflow: hidden; text-overflow: ellipsis; flex: 1; }
+.ifl-ms-panel { position: absolute; top: calc(100% + 2px); left: 0; min-width: 200px; width: max-content; max-width: 320px; background: #fff; border: 1.5px solid #c8d8e8; border-radius: 6px; z-index: 600; box-shadow: 0 4px 16px rgba(0,0,0,0.15); display: none; }
+.ifl-ms-panel.ifl-open { display: block; }
+.ifl-ms-search { padding: 6px 8px; border-bottom: 1px solid #e0eaf3; }
+.ifl-ms-search input { width: 100%; padding: 4px 8px; font-size: 12px; font-family: 'Calibri', sans-serif; border: 1px solid #c8d8e8; border-radius: 4px; box-sizing: border-box; }
+.ifl-ms-list { max-height: 200px; overflow-y: auto; padding: 4px 0; }
+.ifl-ms-list label { display: flex; align-items: center; gap: 8px; padding: 5px 12px; font-size: 12px; font-family: 'Calibri', sans-serif; cursor: pointer; color: #1a2b3c; }
+.ifl-ms-list label:hover { background: #edf4fb; }
+.ifl-ms-list label input { cursor: pointer; accent-color: #1a5276; }
+.ifl-ms-empty { padding: 8px 12px; font-size: 12px; color: #888; }
+body.dark-mode .ifl-ms-btn { background: #1e2d3d; color: #cce; border-color: #2a3d50; }
+body.dark-mode .ifl-ms-panel { background: #1e2d3d; border-color: #2a3d50; }
+body.dark-mode .ifl-ms-search input { background: #16213e; color: #cce; border-color: #2a3d50; }
+body.dark-mode .ifl-ms-list label { color: #ccc; }
+body.dark-mode .ifl-ms-list label:hover { background: #16213e; }
 
 /* ── Dark Mode Styles ── */
 body.dark-mode { background: #1a1a2e !important; color: #e0e0e0 !important; }
@@ -1135,7 +1154,7 @@ body.view-lists #card-area:empty::after { display: none !important; }
   <aside id="sidebar">
     <div id="sb-header">
       <img src="https://nour292.github.io/Nourdata/nour_energy_logo.png" alt="Logo" id="sb-logo">
-      <div id="sb-title">Nour Energy<small>HR System</small><small style="font-size:10px;opacity:0.55;">v2.6</small></div>
+      <div id="sb-title">Nour Energy<small>HR System</small><small style="font-size:10px;opacity:0.55;">v2.7</small></div>
       <button id="sb-toggle" onclick="toggleSidebar()" title="Toggle Sidebar">&#9776;</button>
     </div>
 
@@ -1357,37 +1376,79 @@ body.view-lists #card-area:empty::after { display: none !important; }
       <div class="sl-section-hdr">Filter</div>
       <div id="isl-filter-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px 16px;">
 
+        <!-- Employee Number -->
+        <div style="display:flex;align-items:center;gap:8px;">
+          <label style="font-size:12px;font-weight:700;color:#1a3a52;white-space:nowrap;width:90px;flex-shrink:0;">Emp Number</label>
+          <div class="ifl-ms-wrap" id="ifl-ms-empNum">
+            <button class="ifl-ms-btn" type="button" onclick="islTogglePanel('empNum')"><span id="ifl-ms-lbl-empNum">— All —</span><span>▾</span></button>
+            <div class="ifl-ms-panel" id="ifl-ms-panel-empNum">
+              <div class="ifl-ms-search"><input type="text" placeholder="Search…" oninput="islFilterPanel('empNum',this.value)"></div>
+              <div class="ifl-ms-list" id="ifl-ms-opts-empNum"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Job Title -->
         <div style="display:flex;align-items:center;gap:8px;">
           <label style="font-size:12px;font-weight:700;color:#1a3a52;white-space:nowrap;width:90px;flex-shrink:0;">Job Title</label>
-          <input type="text" id="ifl-jobTitle" placeholder="partial match" style="flex:1;padding:6px 10px;font-size:13px;border:1px solid #c8d8e8;border-radius:5px;">
+          <div class="ifl-ms-wrap" id="ifl-ms-jobTitle">
+            <button class="ifl-ms-btn" type="button" onclick="islTogglePanel('jobTitle')"><span id="ifl-ms-lbl-jobTitle">— All —</span><span>▾</span></button>
+            <div class="ifl-ms-panel" id="ifl-ms-panel-jobTitle">
+              <div class="ifl-ms-search"><input type="text" placeholder="Search…" oninput="islFilterPanel('jobTitle',this.value)"></div>
+              <div class="ifl-ms-list" id="ifl-ms-opts-jobTitle"></div>
+            </div>
+          </div>
         </div>
 
+        <!-- Nationality -->
         <div style="display:flex;align-items:center;gap:8px;">
           <label style="font-size:12px;font-weight:700;color:#1a3a52;white-space:nowrap;width:90px;flex-shrink:0;">Nationality</label>
-          <select id="ifl-nationality" style="flex:1;padding:6px 10px;font-size:13px;border:1px solid #c8d8e8;border-radius:5px;">
-            <option value="">— All —</option>
-          </select>
+          <div class="ifl-ms-wrap" id="ifl-ms-nationality">
+            <button class="ifl-ms-btn" type="button" onclick="islTogglePanel('nationality')"><span id="ifl-ms-lbl-nationality">— All —</span><span>▾</span></button>
+            <div class="ifl-ms-panel" id="ifl-ms-panel-nationality">
+              <div class="ifl-ms-search"><input type="text" placeholder="Search…" oninput="islFilterPanel('nationality',this.value)"></div>
+              <div class="ifl-ms-list" id="ifl-ms-opts-nationality"></div>
+            </div>
+          </div>
         </div>
 
+        <!-- Location -->
         <div style="display:flex;align-items:center;gap:8px;">
           <label style="font-size:12px;font-weight:700;color:#1a3a52;white-space:nowrap;width:90px;flex-shrink:0;">Location</label>
-          <select id="ifl-location" style="flex:1;padding:6px 10px;font-size:13px;border:1px solid #c8d8e8;border-radius:5px;">
-            <option value="">— All —</option>
-          </select>
+          <div class="ifl-ms-wrap" id="ifl-ms-location">
+            <button class="ifl-ms-btn" type="button" onclick="islTogglePanel('location')"><span id="ifl-ms-lbl-location">— All —</span><span>▾</span></button>
+            <div class="ifl-ms-panel" id="ifl-ms-panel-location">
+              <div class="ifl-ms-search"><input type="text" placeholder="Search…" oninput="islFilterPanel('location',this.value)"></div>
+              <div class="ifl-ms-list" id="ifl-ms-opts-location"></div>
+            </div>
+          </div>
         </div>
 
+        <!-- Status -->
         <div style="display:flex;align-items:center;gap:8px;">
           <label style="font-size:12px;font-weight:700;color:#1a3a52;white-space:nowrap;width:90px;flex-shrink:0;">Status</label>
-          <select id="ifl-status" style="flex:1;padding:6px 10px;font-size:13px;border:1px solid #c8d8e8;border-radius:5px;">
-            <option value="">— All —</option>
-          </select>
+          <div class="ifl-ms-wrap" id="ifl-ms-status">
+            <button class="ifl-ms-btn" type="button" onclick="islTogglePanel('status')"><span id="ifl-ms-lbl-status">— All —</span><span>▾</span></button>
+            <div class="ifl-ms-panel" id="ifl-ms-panel-status">
+              <div class="ifl-ms-search"><input type="text" placeholder="Search…" oninput="islFilterPanel('status',this.value)"></div>
+              <div class="ifl-ms-list" id="ifl-ms-opts-status"></div>
+            </div>
+          </div>
         </div>
 
+        <!-- ID Profession -->
         <div style="display:flex;align-items:center;gap:8px;">
           <label style="font-size:12px;font-weight:700;color:#1a3a52;white-space:nowrap;width:90px;flex-shrink:0;">ID Profession</label>
-          <input type="text" id="ifl-idProfession" placeholder="partial match" style="flex:1;padding:6px 10px;font-size:13px;border:1px solid #c8d8e8;border-radius:5px;">
+          <div class="ifl-ms-wrap" id="ifl-ms-idProfession">
+            <button class="ifl-ms-btn" type="button" onclick="islTogglePanel('idProfession')"><span id="ifl-ms-lbl-idProfession">— All —</span><span>▾</span></button>
+            <div class="ifl-ms-panel" id="ifl-ms-panel-idProfession">
+              <div class="ifl-ms-search"><input type="text" placeholder="Search…" oninput="islFilterPanel('idProfession',this.value)"></div>
+              <div class="ifl-ms-list" id="ifl-ms-opts-idProfession"></div>
+            </div>
+          </div>
         </div>
 
+        <!-- Job Ended -->
         <div style="display:flex;align-items:center;gap:8px;">
           <label style="font-size:12px;font-weight:700;color:#1a3a52;white-space:nowrap;width:90px;flex-shrink:0;">Job Ended</label>
           <select id="ifl-ended" style="flex:1;padding:6px 10px;font-size:13px;border:1px solid #c8d8e8;border-radius:5px;">
@@ -1397,6 +1458,7 @@ body.view-lists #card-area:empty::after { display: none !important; }
           </select>
         </div>
 
+        <!-- Age -->
         <div style="display:flex;align-items:center;gap:8px;grid-column:span 2;">
           <label style="font-size:12px;font-weight:700;color:#1a3a52;white-space:nowrap;width:90px;flex-shrink:0;">Age</label>
           <select id="ifl-age-op" style="padding:6px 8px;font-size:13px;border:1px solid #c8d8e8;border-radius:5px;min-width:130px;">
@@ -3127,29 +3189,60 @@ function printDashboard() {
   setTimeout(() => win.print(), 400);
 }
 
+/* ── Multi-select state ── */
+const islSel = { empNum: [], jobTitle: [], nationality: [], location: [], status: [], idProfession: [] };
+
+function islTogglePanel(key) {
+  const panel = document.getElementById('ifl-ms-panel-' + key);
+  const wasOpen = panel.classList.contains('ifl-open');
+  document.querySelectorAll('.ifl-ms-panel').forEach(p => p.classList.remove('ifl-open'));
+  if (!wasOpen) panel.classList.add('ifl-open');
+}
+
+function islFilterPanel(key, query) {
+  const q = query.toLowerCase();
+  const opts = document.getElementById('ifl-ms-opts-' + key);
+  if (!opts) return;
+  opts.querySelectorAll('label').forEach(lbl => {
+    lbl.style.display = (!q || lbl.textContent.toLowerCase().includes(q)) ? '' : 'none';
+  });
+}
+
+function islToggleOption(key, value, checked) {
+  if (checked) { if (!islSel[key].includes(value)) islSel[key].push(value); }
+  else { islSel[key] = islSel[key].filter(v => v !== value); }
+  islUpdateLabel(key);
+}
+
+function islUpdateLabel(key) {
+  const lbl = document.getElementById('ifl-ms-lbl-' + key);
+  if (!lbl) return;
+  const n = islSel[key].length;
+  lbl.textContent = n === 0 ? '— All —' : n === 1 ? islSel[key][0] : `${n} selected`;
+}
+
 function populateFilterDropdowns(rows) {
   const get = (col) => [...new Set(
-    rows.slice(1)
-      .map(r => (r[col]||'').trim())
-      .filter(v => v && v !== '—')
-  )].sort();
+    rows.slice(1).map(r => (r[col]||'').trim()).filter(v => v && v !== '—')
+  )].sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
 
-  const fill = (id, values) => {
-    const sel = document.getElementById(id);
-    if (!sel) return;
-    const current = sel.value;
-    sel.innerHTML = '<option value="">— All —</option>';
-    values.forEach(v => {
-      const opt = document.createElement('option');
-      opt.value = v; opt.textContent = v;
-      sel.appendChild(opt);
-    });
-    sel.value = current;
+  const fillMs = (key, values) => {
+    const opts = document.getElementById('ifl-ms-opts-' + key);
+    if (!opts) return;
+    const sel = islSel[key];
+    opts.innerHTML = values.length ? values.map(v => {
+      const esc = v.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;');
+      const escJs = v.replace(/\\/g,'\\\\').replace(/'/g,"\\'");
+      return `<label><input type="checkbox" value="${esc}"${sel.includes(v)?' checked':''} onchange="islToggleOption('${key}','${escJs}',this.checked)"> ${esc}</label>`;
+    }).join('') : `<div class="ifl-ms-empty">No data</div>`;
   };
 
-  fill('ifl-nationality', get(COL.nationality));
-  fill('ifl-location',    get(COL.location));
-  fill('ifl-status',      get(COL.status));
+  fillMs('empNum',       get(COL.empNum));
+  fillMs('jobTitle',     get(COL.jobTitle));
+  fillMs('nationality',  get(COL.nationality));
+  fillMs('location',     get(COL.location));
+  fillMs('status',       get(COL.status));
+  fillMs('idProfession', get(COL.idProfession));
 }
 
 
@@ -3189,6 +3282,12 @@ document.addEventListener('DOMContentLoaded', function() {
     const b = this.value === 'between';
     document.getElementById('fl-age-and').style.display  = b ? 'inline' : 'none';
     document.getElementById('fl-age-val2').style.display = b ? 'inline-block' : 'none';
+  });
+  // Close multi-select panels when clicking outside
+  document.addEventListener('click', function(e) {
+    if (!e.target.closest('.ifl-ms-wrap')) {
+      document.querySelectorAll('.ifl-ms-panel').forEach(p => p.classList.remove('ifl-open'));
+    }
   });
 });
 
@@ -3378,11 +3477,13 @@ function runInlineQuickList(type) {
 }
 
 function runInlineCombinedFilter() {
-  const flJobTitle    = document.getElementById('ifl-jobTitle').value.trim().toLowerCase();
-  const flNationality = document.getElementById('ifl-nationality').value.trim().toLowerCase();
-  const flLocation    = document.getElementById('ifl-location').value.trim().toLowerCase();
-  const flStatus      = document.getElementById('ifl-status').value.trim().toLowerCase();
-  const flIdProf      = document.getElementById('ifl-idProfession').value.trim().toLowerCase();
+  document.querySelectorAll('.ifl-ms-panel').forEach(p => p.classList.remove('ifl-open'));
+  const flEmpNum      = islSel.empNum;
+  const flJobTitle    = islSel.jobTitle;
+  const flNationality = islSel.nationality;
+  const flLocation    = islSel.location;
+  const flStatus      = islSel.status;
+  const flIdProf      = islSel.idProfession;
   const flAgeOp       = document.getElementById('ifl-age-op').value;
   const flAgeVal1     = parseInt(document.getElementById('ifl-age-val1').value);
   const flAgeVal2     = parseInt(document.getElementById('ifl-age-val2').value);
@@ -3397,11 +3498,12 @@ function runInlineCombinedFilter() {
       const isEnded = je !== '' && je !== '—';
       if (flEnded === 'no'   && isEnded)  return false;
       if (flEnded === 'only' && !isEnded) return false;
-      if (flJobTitle    && !(r[COL.jobTitle]     ||'').toLowerCase().includes(flJobTitle))    return false;
-      if (flNationality && !(r[COL.nationality]  ||'').toLowerCase().includes(flNationality)) return false;
-      if (flLocation    && !(r[COL.location]     ||'').toLowerCase().includes(flLocation))    return false;
-      if (flStatus      && !(r[COL.status]       ||'').toLowerCase().includes(flStatus))      return false;
-      if (flIdProf      && !(r[COL.idProfession] ||'').toLowerCase().includes(flIdProf))      return false;
+      if (flEmpNum.length      && !flEmpNum.includes((r[COL.empNum]||'').trim()))          return false;
+      if (flJobTitle.length    && !flJobTitle.includes((r[COL.jobTitle]||'').trim()))      return false;
+      if (flNationality.length && !flNationality.includes((r[COL.nationality]||'').trim())) return false;
+      if (flLocation.length    && !flLocation.includes((r[COL.location]||'').trim()))      return false;
+      if (flStatus.length      && !flStatus.includes((r[COL.status]||'').trim()))          return false;
+      if (flIdProf.length      && !flIdProf.includes((r[COL.idProfession]||'').trim()))   return false;
       if (flAgeOp && !isNaN(flAgeVal1)) {
         const age = parseAge(r[COL.age]);
         if (age === null) return false;
@@ -3413,11 +3515,12 @@ function runInlineCombinedFilter() {
       return true;
     });
     const parts = [];
-    if (flJobTitle)    parts.push(`Job: ${flJobTitle}`);
-    if (flNationality) parts.push(`Nationality: ${flNationality}`);
-    if (flLocation)    parts.push(`Location: ${flLocation}`);
-    if (flStatus)      parts.push(`Status: ${flStatus}`);
-    if (flIdProf)      parts.push(`ID Prof: ${flIdProf}`);
+    if (flEmpNum.length)      parts.push(`Emp: ${flEmpNum.length === 1 ? flEmpNum[0] : flEmpNum.length + ' selected'}`);
+    if (flJobTitle.length)    parts.push(`Job: ${flJobTitle.length === 1 ? flJobTitle[0] : flJobTitle.length + ' selected'}`);
+    if (flNationality.length) parts.push(`Nat: ${flNationality.length === 1 ? flNationality[0] : flNationality.length + ' selected'}`);
+    if (flLocation.length)    parts.push(`Loc: ${flLocation.length === 1 ? flLocation[0] : flLocation.length + ' selected'}`);
+    if (flStatus.length)      parts.push(`Status: ${flStatus.length === 1 ? flStatus[0] : flStatus.length + ' selected'}`);
+    if (flIdProf.length)      parts.push(`ID Prof: ${flIdProf.length === 1 ? flIdProf[0] : flIdProf.length + ' selected'}`);
     if (flAgeOp && !isNaN(flAgeVal1)) {
       if (flAgeOp === 'lt')      parts.push(`Age < ${flAgeVal1}`);
       if (flAgeOp === 'gte')     parts.push(`Age ≥ ${flAgeVal1}`);
@@ -3428,7 +3531,6 @@ function runInlineCombinedFilter() {
     if (flEnded === 'no')   parts.push('Active Only');
     const title = parts.length ? `📋 ${parts.join(' · ')}` : '📋 All Employees';
     document.getElementById('isl-list-result').innerHTML = buildResultTable(filtered, checkedCols, title);
-    
     document.getElementById('isl-count-badge').textContent = `${filtered.length} record${filtered.length !== 1 ? 's' : ''} found`;
   };
   if (csvRows) doFilter(csvRows);
@@ -3441,12 +3543,15 @@ function setAllCols(checked) {
 }
 
 function resetInlineFilter() {
-  ['ifl-jobTitle','ifl-idProfession'].forEach(id => {
-    const el = document.getElementById(id); if (el) el.value = '';
+  ['empNum','jobTitle','nationality','location','status','idProfession'].forEach(key => {
+    islSel[key] = [];
+    islUpdateLabel(key);
+    const opts = document.getElementById('ifl-ms-opts-' + key);
+    if (opts) opts.querySelectorAll('input[type=checkbox]').forEach(cb => cb.checked = false);
+    const search = document.querySelector('#ifl-ms-panel-' + key + ' .ifl-ms-search input');
+    if (search) { search.value = ''; islFilterPanel(key, ''); }
   });
-  ['ifl-nationality','ifl-location','ifl-status','ifl-ended'].forEach(id => {
-    const el = document.getElementById(id); if (el) el.value = el.options[0].value;
-  });
+  document.querySelectorAll('.ifl-ms-panel').forEach(p => p.classList.remove('ifl-open'));
   document.getElementById('ifl-age-op').value      = '';
   document.getElementById('ifl-age-val1').value    = '';
   document.getElementById('ifl-age-val2').value    = '';
@@ -3454,7 +3559,6 @@ function resetInlineFilter() {
   document.getElementById('ifl-age-val2').style.display = 'none';
   document.getElementById('ifl-ended').value       = 'no';
   document.getElementById('isl-list-result').innerHTML  = '';
-  
   document.getElementById('isl-count-badge').textContent = '';
 }
 
