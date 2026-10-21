@@ -250,6 +250,8 @@ body.viewer-mode .max-footer,
 body.viewer-mode .btn-add,
 body.viewer-mode .btn-edit,
 body.viewer-mode .admin-only { display: none !important; }
+body.admin-mode .update-form-only { display: none !important; }
+body.viewer-mode .update-form-only { display: none !important; }
 @media print{#sidebar,#top-header,#smart-search-bar,#stats-bar,.card-footer-bar,#modal-overlay,#status-modal{display:none!important;}#main-content{margin-left:0!important;}.job-card{break-inside:avoid;border:1px solid #ddd;}}
 /* ── Maximize overlay ── */
 .card-max-btn{position:absolute;top:8px;right:8px;background:none;border:1px solid rgba(0,0,0,0.12);cursor:pointer;font-size:13px;color:#7a8c9a;padding:1px 6px;border-radius:5px;line-height:1.5;z-index:1;}
@@ -317,6 +319,14 @@ body.dark-mode .max-emp-name{color:#e0e0e0!important;}
       <button class="sb-group-hdr" id="btn-grp-emp" onclick="window.location.href='index.html'">
         <span class="sb-icon">👤</span>
         <span class="sb-label">Employee Data</span>
+      </button>
+    </div>
+
+    <!-- Employee Data Update Form -->
+    <div class="sb-group update-form-only">
+      <button class="sb-group-hdr" onclick="window.open('https://nour292.github.io/Nourdata/update','_blank')">
+        <span class="sb-icon">📝</span>
+        <span class="sb-label">Employee Data Update Form</span>
       </button>
     </div>
 
