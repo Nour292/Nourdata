@@ -1721,7 +1721,12 @@ function unlockApp() {
   const arrowTrk = document.getElementById('arrow-grp-tracker');
   if (arrowTrk) arrowTrk.textContent = '▸';
   document.getElementById('employeeNumber').focus();
-  sidebarNav('search');
+  if (location.hash === '#payroll') {
+    history.replaceState(null, '', location.pathname);
+    setTimeout(() => navPayroll('monthly'), 100);
+  } else {
+    sidebarNav('search');
+  }
   const _unlockRole = sessionStorage.getItem('ne_role');
   if (_unlockRole === 'user') {
     currentAccessLevel = 'employee';
