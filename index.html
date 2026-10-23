@@ -1207,7 +1207,7 @@ body.dark-mode .pr-controls select, body.dark-mode .pr-controls input[type=text]
   <aside id="sidebar">
     <div id="sb-header">
       <img src="https://nour292.github.io/Nourdata/nour_energy_logo.png" alt="Logo" id="sb-logo">
-      <div id="sb-title">Nour Energy<small>HR System</small><small style="font-size:10px;opacity:0.55;">v2.15</small></div>
+      <div id="sb-title">Nour Energy<small>HR System</small><small style="font-size:10px;opacity:0.55;">v2.16</small></div>
       <button id="sb-toggle" onclick="toggleSidebar()" title="Toggle Sidebar">&#9776;</button>
     </div>
 
@@ -4038,7 +4038,7 @@ async function loadEmpHistory() {
   const data = await getPrData(res);
   if (!data) return;
   const filtered = data.filter(r => String(r[0]).trim() === emp);
-  filtered.sort((a,b) => { const yd = Number(b[3]) - Number(a[3]); return yd !== 0 ? yd : Number(b[2]) - Number(a[2]); });
+  filtered.sort((a,b) => { const yd = Number(b[3]) - Number(a[3]); return yd !== 0 ? yd : _prMonNum(b[2]) - _prMonNum(a[2]); });
   cnt.textContent = filtered.length ? `${filtered.length} records` : 'No records found';
   res.innerHTML   = _buildPrTable(filtered);
 }
