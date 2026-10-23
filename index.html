@@ -4104,8 +4104,9 @@ function navPayroll(tab) {
   sidebarNav('payroll');
   switchPrTab(tab);
   setTimeout(() => {
+    const nav = document.getElementById('sb-nav');
     const btn = document.getElementById('btn-grp-payroll');
-    if (btn) btn.scrollIntoView({behavior: 'smooth', block: 'start'});
+    if (nav && btn) nav.scrollTop = btn.offsetTop - nav.offsetTop;
   }, 150);
   if (!_prData && !_prLoading) getPrData();
 }
@@ -4119,7 +4120,10 @@ function togglePayrollGroup() {
   grp.style.display = open ? 'none' : 'block';
   if (arrow) arrow.textContent = open ? '▸' : '▾';
   if (btn)   btn.classList.toggle('active-group', !open);
-  if (!open && btn) setTimeout(() => btn.scrollIntoView({behavior: 'smooth', block: 'start'}), 50);
+  if (!open && btn) setTimeout(() => {
+    const nav = document.getElementById('sb-nav');
+    if (nav) nav.scrollTop = btn.offsetTop - nav.offsetTop;
+  }, 80);
 }
 
 </script>
