@@ -920,6 +920,55 @@ body.view-lists #card-area { display: none !important; }
 body.view-dashboard #card-area:empty::after,
 body.view-deepsearch #card-area:empty::after,
 body.view-lists #card-area:empty::after { display: none !important; }
+body.view-payroll #card-area,
+body.view-payroll #card-area:empty::after,
+body.view-payroll #inline-search-panel { display: none !important; }
+body.user-mode .payroll-tab { display: none !important; }
+body.viewer-mode .payroll-tab { display: none !important; }
+
+/* ── Payroll Register ── */
+#ipane-payroll { display: none; }
+.pr-wrap { background: #fff; border-radius: 12px; box-shadow: 0 2px 12px rgba(0,0,0,0.07); overflow: hidden; }
+.pr-subtabs { display: flex; border-bottom: 2px solid #d5e8f5; background: #eaf2fb; }
+.pr-subtab { padding: 11px 22px; font-size: 14px; font-weight: 700; border: none; background: none; cursor: pointer; color: #555; border-bottom: 3px solid transparent; margin-bottom: -2px; font-family: 'Calibri', sans-serif; }
+.pr-subtab.active { color: #1a5276; border-bottom-color: #1a5276; background: #fff; }
+.pr-subtab:hover { color: #1a5276; }
+.pr-pane { display: none; padding: 20px; }
+.pr-pane.active { display: block; }
+.pr-controls { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 16px; }
+.pr-controls label { font-size: 13px; font-weight: 700; color: #1a3a52; }
+.pr-controls select, .pr-controls input[type=text] { padding: 7px 10px; font-size: 13px; border: 1px solid #c8d8e8; border-radius: 5px; font-family: 'Calibri', sans-serif; }
+.pr-load-btn { padding: 8px 20px; font-size: 13px; font-weight: 700; background: #2e86c1; color: #fff; border: none; border-radius: 5px; cursor: pointer; font-family: 'Calibri', sans-serif; }
+.pr-load-btn:hover { background: #1a5276; }
+.pr-tbl-wrap { overflow-x: auto; }
+.pr-tbl { width: 100%; border-collapse: collapse; font-size: 12px; font-family: 'Calibri', sans-serif; }
+.pr-tbl th { padding: 7px 10px; text-align: center; color: #fff; font-weight: 700; white-space: nowrap; border: 1px solid rgba(0,0,0,0.15); print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+.pr-tbl td { padding: 5px 8px; text-align: right; border: 1px solid #dde6f0; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.pr-tbl td:nth-child(1), .pr-tbl td:nth-child(2) { text-align: left; }
+.pr-tbl td:nth-child(3), .pr-tbl td:nth-child(4) { text-align: center; }
+.pr-tbl tr:nth-child(even) td { background: #f7fbff; }
+.pr-tbl tr:hover td { background: #e8f4ff !important; }
+.pr-msg { text-align: center; color: #888; padding: 40px 0; font-size: 14px; }
+.pr-count { font-size: 13px; color: #555; font-weight: 600; }
+.pr-sum-tbl { width: 100%; border-collapse: collapse; font-size: 13px; font-family: 'Calibri', sans-serif; }
+.pr-sum-tbl th { padding: 9px 14px; text-align: right; color: #fff; font-weight: 700; border: 1px solid rgba(0,0,0,0.15); print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+.pr-sum-tbl th:first-child, .pr-sum-tbl th:nth-child(2) { text-align: center; }
+.pr-sum-tbl td { padding: 7px 12px; border: 1px solid #dde6f0; text-align: right; font-variant-numeric: tabular-nums; }
+.pr-sum-tbl td:first-child { text-align: left; font-weight: 700; }
+.pr-sum-tbl td:nth-child(2) { text-align: center; }
+.pr-sum-tbl tr:nth-child(even) td { background: #f7fbff; }
+.pr-sum-tbl tr:hover td { background: #e8f4ff !important; }
+.pr-totals-row td { background: #1a3a52 !important; color: #fff !important; font-weight: 700; print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+body.dark-mode .pr-wrap { background: #22223b !important; }
+body.dark-mode .pr-subtabs { background: #1e2d3d !important; border-color: #2a3d50 !important; }
+body.dark-mode .pr-subtab { color: #aaa !important; }
+body.dark-mode .pr-subtab.active { color: #7fb3d3 !important; background: #22223b !important; border-color: #2e86c1 !important; }
+body.dark-mode .pr-tbl td { background: #22223b !important; border-color: #3a3a5c !important; color: #ddd !important; }
+body.dark-mode .pr-tbl tr:nth-child(even) td { background: #2a2a4a !important; }
+body.dark-mode .pr-tbl tr:hover td { background: #333366 !important; }
+body.dark-mode .pr-sum-tbl td { background: #22223b !important; border-color: #3a3a5c !important; color: #ddd !important; }
+body.dark-mode .pr-sum-tbl tr:nth-child(even) td { background: #2a2a4a !important; }
+body.dark-mode .pr-controls select, body.dark-mode .pr-controls input[type=text] { background: #1e2d3d !important; color: #cce !important; border-color: #2a3d50 !important; }
 
 @media print {
   @page { margin: 0; size: A4; }
@@ -1184,6 +1233,26 @@ body.view-lists #card-area:empty::after { display: none !important; }
             <span class="sb-icon">➕</span><span class="sb-label">Add / Update</span>
           </button>
 
+        </div>
+      </div>
+
+      <!-- ── Payroll Register Group ── -->
+      <div class="sb-group payroll-tab">
+        <button class="sb-group-hdr" id="btn-grp-payroll" onclick="togglePayrollGroup()" aria-expanded="false">
+          <span class="sb-icon">💰</span>
+          <span class="sb-label">Payroll Register</span>
+          <span class="sb-arrow" id="arrow-grp-payroll">▸</span>
+        </button>
+        <div class="sb-group-items" id="grp-payroll" style="display:none;">
+          <button class="sb-item sb-sub" id="snav-pr-monthly" onclick="navPayroll('monthly')">
+            <span class="sb-icon">📅</span><span class="sb-label">Monthly Payroll</span>
+          </button>
+          <button class="sb-item sb-sub" id="snav-pr-history" onclick="navPayroll('history')">
+            <span class="sb-icon">👤</span><span class="sb-label">Employee History</span>
+          </button>
+          <button class="sb-item sb-sub" id="snav-pr-summary" onclick="navPayroll('summary')">
+            <span class="sb-icon">📊</span><span class="sb-label">Summary</span>
+          </button>
         </div>
       </div>
 
@@ -1489,6 +1558,51 @@ body.view-lists #card-area:empty::after { display: none !important; }
 
   <!-- Card / Output Area -->
   <div id="card-area"></div>
+
+  <!-- ── Payroll Register Pane ── -->
+  <div id="ipane-payroll">
+    <div class="pr-wrap">
+      <div class="pr-subtabs">
+        <button class="pr-subtab active" id="pr-tab-monthly" onclick="switchPrTab('monthly')">📅 Monthly Payroll</button>
+        <button class="pr-subtab" id="pr-tab-history" onclick="switchPrTab('history')">👤 Employee History</button>
+        <button class="pr-subtab" id="pr-tab-summary" onclick="switchPrTab('summary')">📊 Summary</button>
+      </div>
+      <!-- Monthly Payroll -->
+      <div class="pr-pane active" id="pr-pane-monthly">
+        <div class="pr-controls">
+          <label>Month</label>
+          <select id="pr-sel-month">
+            <option value="">— Select —</option>
+            <option value="1">January</option><option value="2">February</option>
+            <option value="3">March</option><option value="4">April</option>
+            <option value="5">May</option><option value="6">June</option>
+            <option value="7">July</option><option value="8">August</option>
+            <option value="9">September</option><option value="10">October</option>
+            <option value="11">November</option><option value="12">December</option>
+          </select>
+          <label>Year</label>
+          <select id="pr-sel-year"><option value="">— Select —</option></select>
+          <button class="pr-load-btn" onclick="loadMonthlyPayroll()">▶ Load</button>
+          <span id="pr-monthly-count" class="pr-count"></span>
+        </div>
+        <div id="pr-monthly-result" class="pr-tbl-wrap"><p class="pr-msg">Select month and year then click Load.</p></div>
+      </div>
+      <!-- Employee History -->
+      <div class="pr-pane" id="pr-pane-history">
+        <div class="pr-controls">
+          <label>Employee #</label>
+          <input type="text" id="pr-emp-input" placeholder="Employee number" style="width:150px;" onkeydown="if(event.key==='Enter')loadEmpHistory()">
+          <button class="pr-load-btn" onclick="loadEmpHistory()">▶ Load</button>
+          <span id="pr-history-count" class="pr-count"></span>
+        </div>
+        <div id="pr-history-result" class="pr-tbl-wrap"><p class="pr-msg">Enter employee number then click Load.</p></div>
+      </div>
+      <!-- Summary -->
+      <div class="pr-pane" id="pr-pane-summary">
+        <div id="pr-summary-result"><p class="pr-msg">Switch to this tab to load summary.</p></div>
+      </div>
+    </div>
+  </div>
 
 </div>
 
@@ -3692,8 +3806,11 @@ function resetDsFilter() {
 
 function sidebarNav(section) {
   // Update body class for card-area visibility
-  document.body.classList.remove('view-dashboard','view-deepsearch','view-lists','view-search');
+  document.body.classList.remove('view-dashboard','view-deepsearch','view-lists','view-search','view-payroll');
   document.body.classList.add('view-' + section);
+  // Hide payroll pane unless going there
+  const prPane = document.getElementById('ipane-payroll');
+  if (prPane) prPane.style.display = section === 'payroll' ? 'block' : 'none';
 
   // Update active state
   document.querySelectorAll('.sb-item').forEach(b => b.classList.remove('active'));
@@ -3701,7 +3818,7 @@ function sidebarNav(section) {
   if (btn) btn.classList.add('active');
 
   // Update page title
-  const titles = { search: 'Employee Search', dashboard: 'Dashboard', deepsearch: 'Deep Search', lists: 'Smart Lists' };
+  const titles = { search: 'Employee Search', dashboard: 'Dashboard', deepsearch: 'Deep Search', lists: 'Smart Lists', payroll: 'Payroll Register' };
   document.getElementById('page-title').textContent = titles[section] || 'Nour Energy Data';
 
   // Show/hide search bar and context-specific header buttons
@@ -3759,9 +3876,235 @@ function sidebarNav(section) {
   } else if (section === 'deepsearch') {
     switchToTab('deepsearch');
     setTimeout(() => document.getElementById('employeeNumber').focus(), 50);
+  } else if (section === 'payroll') {
+    document.getElementById('inline-search-panel').style.display = 'none';
+    searchWrapper.style.display  = 'none';
+    headerActions.style.display  = 'none';
+    // pre-load data if not yet fetched
+    if (!_prData && !_prLoading) getPrData(null);
   } else {
     switchToTab(section === 'dashboard' ? 'dashboard' : 'lists');
   }
+}
+
+/* ══════════════════════════════════════
+   PAYROLL REGISTER
+══════════════════════════════════════ */
+const PR_SHEET_URL = 'https://docs.google.com/spreadsheets/d/16QYl00ATXVIlQKkqRxdAIdU6J3u7lDfg0PIoJfaDBpo/export?format=csv&gid=1499715462';
+
+const PR_COLS = [
+  { label:'Emp',          hdr:'#1a3a6c', cell:null       },
+  { label:'Name',         hdr:'#1a3a6c', cell:null       },
+  { label:'Month',        hdr:'#5d4037', cell:null       },
+  { label:'Year',         hdr:'#5d4037', cell:null       },
+  { label:'Basic',        hdr:'#4a148c', cell:null       },
+  { label:'Food',         hdr:'#4a148c', cell:null       },
+  { label:'Other',        hdr:'#4a148c', cell:null       },
+  { label:'Transport',    hdr:'#4a148c', cell:null       },
+  { label:'Housing',      hdr:'#4a148c', cell:null       },
+  { label:'Misc',         hdr:'#4a148c', cell:null       },
+  { label:'Normal Hrs',   hdr:'#7b6000', cell:'#FFF9C4'  },
+  { label:'OT Hours',     hdr:'#7b6000', cell:'#FFF9C4'  },
+  { label:'Total Salary', hdr:'#1b5e20', cell:null       },
+  { label:'OT Amount',    hdr:'#1a237e', cell:null       },
+  { label:'Mobile',       hdr:'#7b6000', cell:'#FFF9C4'  },
+  { label:'Total Pay',    hdr:'#0d47a1', cell:'#DDEBF7'  },
+  { label:'Loans',        hdr:'#b71c1c', cell:'#FFF9C4'  },
+  { label:'GOSI',         hdr:'#b71c1c', cell:'#FFF9C4'  },
+  { label:'Net Pay',      hdr:'#1b5e20', cell:'#E2EFDA'  },
+];
+
+const PR_MONTHS = ['','January','February','March','April','May','June','July','August','September','October','November','December'];
+
+let _prData    = null;
+let _prLoading = false;
+
+function _parseCsvRow(line) {
+  const out = []; let cur = ''; let inQ = false;
+  for (let i = 0; i < line.length; i++) {
+    const c = line[i];
+    if (c === '"') {
+      if (inQ && line[i+1] === '"') { cur += '"'; i++; }
+      else inQ = !inQ;
+    } else if (c === ',' && !inQ) { out.push(cur.trim()); cur = ''; }
+    else cur += c;
+  }
+  out.push(cur.trim());
+  return out;
+}
+
+async function getPrData(statusEl) {
+  if (_prData) return _prData;
+  if (_prLoading) return null;
+  _prLoading = true;
+  if (statusEl) statusEl.innerHTML = '<p class="pr-msg">⏳ Loading payroll data… please wait.</p>';
+  try {
+    const resp = await fetch(PR_SHEET_URL);
+    if (!resp.ok) throw new Error('HTTP ' + resp.status);
+    const text = await resp.text();
+    const lines = text.split('\n');
+    const rows = [];
+    for (let i = 1; i < lines.length; i++) {
+      const l = lines[i].trim();
+      if (l) rows.push(_parseCsvRow(l));
+    }
+    _prData = rows;
+    _prLoading = false;
+    _prPopulateYears();
+    return _prData;
+  } catch(e) {
+    _prLoading = false;
+    if (statusEl) statusEl.innerHTML = '<p class="pr-msg" style="color:#c0392b;">❌ Failed to load payroll data. Ensure the sheet is shared publicly (Anyone with link can view).</p>';
+    return null;
+  }
+}
+
+function _prPopulateYears() {
+  const sel = document.getElementById('pr-sel-year');
+  if (!sel || !_prData) return;
+  const years = [...new Set(_prData.map(r => r[3]).filter(Boolean))].sort((a,b) => b - a);
+  sel.innerHTML = '<option value="">— Select —</option>' + years.map(y => `<option value="${y}">${y}</option>`).join('');
+}
+
+function _prFmt(val) {
+  const n = parseFloat(String(val).replace(/,/g,''));
+  if (isNaN(n)) return val || '';
+  return n.toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2});
+}
+
+function _buildPrTable(rows) {
+  if (!rows.length) return '<p class="pr-msg">No records found.</p>';
+  let h = '<div class="pr-tbl-wrap"><table class="pr-tbl"><thead><tr>';
+  PR_COLS.forEach(c => { h += `<th style="background:${c.hdr};">${c.label}</th>`; });
+  h += '</tr></thead><tbody>';
+  rows.forEach(row => {
+    h += '<tr>';
+    PR_COLS.forEach((c, i) => {
+      const v   = row[i] != null ? row[i] : '';
+      const bg  = c.cell ? `background:${c.cell};` : '';
+      const txt = (i >= 4) ? _prFmt(v) : escHtml(String(v));
+      h += `<td style="${bg}">${txt}</td>`;
+    });
+    h += '</tr>';
+  });
+  h += '</tbody></table></div>';
+  return h;
+}
+
+async function loadMonthlyPayroll() {
+  const month = document.getElementById('pr-sel-month').value;
+  const year  = document.getElementById('pr-sel-year').value;
+  const res   = document.getElementById('pr-monthly-result');
+  const cnt   = document.getElementById('pr-monthly-count');
+  if (!month || !year) { res.innerHTML = '<p class="pr-msg" style="color:#c0392b;">Please select both month and year.</p>'; cnt.textContent=''; return; }
+  const data = await getPrData(res);
+  if (!data) return;
+  const filtered = data.filter(r => String(r[2]).trim() === String(month) && String(r[3]).trim() === String(year));
+  cnt.textContent = filtered.length ? `${filtered.length} employees` : 'No records';
+  res.innerHTML   = _buildPrTable(filtered);
+}
+
+async function loadEmpHistory() {
+  const emp = (document.getElementById('pr-emp-input').value || '').trim();
+  const res = document.getElementById('pr-history-result');
+  const cnt = document.getElementById('pr-history-count');
+  if (!emp) { res.innerHTML = '<p class="pr-msg" style="color:#c0392b;">Enter an employee number.</p>'; cnt.textContent=''; return; }
+  const data = await getPrData(res);
+  if (!data) return;
+  const filtered = data.filter(r => String(r[0]).trim() === emp);
+  filtered.sort((a,b) => { const yd = Number(b[3]) - Number(a[3]); return yd !== 0 ? yd : Number(b[2]) - Number(a[2]); });
+  cnt.textContent = filtered.length ? `${filtered.length} records` : 'No records found';
+  res.innerHTML   = _buildPrTable(filtered);
+}
+
+async function loadPrSummary() {
+  const res = document.getElementById('pr-summary-result');
+  res.innerHTML = '<p class="pr-msg">⏳ Loading summary…</p>';
+  const data = await getPrData(res);
+  if (!data) return;
+  const map = {};
+  data.forEach(r => {
+    const key = `${r[3]}-${String(r[2]).padStart(2,'0')}`;
+    if (!map[key]) map[key] = { year:r[3], month:r[2], count:0, totalSal:0, totalPay:0, gosi:0, netPay:0 };
+    map[key].count++;
+    map[key].totalSal += parseFloat(String(r[12]).replace(/,/g,'')) || 0;
+    map[key].totalPay += parseFloat(String(r[15]).replace(/,/g,'')) || 0;
+    map[key].gosi     += parseFloat(String(r[17]).replace(/,/g,'')) || 0;
+    map[key].netPay   += parseFloat(String(r[18]).replace(/,/g,'')) || 0;
+  });
+  const keys = Object.keys(map).sort((a,b) => b.localeCompare(a));
+  let tot = { count:0, totalSal:0, totalPay:0, gosi:0, netPay:0 };
+  let rows = '';
+  keys.forEach(k => {
+    const m = map[k];
+    const mn = parseInt(m.month);
+    const mName = PR_MONTHS[mn] || m.month;
+    tot.count    += m.count;
+    tot.totalSal += m.totalSal;
+    tot.totalPay += m.totalPay;
+    tot.gosi     += m.gosi;
+    tot.netPay   += m.netPay;
+    rows += `<tr>
+      <td>${mName} ${m.year}</td>
+      <td style="text-align:center;">${m.count}</td>
+      <td>${_prFmt(m.totalSal)}</td>
+      <td>${_prFmt(m.totalPay)}</td>
+      <td style="background:#FFF9C4;">${_prFmt(m.gosi)}</td>
+      <td style="background:#E2EFDA;font-weight:700;">${_prFmt(m.netPay)}</td>
+    </tr>`;
+  });
+  res.innerHTML = `<div class="pr-tbl-wrap"><table class="pr-sum-tbl">
+    <thead><tr>
+      <th style="background:#1a3a52;text-align:left;">Period</th>
+      <th style="background:#1a3a52;">Employees</th>
+      <th style="background:#1b5e20;">Total Salary</th>
+      <th style="background:#0d47a1;">Total Pay</th>
+      <th style="background:#7b6000;">GOSI</th>
+      <th style="background:#1b5e20;">Net Pay</th>
+    </tr></thead>
+    <tbody>${rows}</tbody>
+    <tfoot><tr class="pr-totals-row">
+      <td>TOTAL — ${keys.length} month${keys.length!==1?'s':''}</td>
+      <td style="text-align:center;">${tot.count}</td>
+      <td>${_prFmt(tot.totalSal)}</td>
+      <td>${_prFmt(tot.totalPay)}</td>
+      <td>${_prFmt(tot.gosi)}</td>
+      <td>${_prFmt(tot.netPay)}</td>
+    </tr></tfoot>
+  </table></div>`;
+}
+
+function switchPrTab(tab) {
+  document.querySelectorAll('.pr-subtab').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.pr-pane').forEach(p => p.classList.remove('active'));
+  const tabBtn = document.getElementById('pr-tab-' + tab);
+  const pane   = document.getElementById('pr-pane-' + tab);
+  if (tabBtn) tabBtn.classList.add('active');
+  if (pane)   pane.classList.add('active');
+  document.querySelectorAll('#grp-payroll .sb-item').forEach(b => b.classList.remove('active'));
+  const sb = document.getElementById('snav-pr-' + tab);
+  if (sb) sb.classList.add('active');
+  if (tab === 'summary' && !_prData && !_prLoading) loadPrSummary();
+  else if (tab === 'summary' && _prData) loadPrSummary();
+}
+
+function navPayroll(tab) {
+  // Open sidebar group if collapsed
+  const grp = document.getElementById('grp-payroll');
+  if (grp && grp.style.display === 'none') togglePayrollGroup();
+  sidebarNav('payroll');
+  switchPrTab(tab);
+}
+
+function togglePayrollGroup() {
+  const grp   = document.getElementById('grp-payroll');
+  const arrow = document.getElementById('arrow-grp-payroll');
+  const btn   = document.getElementById('btn-grp-payroll');
+  if (!grp) return;
+  const open = grp.style.display !== 'none';
+  grp.style.display = open ? 'none' : 'block';
+  if (arrow) arrow.textContent = open ? '▸' : '▾';
+  if (btn)   btn.classList.toggle('active-group', !open);
 }
 
 </script>
