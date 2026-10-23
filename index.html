@@ -1207,7 +1207,7 @@ body.dark-mode .pr-controls select, body.dark-mode .pr-controls input[type=text]
   <aside id="sidebar">
     <div id="sb-header">
       <img src="https://nour292.github.io/Nourdata/nour_energy_logo.png" alt="Logo" id="sb-logo">
-      <div id="sb-title">Nour Energy<small>HR System</small><small style="font-size:10px;opacity:0.55;">v2.19</small></div>
+      <div id="sb-title">Nour Energy<small>HR System</small><small style="font-size:10px;opacity:0.55;">v2.20</small></div>
       <button id="sb-toggle" onclick="toggleSidebar()" title="Toggle Sidebar">&#9776;</button>
     </div>
 
@@ -4126,7 +4126,7 @@ async function loadPrComparison() {
   const now = new Date();
   const wanted = new Set();
   for (let i = 0; i < months; i++) {
-    const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+    const d = new Date(now.getFullYear(), now.getMonth() - 1 - i, 1);
     const monSlice = PR_MONTHS[d.getMonth() + 1].slice(0,3).toLowerCase();
     wanted.add(String(d.getFullYear()) + '-' + monSlice);
   }
