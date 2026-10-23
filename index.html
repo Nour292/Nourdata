@@ -4119,6 +4119,7 @@ function togglePayrollGroup() {
   grp.style.display = open ? 'none' : 'block';
   if (arrow) arrow.textContent = open ? '▸' : '▾';
   if (btn)   btn.classList.toggle('active-group', !open);
+  if (!open && btn) setTimeout(() => btn.scrollIntoView({behavior: 'smooth', block: 'start'}), 50);
 }
 
 </script>
