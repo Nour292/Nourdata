@@ -1721,8 +1721,10 @@ function unlockApp() {
   const arrowTrk = document.getElementById('arrow-grp-tracker');
   if (arrowTrk) arrowTrk.textContent = '▸';
   document.getElementById('employeeNumber').focus();
-  if (location.hash === '#payroll') {
-    history.replaceState(null, '', location.pathname);
+  const _navTarget = sessionStorage.getItem('ne_nav') || (location.hash === '#payroll' ? 'payroll' : null);
+  if (_navTarget === 'payroll') {
+    sessionStorage.removeItem('ne_nav');
+    if (location.hash) history.replaceState(null, '', location.pathname);
     setTimeout(() => navPayroll('monthly'), 100);
   } else {
     sidebarNav('search');
@@ -4097,11 +4099,14 @@ function switchPrTab(tab) {
 }
 
 function navPayroll(tab) {
-  // Open sidebar group if collapsed
   const grp = document.getElementById('grp-payroll');
   if (grp && grp.style.display === 'none') togglePayrollGroup();
   sidebarNav('payroll');
   switchPrTab(tab);
+  setTimeout(() => {
+    const btn = document.getElementById('btn-grp-payroll');
+    if (btn) btn.scrollIntoView({behavior: 'smooth', block: 'start'});
+  }, 150);
 }
 
 function togglePayrollGroup() {
