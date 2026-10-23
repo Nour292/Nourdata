@@ -1207,7 +1207,7 @@ body.dark-mode .pr-controls select, body.dark-mode .pr-controls input[type=text]
   <aside id="sidebar">
     <div id="sb-header">
       <img src="https://nour292.github.io/Nourdata/nour_energy_logo.png" alt="Logo" id="sb-logo">
-      <div id="sb-title">Nour Energy<small>HR System</small><small style="font-size:10px;opacity:0.55;">v2.18</small></div>
+      <div id="sb-title">Nour Energy<small>HR System</small><small style="font-size:10px;opacity:0.55;">v2.19</small></div>
       <button id="sb-toggle" onclick="toggleSidebar()" title="Toggle Sidebar">&#9776;</button>
     </div>
 
@@ -4196,16 +4196,6 @@ async function loadPrComparison() {
       <th style="background:#1b5e20;">Net Pay</th>
     </tr></thead>
     <tbody>${rows}</tbody>
-    <tfoot><tr class="pr-totals-row">
-      <td><strong>Total — ${keys.length} month${keys.length!==1?'s':''}</strong></td>
-      <td style="text-align:center;">${tot.count}</td>
-      <td>${_prFmt(tot.totalSal)}</td>
-      <td>${_prFmt(tot.otAmt)}</td>
-      <td style="background:#DDEBF7;">${_prFmt(tot.totalPay)}</td>
-      <td style="background:#FFF9C4;">${_prFmt(tot.loans)}</td>
-      <td style="background:#FFF9C4;">${_prFmt(tot.gosi)}</td>
-      <td style="background:#E2EFDA;font-weight:700;">${_prFmt(tot.netPay)}</td>
-    </tr></tfoot>
   </table></div>`;
 }
 
