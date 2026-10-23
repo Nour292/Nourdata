@@ -1573,12 +1573,12 @@ body.dark-mode .pr-controls select, body.dark-mode .pr-controls input[type=text]
           <label>Month</label>
           <select id="pr-sel-month">
             <option value="">— Select —</option>
-            <option value="1">January</option><option value="2">February</option>
-            <option value="3">March</option><option value="4">April</option>
-            <option value="5">May</option><option value="6">June</option>
-            <option value="7">July</option><option value="8">August</option>
-            <option value="9">September</option><option value="10">October</option>
-            <option value="11">November</option><option value="12">December</option>
+            <option value="Jan">January</option><option value="Feb">February</option>
+            <option value="Mar">March</option><option value="Apr">April</option>
+            <option value="May">May</option><option value="Jun">June</option>
+            <option value="Jul">July</option><option value="Aug">August</option>
+            <option value="Sep">September</option><option value="Oct">October</option>
+            <option value="Nov">November</option><option value="Dec">December</option>
           </select>
           <label>Year</label>
           <select id="pr-sel-year"><option value="">— Select —</option></select>
@@ -3890,7 +3890,7 @@ function sidebarNav(section) {
 /* ══════════════════════════════════════
    PAYROLL REGISTER
 ══════════════════════════════════════ */
-const PR_SHEET_URL = 'https://docs.google.com/spreadsheets/d/16QYl00ATXVIlQKkqRxdAIdU6J3u7lDfg0PIoJfaDBpo/export?format=csv&gid=1499715462';
+const PR_SHEET_URL = 'https://docs.google.com/spreadsheets/d/16QYl00ATXVIlQKkqRxdAIdU6J3u7lDfg0PIoJfaDBpo/export?format=csv&gid=2140246528';
 
 const PR_COLS = [
   { label:'Emp',          hdr:'#1a3a6c', cell:null       },
@@ -3915,6 +3915,9 @@ const PR_COLS = [
 ];
 
 const PR_MONTHS = ['','January','February','March','April','May','June','July','August','September','October','November','December'];
+const PR_MON_IDX = { jan:1,feb:2,mar:3,apr:4,may:5,jun:6,jul:7,aug:8,sep:9,oct:10,nov:11,dec:12 };
+function _prMonNum(m) { return PR_MON_IDX[(m||'').toLowerCase().slice(0,3)] || 0; }
+function _prMonName(m) { return PR_MONTHS[_prMonNum(m)] || m; }
 
 let _prData    = null;
 let _prLoading = false;
@@ -3999,7 +4002,7 @@ async function loadMonthlyPayroll() {
   if (!month || !year) { res.innerHTML = '<p class="pr-msg" style="color:#c0392b;">Please select both month and year.</p>'; cnt.textContent=''; return; }
   const data = await getPrData(res);
   if (!data) return;
-  const filtered = data.filter(r => String(r[2]).trim() === String(month) && String(r[3]).trim() === String(year));
+  const filtered = data.filter(r => String(r[2]).trim().toLowerCase() === month.toLowerCase() && String(r[3]).trim() === String(year));
   cnt.textContent = filtered.length ? `${filtered.length} employees` : 'No records';
   res.innerHTML   = _buildPrTable(filtered);
 }
@@ -4024,7 +4027,8 @@ async function loadPrSummary() {
   if (!data) return;
   const map = {};
   data.forEach(r => {
-    const key = `${r[3]}-${String(r[2]).padStart(2,'0')}`;
+    const monNum = _prMonNum(r[2]);
+    const key = `${r[3]}-${String(monNum).padStart(2,'0')}`;
     if (!map[key]) map[key] = { year:r[3], month:r[2], count:0, totalSal:0, totalPay:0, gosi:0, netPay:0 };
     map[key].count++;
     map[key].totalSal += parseFloat(String(r[12]).replace(/,/g,'')) || 0;
@@ -4037,8 +4041,7 @@ async function loadPrSummary() {
   let rows = '';
   keys.forEach(k => {
     const m = map[k];
-    const mn = parseInt(m.month);
-    const mName = PR_MONTHS[mn] || m.month;
+    const mName = _prMonName(m.month);
     tot.count    += m.count;
     tot.totalSal += m.totalSal;
     tot.totalPay += m.totalPay;
