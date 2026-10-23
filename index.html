@@ -98,7 +98,8 @@ html, body { margin: 0; padding: 0; font-family: 'Calibri', sans-serif; backgrou
   display: flex;
   flex-direction: column;
 }
-#sb-nav.payroll-active #sb-grp-emp { order: 99; }
+#sb-nav.payroll-active #sb-grp-emp { order: 1; }
+#sb-nav.payroll-active .sb-group:not(#sb-grp-emp):not(.payroll-tab) { order: 2; }
 .sb-item {
   display: flex;
   align-items: center;
@@ -1206,7 +1207,7 @@ body.dark-mode .pr-controls select, body.dark-mode .pr-controls input[type=text]
   <aside id="sidebar">
     <div id="sb-header">
       <img src="https://nour292.github.io/Nourdata/nour_energy_logo.png" alt="Logo" id="sb-logo">
-      <div id="sb-title">Nour Energy<small>HR System</small><small style="font-size:10px;opacity:0.55;">v2.11</small></div>
+      <div id="sb-title">Nour Energy<small>HR System</small><small style="font-size:10px;opacity:0.55;">v2.12</small></div>
       <button id="sb-toggle" onclick="toggleSidebar()" title="Toggle Sidebar">&#9776;</button>
     </div>
 
