@@ -95,7 +95,10 @@ html, body { margin: 0; padding: 0; font-family: 'Calibri', sans-serif; backgrou
   padding: 10px 0;
   overflow-y: auto;
   overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
 }
+#sb-nav.payroll-active #sb-grp-emp { order: 99; }
 .sb-item {
   display: flex;
   align-items: center;
@@ -1203,14 +1206,14 @@ body.dark-mode .pr-controls select, body.dark-mode .pr-controls input[type=text]
   <aside id="sidebar">
     <div id="sb-header">
       <img src="https://nour292.github.io/Nourdata/nour_energy_logo.png" alt="Logo" id="sb-logo">
-      <div id="sb-title">Nour Energy<small>HR System</small><small style="font-size:10px;opacity:0.55;">v2.10</small></div>
+      <div id="sb-title">Nour Energy<small>HR System</small><small style="font-size:10px;opacity:0.55;">v2.11</small></div>
       <button id="sb-toggle" onclick="toggleSidebar()" title="Toggle Sidebar">&#9776;</button>
     </div>
 
     <nav id="sb-nav" role="navigation" aria-label="Main navigation">
 
       <!-- ── Employee Data Group ── -->
-      <div class="sb-group">
+      <div class="sb-group" id="sb-grp-emp">
         <button class="sb-group-hdr active-group" id="btn-grp-emp" onclick="toggleEmpGroup()" aria-expanded="true" aria-controls="grp-emp">
           <span class="sb-icon">👤</span>
           <span class="sb-label">Employee Data</span>
@@ -3816,6 +3819,10 @@ function sidebarNav(section) {
   // Update body class for card-area visibility
   document.body.classList.remove('view-dashboard','view-deepsearch','view-lists','view-search','view-payroll');
   document.body.classList.add('view-' + section);
+  // Remove payroll-active reordering when leaving payroll
+  if (section !== 'payroll') {
+    document.getElementById('sb-nav').classList.remove('payroll-active');
+  }
   // Hide payroll pane unless going there
   const prPane = document.getElementById('ipane-payroll');
   if (prPane) prPane.style.display = section === 'payroll' ? 'block' : 'none';
@@ -4102,14 +4109,14 @@ function switchPrTab(tab) {
 function navPayroll(tab) {
   const grp = document.getElementById('grp-payroll');
   collapseEmpGroup();
+  document.getElementById('sb-nav').classList.add('payroll-active');
   if (grp && grp.style.display === 'none') togglePayrollGroup();
   sidebarNav('payroll');
   switchPrTab(tab);
   setTimeout(() => {
     const nav = document.getElementById('sb-nav');
-    const btn = document.getElementById('btn-grp-payroll');
-    if (nav && btn) nav.scrollTop = btn.offsetTop - nav.offsetTop;
-  }, 150);
+    if (nav) nav.scrollTop = 0;
+  }, 100);
   if (!_prData && !_prLoading) getPrData();
 }
 
@@ -4135,10 +4142,6 @@ function togglePayrollGroup() {
   if (btn)   btn.classList.toggle('active-group', !open);
   if (!open) {
     collapseEmpGroup();
-    setTimeout(() => {
-      const nav = document.getElementById('sb-nav');
-      if (nav && btn) nav.scrollTop = btn.offsetTop - nav.offsetTop;
-    }, 80);
   }
 }
 
