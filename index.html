@@ -1203,7 +1203,7 @@ body.dark-mode .pr-controls select, body.dark-mode .pr-controls input[type=text]
   <aside id="sidebar">
     <div id="sb-header">
       <img src="https://nour292.github.io/Nourdata/nour_energy_logo.png" alt="Logo" id="sb-logo">
-      <div id="sb-title">Nour Energy<small>HR System</small><small style="font-size:10px;opacity:0.55;">v2.8</small></div>
+      <div id="sb-title">Nour Energy<small>HR System</small><small style="font-size:10px;opacity:0.55;">v2.9</small></div>
       <button id="sb-toggle" onclick="toggleSidebar()" title="Toggle Sidebar">&#9776;</button>
     </div>
 
@@ -4101,6 +4101,7 @@ function switchPrTab(tab) {
 
 function navPayroll(tab) {
   const grp = document.getElementById('grp-payroll');
+  collapseEmpGroup();
   if (grp && grp.style.display === 'none') togglePayrollGroup();
   sidebarNav('payroll');
   switchPrTab(tab);
@@ -4112,6 +4113,17 @@ function navPayroll(tab) {
   if (!_prData && !_prLoading) getPrData();
 }
 
+function collapseEmpGroup() {
+  const el = document.getElementById('grp-emp');
+  const arrow = document.getElementById('arrow-grp-emp');
+  const hdr = document.getElementById('btn-grp-emp');
+  if (el && el.style.display !== 'none') {
+    el.style.display = 'none';
+    if (arrow) arrow.textContent = '▸';
+    if (hdr) hdr.classList.remove('active-group');
+  }
+}
+
 function togglePayrollGroup() {
   const grp   = document.getElementById('grp-payroll');
   const arrow = document.getElementById('arrow-grp-payroll');
@@ -4121,10 +4133,13 @@ function togglePayrollGroup() {
   grp.style.display = open ? 'none' : 'block';
   if (arrow) arrow.textContent = open ? '▸' : '▾';
   if (btn)   btn.classList.toggle('active-group', !open);
-  if (!open && btn) setTimeout(() => {
-    const nav = document.getElementById('sb-nav');
-    if (nav) nav.scrollTop = btn.offsetTop - nav.offsetTop;
-  }, 80);
+  if (!open) {
+    collapseEmpGroup();
+    setTimeout(() => {
+      const nav = document.getElementById('sb-nav');
+      if (nav && btn) nav.scrollTop = btn.offsetTop - nav.offsetTop;
+    }, 80);
+  }
 }
 
 </script>
