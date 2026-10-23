@@ -4107,6 +4107,7 @@ function navPayroll(tab) {
     const btn = document.getElementById('btn-grp-payroll');
     if (btn) btn.scrollIntoView({behavior: 'smooth', block: 'start'});
   }, 150);
+  if (!_prData && !_prLoading) getPrData();
 }
 
 function togglePayrollGroup() {
