@@ -1207,7 +1207,7 @@ body.dark-mode .pr-controls select, body.dark-mode .pr-controls input[type=text]
   <aside id="sidebar">
     <div id="sb-header">
       <img src="https://nour292.github.io/Nourdata/nour_energy_logo.png" alt="Logo" id="sb-logo">
-      <div id="sb-title">Nour Energy<small>HR System</small><small style="font-size:10px;opacity:0.55;">v2.16</small></div>
+      <div id="sb-title">Nour Energy<small>HR System</small><small style="font-size:10px;opacity:0.55;">v2.17</small></div>
       <button id="sb-toggle" onclick="toggleSidebar()" title="Toggle Sidebar">&#9776;</button>
     </div>
 
@@ -3916,25 +3916,19 @@ function sidebarNav(section) {
 const PR_SHEET_URL = 'https://docs.google.com/spreadsheets/d/16QYl00ATXVIlQKkqRxdAIdU6J3u7lDfg0PIoJfaDBpo/export?format=csv&gid=1499715462';
 
 const PR_COLS = [
-  { label:'Emp',          hdr:'#1a3a6c', cell:null       },
-  { label:'Name',         hdr:'#1a3a6c', cell:null       },
-  { label:'Month',        hdr:'#5d4037', cell:null       },
-  { label:'Year',         hdr:'#5d4037', cell:null       },
-  { label:'Basic',        hdr:'#4a148c', cell:null       },
-  { label:'Food',         hdr:'#4a148c', cell:null       },
-  { label:'Other',        hdr:'#4a148c', cell:null       },
-  { label:'Transport',    hdr:'#4a148c', cell:null       },
-  { label:'Housing',      hdr:'#4a148c', cell:null       },
-  { label:'Misc',         hdr:'#4a148c', cell:null       },
-  { label:'Normal Hrs',   hdr:'#7b6000', cell:'#FFF9C4'  },
-  { label:'OT Hours',     hdr:'#7b6000', cell:'#FFF9C4'  },
-  { label:'Total Salary', hdr:'#1b5e20', cell:null       },
-  { label:'OT Amount',    hdr:'#1a237e', cell:null       },
-  { label:'Mobile',       hdr:'#7b6000', cell:'#FFF9C4'  },
-  { label:'Total Pay',    hdr:'#0d47a1', cell:'#DDEBF7'  },
-  { label:'Loans',        hdr:'#b71c1c', cell:'#FFF9C4'  },
-  { label:'GOSI',         hdr:'#b71c1c', cell:'#FFF9C4'  },
-  { label:'Net Pay',      hdr:'#1b5e20', cell:'#E2EFDA'  },
+  { label:'Emp',          hdr:'#1a3a6c', cell:null,      col:0  },
+  { label:'Name',         hdr:'#1a3a6c', cell:null,      col:1  },
+  { label:'Month',        hdr:'#5d4037', cell:null,      col:2  },
+  { label:'Year',         hdr:'#5d4037', cell:null,      col:3  },
+  { label:'Normal Hrs',   hdr:'#7b6000', cell:'#FFF9C4', col:10 },
+  { label:'OT Hours',     hdr:'#7b6000', cell:'#FFF9C4', col:11 },
+  { label:'Total Salary', hdr:'#1b5e20', cell:null,      col:12 },
+  { label:'OT Amount',    hdr:'#1a237e', cell:null,      col:13 },
+  { label:'Mobile',       hdr:'#7b6000', cell:'#FFF9C4', col:14 },
+  { label:'Total Pay',    hdr:'#0d47a1', cell:'#DDEBF7', col:15 },
+  { label:'Loans',        hdr:'#b71c1c', cell:'#FFF9C4', col:16 },
+  { label:'GOSI',         hdr:'#b71c1c', cell:'#FFF9C4', col:17 },
+  { label:'Net Pay',      hdr:'#1b5e20', cell:'#E2EFDA', col:18 },
 ];
 
 const PR_MONTHS = ['','January','February','March','April','May','June','July','August','September','October','November','December'];
@@ -4005,10 +3999,10 @@ function _buildPrTable(rows) {
   h += '</tr></thead><tbody>';
   rows.forEach(row => {
     h += '<tr>';
-    PR_COLS.forEach((c, i) => {
-      const v   = row[i] != null ? row[i] : '';
+    PR_COLS.forEach(c => {
+      const v   = row[c.col] != null ? row[c.col] : '';
       const bg  = c.cell ? `background:${c.cell};` : '';
-      const txt = (i >= 4) ? _prFmt(v) : escHtml(String(v));
+      const txt = (c.col >= 4) ? _prFmt(v) : escHtml(String(v));
       h += `<td style="${bg}">${txt}</td>`;
     });
     h += '</tr>';
