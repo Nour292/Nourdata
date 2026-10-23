@@ -1207,7 +1207,7 @@ body.dark-mode .pr-controls select, body.dark-mode .pr-controls input[type=text]
   <aside id="sidebar">
     <div id="sb-header">
       <img src="https://nour292.github.io/Nourdata/nour_energy_logo.png" alt="Logo" id="sb-logo">
-      <div id="sb-title">Nour Energy<small>HR System</small><small style="font-size:10px;opacity:0.55;">v2.17</small></div>
+      <div id="sb-title">Nour Energy<small>HR System</small><small style="font-size:10px;opacity:0.55;">v2.18</small></div>
       <button id="sb-toggle" onclick="toggleSidebar()" title="Toggle Sidebar">&#9776;</button>
     </div>
 
@@ -1248,11 +1248,14 @@ body.dark-mode .pr-controls select, body.dark-mode .pr-controls input[type=text]
           <span class="sb-arrow" id="arrow-grp-payroll">▸</span>
         </button>
         <div class="sb-group-items" id="grp-payroll" style="display:none;">
-          <button class="sb-item sb-sub" id="snav-pr-monthly" onclick="navPayroll('monthly')">
-            <span class="sb-icon">📅</span><span class="sb-label">Monthly Payroll</span>
+          <button class="sb-item sb-sub" id="snav-pr-comparison" onclick="navPayroll('comparison')">
+            <span class="sb-icon">📈</span><span class="sb-label">Monthly Comparison</span>
           </button>
           <button class="sb-item sb-sub" id="snav-pr-history" onclick="navPayroll('history')">
             <span class="sb-icon">👤</span><span class="sb-label">Employee History</span>
+          </button>
+          <button class="sb-item sb-sub" id="snav-pr-monthly" onclick="navPayroll('monthly')">
+            <span class="sb-icon">📅</span><span class="sb-label">Monthly Payroll</span>
           </button>
           <button class="sb-item sb-sub" id="snav-pr-summary" onclick="navPayroll('summary')">
             <span class="sb-icon">📊</span><span class="sb-label">Summary</span>
@@ -1575,12 +1578,37 @@ body.dark-mode .pr-controls select, body.dark-mode .pr-controls input[type=text]
   <div id="ipane-payroll">
     <div class="pr-wrap">
       <div class="pr-subtabs">
-        <button class="pr-subtab active" id="pr-tab-monthly" onclick="switchPrTab('monthly')">📅 Monthly Payroll</button>
+        <button class="pr-subtab active" id="pr-tab-comparison" onclick="switchPrTab('comparison')">📈 Monthly Comparison</button>
         <button class="pr-subtab" id="pr-tab-history" onclick="switchPrTab('history')">👤 Employee History</button>
+        <button class="pr-subtab" id="pr-tab-monthly" onclick="switchPrTab('monthly')">📅 Monthly Payroll</button>
         <button class="pr-subtab" id="pr-tab-summary" onclick="switchPrTab('summary')">📊 Summary</button>
       </div>
+      <!-- Monthly Comparison -->
+      <div class="pr-pane active" id="pr-pane-comparison">
+        <div class="pr-controls">
+          <label>Period</label>
+          <select id="pr-comp-period" onchange="loadPrComparison()">
+            <option value="6">Last 6 months</option>
+            <option value="12" selected>Last 12 months</option>
+            <option value="18">Last 18 months</option>
+            <option value="24">Last 24 months</option>
+          </select>
+          <span id="pr-comp-count" class="pr-count"></span>
+        </div>
+        <div id="pr-comp-result" class="pr-tbl-wrap"><p class="pr-msg">⏳ Loading…</p></div>
+      </div>
+      <!-- Employee History -->
+      <div class="pr-pane" id="pr-pane-history">
+        <div class="pr-controls">
+          <label>Employee #</label>
+          <input type="text" id="pr-emp-input" placeholder="Employee number" style="width:150px;" onkeydown="if(event.key==='Enter')loadEmpHistory()">
+          <button class="pr-load-btn" onclick="loadEmpHistory()">▶ Load</button>
+          <span id="pr-history-count" class="pr-count"></span>
+        </div>
+        <div id="pr-history-result" class="pr-tbl-wrap"><p class="pr-msg">Enter employee number then click Load.</p></div>
+      </div>
       <!-- Monthly Payroll -->
-      <div class="pr-pane active" id="pr-pane-monthly">
+      <div class="pr-pane" id="pr-pane-monthly">
         <div class="pr-controls">
           <label>Month</label>
           <select id="pr-sel-month">
@@ -1598,16 +1626,6 @@ body.dark-mode .pr-controls select, body.dark-mode .pr-controls input[type=text]
           <span id="pr-monthly-count" class="pr-count"></span>
         </div>
         <div id="pr-monthly-result" class="pr-tbl-wrap"><p class="pr-msg">Select month and year then click Load.</p></div>
-      </div>
-      <!-- Employee History -->
-      <div class="pr-pane" id="pr-pane-history">
-        <div class="pr-controls">
-          <label>Employee #</label>
-          <input type="text" id="pr-emp-input" placeholder="Employee number" style="width:150px;" onkeydown="if(event.key==='Enter')loadEmpHistory()">
-          <button class="pr-load-btn" onclick="loadEmpHistory()">▶ Load</button>
-          <span id="pr-history-count" class="pr-count"></span>
-        </div>
-        <div id="pr-history-result" class="pr-tbl-wrap"><p class="pr-msg">Enter employee number then click Load.</p></div>
       </div>
       <!-- Summary -->
       <div class="pr-pane" id="pr-pane-summary">
@@ -1737,7 +1755,7 @@ function unlockApp() {
   if (_navTarget === 'payroll') {
     sessionStorage.removeItem('ne_nav');
     if (location.hash) history.replaceState(null, '', location.pathname);
-    setTimeout(() => navPayroll('monthly'), 100);
+    setTimeout(() => navPayroll('comparison'), 100);
   } else {
     sidebarNav('search');
   }
@@ -4094,6 +4112,103 @@ async function loadPrSummary() {
   </table></div>`;
 }
 
+async function loadPrComparison() {
+  const res = document.getElementById('pr-comp-result');
+  const cnt = document.getElementById('pr-comp-count');
+  if (!res) return;
+  res.innerHTML = '<p class="pr-msg">⏳ Loading…</p>';
+  const data = await getPrData(res);
+  if (!data) return;
+
+  const months = parseInt(document.getElementById('pr-comp-period').value) || 12;
+
+  // Build set of wanted year-month keys for the last N months
+  const now = new Date();
+  const wanted = new Set();
+  for (let i = 0; i < months; i++) {
+    const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+    const monSlice = PR_MONTHS[d.getMonth() + 1].slice(0,3).toLowerCase();
+    wanted.add(String(d.getFullYear()) + '-' + monSlice);
+  }
+
+  // Aggregate per month
+  const map = {};
+  data.forEach(r => {
+    const mon = (r[2] || '').trim();
+    const yr  = String(r[3] || '').trim();
+    const key = yr + '-' + mon.toLowerCase().slice(0,3);
+    if (!wanted.has(key)) return;
+    if (!map[key]) map[key] = { year:yr, month:mon, count:0, totalSal:0, otAmt:0, totalPay:0, loans:0, gosi:0, netPay:0 };
+    map[key].count++;
+    map[key].totalSal += parseFloat(String(r[12]).replace(/,/g,'')) || 0;
+    map[key].otAmt    += parseFloat(String(r[13]).replace(/,/g,'')) || 0;
+    map[key].totalPay += parseFloat(String(r[15]).replace(/,/g,'')) || 0;
+    map[key].loans    += parseFloat(String(r[16]).replace(/,/g,'')) || 0;
+    map[key].gosi     += parseFloat(String(r[17]).replace(/,/g,'')) || 0;
+    map[key].netPay   += parseFloat(String(r[18]).replace(/,/g,'')) || 0;
+  });
+
+  const keys = Object.keys(map).sort((a,b) => {
+    const [ya,ma] = a.split('-'); const [yb,mb] = b.split('-');
+    const yd = Number(yb) - Number(ya);
+    return yd !== 0 ? yd : _prMonNum(mb) - _prMonNum(ma);
+  });
+
+  if (!keys.length) {
+    res.innerHTML = '<p class="pr-msg">No data found for the selected period.</p>';
+    cnt.textContent = '';
+    return;
+  }
+
+  cnt.textContent = `${keys.length} months`;
+  let tot = { count:0, totalSal:0, otAmt:0, totalPay:0, loans:0, gosi:0, netPay:0 };
+  let rows = '';
+  keys.forEach(k => {
+    const m = map[k];
+    tot.count    += m.count;
+    tot.totalSal += m.totalSal;
+    tot.otAmt    += m.otAmt;
+    tot.totalPay += m.totalPay;
+    tot.loans    += m.loans;
+    tot.gosi     += m.gosi;
+    tot.netPay   += m.netPay;
+    rows += `<tr>
+      <td>${_prMonName(m.month)} ${m.year}</td>
+      <td style="text-align:center;">${m.count}</td>
+      <td>${_prFmt(m.totalSal)}</td>
+      <td>${_prFmt(m.otAmt)}</td>
+      <td style="background:#DDEBF7;">${_prFmt(m.totalPay)}</td>
+      <td style="background:#FFF9C4;">${_prFmt(m.loans)}</td>
+      <td style="background:#FFF9C4;">${_prFmt(m.gosi)}</td>
+      <td style="background:#E2EFDA;font-weight:700;">${_prFmt(m.netPay)}</td>
+    </tr>`;
+  });
+
+  res.innerHTML = `<div class="pr-tbl-wrap"><table class="pr-sum-tbl">
+    <thead><tr>
+      <th style="background:#1a3a52;text-align:left;">Period</th>
+      <th style="background:#1a3a52;">Employees</th>
+      <th style="background:#1b5e20;">Total Salary</th>
+      <th style="background:#1a237e;">OT Amount</th>
+      <th style="background:#0d47a1;">Total Pay</th>
+      <th style="background:#7b6000;">Loans</th>
+      <th style="background:#7b6000;">GOSI</th>
+      <th style="background:#1b5e20;">Net Pay</th>
+    </tr></thead>
+    <tbody>${rows}</tbody>
+    <tfoot><tr class="pr-totals-row">
+      <td><strong>Total — ${keys.length} month${keys.length!==1?'s':''}</strong></td>
+      <td style="text-align:center;">${tot.count}</td>
+      <td>${_prFmt(tot.totalSal)}</td>
+      <td>${_prFmt(tot.otAmt)}</td>
+      <td style="background:#DDEBF7;">${_prFmt(tot.totalPay)}</td>
+      <td style="background:#FFF9C4;">${_prFmt(tot.loans)}</td>
+      <td style="background:#FFF9C4;">${_prFmt(tot.gosi)}</td>
+      <td style="background:#E2EFDA;font-weight:700;">${_prFmt(tot.netPay)}</td>
+    </tr></tfoot>
+  </table></div>`;
+}
+
 function switchPrTab(tab) {
   document.querySelectorAll('.pr-subtab').forEach(b => b.classList.remove('active'));
   document.querySelectorAll('.pr-pane').forEach(p => p.classList.remove('active'));
@@ -4104,8 +4219,8 @@ function switchPrTab(tab) {
   document.querySelectorAll('#grp-payroll .sb-item').forEach(b => b.classList.remove('active'));
   const sb = document.getElementById('snav-pr-' + tab);
   if (sb) sb.classList.add('active');
-  if (tab === 'summary' && !_prData && !_prLoading) loadPrSummary();
-  else if (tab === 'summary' && _prData) loadPrSummary();
+  if (tab === 'summary') loadPrSummary();
+  if (tab === 'comparison') loadPrComparison();
 }
 
 function navPayroll(tab) {
@@ -4128,7 +4243,7 @@ function clickPayrollGroup() {
     togglePayrollGroup();
     document.getElementById('sb-nav').classList.remove('payroll-active');
   } else {
-    navPayroll('monthly');
+    navPayroll('comparison');
   }
 }
 
