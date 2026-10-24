@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- NourData v2.29 Dashboard Build - 24-Oct-2026 -->
+<!-- NourData v2.30 Dashboard Build - 24-Oct-2026 -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -1213,7 +1213,7 @@ body.dark-mode .pr-controls select, body.dark-mode .pr-controls input[type=text]
   <aside id="sidebar">
     <div id="sb-header">
       <img src="https://nour292.github.io/Nourdata/nour_energy_logo.png" alt="Logo" id="sb-logo">
-      <div id="sb-title">Nour Energy<small>HR System</small><small style="font-size:10px;opacity:0.55;">v2.29</small></div>
+      <div id="sb-title">Nour Energy<small>HR System</small><small style="font-size:10px;opacity:0.55;">v2.30</small></div>
       <button id="sb-toggle" onclick="toggleSidebar()" title="Toggle Sidebar">&#9776;</button>
     </div>
 
@@ -1606,9 +1606,10 @@ body.dark-mode .pr-controls select, body.dark-mode .pr-controls input[type=text]
             <button class="pr-export-btn pr-export-excel" onclick="exportCompExcel()">&#128202; Excel</button>
             <button class="pr-export-btn pr-export-print" onclick="printCompTable()">&#128438; Print</button>
             <button class="pr-export-btn pr-export-pdf"   onclick="exportCompPDF()">&#128196; PDF</button>
+            <button class="pr-export-btn" style="background:#78909c;color:#fff;" onclick="clearCompTable()">&#10005; Clear</button>
           </div>
         </div>
-        <div id="pr-comp-result" class="pr-tbl-wrap"><p class="pr-msg">⏳ Loading…</p></div>
+        <div id="pr-comp-result" class="pr-tbl-wrap"><p class="pr-msg">📋 Select a period above and the table will load automatically.</p></div>
       </div>
       <!-- Employee History -->
       <div class="pr-pane" id="pr-pane-history">
@@ -4234,6 +4235,13 @@ async function loadPrComparison() {
   </table></div>`;
 }
 
+function clearCompTable() {
+  const res = document.getElementById('pr-comp-result');
+  const cnt = document.getElementById('pr-comp-count');
+  if (res) res.innerHTML = '<p class="pr-msg">📋 Select a period above and the table will load automatically.</p>';
+  if (cnt) cnt.textContent = '';
+}
+
 function exportCompExcel() {
   const tbl = document.querySelector('#pr-comp-result table');
   if (!tbl) return;
@@ -4335,7 +4343,6 @@ function switchPrTab(tab) {
   const sb = document.getElementById('snav-pr-' + tab);
   if (sb) sb.classList.add('active');
   if (tab === 'summary') loadPrSummary();
-  if (tab === 'comparison') loadPrComparison();
 }
 
 function navPayroll(tab) {
