@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- NourData v2.32 Dashboard Build - 24-Oct-2026 -->
+<!-- NourData v2.33 Dashboard Build - 24-Oct-2026 -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -1216,7 +1216,7 @@ body.dark-mode .pr-controls select, body.dark-mode .pr-controls input[type=text]
   <aside id="sidebar">
     <div id="sb-header">
       <img src="https://nour292.github.io/Nourdata/nour_energy_logo.png" alt="Logo" id="sb-logo">
-      <div id="sb-title">Nour Energy<small>HR System</small><small style="font-size:10px;opacity:0.55;">v2.32</small></div>
+      <div id="sb-title">Nour Energy<small>HR System</small><small style="font-size:10px;opacity:0.55;">v2.33</small></div>
       <button id="sb-toggle" onclick="toggleSidebar()" title="Toggle Sidebar">&#9776;</button>
     </div>
 
@@ -4073,7 +4073,7 @@ async function loadMonthlyPayroll() {
   if (!month || !year) { res.innerHTML = '<p class="pr-msg" style="color:#c0392b;">Please select both month and year.</p>'; cnt.textContent=''; return; }
   const data = await getPrData(res);
   if (!data) return;
-  const filtered = data.filter(r => String(r[2]).trim().toLowerCase() === month.toLowerCase() && String(r[3]).trim() === String(year));
+  const filtered = data.filter(r => String(r[2]).trim().toLowerCase().slice(0,3) === month.toLowerCase().slice(0,3) && String(r[3]).trim() === String(year));
   cnt.textContent = filtered.length ? `${filtered.length} employees` : 'No records';
   res.innerHTML   = _buildPrTable(filtered);
 }
