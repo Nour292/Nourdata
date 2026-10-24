@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- NourData v2.27 Dashboard Build - 24-Oct-2026 -->
+<!-- NourData v2.28 Dashboard Build - 24-Oct-2026 -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -1213,7 +1213,7 @@ body.dark-mode .pr-controls select, body.dark-mode .pr-controls input[type=text]
   <aside id="sidebar">
     <div id="sb-header">
       <img src="https://nour292.github.io/Nourdata/nour_energy_logo.png" alt="Logo" id="sb-logo">
-      <div id="sb-title">Nour Energy<small>HR System</small><small style="font-size:10px;opacity:0.55;">v2.27</small></div>
+      <div id="sb-title">Nour Energy<small>HR System</small><small style="font-size:10px;opacity:0.55;">v2.28</small></div>
       <button id="sb-toggle" onclick="toggleSidebar()" title="Toggle Sidebar">&#9776;</button>
     </div>
 
@@ -4237,15 +4237,19 @@ async function loadPrComparison() {
 function exportCompExcel() {
   const tbl = document.querySelector('#pr-comp-result table');
   if (!tbl) return;
-  let csv = '';
-  tbl.querySelectorAll('tr').forEach(row => {
-    const cells = [...row.querySelectorAll('th,td')];
-    csv += cells.map(c => '"' + (c.innerText||'').replace(/\n/g,' ').replace(/"/g,'""') + '"').join(',') + '\r\n';
-  });
-  const blob = new Blob(['﻿' + csv], {type:'text/csv;charset=utf-8'});
+  const xStyle = '<style>table{border-collapse:collapse;font-family:Calibri,sans-serif;font-size:11pt;}' +
+    'th{font-weight:bold;padding:5px 8px;border:1px solid #999;-webkit-print-color-adjust:exact;}' +
+    'td{padding:5px 8px;border:1px solid #ddd;}</style>';
+  const html = '<html xmlns:o="urn:schemas-microsoft-com:office:office" ' +
+    'xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">' +
+    '<head><meta charset="UTF-8"><!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets>' +
+    '<x:ExcelWorksheet><x:Name>Monthly Comparison<\/x:Name><x:WorksheetOptions><x:DisplayGridlines\/>' +
+    '<\/x:WorksheetOptions><\/x:ExcelWorksheet><\/x:ExcelWorksheets><\/x:ExcelWorkbook><\/xml><![endif]-->' +
+    xStyle + '<\/head><body>' + tbl.outerHTML + '<\/body><\/html>';
+  const blob = new Blob(['﻿' + html], {type:'application/vnd.ms-excel;charset=utf-8'});
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
-  a.download = 'Monthly_Comparison_' + new Date().toISOString().slice(0,10) + '.csv';
+  a.download = 'Monthly Comparison.xls';
   a.click();
 }
 
@@ -4256,27 +4260,48 @@ function printCompTable() {
   const sel = document.getElementById('pr-comp-period');
   const period = sel ? sel.options[sel.selectedIndex].text : '';
   const today = new Date().toLocaleDateString('en-GB');
+  const lastHdr = result.querySelector('thead tr:last-child');
+  const cols = lastHdr ? lastHdr.querySelectorAll('th').length : 5;
+  const orient = cols > 7 ? 'landscape' : 'portrait';
   const w = window.open('', '_blank', 'width=1200,height=800');
-  w.document.write('<!doctype html><html><head><title><\/title>' +
+  w.document.write(
+    '<!doctype html><html><head><title>Monthly Comparison<\/title>' +
+    '<style id="os">@page{margin:0;size:A4 ' + orient + ';}<\/style>' +
     '<style>' +
-    '* { box-sizing:border-box; margin:0; padding:0; }' +
-    '@page { margin:0; size:A4 landscape; }' +
-    'body { font-family:Calibri,Arial,sans-serif; font-size:11px; padding:10mm 12mm 20mm; color:#222; }' +
-    '.ph { margin-bottom:5px; }' +
-    '.ph-title { font-size:14px; font-weight:700; color:#1a3a52; }' +
-    '.ph-meta { font-size:10px; color:#666; margin-top:2px; }' +
-    '.pf { position:fixed; bottom:5mm; left:12mm; right:12mm; font-size:9px; color:#888; border-top:1px solid #ddd; padding-top:3px; display:flex; justify-content:space-between; -webkit-print-color-adjust:exact; print-color-adjust:exact; }' +
-    'table { width:100%; border-collapse:collapse; margin-top:6px; }' +
-    'th { padding:5px 8px; color:#fff; font-weight:700; text-align:left; white-space:nowrap; font-size:10px; -webkit-print-color-adjust:exact; print-color-adjust:exact; }' +
-    'td { padding:5px 8px 5px 11px; border-bottom:1px solid #e0e8f0; text-align:left; font-size:11px; }' +
-    'td:nth-child(2) { text-align:center; }' +
+    '*{box-sizing:border-box;margin:0;padding:0;}' +
+    'body{font-family:Calibri,Arial,sans-serif;font-size:11px;padding:10mm 12mm 20mm;color:#222;}' +
+    '.ctrl{display:flex;gap:8px;margin-bottom:8px;align-items:center;font-size:11px;color:#555;}' +
+    '.ctrl button{padding:4px 14px;font-size:11px;border:1px solid #bbb;border-radius:4px;cursor:pointer;background:#f5f5f5;font-family:Calibri,sans-serif;}' +
+    '.ctrl button.on{background:#1a3a52;color:#fff;border-color:#1a3a52;}' +
+    '.ph{margin-bottom:5px;}' +
+    '.ph-title{font-size:14px;font-weight:700;color:#1a3a52;}' +
+    '.ph-meta{font-size:10px;color:#666;margin-top:2px;}' +
+    '.pf{position:fixed;bottom:5mm;left:12mm;right:12mm;font-size:9px;color:#888;border-top:1px solid #ddd;padding-top:3px;display:flex;justify-content:space-between;-webkit-print-color-adjust:exact;print-color-adjust:exact;}' +
+    'table{width:100%;border-collapse:collapse;margin-top:6px;}' +
+    'th{padding:5px 8px;color:#fff;font-weight:700;text-align:left;white-space:nowrap;font-size:10px;-webkit-print-color-adjust:exact;print-color-adjust:exact;}' +
+    'td{padding:5px 8px 5px 11px;border-bottom:1px solid #e0e8f0;text-align:left;font-size:11px;}' +
+    'td:nth-child(2){text-align:center;}' +
+    '@media print{.ctrl{display:none!important;}}' +
     '<\/style><\/head><body>' +
+    '<div class="ctrl"><span>Orientation:</span>' +
+    '<button id="bp" class="' + (orient==='portrait'?'on':'') + '" onclick="setOr(\'portrait\')">Portrait<\/button>' +
+    '<button id="bl" class="' + (orient==='landscape'?'on':'') + '" onclick="setOr(\'landscape\')">Landscape<\/button>' +
+    '<\/div>' +
     '<div class="ph"><div class="ph-title">Monthly Payroll Comparison<\/div>' +
-    '<div class="ph-meta">Period: ' + period + ' &nbsp;|&nbsp; ' + today + ' &nbsp;|&nbsp; Nour Energy HR System<\/div><\/div>' +
+    '<div class="ph-meta">Period: ' + period + '  |  ' + today + '  |  Nour Energy HR System<\/div><\/div>' +
     tbl +
     '<div class="pf"><span>Nour Energy HR System<\/span><span>Qasim<\/span><span>' + today + '<\/span><\/div>' +
-    '<script>window.onload=function(){window.print();}<\/scr' + 'ipt>' +
-    '<\/body><\/html>');
+    '<scr' + 'ipt>' +
+    'function setOr(o){' +
+      'document.getElementById("os").innerHTML="@page{margin:0;size:A4 "+o+";}";' +
+      'document.getElementById("bp").className=o==="portrait"?"on":"";' +
+      'document.getElementById("bl").className=o==="landscape"?"on":"";' +
+    '}' +
+    'window.onload=function(){window.print();};' +
+    'window.addEventListener("afterprint",function(){window.close();});' +
+    '<\/scr' + 'ipt>' +
+    '<\/body><\/html>'
+  );
   w.document.close();
 }
 
