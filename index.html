@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- NourData v2.48 Dashboard Build - 25-Oct-2026 -->
+<!-- NourData v2.49 Dashboard Build - 25-Oct-2026 -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -1305,7 +1305,7 @@ body.dark-mode .hstat-lbl { color: #8a9aaa; }
   <aside id="sidebar">
     <div id="sb-header">
       <img src="https://nour292.github.io/Nourdata/nour_energy_logo.png" alt="Logo" id="sb-logo">
-      <div id="sb-title" onclick="sidebarNav('home')" style="cursor:pointer;" title="Go to Home">Nour Energy<small>HR System</small><small style="font-size:10px;opacity:0.55;">v2.48</small></div>
+      <div id="sb-title" onclick="sidebarNav('home')" style="cursor:pointer;" title="Go to Home">Nour Energy<small>HR System</small><small style="font-size:10px;opacity:0.55;">v2.49</small></div>
       <button id="sb-toggle" onclick="toggleSidebar()" title="Toggle Sidebar">&#9776;</button>
     </div>
 
@@ -4410,18 +4410,13 @@ function exportHistExcel() {
 function printHistTable() {
   const result = document.getElementById('pr-history-result');
   if (!result) return;
-  const cols = (result.querySelector('thead tr')||{querySelectorAll:()=>[]}).querySelectorAll('th').length;
-  const orient = cols > 7 ? 'landscape' : 'portrait';
   const today = new Date().toLocaleDateString('en-GB');
   const w = window.open('', '_blank', 'width=1200,height=800');
   w.document.write(
     '<!doctype html><html><head><title>Employee History<\/title>' +
-    '<style id="os">@page{margin:0;size:A4 ' + orient + ';}<\/style>' +
-    '<style>*{box-sizing:border-box;margin:0;padding:0;}' +
-    'body{font-family:Calibri,Arial,sans-serif;font-size:11px;padding:10mm 12mm 20mm;color:#222;}' +
-    '.ctrl{display:flex;gap:8px;margin-bottom:8px;align-items:center;font-size:11px;color:#555;}' +
-    '.ctrl button{padding:4px 14px;font-size:11px;border:1px solid #bbb;border-radius:4px;cursor:pointer;background:#f5f5f5;font-family:Calibri,sans-serif;}' +
-    '.ctrl button.on{background:#1a3a52;color:#fff;border-color:#1a3a52;}' +
+    '<style>@page{margin:10mm 12mm 20mm;size:A4 portrait;}' +
+    '*{box-sizing:border-box;margin:0;padding:0;}' +
+    'body{font-family:Calibri,Arial,sans-serif;font-size:11px;color:#222;}' +
     '.pr-hist-hdr{margin-bottom:8px;padding:7px 12px;background:#f0f5fa;border-left:4px solid #1a3a52;border-radius:0 4px 4px 0;}' +
     '.pr-hist-emp{font-size:14px;font-weight:700;color:#1a3a52;}' +
     '.pr-hist-period{font-size:10px;color:#555;margin-top:2px;}' +
@@ -4430,18 +4425,13 @@ function printHistTable() {
     'table{width:100%;border-collapse:collapse;margin-top:6px;}' +
     'th{padding:5px 8px;color:#fff;font-weight:700;text-align:left;white-space:nowrap;font-size:10px;-webkit-print-color-adjust:exact;print-color-adjust:exact;}' +
     'td{padding:5px 8px;border-bottom:1px solid #e0e8f0;text-align:left;font-size:11px;}' +
-    '@media print{.ctrl{display:none!important;}}<\/style><\/head><body>' +
-    '<div class="ctrl"><span>Orientation:<\/span>' +
-    '<button id="bp" class="' + (orient==='portrait'?'on':'') + '" onclick="setOr(\'portrait\')">Portrait<\/button>' +
-    '<button id="bl" class="' + (orient==='landscape'?'on':'') + '" onclick="setOr(\'landscape\')">Landscape<\/button>' +
-    '<button onclick="window.print()" style="padding:4px 18px;background:#1a3a52;color:#fff;border:none;border-radius:4px;cursor:pointer;font-size:11px;font-family:Calibri,sans-serif;">&#128438; Print Now<\/button>' +
-    '<\/div>' + result.innerHTML +
+    '<\/style><\/head><body>' +
+    result.innerHTML +
     '<div class="pf"><span>Nour Energy HR System<\/span><span>Qasim<\/span><span>' + today + '<\/span><\/div>' +
-    '<scr' + 'ipt>function setOr(o){document.getElementById("os").innerHTML="@page{margin:0;size:A4 "+o+";}";' +
-    'document.getElementById("bp").className=o==="portrait"?"on":"";document.getElementById("bl").className=o==="landscape"?"on":"";}' +
-    'window.addEventListener("afterprint",function(){window.close();});<\/scr' + 'ipt>' +
+    '<scr' + 'ipt>window.addEventListener("afterprint",function(){window.close();});<\/scr' + 'ipt>' +
     '<\/body><\/html>');
   w.document.close();
+  setTimeout(function(){ w.print(); }, 400);
 }
 
 function exportHistPDF() { printHistTable(); }
@@ -4686,19 +4676,12 @@ function printCompTable() {
   const sel = document.getElementById('pr-comp-period');
   const period = sel ? sel.options[sel.selectedIndex].text : '';
   const today = new Date().toLocaleDateString('en-GB');
-  const lastHdr = result.querySelector('thead tr:last-child');
-  const cols = lastHdr ? lastHdr.querySelectorAll('th').length : 5;
-  const orient = cols > 7 ? 'landscape' : 'portrait';
   const w = window.open('', '_blank', 'width=1200,height=800');
   w.document.write(
     '<!doctype html><html><head><title>Monthly Comparison<\/title>' +
-    '<style id="os">@page{margin:0;size:A4 ' + orient + ';}<\/style>' +
-    '<style>' +
+    '<style>@page{margin:10mm 12mm 20mm;size:A4 portrait;}' +
     '*{box-sizing:border-box;margin:0;padding:0;}' +
-    'body{font-family:Calibri,Arial,sans-serif;font-size:11px;padding:10mm 12mm 20mm;color:#222;}' +
-    '.ctrl{display:flex;gap:8px;margin-bottom:8px;align-items:center;font-size:11px;color:#555;}' +
-    '.ctrl button{padding:4px 14px;font-size:11px;border:1px solid #bbb;border-radius:4px;cursor:pointer;background:#f5f5f5;font-family:Calibri,sans-serif;}' +
-    '.ctrl button.on{background:#1a3a52;color:#fff;border-color:#1a3a52;}' +
+    'body{font-family:Calibri,Arial,sans-serif;font-size:11px;color:#222;}' +
     '.ph{margin-bottom:5px;}' +
     '.ph-title{font-size:14px;font-weight:700;color:#1a3a52;}' +
     '.ph-meta{font-size:10px;color:#666;margin-top:2px;}' +
@@ -4707,28 +4690,16 @@ function printCompTable() {
     'th{padding:5px 8px;color:#fff;font-weight:700;text-align:left;white-space:nowrap;font-size:10px;-webkit-print-color-adjust:exact;print-color-adjust:exact;}' +
     'td{padding:5px 8px 5px 11px;border-bottom:1px solid #e0e8f0;text-align:left;font-size:11px;}' +
     'td:nth-child(2){text-align:center;}' +
-    '@media print{.ctrl{display:none!important;}}' +
     '<\/style><\/head><body>' +
-    '<div class="ctrl"><span>Orientation:</span>' +
-    '<button id="bp" class="' + (orient==='portrait'?'on':'') + '" onclick="setOr(\'portrait\')">Portrait<\/button>' +
-    '<button id="bl" class="' + (orient==='landscape'?'on':'') + '" onclick="setOr(\'landscape\')">Landscape<\/button>' +
-    '<button onclick="window.print()" style="padding:4px 18px;background:#1a3a52;color:#fff;border:none;border-radius:4px;cursor:pointer;font-size:11px;font-family:Calibri,sans-serif;">&#128438; Print Now<\/button>' +
-    '<\/div>' +
     '<div class="ph"><div class="ph-title">Monthly Payroll Comparison<\/div>' +
     '<div class="ph-meta">Period: ' + period + '  |  ' + today + '  |  Nour Energy HR System<\/div><\/div>' +
     tbl +
     '<div class="pf"><span>Nour Energy HR System<\/span><span>Qasim<\/span><span>' + today + '<\/span><\/div>' +
-    '<scr' + 'ipt>' +
-    'function setOr(o){' +
-      'document.getElementById("os").innerHTML="@page{margin:0;size:A4 "+o+";}";' +
-      'document.getElementById("bp").className=o==="portrait"?"on":"";' +
-      'document.getElementById("bl").className=o==="landscape"?"on":"";' +
-    '}' +
-    'window.addEventListener("afterprint",function(){window.close();});' +
-    '<\/scr' + 'ipt>' +
+    '<scr' + 'ipt>window.addEventListener("afterprint",function(){window.close();});<\/scr' + 'ipt>' +
     '<\/body><\/html>'
   );
   w.document.close();
+  setTimeout(function(){ w.print(); }, 400);
 }
 
 function exportCompPDF() { printCompTable(); }
@@ -4788,17 +4759,12 @@ function printMonthlyTable() {
   const yr  = document.getElementById('pr-sel-year');
   const label = (sel && yr) ? (sel.options[sel.selectedIndex]||{text:''}).text + ' ' + yr.value : '';
   const today = new Date().toLocaleDateString('en-GB');
-  const cols = (result.querySelector('thead tr')||{querySelectorAll:()=>[]}).querySelectorAll('th').length;
-  const orient = cols > 7 ? 'landscape' : 'portrait';
   const w = window.open('', '_blank', 'width=1200,height=800');
   w.document.write(
     '<!doctype html><html><head><title>Monthly Payroll<\/title>' +
-    '<style id="os">@page{margin:0;size:A4 ' + orient + ';}<\/style>' +
-    '<style>*{box-sizing:border-box;margin:0;padding:0;}' +
-    'body{font-family:Calibri,Arial,sans-serif;font-size:11px;padding:10mm 12mm 20mm;color:#222;}' +
-    '.ctrl{display:flex;gap:8px;margin-bottom:8px;align-items:center;font-size:11px;color:#555;}' +
-    '.ctrl button{padding:4px 14px;font-size:11px;border:1px solid #bbb;border-radius:4px;cursor:pointer;background:#f5f5f5;font-family:Calibri,sans-serif;}' +
-    '.ctrl button.on{background:#1a3a52;color:#fff;border-color:#1a3a52;}' +
+    '<style>@page{margin:10mm 12mm 20mm;size:A4 portrait;}' +
+    '*{box-sizing:border-box;margin:0;padding:0;}' +
+    'body{font-family:Calibri,Arial,sans-serif;font-size:11px;color:#222;}' +
     '.ph{margin-bottom:5px;}' +
     '.ph-title{font-size:14px;font-weight:700;color:#1a3a52;}' +
     '.ph-meta{font-size:10px;color:#666;margin-top:2px;}' +
@@ -4806,21 +4772,15 @@ function printMonthlyTable() {
     'table{width:100%;border-collapse:collapse;margin-top:6px;}' +
     'th{padding:5px 8px;color:#fff;font-weight:700;text-align:left;white-space:nowrap;font-size:10px;-webkit-print-color-adjust:exact;print-color-adjust:exact;}' +
     'td{padding:5px 8px 5px 11px;border-bottom:1px solid #e0e8f0;text-align:left;font-size:11px;}' +
-    '@media print{.ctrl{display:none!important;}}<\/style><\/head><body>' +
-    '<div class="ctrl"><span>Orientation:<\/span>' +
-    '<button id="bp" class="' + (orient==='portrait'?'on':'') + '" onclick="setOr(\'portrait\')">Portrait<\/button>' +
-    '<button id="bl" class="' + (orient==='landscape'?'on':'') + '" onclick="setOr(\'landscape\')">Landscape<\/button>' +
-    '<button onclick="window.print()" style="padding:4px 18px;background:#1a3a52;color:#fff;border:none;border-radius:4px;cursor:pointer;font-size:11px;font-family:Calibri,sans-serif;">&#128438; Print Now<\/button>' +
-    '<\/div>' +
+    '<\/style><\/head><body>' +
     '<div class="ph"><div class="ph-title">Monthly Payroll — ' + label + '<\/div>' +
     '<div class="ph-meta">' + today + '  |  Nour Energy HR System<\/div><\/div>' +
     result.innerHTML +
     '<div class="pf"><span>Nour Energy HR System<\/span><span>Qasim<\/span><span>' + today + '<\/span><\/div>' +
-    '<scr' + 'ipt>function setOr(o){document.getElementById("os").innerHTML="@page{margin:0;size:A4 "+o+";}";' +
-    'document.getElementById("bp").className=o==="portrait"?"on":"";document.getElementById("bl").className=o==="landscape"?"on":"";}' +
-    'window.addEventListener("afterprint",function(){window.close();});<\/scr' + 'ipt>' +
+    '<scr' + 'ipt>window.addEventListener("afterprint",function(){window.close();});<\/scr' + 'ipt>' +
     '<\/body><\/html>');
   w.document.close();
+  setTimeout(function(){ w.print(); }, 400);
 }
 
 function exportMonthlyPDF() { printMonthlyTable(); }
