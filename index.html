@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- NourData v2.44 Dashboard Build - 24-Oct-2026 -->
+<!-- NourData v2.45 Dashboard Build - 25-Oct-2026 -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -1254,7 +1254,7 @@ body.dark-mode .home-subtitle { color:#8a9aaa; }
   <aside id="sidebar">
     <div id="sb-header">
       <img src="https://nour292.github.io/Nourdata/nour_energy_logo.png" alt="Logo" id="sb-logo">
-      <div id="sb-title" onclick="sidebarNav('home')" style="cursor:pointer;" title="Go to Home">Nour Energy<small>HR System</small><small style="font-size:10px;opacity:0.55;">v2.44</small></div>
+      <div id="sb-title" onclick="sidebarNav('home')" style="cursor:pointer;" title="Go to Home">Nour Energy<small>HR System</small><small style="font-size:10px;opacity:0.55;">v2.45</small></div>
       <button id="sb-toggle" onclick="toggleSidebar()" title="Toggle Sidebar">&#9776;</button>
     </div>
 
@@ -4939,25 +4939,66 @@ function installApp(e) {
 const OTP_URL = 'https://script.google.com/macros/s/AKfycbzGXoDV-fdif6qiP_wFjmoULC0pXoRDVsH1P_-LptWEAIwYC3NBzDo-aWwOr4OXoaVuxQ/exec';
 let _otpTimer = null, _otpExpiry = 0, _pendingRole = 'admin';
 
-function doLogin() {
+/* ── Auth security helpers ── */
+const _H = {
+  u: 'd4e2501734145318e12b209000cf646434ff9d3fae8bc9302dba2d7ce01f3073',
+  v: 'd7192da7e0a705d763b318d67c4bbfe9a06f254714f5a161daf74eed6b6853c1',
+  s: '838a9375a280755b982b3a9910b27108c2a0b8a63d25a708b33e29d6311099f7'
+};
+async function _sha256(str) {
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
+  return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,'0')).join('');
+}
+function _loginLocked() {
+  try {
+    const d = JSON.parse(localStorage.getItem('ne_lf') || '{}');
+    if ((d.c || 0) < 5) return false;
+    if (Date.now() - (d.t || 0) > 1800000) { localStorage.removeItem('ne_lf'); return false; }
+    return true;
+  } catch(e) { return false; }
+}
+function _loginLockMsg() {
+  try {
+    const d = JSON.parse(localStorage.getItem('ne_lf') || '{}');
+    const rem = Math.ceil((1800000 - (Date.now() - (d.t || 0))) / 60000);
+    return 'Too many failed attempts. Try again in ' + rem + ' minute' + (rem !== 1 ? 's' : '') + '.';
+  } catch(e) { return 'Too many failed attempts. Try again later.'; }
+}
+function _loginFail() {
+  try {
+    const d = JSON.parse(localStorage.getItem('ne_lf') || '{}');
+    if (!d.c) { d.c = 0; d.t = Date.now(); }
+    d.c++;
+    localStorage.setItem('ne_lf', JSON.stringify(d));
+  } catch(e) {}
+}
+function _loginOk() { try { localStorage.removeItem('ne_lf'); } catch(e) {} }
+
+async function doLogin() {
   const pass = (document.getElementById('login-pass').value || '').trim();
   const err  = document.getElementById('login-error');
-  if (pass === '4190') {
+  if (_loginLocked()) { err.textContent = _loginLockMsg(); return; }
+  const h = await _sha256(pass);
+  if (h === _H.u) {
+    _loginOk();
     sessionStorage.setItem('ne_role', 'user');
     document.getElementById('login-overlay').style.display = 'none';
     unlockApp();
-  } else if (pass === '108624') {
+  } else if (h === _H.v) {
+    _loginOk();
     sessionStorage.setItem('ne_role', 'viewer');
     document.getElementById('login-overlay').style.display = 'none';
     unlockApp();
-  } else if (pass === 'Nour-pprr') {
+  } else if (h === _H.s) {
+    _loginOk();
     _pendingRole = 'superadmin';
     err.textContent = '';
     document.getElementById('phase-password').style.display = 'none';
     document.getElementById('phase-otp').style.display = 'block';
     generateAdminOTP();
   } else {
-    err.textContent = 'Incorrect password. Please try again.';
+    _loginFail();
+    err.textContent = _loginLocked() ? _loginLockMsg() : 'Incorrect password. Please try again.';
     document.getElementById('login-pass').value = '';
     document.getElementById('login-pass').focus();
   }
