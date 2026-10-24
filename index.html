@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- NourData v2.28 Dashboard Build - 24-Oct-2026 -->
+<!-- NourData v2.29 Dashboard Build - 24-Oct-2026 -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -1213,7 +1213,7 @@ body.dark-mode .pr-controls select, body.dark-mode .pr-controls input[type=text]
   <aside id="sidebar">
     <div id="sb-header">
       <img src="https://nour292.github.io/Nourdata/nour_energy_logo.png" alt="Logo" id="sb-logo">
-      <div id="sb-title">Nour Energy<small>HR System</small><small style="font-size:10px;opacity:0.55;">v2.28</small></div>
+      <div id="sb-title">Nour Energy<small>HR System</small><small style="font-size:10px;opacity:0.55;">v2.29</small></div>
       <button id="sb-toggle" onclick="toggleSidebar()" title="Toggle Sidebar">&#9776;</button>
     </div>
 
@@ -4237,15 +4237,32 @@ async function loadPrComparison() {
 function exportCompExcel() {
   const tbl = document.querySelector('#pr-comp-result table');
   if (!tbl) return;
+  const clone = tbl.cloneNode(true);
+  clone.querySelectorAll('th').forEach(th => {
+    const bg = th.style.background || th.style.backgroundColor || '';
+    const m = bg.match(/\d+/g);
+    if (m && m.length >= 3) {
+      const [r,g,b] = m.map(Number);
+      const lr = Math.round(r + (255-r)*0.72);
+      const lg = Math.round(g + (255-g)*0.72);
+      const lb = Math.round(b + (255-b)*0.72);
+      th.style.background = 'rgb('+lr+','+lg+','+lb+')';
+    } else {
+      th.style.background = '#e8f0f8';
+    }
+    th.style.color = '#1a1a1a';
+    th.style.borderLeft = '1px solid #bbb';
+    th.style.borderRight = '1px solid #bbb';
+  });
   const xStyle = '<style>table{border-collapse:collapse;font-family:Calibri,sans-serif;font-size:11pt;}' +
-    'th{font-weight:bold;padding:5px 8px;border:1px solid #999;-webkit-print-color-adjust:exact;}' +
+    'th{font-weight:bold;padding:5px 8px;border:1px solid #bbb;-webkit-print-color-adjust:exact;}' +
     'td{padding:5px 8px;border:1px solid #ddd;}</style>';
   const html = '<html xmlns:o="urn:schemas-microsoft-com:office:office" ' +
     'xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">' +
     '<head><meta charset="UTF-8"><!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets>' +
     '<x:ExcelWorksheet><x:Name>Monthly Comparison<\/x:Name><x:WorksheetOptions><x:DisplayGridlines\/>' +
     '<\/x:WorksheetOptions><\/x:ExcelWorksheet><\/x:ExcelWorksheets><\/x:ExcelWorkbook><\/xml><![endif]-->' +
-    xStyle + '<\/head><body>' + tbl.outerHTML + '<\/body><\/html>';
+    xStyle + '<\/head><body>' + clone.outerHTML + '<\/body><\/html>';
   const blob = new Blob(['﻿' + html], {type:'application/vnd.ms-excel;charset=utf-8'});
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
