@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- NourData v2.59 Dashboard Build - 25-Oct-2026 -->
+<!-- NourData v2.60 Dashboard Build - 25-Oct-2026 -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -1305,7 +1305,7 @@ body.dark-mode .hstat-lbl { color: #8a9aaa; }
   <aside id="sidebar">
     <div id="sb-header">
       <img src="https://nour292.github.io/Nourdata/nour_energy_logo.png" alt="Logo" id="sb-logo">
-      <div id="sb-title" onclick="sidebarNav('home')" style="cursor:pointer;" title="Go to Home">Nour Energy<small>HR System</small><small style="font-size:10px;opacity:0.55;">v2.59</small></div>
+      <div id="sb-title" onclick="sidebarNav('home')" style="cursor:pointer;" title="Go to Home">Nour Energy<small>HR System</small><small style="font-size:10px;opacity:0.55;">v2.60</small></div>
       <button id="sb-toggle" onclick="toggleSidebar()" title="Toggle Sidebar">&#9776;</button>
     </div>
 
@@ -4175,10 +4175,12 @@ function sidebarNav(section) {
     document.querySelectorAll('.sb-item,.sb-group-hdr').forEach(b => b.classList.remove('active'));
     document.getElementById('snav-home').classList.add('active');
     document.getElementById('card-area').innerHTML = '';
+    document.getElementById('card-area').style.display = 'none';
     return;
   } else if (section === 'search') {
     expandEmpGroup();
     document.getElementById('inline-search-panel').style.display = 'none';
+    document.getElementById('card-area').style.display = '';
     setTimeout(() => document.getElementById('employeeNumber').focus(), 50);
   } else if (section === 'deepsearch') {
     expandEmpGroup();
