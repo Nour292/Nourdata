@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- NourData v2.35 Dashboard Build - 24-Oct-2026 -->
+<!-- NourData v2.36 Dashboard Build - 24-Oct-2026 -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -1094,11 +1094,11 @@ body.dark-mode .pr-controls select, body.dark-mode .pr-controls input[type=text]
 .hist-col-hdr .hist-col-toggle { font-size:11px; opacity:0.75; margin-left:8px; }
 .hist-col-btns button { padding:3px 12px; font-size:12px; border:1px solid rgba(255,255,255,0.35); border-radius:4px; background:rgba(255,255,255,0.15); color:#fff; cursor:pointer; font-family:'Calibri',sans-serif; }
 .hist-col-btns button:hover { background:rgba(255,255,255,0.3); }
-#hist-col-picks { display:grid; grid-template-columns:repeat(auto-fill,minmax(120px,1fr)); gap:7px 12px; padding:10px 14px; }
-#hist-col-picks label { font-size:13px; color:#333; cursor:pointer; display:flex; align-items:center; gap:5px; white-space:nowrap; }
+#hist-col-picks, #monthly-col-picks { display:grid; grid-template-columns:repeat(auto-fill,minmax(120px,1fr)); gap:7px 12px; padding:10px 14px; }
+#hist-col-picks label, #monthly-col-picks label { font-size:13px; color:#333; cursor:pointer; display:flex; align-items:center; gap:5px; white-space:nowrap; }
 body.dark-mode .hist-col-panel { background:#1a2a3a; border-color:#2a4a6a; }
 body.dark-mode .hist-col-hdr { background:#16213e; }
-body.dark-mode #hist-col-picks label { color:#ccc; }
+body.dark-mode #hist-col-picks label, body.dark-mode #monthly-col-picks label { color:#ccc; }
 #sl-col-picks { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 8px 10px; }
 #sl-col-picks label { font-size: 13px; color: #333; cursor: pointer; display: flex; align-items: center; gap: 5px; white-space: nowrap; }
 #sl-filter-actions { display: flex; gap: 12px; margin-top: 14px; }
@@ -1226,7 +1226,7 @@ body.dark-mode #hist-col-picks label { color:#ccc; }
   <aside id="sidebar">
     <div id="sb-header">
       <img src="https://nour292.github.io/Nourdata/nour_energy_logo.png" alt="Logo" id="sb-logo">
-      <div id="sb-title">Nour Energy<small>HR System</small><small style="font-size:10px;opacity:0.55;">v2.35</small></div>
+      <div id="sb-title">Nour Energy<small>HR System</small><small style="font-size:10px;opacity:0.55;">v2.36</small></div>
       <button id="sb-toggle" onclick="toggleSidebar()" title="Toggle Sidebar">&#9776;</button>
     </div>
 
@@ -1700,6 +1700,39 @@ body.dark-mode #hist-col-picks label { color:#ccc; }
             <button class="pr-export-btn pr-export-print" onclick="printMonthlyTable()">&#128438; Print</button>
             <button class="pr-export-btn pr-export-pdf"   onclick="exportMonthlyPDF()">&#128196; PDF</button>
             <button class="pr-export-btn" style="background:#78909c;color:#fff;" onclick="clearMonthlyTable()">&#10005; Clear</button>
+          </div>
+        </div>
+        <div class="hist-col-panel">
+          <div class="hist-col-hdr" onclick="this.nextElementSibling.style.display=this.nextElementSibling.style.display==='none'?'':'none';this.querySelector('.hist-col-toggle').textContent=this.nextElementSibling.style.display===''?'&#9650;':'&#9660;'">
+            <span>&#128065; Columns to Show</span>
+            <span style="display:flex;align-items:center;gap:8px;">
+              <span class="hist-col-btns">
+                <button onclick="event.stopPropagation();setAllMonthlyCols(true)">&#9989; Select All</button>
+                <button onclick="event.stopPropagation();setAllMonthlyCols(false)">&#9634; Clear All</button>
+              </span>
+              <span class="hist-col-toggle">&#9650;</span>
+            </span>
+          </div>
+          <div id="monthly-col-picks">
+            <label><input type="checkbox" data-col="0"  checked onchange="applyMonthlyColVis()"> Emp</label>
+            <label><input type="checkbox" data-col="1"  checked onchange="applyMonthlyColVis()"> Name</label>
+            <label><input type="checkbox" data-col="2"  checked onchange="applyMonthlyColVis()"> Month</label>
+            <label><input type="checkbox" data-col="3"  checked onchange="applyMonthlyColVis()"> Year</label>
+            <label><input type="checkbox" data-col="4"         onchange="applyMonthlyColVis()"> Basic</label>
+            <label><input type="checkbox" data-col="5"         onchange="applyMonthlyColVis()"> Food</label>
+            <label><input type="checkbox" data-col="6"         onchange="applyMonthlyColVis()"> Other</label>
+            <label><input type="checkbox" data-col="7"         onchange="applyMonthlyColVis()"> Transport</label>
+            <label><input type="checkbox" data-col="8"         onchange="applyMonthlyColVis()"> Housing</label>
+            <label><input type="checkbox" data-col="9"         onchange="applyMonthlyColVis()"> Misc</label>
+            <label><input type="checkbox" data-col="10" checked onchange="applyMonthlyColVis()"> Normal Hrs</label>
+            <label><input type="checkbox" data-col="11" checked onchange="applyMonthlyColVis()"> OT Hours</label>
+            <label><input type="checkbox" data-col="12" checked onchange="applyMonthlyColVis()"> Total Salary</label>
+            <label><input type="checkbox" data-col="13" checked onchange="applyMonthlyColVis()"> OT Amount</label>
+            <label><input type="checkbox" data-col="14" checked onchange="applyMonthlyColVis()"> Mobile</label>
+            <label><input type="checkbox" data-col="15" checked onchange="applyMonthlyColVis()"> Total Pay</label>
+            <label><input type="checkbox" data-col="16" checked onchange="applyMonthlyColVis()"> Loans</label>
+            <label><input type="checkbox" data-col="17" checked onchange="applyMonthlyColVis()"> GOSI</label>
+            <label><input type="checkbox" data-col="18" checked onchange="applyMonthlyColVis()"> Net Pay</label>
           </div>
         </div>
         <div id="pr-monthly-result"><p class="pr-msg">Select month and year then click Load.</p></div>
@@ -4123,6 +4156,7 @@ async function loadMonthlyPayroll() {
   const filtered = data.filter(r => String(r[2]).trim().toLowerCase().slice(0,3) === month.toLowerCase().slice(0,3) && String(r[3]).trim() === String(year));
   cnt.textContent = filtered.length ? `${filtered.length} employees` : 'No records';
   res.innerHTML   = _buildPrTable(filtered);
+  applyMonthlyColVis();
 }
 
 async function loadEmpHistory() {
@@ -4548,6 +4582,7 @@ function clearMonthlyTable() {
   if (res) res.innerHTML = '<p class="pr-msg">Select month and year then click Load.</p>';
   if (cnt) cnt.textContent = '';
   if (fi)  fi.value = '';
+  setAllMonthlyCols(true);
 }
 
 function exportMonthlyExcel() {
@@ -4620,6 +4655,29 @@ function printMonthlyTable() {
 }
 
 function exportMonthlyPDF() { printMonthlyTable(); }
+
+function applyMonthlyColVis() {
+  const res = document.getElementById('pr-monthly-result');
+  if (!res) return;
+  const tbl = res.querySelector('table');
+  if (!tbl) return;
+  PR_COLS.forEach((c, i) => {
+    const cb = document.querySelector('#monthly-col-picks input[data-col="' + c.col + '"]');
+    const show = !cb || cb.checked;
+    const nth = i + 1;
+    const th = tbl.querySelector('thead tr th:nth-child(' + nth + ')');
+    if (th) th.style.display = show ? '' : 'none';
+    tbl.querySelectorAll('tbody tr').forEach(tr => {
+      const td = tr.querySelector('td:nth-child(' + nth + ')');
+      if (td) td.style.display = show ? '' : 'none';
+    });
+  });
+}
+
+function setAllMonthlyCols(checked) {
+  document.querySelectorAll('#monthly-col-picks input[type=checkbox]').forEach(cb => cb.checked = checked);
+  applyMonthlyColVis();
+}
 
 function switchPrTab(tab) {
   document.querySelectorAll('.pr-subtab').forEach(b => b.classList.remove('active'));
