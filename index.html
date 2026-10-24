@@ -1207,7 +1207,7 @@ body.dark-mode .pr-controls select, body.dark-mode .pr-controls input[type=text]
   <aside id="sidebar">
     <div id="sb-header">
       <img src="https://nour292.github.io/Nourdata/nour_energy_logo.png" alt="Logo" id="sb-logo">
-      <div id="sb-title">Nour Energy<small>HR System</small><small style="font-size:10px;opacity:0.55;">v2.21</small></div>
+      <div id="sb-title">Nour Energy<small>HR System</small><small style="font-size:10px;opacity:0.55;">v2.22</small></div>
       <button id="sb-toggle" onclick="toggleSidebar()" title="Toggle Sidebar">&#9776;</button>
     </div>
 
@@ -4138,11 +4138,13 @@ async function loadPrComparison() {
     const yr  = String(r[3] || '').trim();
     const key = yr + '-' + mon.toLowerCase().slice(0,3);
     if (!wanted.has(key)) return;
-    if (!map[key]) map[key] = { year:yr, month:mon, count:0, totalSal:0, otAmt:0, mobile:0, totalPay:0, loans:0, gosi:0, netPay:0 };
+    if (!map[key]) map[key] = { year:yr, month:mon, count:0, mobile:0, housing:0, misc:0, totalSal:0, otAmt:0, totalPay:0, loans:0, gosi:0, netPay:0 };
     map[key].count++;
+    map[key].mobile   += parseFloat(String(r[14]).replace(/,/g,'')) || 0;
+    map[key].housing  += parseFloat(String(r[8]).replace(/,/g,''))  || 0;
+    map[key].misc     += parseFloat(String(r[9]).replace(/,/g,''))  || 0;
     map[key].totalSal += parseFloat(String(r[12]).replace(/,/g,'')) || 0;
     map[key].otAmt    += parseFloat(String(r[13]).replace(/,/g,'')) || 0;
-    map[key].mobile   += parseFloat(String(r[14]).replace(/,/g,'')) || 0;
     map[key].totalPay += parseFloat(String(r[15]).replace(/,/g,'')) || 0;
     map[key].loans    += parseFloat(String(r[16]).replace(/,/g,'')) || 0;
     map[key].gosi     += parseFloat(String(r[17]).replace(/,/g,'')) || 0;
@@ -4162,14 +4164,16 @@ async function loadPrComparison() {
   }
 
   cnt.textContent = `${keys.length} months`;
-  let tot = { count:0, totalSal:0, otAmt:0, mobile:0, totalPay:0, loans:0, gosi:0, netPay:0 };
+  let tot = { count:0, mobile:0, housing:0, misc:0, totalSal:0, otAmt:0, totalPay:0, loans:0, gosi:0, netPay:0 };
   let rows = '';
   keys.forEach(k => {
     const m = map[k];
     tot.count    += m.count;
+    tot.mobile   += m.mobile;
+    tot.housing  += m.housing;
+    tot.misc     += m.misc;
     tot.totalSal += m.totalSal;
     tot.otAmt    += m.otAmt;
-    tot.mobile   += m.mobile;
     tot.totalPay += m.totalPay;
     tot.loans    += m.loans;
     tot.gosi     += m.gosi;
@@ -4177,9 +4181,11 @@ async function loadPrComparison() {
     rows += `<tr>
       <td>${_prMonName(m.month)} ${m.year}</td>
       <td style="text-align:center;">${m.count}</td>
+      <td>${_prFmt(m.mobile)}</td>
+      <td>${_prFmt(m.housing)}</td>
+      <td>${_prFmt(m.misc)}</td>
       <td>${_prFmt(m.totalSal)}</td>
       <td>${_prFmt(m.otAmt)}</td>
-      <td>${_prFmt(m.mobile)}</td>
       <td style="background:#DDEBF7;">${_prFmt(m.totalPay)}</td>
       <td style="background:#FFF9C4;">${_prFmt(m.loans)}</td>
       <td style="background:#FFF9C4;">${_prFmt(m.gosi)}</td>
@@ -4191,9 +4197,11 @@ async function loadPrComparison() {
     <thead><tr>
       <th style="background:#1a3a52;text-align:left;">Period</th>
       <th style="background:#1a3a52;">Employees</th>
-      <th style="background:#1b5e20;">Total Salary</th>
-      <th style="background:#1a237e;">OT Amount</th>
       <th style="background:#7b6000;">Mobile</th>
+      <th style="background:#4a148c;">Housing</th>
+      <th style="background:#4a148c;">Misc</th>
+      <th style="background:#1b5e20;">Total Salary</th>
+      <th style="background:#1a237e;">Overtime</th>
       <th style="background:#0d47a1;">Total Payable</th>
       <th style="background:#7b6000;">Loans</th>
       <th style="background:#7b6000;">GOSI</th>
