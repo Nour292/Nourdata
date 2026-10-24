@@ -1207,7 +1207,7 @@ body.dark-mode .pr-controls select, body.dark-mode .pr-controls input[type=text]
   <aside id="sidebar">
     <div id="sb-header">
       <img src="https://nour292.github.io/Nourdata/nour_energy_logo.png" alt="Logo" id="sb-logo">
-      <div id="sb-title">Nour Energy<small>HR System</small><small style="font-size:10px;opacity:0.55;">v2.22</small></div>
+      <div id="sb-title">Nour Energy<small>HR System</small><small style="font-size:10px;opacity:0.55;">v2.23</small></div>
       <button id="sb-toggle" onclick="toggleSidebar()" title="Toggle Sidebar">&#9776;</button>
     </div>
 
@@ -4179,33 +4179,33 @@ async function loadPrComparison() {
     tot.gosi     += m.gosi;
     tot.netPay   += m.netPay;
     rows += `<tr>
-      <td>${_prMonName(m.month)} ${m.year}</td>
+      <td style="font-weight:600;">${_prMonName(m.month)} ${m.year}</td>
       <td style="text-align:center;">${m.count}</td>
-      <td>${_prFmt(m.mobile)}</td>
-      <td>${_prFmt(m.housing)}</td>
-      <td>${_prFmt(m.misc)}</td>
-      <td>${_prFmt(m.totalSal)}</td>
-      <td>${_prFmt(m.otAmt)}</td>
-      <td style="background:#DDEBF7;">${_prFmt(m.totalPay)}</td>
-      <td style="background:#FFF9C4;">${_prFmt(m.loans)}</td>
-      <td style="background:#FFF9C4;">${_prFmt(m.gosi)}</td>
-      <td style="background:#E2EFDA;font-weight:700;">${_prFmt(m.netPay)}</td>
+      <td style="background:#fff8e1;">${_prFmt(m.mobile)}</td>
+      <td style="background:#ede7f6;">${_prFmt(m.housing)}</td>
+      <td style="background:#ede7f6;">${_prFmt(m.misc)}</td>
+      <td style="background:#e8f5e9;font-weight:600;">${_prFmt(m.totalSal)}</td>
+      <td style="background:#e3f2fd;">${_prFmt(m.otAmt)}</td>
+      <td style="background:#bbdefb;font-weight:700;">${_prFmt(m.totalPay)}</td>
+      <td style="background:#ffebee;color:#b71c1c;">${_prFmt(m.loans)}</td>
+      <td style="background:#ffebee;color:#b71c1c;">${_prFmt(m.gosi)}</td>
+      <td style="background:#c8e6c9;font-weight:700;color:#1b5e20;">${_prFmt(m.netPay)}</td>
     </tr>`;
   });
 
   res.innerHTML = `<div class="pr-tbl-wrap"><table class="pr-sum-tbl">
     <thead><tr>
       <th style="background:#1a3a52;text-align:left;">Period</th>
-      <th style="background:#1a3a52;">Employees</th>
-      <th style="background:#7b6000;">Mobile</th>
-      <th style="background:#4a148c;">Housing</th>
-      <th style="background:#4a148c;">Misc</th>
-      <th style="background:#1b5e20;">Total Salary</th>
-      <th style="background:#1a237e;">Overtime</th>
-      <th style="background:#0d47a1;">Total Payable</th>
-      <th style="background:#7b6000;">Loans</th>
-      <th style="background:#7b6000;">GOSI</th>
-      <th style="background:#1b5e20;">Net Pay</th>
+      <th style="background:#37474f;">Employees</th>
+      <th style="background:#f57f17;color:#fff;">Mobile</th>
+      <th style="background:#4527a0;color:#fff;">Housing</th>
+      <th style="background:#4527a0;color:#fff;">Misc</th>
+      <th style="background:#2e7d32;color:#fff;">Total Salary</th>
+      <th style="background:#1565c0;color:#fff;">Overtime</th>
+      <th style="background:#0277bd;color:#fff;border-left:3px solid #fff;">Total Payable</th>
+      <th style="background:#c62828;color:#fff;border-left:3px solid #fff;">Loans</th>
+      <th style="background:#c62828;color:#fff;">GOSI</th>
+      <th style="background:#1b5e20;color:#fff;border-left:3px solid #fff;">Net Pay</th>
     </tr></thead>
     <tbody>${rows}</tbody>
   </table></div>`;
