@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- NourData v2.58 Dashboard Build - 25-Oct-2026 -->
+<!-- NourData v2.59 Dashboard Build - 25-Oct-2026 -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -1305,7 +1305,7 @@ body.dark-mode .hstat-lbl { color: #8a9aaa; }
   <aside id="sidebar">
     <div id="sb-header">
       <img src="https://nour292.github.io/Nourdata/nour_energy_logo.png" alt="Logo" id="sb-logo">
-      <div id="sb-title" onclick="sidebarNav('home')" style="cursor:pointer;" title="Go to Home">Nour Energy<small>HR System</small><small style="font-size:10px;opacity:0.55;">v2.58</small></div>
+      <div id="sb-title" onclick="sidebarNav('home')" style="cursor:pointer;" title="Go to Home">Nour Energy<small>HR System</small><small style="font-size:10px;opacity:0.55;">v2.59</small></div>
       <button id="sb-toggle" onclick="toggleSidebar()" title="Toggle Sidebar">&#9776;</button>
     </div>
 
@@ -1683,11 +1683,6 @@ body.dark-mode .hstat-lbl { color: #8a9aaa; }
   <div id="home-landing">
     <div class="home-greeting">Welcome to Nour Energy HR System</div>
     <div class="home-subtitle">Select a module below to get started.</div>
-    <div id="home-stats-strip">
-      <div class="hstat"><span class="hstat-num" id="hs-total">—</span><span class="hstat-lbl">Total Employees</span></div>
-      <div class="hstat"><span class="hstat-num" id="hs-active" style="color:#27ae60;">—</span><span class="hstat-lbl">Active</span></div>
-      <div class="hstat"><span class="hstat-num" id="hs-ended" style="color:#c0392b;">—</span><span class="hstat-lbl">Job Ended</span></div>
-    </div>
     <div class="home-cards">
       <div class="home-card" style="background:linear-gradient(135deg,#1a3a52 0%,#2471a3 100%);" onclick="sidebarNav('search')">
         <div class="home-card-icon">&#128100;</div>
@@ -4179,16 +4174,7 @@ function sidebarNav(section) {
     headerActions.style.display  = 'none';
     document.querySelectorAll('.sb-item,.sb-group-hdr').forEach(b => b.classList.remove('active'));
     document.getElementById('snav-home').classList.add('active');
-    // Show stats if data already loaded
-    if (csvRows && csvRows.length > 1) {
-      const emp    = csvRows.slice(1).filter(r => (r[COL.empNum]||'').trim());
-      const ended  = emp.filter(r => (r[COL.jobEnded]||'').toString().trim() === '1');
-      const active = emp.length - ended.length;
-      document.getElementById('hs-total').textContent  = emp.length;
-      document.getElementById('hs-active').textContent = active;
-      document.getElementById('hs-ended').textContent  = ended.length;
-      document.getElementById('home-stats-strip').style.display = 'flex';
-    }
+    document.getElementById('card-area').innerHTML = '';
     return;
   } else if (section === 'search') {
     expandEmpGroup();
