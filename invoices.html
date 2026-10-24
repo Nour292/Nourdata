@@ -29,6 +29,7 @@ html,body{font-family:'Calibri',sans-serif;background:#f0f4f8;min-height:100vh;}
 #sb-toggle:hover{background:rgba(255,255,255,0.2);}
 #sidebar.collapsed #sb-toggle{margin-left:0;width:36px;height:36px;}
 #sb-nav{flex:1;padding:4px 0;overflow-y:auto;}
+#snav-home{order:-1;position:sticky;top:0;z-index:5;background:#1a2b3c;border-bottom:1px solid rgba(255,255,255,0.07);}
 .sb-group{border-bottom:1px solid rgba(255,255,255,0.06);}
 .sb-group-hdr{display:flex;align-items:center;gap:10px;width:100%;padding:11px 16px;background:none;border:none;color:#8fa8c0;font-size:13px;font-weight:700;cursor:pointer;text-align:left;white-space:nowrap;transition:background 0.15s,color 0.15s;}
 .sb-group-hdr:hover{background:rgba(255,255,255,0.05);color:#fff;}
@@ -284,9 +285,10 @@ body.dark-mode .sug-item:hover{background:#1a2b3c!important;}
 <aside id="sidebar">
   <div id="sb-header">
     <img src="https://nour292.github.io/Nourdata/nour_energy_logo.png" alt="Logo" id="sb-logo">
-    <div id="sb-title">Nour Energy<small>HR System &nbsp;·&nbsp; v2.5</small></div>
+    <div id="sb-title">Nour Energy<small>HR System &nbsp;·&nbsp; v2.6</small></div>
   </div>
   <nav id="sb-nav">
+    <button id="snav-home" class="sb-item" onclick="window.location.href='index.html'" style="padding:9px 16px;"><span class="sb-icon">🏠</span><span class="sb-label">Home</span></button>
 
     <!-- Submit to Account -->
     <div class="sb-group">

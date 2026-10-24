@@ -28,6 +28,7 @@ html,body{font-family:'Calibri',sans-serif;background:#f0f4f8;min-height:100vh;}
 #sb-toggle:hover{background:rgba(255,255,255,0.2);}
 #sidebar.collapsed #sb-toggle{margin-left:0;width:36px;height:36px;}
 #sb-nav{flex:1;padding:4px 0;overflow-y:auto;}
+#snav-home{order:-1;position:sticky;top:0;z-index:5;background:#1a2b3c;border-bottom:1px solid rgba(255,255,255,0.07);}
 .sb-group{border-bottom:1px solid rgba(255,255,255,0.06);}
 .sb-group-hdr{display:flex;align-items:center;gap:10px;width:100%;padding:11px 16px;background:none;border:none;color:#8fa8c0;font-size:12px;font-weight:700;cursor:pointer;text-align:left;white-space:nowrap;text-transform:uppercase;letter-spacing:0.5px;}
 .sb-group-hdr:hover{background:rgba(255,255,255,0.05);color:#fff;}
@@ -289,10 +290,11 @@ if (sessionStorage.getItem('ne_sb_collapsed') === '1') {
 <aside id="sidebar">
   <div id="sb-header">
     <img id="sb-logo" src="nour_energy_logo.png" alt="Nour Energy" onerror="this.style.display='none'">
-    <div id="sb-title">Nour Energy<small>Expense Voucher &nbsp;·&nbsp; v3.21</small></div>
+    <div id="sb-title">Nour Energy<small>Expense Voucher &nbsp;·&nbsp; v3.22</small></div>
     <button id="sb-toggle" onclick="toggleSidebar()" title="Toggle sidebar">&#9776;</button>
   </div>
   <nav id="sb-nav">
+    <button id="snav-home" class="sb-item" onclick="window.location.href='index.html'" style="padding:9px 16px;"><span class="sb-icon">🏠</span><span class="sb-label">Home</span></button>
     <!-- Expenses Vouchers -->
     <div class="sb-group">
       <button class="sb-group-hdr" onclick="toggleGroup(this)">
