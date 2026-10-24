@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- NourData v2.51 Dashboard Build - 25-Oct-2026 -->
+<!-- NourData v2.52 Dashboard Build - 25-Oct-2026 -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -1305,7 +1305,7 @@ body.dark-mode .hstat-lbl { color: #8a9aaa; }
   <aside id="sidebar">
     <div id="sb-header">
       <img src="https://nour292.github.io/Nourdata/nour_energy_logo.png" alt="Logo" id="sb-logo">
-      <div id="sb-title" onclick="sidebarNav('home')" style="cursor:pointer;" title="Go to Home">Nour Energy<small>HR System</small><small style="font-size:10px;opacity:0.55;">v2.51</small></div>
+      <div id="sb-title" onclick="sidebarNav('home')" style="cursor:pointer;" title="Go to Home">Nour Energy<small>HR System</small><small style="font-size:10px;opacity:0.55;">v2.52</small></div>
       <button id="sb-toggle" onclick="toggleSidebar()" title="Toggle Sidebar">&#9776;</button>
     </div>
 
@@ -4382,29 +4382,20 @@ function exportHistExcel() {
   const result = document.getElementById('pr-history-result');
   const tbl = result ? result.querySelector('table') : null;
   if (!tbl) return;
-  const hdr = result.querySelector('.pr-hist-hdr');
-  const empLine    = hdr ? (hdr.querySelector('.pr-hist-emp')    || {innerText:''}).innerText : '';
-  const periodLine = hdr ? (hdr.querySelector('.pr-hist-period') || {innerText:''}).innerText : '';
-  const clone = tbl.cloneNode(true);
-  clone.querySelectorAll('th').forEach(th => {
-    const m = (th.style.background||'').match(/\d+/g);
-    if (m && m.length >= 3) {
-      const [r,g,b] = m.map(Number);
-      th.style.background = 'rgb('+Math.round(r+(255-r)*.72)+','+Math.round(g+(255-g)*.72)+','+Math.round(b+(255-b)*.72)+')';
-    } else { th.style.background = '#e8f0f8'; }
-    th.style.color = '#1a1a1a'; th.style.borderColor = '#bbb';
+  const rows = [];
+  tbl.querySelectorAll('tr').forEach(tr => {
+    const cells = [];
+    tr.querySelectorAll('th,td').forEach(cell => {
+      const text = (cell.innerText||cell.textContent||'').replace(/[\r\n]+/g,' ').trim();
+      const span = parseInt(cell.getAttribute('colspan')||'1');
+      cells.push('"'+text.replace(/"/g,'""')+'"');
+      for (let i=1;i<span;i++) cells.push('""');
+    });
+    rows.push(cells.join(','));
   });
-  const hdrHtml = '<p style="font-family:Calibri;font-size:13pt;font-weight:700;color:#1a3a52;margin:0 0 2px;">' + empLine + '<\/p>' +
-    '<p style="font-family:Calibri;font-size:10pt;color:#555;margin:0 0 8px;">' + periodLine + '<\/p>';
-  const xStyle = '<style>body{font-family:Calibri,sans-serif;font-size:11pt;}table{border-collapse:collapse;}' +
-    'th{font-weight:bold;padding:5px 8px;border:1px solid #bbb;-webkit-print-color-adjust:exact;}td{padding:5px 8px;border:1px solid #ddd;}<\/style>';
-  const html = '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">' +
-    '<head><meta charset="UTF-8"><!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet><x:Name>Employee History<\/x:Name>' +
-    '<x:WorksheetOptions><x:DisplayGridlines\/><\/x:WorksheetOptions><\/x:ExcelWorksheet><\/x:ExcelWorksheets><\/x:ExcelWorkbook><\/xml><![endif]-->' +
-    xStyle + '<\/head><body>' + hdrHtml + clone.outerHTML + '<\/body><\/html>';
-  const blob = new Blob(['﻿' + html], {type:'application/vnd.ms-excel;charset=utf-8'});
+  const blob = new Blob(['﻿'+rows.join('\r\n')],{type:'text/csv;charset=utf-8'});
   const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
-  a.download = 'Employee History.xls'; a.click();
+  a.download = 'Employee History.csv'; a.click();
 }
 
 function printHistTable() {
@@ -4637,36 +4628,21 @@ function clearCompTable() {
 function exportCompExcel() {
   const tbl = document.querySelector('#pr-comp-result table');
   if (!tbl) return;
-  const clone = tbl.cloneNode(true);
-  clone.querySelectorAll('th').forEach(th => {
-    const bg = th.style.background || th.style.backgroundColor || '';
-    const m = bg.match(/\d+/g);
-    if (m && m.length >= 3) {
-      const [r,g,b] = m.map(Number);
-      const lr = Math.round(r + (255-r)*0.72);
-      const lg = Math.round(g + (255-g)*0.72);
-      const lb = Math.round(b + (255-b)*0.72);
-      th.style.background = 'rgb('+lr+','+lg+','+lb+')';
-    } else {
-      th.style.background = '#e8f0f8';
-    }
-    th.style.color = '#1a1a1a';
-    th.style.borderLeft = '1px solid #bbb';
-    th.style.borderRight = '1px solid #bbb';
+  const rows = [];
+  tbl.querySelectorAll('tr').forEach(tr => {
+    const cells = [];
+    tr.querySelectorAll('th,td').forEach(cell => {
+      const text = (cell.innerText||cell.textContent||'').replace(/[\r\n]+/g,' ').trim();
+      const span = parseInt(cell.getAttribute('colspan')||'1');
+      cells.push('"'+text.replace(/"/g,'""')+'"');
+      for (let i=1;i<span;i++) cells.push('""');
+    });
+    rows.push(cells.join(','));
   });
-  const xStyle = '<style>table{border-collapse:collapse;font-family:Calibri,sans-serif;font-size:11pt;}' +
-    'th{font-weight:bold;padding:5px 8px;border:1px solid #bbb;-webkit-print-color-adjust:exact;}' +
-    'td{padding:5px 8px;border:1px solid #ddd;}</style>';
-  const html = '<html xmlns:o="urn:schemas-microsoft-com:office:office" ' +
-    'xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">' +
-    '<head><meta charset="UTF-8"><!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets>' +
-    '<x:ExcelWorksheet><x:Name>Monthly Comparison<\/x:Name><x:WorksheetOptions><x:DisplayGridlines\/>' +
-    '<\/x:WorksheetOptions><\/x:ExcelWorksheet><\/x:ExcelWorksheets><\/x:ExcelWorkbook><\/xml><![endif]-->' +
-    xStyle + '<\/head><body>' + clone.outerHTML + '<\/body><\/html>';
-  const blob = new Blob(['﻿' + html], {type:'application/vnd.ms-excel;charset=utf-8'});
+  const blob = new Blob(['﻿'+rows.join('\r\n')],{type:'text/csv;charset=utf-8'});
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
-  a.download = 'Monthly Comparison.xls';
+  a.download = 'Monthly Comparison.csv';
   a.click();
 }
 
@@ -4734,24 +4710,20 @@ function exportMonthlyExcel() {
   const sel = document.getElementById('pr-sel-month');
   const yr  = document.getElementById('pr-sel-year');
   const label = (sel && yr) ? (sel.options[sel.selectedIndex]||{text:''}).text + ' ' + yr.value : 'Monthly Payroll';
-  const clone = tbl.cloneNode(true);
-  clone.querySelectorAll('th').forEach(th => {
-    const m = (th.style.background||'').match(/\d+/g);
-    if (m && m.length >= 3) {
-      const [r,g,b] = m.map(Number);
-      th.style.background = 'rgb('+Math.round(r+(255-r)*.72)+','+Math.round(g+(255-g)*.72)+','+Math.round(b+(255-b)*.72)+')';
-    } else { th.style.background = '#e8f0f8'; }
-    th.style.color = '#1a1a1a'; th.style.borderColor = '#bbb';
+  const rows = [];
+  tbl.querySelectorAll('tr').forEach(tr => {
+    const cells = [];
+    tr.querySelectorAll('th,td').forEach(cell => {
+      const text = (cell.innerText||cell.textContent||'').replace(/[\r\n]+/g,' ').trim();
+      const span = parseInt(cell.getAttribute('colspan')||'1');
+      cells.push('"'+text.replace(/"/g,'""')+'"');
+      for (let i=1;i<span;i++) cells.push('""');
+    });
+    rows.push(cells.join(','));
   });
-  const xStyle = '<style>body{font-family:Calibri,sans-serif;font-size:11pt;}table{border-collapse:collapse;}' +
-    'th{font-weight:bold;padding:5px 8px;border:1px solid #bbb;-webkit-print-color-adjust:exact;}td{padding:5px 8px;border:1px solid #ddd;}<\/style>';
-  const html = '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">' +
-    '<head><meta charset="UTF-8"><!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet><x:Name>Monthly Payroll<\/x:Name>' +
-    '<x:WorksheetOptions><x:DisplayGridlines\/><\/x:WorksheetOptions><\/x:ExcelWorksheet><\/x:ExcelWorksheets><\/x:ExcelWorkbook><\/xml><![endif]-->' +
-    xStyle + '<\/head><body>' + clone.outerHTML + '<\/body><\/html>';
-  const blob = new Blob(['﻿' + html], {type:'application/vnd.ms-excel;charset=utf-8'});
+  const blob = new Blob(['﻿'+rows.join('\r\n')],{type:'text/csv;charset=utf-8'});
   const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
-  a.download = label + '.xls'; a.click();
+  a.download = label + '.csv'; a.click();
 }
 
 function printMonthlyTable() {
