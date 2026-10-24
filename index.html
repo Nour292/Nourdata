@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- NourData v2.54 Dashboard Build - 25-Oct-2026 -->
+<!-- NourData v2.55 Dashboard Build - 25-Oct-2026 -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -1305,7 +1305,7 @@ body.dark-mode .hstat-lbl { color: #8a9aaa; }
   <aside id="sidebar">
     <div id="sb-header">
       <img src="https://nour292.github.io/Nourdata/nour_energy_logo.png" alt="Logo" id="sb-logo">
-      <div id="sb-title" onclick="sidebarNav('home')" style="cursor:pointer;" title="Go to Home">Nour Energy<small>HR System</small><small style="font-size:10px;opacity:0.55;">v2.54</small></div>
+      <div id="sb-title" onclick="sidebarNav('home')" style="cursor:pointer;" title="Go to Home">Nour Energy<small>HR System</small><small style="font-size:10px;opacity:0.55;">v2.55</small></div>
       <button id="sb-toggle" onclick="toggleSidebar()" title="Toggle Sidebar">&#9776;</button>
     </div>
 
@@ -4202,7 +4202,8 @@ function sidebarNav(section) {
     document.getElementById('inline-search-panel').style.display = 'none';
     searchWrapper.style.display  = 'none';
     headerActions.style.display  = 'none';
-    // pre-load data if not yet fetched
+    // activate default tab and load data; render fires when data arrives
+    switchPrTab('comparison');
     if (!_prData && !_prLoading) getPrData(null);
   } else {
     expandEmpGroup();
@@ -4277,6 +4278,13 @@ async function getPrData(statusEl) {
     _prData = rows;
     _prLoading = false;
     _prPopulateYears();
+    // Auto-render the active tab if user is already on the payroll section
+    if (document.body.classList.contains('view-payroll')) {
+      const activeTab = document.querySelector('.pr-subtab.active');
+      const tabId = activeTab ? activeTab.id.replace('pr-tab-','') : 'comparison';
+      if (tabId === 'summary') loadPrSummary();
+      else loadPrComparison();
+    }
     return _prData;
   } catch(e) {
     _prLoading = false;
