@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- NourData v2.36 Dashboard Build - 24-Oct-2026 -->
+<!-- NourData v2.37 Dashboard Build - 24-Oct-2026 -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -1215,6 +1215,27 @@ body.dark-mode #hist-col-picks label, body.dark-mode #monthly-col-picks label { 
   flex-shrink: 0;
 }
 
+/* ── Home Landing ── */
+#home-landing { display:none; padding:28px 24px; }
+.home-greeting { font-size:20px; font-weight:700; color:#1a3a52; margin-bottom:4px; }
+.home-subtitle { font-size:13px; color:#666; margin-bottom:26px; }
+body.dark-mode .home-greeting { color:#a8c8e8; }
+body.dark-mode .home-subtitle { color:#8a9aaa; }
+.home-cards { display:grid; grid-template-columns:repeat(3,1fr); gap:18px; max-width:960px; }
+.home-card {
+  border-radius:12px; padding:26px 22px 22px; cursor:pointer; color:#fff;
+  transition:transform 0.15s, box-shadow 0.15s;
+  display:flex; flex-direction:column; gap:10px; user-select:none;
+  box-shadow:0 3px 12px rgba(0,0,0,0.18);
+}
+.home-card:hover { transform:translateY(-4px); box-shadow:0 10px 28px rgba(0,0,0,0.28); }
+.home-card:active { transform:translateY(-1px); }
+.home-card-icon { font-size:34px; line-height:1; }
+.home-card-title { font-size:15px; font-weight:700; letter-spacing:0.2px; }
+.home-card-desc { font-size:11.5px; opacity:0.84; line-height:1.45; }
+@media (max-width:768px) { .home-cards { grid-template-columns:repeat(2,1fr); } }
+@media (max-width:480px) { .home-cards { grid-template-columns:1fr; } }
+
 </style>
 </head>
 <body>
@@ -1226,11 +1247,17 @@ body.dark-mode #hist-col-picks label, body.dark-mode #monthly-col-picks label { 
   <aside id="sidebar">
     <div id="sb-header">
       <img src="https://nour292.github.io/Nourdata/nour_energy_logo.png" alt="Logo" id="sb-logo">
-      <div id="sb-title">Nour Energy<small>HR System</small><small style="font-size:10px;opacity:0.55;">v2.36</small></div>
+      <div id="sb-title" onclick="sidebarNav('home')" style="cursor:pointer;" title="Go to Home">Nour Energy<small>HR System</small><small style="font-size:10px;opacity:0.55;">v2.37</small></div>
       <button id="sb-toggle" onclick="toggleSidebar()" title="Toggle Sidebar">&#9776;</button>
     </div>
 
     <nav id="sb-nav" role="navigation" aria-label="Main navigation">
+
+      <!-- ── Home ── -->
+      <button class="sb-group-hdr" id="snav-home" onclick="sidebarNav('home')" style="font-weight:700;">
+        <span class="sb-icon">🏠</span>
+        <span class="sb-label">Home</span>
+      </button>
 
       <!-- ── Employee Data Group ── -->
       <div class="sb-group" id="sb-grp-emp">
@@ -1591,6 +1618,44 @@ body.dark-mode #hist-col-picks label, body.dark-mode #monthly-col-picks label { 
   </div>
 
   <!-- Card / Output Area -->
+  <!-- Home Landing -->
+  <div id="home-landing">
+    <div class="home-greeting">Welcome to Nour Energy HR System</div>
+    <div class="home-subtitle">Select a module below to get started.</div>
+    <div class="home-cards">
+      <div class="home-card" style="background:linear-gradient(135deg,#1a3a52 0%,#2471a3 100%);" onclick="sidebarNav('search')">
+        <div class="home-card-icon">&#128100;</div>
+        <div class="home-card-title">Employee Data</div>
+        <div class="home-card-desc">Search, view and manage employee records</div>
+      </div>
+      <div class="home-card" style="background:linear-gradient(135deg,#1b5e20 0%,#2e7d32 100%);" onclick="sidebarNav('payroll')">
+        <div class="home-card-icon">&#128176;</div>
+        <div class="home-card-title">Payroll Register</div>
+        <div class="home-card-desc">Monthly payroll, comparisons and history</div>
+      </div>
+      <div class="home-card" style="background:linear-gradient(135deg,#4a148c 0%,#7b1fa2 100%);" onclick="window.location.href='tracker.html'">
+        <div class="home-card-icon">&#128203;</div>
+        <div class="home-card-title">Job Tracker</div>
+        <div class="home-card-desc">Track and manage active and completed jobs</div>
+      </div>
+      <div class="home-card" style="background:linear-gradient(135deg,#bf360c 0%,#e64a19 100%);" onclick="window.location.href='invoices.html'">
+        <div class="home-card-icon">&#129534;</div>
+        <div class="home-card-title">Submit to Account</div>
+        <div class="home-card-desc">Submit invoices and claims to accounts</div>
+      </div>
+      <div class="home-card" style="background:linear-gradient(135deg,#0d47a1 0%,#1565c0 100%);" onclick="window.location.href='eev.html'">
+        <div class="home-card-icon">&#128209;</div>
+        <div class="home-card-title">Expenses Vouchers</div>
+        <div class="home-card-desc">Review and manage expense vouchers</div>
+      </div>
+      <div class="home-card" style="background:linear-gradient(135deg,#b71c1c 0%,#c62828 100%);" onclick="window.open('https://nour292.github.io/Nourdata/update','_blank')">
+        <div class="home-card-icon">&#128221;</div>
+        <div class="home-card-title">Data Update Form</div>
+        <div class="home-card-desc">Update employee records and information</div>
+      </div>
+    </div>
+  </div>
+
   <div id="card-area"></div>
 
   <!-- ── Payroll Register Pane ── -->
@@ -1867,7 +1932,7 @@ function unlockApp() {
     if (location.hash) history.replaceState(null, '', location.pathname);
     setTimeout(() => navPayroll('comparison'), 100);
   } else {
-    sidebarNav('search');
+    sidebarNav('home');
   }
   const _unlockRole = sessionStorage.getItem('ne_role');
   if (_unlockRole === 'user') {
@@ -3952,8 +4017,11 @@ function resetDsFilter() {
 }
 
 function sidebarNav(section) {
+  // Always hide home landing unless going home
+  document.getElementById('home-landing').style.display = 'none';
+
   // Update body class for card-area visibility
-  document.body.classList.remove('view-dashboard','view-deepsearch','view-lists','view-search','view-payroll');
+  document.body.classList.remove('view-dashboard','view-deepsearch','view-lists','view-search','view-payroll','view-home');
   document.body.classList.add('view-' + section);
   // Remove payroll-active reordering when leaving payroll
   if (section !== 'payroll') {
@@ -4021,7 +4089,18 @@ function sidebarNav(section) {
   }
 
   // Route to correct panel
-  if (section === 'search') {
+  if (section === 'home') {
+    document.getElementById('home-landing').style.display = 'block';
+    document.getElementById('inline-search-panel').style.display = 'none';
+    const prPane2 = document.getElementById('ipane-payroll');
+    if (prPane2) prPane2.style.display = 'none';
+    document.getElementById('page-title').textContent = 'Home';
+    searchWrapper.style.display  = 'none';
+    headerActions.style.display  = 'none';
+    document.querySelectorAll('.sb-item,.sb-group-hdr').forEach(b => b.classList.remove('active'));
+    document.getElementById('snav-home').classList.add('active');
+    return;
+  } else if (section === 'search') {
     document.getElementById('inline-search-panel').style.display = 'none';
     setTimeout(() => document.getElementById('employeeNumber').focus(), 50);
   } else if (section === 'deepsearch') {
