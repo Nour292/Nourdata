@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- NourData v2.52 Dashboard Build - 25-Oct-2026 -->
+<!-- NourData v2.53 Dashboard Build - 25-Oct-2026 -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -1305,7 +1305,7 @@ body.dark-mode .hstat-lbl { color: #8a9aaa; }
   <aside id="sidebar">
     <div id="sb-header">
       <img src="https://nour292.github.io/Nourdata/nour_energy_logo.png" alt="Logo" id="sb-logo">
-      <div id="sb-title" onclick="sidebarNav('home')" style="cursor:pointer;" title="Go to Home">Nour Energy<small>HR System</small><small style="font-size:10px;opacity:0.55;">v2.52</small></div>
+      <div id="sb-title" onclick="sidebarNav('home')" style="cursor:pointer;" title="Go to Home">Nour Energy<small>HR System</small><small style="font-size:10px;opacity:0.55;">v2.53</small></div>
       <button id="sb-toggle" onclick="toggleSidebar()" title="Toggle Sidebar">&#9776;</button>
     </div>
 
@@ -4378,24 +4378,68 @@ function clearHistTable() {
   setAllHistCols(true);
 }
 
-function exportHistExcel() {
-  const result = document.getElementById('pr-history-result');
-  const tbl = result ? result.querySelector('table') : null;
-  if (!tbl) return;
+function _prHex(str) {
+  if (!str) return '';
+  const m = str.match(/rgb\((\d+),\s*(\d+),\s*(\d+)\)/i);
+  if (m) return '#' + [m[1],m[2],m[3]].map(n => ('0'+parseInt(n).toString(16)).slice(-2)).join('').toUpperCase();
+  if (/^#[0-9a-f]{3,8}$/i.test(str)) return str.replace(/^#([0-9a-f]{3})$/i,(_,c)=>'#'+c[0]+c[0]+c[1]+c[1]+c[2]+c[2]).toUpperCase();
+  return '';
+}
+function prExportXLS(tbl, sheetName, fileName) {
+  const styleMap = new Map(); let sIdx = 1;
+  function sid(bg, fg, bold, align) {
+    const k = bg+'|'+fg+'|'+bold+'|'+align;
+    if (!styleMap.has(k)) styleMap.set(k, 'S'+sIdx++);
+    return styleMap.get(k);
+  }
   const rows = [];
   tbl.querySelectorAll('tr').forEach(tr => {
     const cells = [];
     tr.querySelectorAll('th,td').forEach(cell => {
-      const text = (cell.innerText||cell.textContent||'').replace(/[\r\n]+/g,' ').trim();
+      const isH = cell.tagName === 'TH';
       const span = parseInt(cell.getAttribute('colspan')||'1');
-      cells.push('"'+text.replace(/"/g,'""')+'"');
-      for (let i=1;i<span;i++) cells.push('""');
+      const bg = _prHex(cell.style.background || cell.style.backgroundColor || '');
+      const fg = _prHex(cell.style.color || '') || (isH ? '#FFFFFF' : '#222222');
+      const text = (cell.innerText||'').replace(/\s+/g,' ').trim();
+      const bold = isH ? 1 : 0;
+      const align = isH ? 'Center' : (/^-?[\d,]+(\.\d+)?$/.test(text.replace(/,/g,'')) ? 'Right' : 'Left');
+      cells.push({ text, span, styleId: sid(bg,fg,bold,align), bg, fg, bold, align,
+        isNum: !isH && /^-?[\d,]+(\.\d+)?$/.test(text.replace(/,/g,'')) });
     });
-    rows.push(cells.join(','));
+    rows.push(cells);
   });
-  const blob = new Blob(['﻿'+rows.join('\r\n')],{type:'text/csv;charset=utf-8'});
-  const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
-  a.download = 'Employee History.csv'; a.click();
+  let sXML = '<Styles><Style ss:ID="Default"><Font ss:FontName="Calibri" ss:Size="11"/><Alignment ss:WrapText="0"/></Style>';
+  styleMap.forEach((id, k) => {
+    const [bg,fg,bold,align] = k.split('|');
+    sXML += '<Style ss:ID="'+id+'"><Font ss:FontName="Calibri" ss:Size="11" ss:Bold="'+bold+'" ss:Color="'+fg+'"/>' +
+      '<Alignment ss:Horizontal="'+align+'" ss:Vertical="Center"/>' +
+      (bg ? '<Interior ss:Color="'+bg+'" ss:Pattern="Solid"/>' : '') +
+      '<Borders><Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#DDDDDD"/>' +
+      '<Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#DDDDDD"/>' +
+      '<Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#DDDDDD"/></Borders></Style>';
+  });
+  sXML += '</Styles>';
+  let tXML = '<Worksheet ss:Name="'+sheetName.replace(/&/g,'&amp;')+'"><Table>';
+  rows.forEach(row => {
+    tXML += '<Row>';
+    row.forEach(c => {
+      const mg = c.span > 1 ? ' ss:MergeAcross="'+(c.span-1)+'"' : '';
+      const esc = c.text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+      tXML += '<Cell'+mg+' ss:StyleID="'+c.styleId+'"><Data ss:Type="'+(c.isNum?'Number':'String')+'">'+(c.isNum?parseFloat(c.text.replace(/,/g,'')):esc)+'</Data></Cell>';
+    });
+    tXML += '</Row>';
+  });
+  tXML += '</Table></Worksheet>';
+  const xml = '<?xml version="1.0" encoding="UTF-8"?>\n<?mso-application progid="Excel.Sheet"?>\n' +
+    '<Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet" xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet" xmlns:x="urn:schemas-microsoft-com:office:excel">'+sXML+tXML+'</Workbook>';
+  const blob = new Blob(['﻿'+xml],{type:'application/vnd.ms-excel;charset=utf-8'});
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = fileName; a.click();
+}
+function exportHistExcel() {
+  const result = document.getElementById('pr-history-result');
+  const tbl = result ? result.querySelector('table') : null;
+  if (!tbl) return;
+  prExportXLS(tbl, 'Employee History', 'Employee History.xls');
 }
 
 function printHistTable() {
@@ -4628,22 +4672,7 @@ function clearCompTable() {
 function exportCompExcel() {
   const tbl = document.querySelector('#pr-comp-result table');
   if (!tbl) return;
-  const rows = [];
-  tbl.querySelectorAll('tr').forEach(tr => {
-    const cells = [];
-    tr.querySelectorAll('th,td').forEach(cell => {
-      const text = (cell.innerText||cell.textContent||'').replace(/[\r\n]+/g,' ').trim();
-      const span = parseInt(cell.getAttribute('colspan')||'1');
-      cells.push('"'+text.replace(/"/g,'""')+'"');
-      for (let i=1;i<span;i++) cells.push('""');
-    });
-    rows.push(cells.join(','));
-  });
-  const blob = new Blob(['﻿'+rows.join('\r\n')],{type:'text/csv;charset=utf-8'});
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = 'Monthly Comparison.csv';
-  a.click();
+  prExportXLS(tbl, 'Monthly Comparison', 'Monthly Comparison.xls');
 }
 
 function printCompTable() {
@@ -4710,20 +4739,7 @@ function exportMonthlyExcel() {
   const sel = document.getElementById('pr-sel-month');
   const yr  = document.getElementById('pr-sel-year');
   const label = (sel && yr) ? (sel.options[sel.selectedIndex]||{text:''}).text + ' ' + yr.value : 'Monthly Payroll';
-  const rows = [];
-  tbl.querySelectorAll('tr').forEach(tr => {
-    const cells = [];
-    tr.querySelectorAll('th,td').forEach(cell => {
-      const text = (cell.innerText||cell.textContent||'').replace(/[\r\n]+/g,' ').trim();
-      const span = parseInt(cell.getAttribute('colspan')||'1');
-      cells.push('"'+text.replace(/"/g,'""')+'"');
-      for (let i=1;i<span;i++) cells.push('""');
-    });
-    rows.push(cells.join(','));
-  });
-  const blob = new Blob(['﻿'+rows.join('\r\n')],{type:'text/csv;charset=utf-8'});
-  const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
-  a.download = label + '.csv'; a.click();
+  prExportXLS(tbl, 'Monthly Payroll', label + '.xls');
 }
 
 function printMonthlyTable() {
