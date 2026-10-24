@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- NourData v2.26 Dashboard Build - 24-Oct-2026 -->
+<!-- NourData v2.27 Dashboard Build - 24-Oct-2026 -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -1213,7 +1213,7 @@ body.dark-mode .pr-controls select, body.dark-mode .pr-controls input[type=text]
   <aside id="sidebar">
     <div id="sb-header">
       <img src="https://nour292.github.io/Nourdata/nour_energy_logo.png" alt="Logo" id="sb-logo">
-      <div id="sb-title">Nour Energy<small>HR System</small><small style="font-size:10px;opacity:0.55;">v2.26</small></div>
+      <div id="sb-title">Nour Energy<small>HR System</small><small style="font-size:10px;opacity:0.55;">v2.27</small></div>
       <button id="sb-toggle" onclick="toggleSidebar()" title="Toggle Sidebar">&#9776;</button>
     </div>
 
@@ -4255,22 +4255,26 @@ function printCompTable() {
   const tbl = result.innerHTML;
   const sel = document.getElementById('pr-comp-period');
   const period = sel ? sel.options[sel.selectedIndex].text : '';
-  const w = window.open('', '_blank', 'width=1150,height=750');
-  w.document.write('<!doctype html><html><head><title>Monthly Payroll Comparison<\/title>' +
+  const today = new Date().toLocaleDateString('en-GB');
+  const w = window.open('', '_blank', 'width=1200,height=800');
+  w.document.write('<!doctype html><html><head><title><\/title>' +
     '<style>' +
     '* { box-sizing:border-box; margin:0; padding:0; }' +
-    'body { font-family:Calibri,Arial,sans-serif; font-size:12px; padding:18px; color:#222; }' +
-    'h2 { font-size:15px; color:#1a3a52; margin-bottom:3px; }' +
-    '.meta { font-size:11px; color:#666; margin-bottom:12px; }' +
-    'table { width:100%; border-collapse:collapse; }' +
-    'th { padding:6px 10px; color:#fff; font-weight:700; text-align:left; white-space:nowrap; -webkit-print-color-adjust:exact; print-color-adjust:exact; }' +
-    'td { padding:5px 10px 5px 13px; border-bottom:1px solid #e0e8f0; text-align:left; font-size:12px; }' +
+    '@page { margin:0; size:A4 landscape; }' +
+    'body { font-family:Calibri,Arial,sans-serif; font-size:11px; padding:10mm 12mm 20mm; color:#222; }' +
+    '.ph { margin-bottom:5px; }' +
+    '.ph-title { font-size:14px; font-weight:700; color:#1a3a52; }' +
+    '.ph-meta { font-size:10px; color:#666; margin-top:2px; }' +
+    '.pf { position:fixed; bottom:5mm; left:12mm; right:12mm; font-size:9px; color:#888; border-top:1px solid #ddd; padding-top:3px; display:flex; justify-content:space-between; -webkit-print-color-adjust:exact; print-color-adjust:exact; }' +
+    'table { width:100%; border-collapse:collapse; margin-top:6px; }' +
+    'th { padding:5px 8px; color:#fff; font-weight:700; text-align:left; white-space:nowrap; font-size:10px; -webkit-print-color-adjust:exact; print-color-adjust:exact; }' +
+    'td { padding:5px 8px 5px 11px; border-bottom:1px solid #e0e8f0; text-align:left; font-size:11px; }' +
     'td:nth-child(2) { text-align:center; }' +
-    '@media print { body { padding:8px; } }' +
     '<\/style><\/head><body>' +
-    '<h2>Monthly Payroll Comparison<\/h2>' +
-    '<p class="meta">Period: ' + period + ' &nbsp;|&nbsp; Generated: ' + new Date().toLocaleDateString('en-GB') + '<\/p>' +
+    '<div class="ph"><div class="ph-title">Monthly Payroll Comparison<\/div>' +
+    '<div class="ph-meta">Period: ' + period + ' &nbsp;|&nbsp; ' + today + ' &nbsp;|&nbsp; Nour Energy HR System<\/div><\/div>' +
     tbl +
+    '<div class="pf"><span>Nour Energy HR System<\/span><span>Qasim<\/span><span>' + today + '<\/span><\/div>' +
     '<script>window.onload=function(){window.print();}<\/scr' + 'ipt>' +
     '<\/body><\/html>');
   w.document.close();
