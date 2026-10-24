@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- NourData v2.38 Dashboard Build - 24-Oct-2026 -->
+<!-- NourData v2.39 Dashboard Build - 24-Oct-2026 -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -100,6 +100,7 @@ html, body { margin: 0; padding: 0; font-family: 'Calibri', sans-serif; backgrou
 }
 #sb-nav.payroll-active #sb-grp-emp { order: 1; }
 #sb-nav.payroll-active .sb-group:not(#sb-grp-emp):not(.payroll-tab) { order: 2; }
+#snav-home { order: -1; position: sticky; top: 0; z-index: 5; background: #1a2b3c; border-bottom: 1px solid rgba(255,255,255,0.07); }
 .sb-item {
   display: flex;
   align-items: center;
@@ -1247,7 +1248,7 @@ body.dark-mode .home-subtitle { color:#8a9aaa; }
   <aside id="sidebar">
     <div id="sb-header">
       <img src="https://nour292.github.io/Nourdata/nour_energy_logo.png" alt="Logo" id="sb-logo">
-      <div id="sb-title" onclick="sidebarNav('home')" style="cursor:pointer;" title="Go to Home">Nour Energy<small>HR System</small><small style="font-size:10px;opacity:0.55;">v2.38</small></div>
+      <div id="sb-title" onclick="sidebarNav('home')" style="cursor:pointer;" title="Go to Home">Nour Energy<small>HR System</small><small style="font-size:10px;opacity:0.55;">v2.39</small></div>
       <button id="sb-toggle" onclick="toggleSidebar()" title="Toggle Sidebar">&#9776;</button>
     </div>
 
