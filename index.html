@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- NourData v2.56 Dashboard Build - 25-Oct-2026 -->
+<!-- NourData v2.57 Dashboard Build - 25-Oct-2026 -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -1305,7 +1305,7 @@ body.dark-mode .hstat-lbl { color: #8a9aaa; }
   <aside id="sidebar">
     <div id="sb-header">
       <img src="https://nour292.github.io/Nourdata/nour_energy_logo.png" alt="Logo" id="sb-logo">
-      <div id="sb-title" onclick="sidebarNav('home')" style="cursor:pointer;" title="Go to Home">Nour Energy<small>HR System</small><small style="font-size:10px;opacity:0.55;">v2.56</small></div>
+      <div id="sb-title" onclick="sidebarNav('home')" style="cursor:pointer;" title="Go to Home">Nour Energy<small>HR System</small><small style="font-size:10px;opacity:0.55;">v2.57</small></div>
       <button id="sb-toggle" onclick="toggleSidebar()" title="Toggle Sidebar">&#9776;</button>
     </div>
 
@@ -4473,17 +4473,21 @@ function exportHistExcel() {
   const result = document.getElementById('pr-history-result');
   const tbl = result ? result.querySelector('table') : null;
   if (!tbl) return;
-  prExportXLS(tbl, 'Employee History', 'Employee History.xls');
+  const empNum = (document.getElementById('pr-emp-input')||{}).value || '';
+  const fname = (empNum ? empNum + ' - ' : '') + 'Employee History.xls';
+  prExportXLS(tbl, 'Employee History', fname);
 }
 
 function printHistTable() {
   const result = document.getElementById('pr-history-result');
   if (!result) return;
+  const empNum = (document.getElementById('pr-emp-input')||{}).value || '';
+  const pageTitle = (empNum ? empNum + ' - ' : '') + 'Employee History';
   const today = new Date().toLocaleDateString('en-GB');
   const w = window.open('', '_blank', 'width=1200,height=800');
   if (!w) { alert('Please allow popups for this site to print.'); return; }
   w.document.write(
-    '<!doctype html><html><head><title>Employee History<\/title>' +
+    '<!doctype html><html><head><title>' + pageTitle + '<\/title>' +
     '<style>@page{margin:10mm 12mm 20mm;size:A4 portrait;}' +
     '*{box-sizing:border-box;margin:0;padding:0;}' +
     'body{font-family:Calibri,Arial,sans-serif;font-size:11px;color:#222;margin-bottom:22mm;}' +
