@@ -4412,6 +4412,7 @@ function printHistTable() {
   if (!result) return;
   const today = new Date().toLocaleDateString('en-GB');
   const w = window.open('', '_blank', 'width=1200,height=800');
+  if (!w) { alert('Please allow popups for this site to print.'); return; }
   w.document.write(
     '<!doctype html><html><head><title>Employee History<\/title>' +
     '<style>@page{margin:10mm 12mm 20mm;size:A4 portrait;}' +
@@ -4677,6 +4678,7 @@ function printCompTable() {
   const period = sel ? sel.options[sel.selectedIndex].text : '';
   const today = new Date().toLocaleDateString('en-GB');
   const w = window.open('', '_blank', 'width=1200,height=800');
+  if (!w) { alert('Please allow popups for this site to print.'); return; }
   w.document.write(
     '<!doctype html><html><head><title>Monthly Comparison<\/title>' +
     '<style>@page{margin:10mm 12mm 20mm;size:A4 portrait;}' +
@@ -4760,6 +4762,7 @@ function printMonthlyTable() {
   const label = (sel && yr) ? (sel.options[sel.selectedIndex]||{text:''}).text + ' ' + yr.value : '';
   const today = new Date().toLocaleDateString('en-GB');
   const w = window.open('', '_blank', 'width=1200,height=800');
+  if (!w) { alert('Please allow popups for this site to print.'); return; }
   w.document.write(
     '<!doctype html><html><head><title>Monthly Payroll<\/title>' +
     '<style>@page{margin:10mm 12mm 20mm;size:A4 portrait;}' +
