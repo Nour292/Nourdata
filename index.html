@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- NourData v2.40 Dashboard Build - 24-Oct-2026 -->
+<!-- NourData v2.41 Dashboard Build - 24-Oct-2026 -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -571,6 +571,9 @@ body.user-mode #snav-deepsearch,
 body.user-mode #snav-lists,
 body.user-mode #filterButton { display: none !important; }
 body.user-mode .admin-only { display: none !important; }
+body.user-mode #home-card-payroll,
+body.user-mode #home-card-invoices,
+body.user-mode #home-card-eev { display: none !important; }
 body.admin-mode .admin-only { display: none !important; }
 body.viewer-mode #snav-add,
 body.viewer-mode #dataFormButton { display: none !important; }
@@ -1248,7 +1251,7 @@ body.dark-mode .home-subtitle { color:#8a9aaa; }
   <aside id="sidebar">
     <div id="sb-header">
       <img src="https://nour292.github.io/Nourdata/nour_energy_logo.png" alt="Logo" id="sb-logo">
-      <div id="sb-title" onclick="sidebarNav('home')" style="cursor:pointer;" title="Go to Home">Nour Energy<small>HR System</small><small style="font-size:10px;opacity:0.55;">v2.40</small></div>
+      <div id="sb-title" onclick="sidebarNav('home')" style="cursor:pointer;" title="Go to Home">Nour Energy<small>HR System</small><small style="font-size:10px;opacity:0.55;">v2.41</small></div>
       <button id="sb-toggle" onclick="toggleSidebar()" title="Toggle Sidebar">&#9776;</button>
     </div>
 
@@ -1629,7 +1632,7 @@ body.dark-mode .home-subtitle { color:#8a9aaa; }
         <div class="home-card-title">Employee Data</div>
         <div class="home-card-desc">Search, view and manage employee records</div>
       </div>
-      <div class="home-card" style="background:linear-gradient(135deg,#1b5e20 0%,#2e7d32 100%);" onclick="navPayroll('comparison')">
+      <div id="home-card-payroll" class="home-card" style="background:linear-gradient(135deg,#1b5e20 0%,#2e7d32 100%);" onclick="navPayroll('comparison')">
         <div class="home-card-icon">&#128176;</div>
         <div class="home-card-title">Payroll Register</div>
         <div class="home-card-desc">Monthly payroll, comparisons and history</div>
@@ -1639,12 +1642,12 @@ body.dark-mode .home-subtitle { color:#8a9aaa; }
         <div class="home-card-title">Job Tracker</div>
         <div class="home-card-desc">Track and manage active and completed jobs</div>
       </div>
-      <div class="home-card" style="background:linear-gradient(135deg,#bf360c 0%,#e64a19 100%);" onclick="window.location.href='invoices.html'">
+      <div id="home-card-invoices" class="home-card" style="background:linear-gradient(135deg,#bf360c 0%,#e64a19 100%);" onclick="window.location.href='invoices.html'">
         <div class="home-card-icon">&#129534;</div>
         <div class="home-card-title">Submit to Account</div>
         <div class="home-card-desc">Submit invoices and claims to accounts</div>
       </div>
-      <div class="home-card" style="background:linear-gradient(135deg,#0d47a1 0%,#1565c0 100%);" onclick="window.location.href='eev.html'">
+      <div id="home-card-eev" class="home-card" style="background:linear-gradient(135deg,#0d47a1 0%,#1565c0 100%);" onclick="window.location.href='eev.html'">
         <div class="home-card-icon">&#128209;</div>
         <div class="home-card-title">Expenses Vouchers</div>
         <div class="home-card-desc">Review and manage expense vouchers</div>
@@ -4938,7 +4941,8 @@ function doLogin() {
   const err  = document.getElementById('login-error');
   if (pass === '4190') {
     sessionStorage.setItem('ne_role', 'user');
-    window.location.href = 'tracker.html';
+    document.getElementById('login-overlay').style.display = 'none';
+    unlockApp();
   } else if (pass === '108624') {
     sessionStorage.setItem('ne_role', 'viewer');
     document.getElementById('login-overlay').style.display = 'none';
