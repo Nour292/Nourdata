@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- NourData v2.37 Dashboard Build - 24-Oct-2026 -->
+<!-- NourData v2.38 Dashboard Build - 24-Oct-2026 -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -1247,7 +1247,7 @@ body.dark-mode .home-subtitle { color:#8a9aaa; }
   <aside id="sidebar">
     <div id="sb-header">
       <img src="https://nour292.github.io/Nourdata/nour_energy_logo.png" alt="Logo" id="sb-logo">
-      <div id="sb-title" onclick="sidebarNav('home')" style="cursor:pointer;" title="Go to Home">Nour Energy<small>HR System</small><small style="font-size:10px;opacity:0.55;">v2.37</small></div>
+      <div id="sb-title" onclick="sidebarNav('home')" style="cursor:pointer;" title="Go to Home">Nour Energy<small>HR System</small><small style="font-size:10px;opacity:0.55;">v2.38</small></div>
       <button id="sb-toggle" onclick="toggleSidebar()" title="Toggle Sidebar">&#9776;</button>
     </div>
 
@@ -1628,7 +1628,7 @@ body.dark-mode .home-subtitle { color:#8a9aaa; }
         <div class="home-card-title">Employee Data</div>
         <div class="home-card-desc">Search, view and manage employee records</div>
       </div>
-      <div class="home-card" style="background:linear-gradient(135deg,#1b5e20 0%,#2e7d32 100%);" onclick="sidebarNav('payroll')">
+      <div class="home-card" style="background:linear-gradient(135deg,#1b5e20 0%,#2e7d32 100%);" onclick="navPayroll('comparison')">
         <div class="home-card-icon">&#128176;</div>
         <div class="home-card-title">Payroll Register</div>
         <div class="home-card-desc">Monthly payroll, comparisons and history</div>
@@ -4090,6 +4090,7 @@ function sidebarNav(section) {
 
   // Route to correct panel
   if (section === 'home') {
+    collapseAllGroups();
     document.getElementById('home-landing').style.display = 'block';
     document.getElementById('inline-search-panel').style.display = 'none';
     const prPane2 = document.getElementById('ipane-payroll');
@@ -4101,9 +4102,11 @@ function sidebarNav(section) {
     document.getElementById('snav-home').classList.add('active');
     return;
   } else if (section === 'search') {
+    expandEmpGroup();
     document.getElementById('inline-search-panel').style.display = 'none';
     setTimeout(() => document.getElementById('employeeNumber').focus(), 50);
   } else if (section === 'deepsearch') {
+    expandEmpGroup();
     switchToTab('deepsearch');
     setTimeout(() => document.getElementById('employeeNumber').focus(), 50);
   } else if (section === 'payroll') {
@@ -4113,6 +4116,7 @@ function sidebarNav(section) {
     // pre-load data if not yet fetched
     if (!_prData && !_prLoading) getPrData(null);
   } else {
+    expandEmpGroup();
     switchToTab(section === 'dashboard' ? 'dashboard' : 'lists');
   }
 }
@@ -4800,11 +4804,28 @@ function collapseEmpGroup() {
   const el = document.getElementById('grp-emp');
   const arrow = document.getElementById('arrow-grp-emp');
   const hdr = document.getElementById('btn-grp-emp');
-  if (el && el.style.display !== 'none') {
-    el.style.display = 'none';
-    if (arrow) arrow.textContent = '▸';
-    if (hdr) hdr.classList.remove('active-group');
-  }
+  if (el) { el.style.display = 'none'; }
+  if (arrow) arrow.textContent = '▸';
+  if (hdr) hdr.classList.remove('active-group');
+}
+
+function expandEmpGroup() {
+  const el = document.getElementById('grp-emp');
+  const arrow = document.getElementById('arrow-grp-emp');
+  const hdr = document.getElementById('btn-grp-emp');
+  if (el) el.style.display = 'block';
+  if (arrow) arrow.textContent = '▾';
+  if (hdr) hdr.classList.add('active-group');
+}
+
+function collapseAllGroups() {
+  collapseEmpGroup();
+  const prEl    = document.getElementById('grp-payroll');
+  const prArrow = document.getElementById('arrow-grp-payroll');
+  const prBtn   = document.getElementById('btn-grp-payroll');
+  if (prEl)    prEl.style.display = 'none';
+  if (prArrow) prArrow.textContent = '▸';
+  if (prBtn)   prBtn.classList.remove('active-group');
 }
 
 function togglePayrollGroup() {
