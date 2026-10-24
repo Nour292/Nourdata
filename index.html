@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- NourData v2.34 Dashboard Build - 24-Oct-2026 -->
+<!-- NourData v2.35 Dashboard Build - 24-Oct-2026 -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -1226,7 +1226,7 @@ body.dark-mode #hist-col-picks label { color:#ccc; }
   <aside id="sidebar">
     <div id="sb-header">
       <img src="https://nour292.github.io/Nourdata/nour_energy_logo.png" alt="Logo" id="sb-logo">
-      <div id="sb-title">Nour Energy<small>HR System</small><small style="font-size:10px;opacity:0.55;">v2.34</small></div>
+      <div id="sb-title">Nour Energy<small>HR System</small><small style="font-size:10px;opacity:0.55;">v2.35</small></div>
       <button id="sb-toggle" onclick="toggleSidebar()" title="Toggle Sidebar">&#9776;</button>
     </div>
 
@@ -1656,6 +1656,12 @@ body.dark-mode #hist-col-picks label { color:#ccc; }
           <div id="hist-col-picks">
             <label><input type="checkbox" data-col="2"  checked onchange="applyHistColVis()"> Month</label>
             <label><input type="checkbox" data-col="3"  checked onchange="applyHistColVis()"> Year</label>
+            <label><input type="checkbox" data-col="4"         onchange="applyHistColVis()"> Basic</label>
+            <label><input type="checkbox" data-col="5"         onchange="applyHistColVis()"> Food</label>
+            <label><input type="checkbox" data-col="6"         onchange="applyHistColVis()"> Other</label>
+            <label><input type="checkbox" data-col="7"         onchange="applyHistColVis()"> Transport</label>
+            <label><input type="checkbox" data-col="8"         onchange="applyHistColVis()"> Housing</label>
+            <label><input type="checkbox" data-col="9"         onchange="applyHistColVis()"> Misc</label>
             <label><input type="checkbox" data-col="10" checked onchange="applyHistColVis()"> Normal Hrs</label>
             <label><input type="checkbox" data-col="11" checked onchange="applyHistColVis()"> OT Hours</label>
             <label><input type="checkbox" data-col="12" checked onchange="applyHistColVis()"> Total Salary</label>
@@ -4009,6 +4015,12 @@ const PR_COLS = [
   { label:'Name',         hdr:'#1a3a6c', cell:null,      col:1  },
   { label:'Month',        hdr:'#5d4037', cell:null,      col:2  },
   { label:'Year',         hdr:'#5d4037', cell:null,      col:3  },
+  { label:'Basic',        hdr:'#1b5e20', cell:'#E2EFDA', col:4  },
+  { label:'Food',         hdr:'#7b6000', cell:'#FFF9C4', col:5  },
+  { label:'Other',        hdr:'#546e7a', cell:null,      col:6  },
+  { label:'Transport',    hdr:'#7b6000', cell:'#FFF9C4', col:7  },
+  { label:'Housing',      hdr:'#1a5276', cell:'#EBF5FB', col:8  },
+  { label:'Misc',         hdr:'#546e7a', cell:null,      col:9  },
   { label:'Normal Hrs',   hdr:'#7b6000', cell:'#FFF9C4', col:10 },
   { label:'OT Hours',     hdr:'#7b6000', cell:'#FFF9C4', col:11 },
   { label:'Total Salary', hdr:'#1b5e20', cell:null,      col:12 },
