@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- NourData v2.31 Dashboard Build - 24-Oct-2026 -->
+<!-- NourData v2.32 Dashboard Build - 24-Oct-2026 -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -1216,7 +1216,7 @@ body.dark-mode .pr-controls select, body.dark-mode .pr-controls input[type=text]
   <aside id="sidebar">
     <div id="sb-header">
       <img src="https://nour292.github.io/Nourdata/nour_energy_logo.png" alt="Logo" id="sb-logo">
-      <div id="sb-title">Nour Energy<small>HR System</small><small style="font-size:10px;opacity:0.55;">v2.31</small></div>
+      <div id="sb-title">Nour Energy<small>HR System</small><small style="font-size:10px;opacity:0.55;">v2.32</small></div>
       <button id="sb-toggle" onclick="toggleSidebar()" title="Toggle Sidebar">&#9776;</button>
     </div>
 
@@ -1598,12 +1598,13 @@ body.dark-mode .pr-controls select, body.dark-mode .pr-controls input[type=text]
           <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
             <label>Period</label>
             <select id="pr-comp-period" onchange="loadPrComparison()">
-              <option value="6">Last 6 months</option>
-              <option value="12" selected>Last 12 months</option>
+              <option value="6" selected>Last 6 months</option>
+              <option value="12">Last 12 months</option>
               <option value="18">Last 18 months</option>
               <option value="24">Last 24 months</option>
             </select>
             <span id="pr-comp-count" class="pr-count"></span>
+            <input type="text" id="comp-filter" placeholder="&#128269; Filter rows…" oninput="filterPrTable('pr-comp-result',this.value)" style="padding:6px 10px;font-size:12px;border:1px solid #c8d8e8;border-radius:5px;width:160px;font-family:'Calibri',sans-serif;">
           </div>
           <div style="display:flex;gap:6px;align-items:center;">
             <button class="pr-export-btn pr-export-excel" onclick="exportCompExcel()">&#128202; Excel</button>
@@ -1612,7 +1613,7 @@ body.dark-mode .pr-controls select, body.dark-mode .pr-controls input[type=text]
             <button class="pr-export-btn" style="background:#78909c;color:#fff;" onclick="clearCompTable()">&#10005; Clear</button>
           </div>
         </div>
-        <div id="pr-comp-result" class="pr-tbl-wrap"><p class="pr-msg">📋 Select a period above and the table will load automatically.</p></div>
+        <div id="pr-comp-result"><p class="pr-msg">📋 Loading…</p></div>
       </div>
       <!-- Employee History -->
       <div class="pr-pane" id="pr-pane-history">
@@ -1622,6 +1623,7 @@ body.dark-mode .pr-controls select, body.dark-mode .pr-controls input[type=text]
             <input type="text" id="pr-emp-input" placeholder="Employee number" style="width:150px;" onkeydown="if(event.key==='Enter')loadEmpHistory()">
             <button class="pr-load-btn" onclick="loadEmpHistory()">&#9654; Load</button>
             <span id="pr-history-count" class="pr-count"></span>
+            <input type="text" id="hist-filter" placeholder="&#128269; Filter rows…" oninput="filterPrTable('pr-history-result',this.value)" style="padding:6px 10px;font-size:12px;border:1px solid #c8d8e8;border-radius:5px;width:160px;font-family:'Calibri',sans-serif;">
           </div>
           <div style="display:flex;gap:6px;align-items:center;">
             <button class="pr-export-btn pr-export-excel" onclick="exportHistExcel()">&#128202; Excel</button>
@@ -1634,23 +1636,32 @@ body.dark-mode .pr-controls select, body.dark-mode .pr-controls input[type=text]
       </div>
       <!-- Monthly Payroll -->
       <div class="pr-pane" id="pr-pane-monthly">
-        <div class="pr-controls">
-          <label>Month</label>
-          <select id="pr-sel-month">
-            <option value="">— Select —</option>
-            <option value="Jan">January</option><option value="Feb">February</option>
-            <option value="Mar">March</option><option value="Apr">April</option>
-            <option value="May">May</option><option value="Jun">June</option>
-            <option value="Jul">July</option><option value="Aug">August</option>
-            <option value="Sep">September</option><option value="Oct">October</option>
-            <option value="Nov">November</option><option value="Dec">December</option>
-          </select>
-          <label>Year</label>
-          <select id="pr-sel-year"><option value="">— Select —</option></select>
-          <button class="pr-load-btn" onclick="loadMonthlyPayroll()">▶ Load</button>
-          <span id="pr-monthly-count" class="pr-count"></span>
+        <div class="pr-controls" style="justify-content:space-between;">
+          <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+            <label>Month</label>
+            <select id="pr-sel-month">
+              <option value="">— Select —</option>
+              <option value="Jan">January</option><option value="Feb">February</option>
+              <option value="Mar">March</option><option value="Apr">April</option>
+              <option value="May">May</option><option value="Jun">June</option>
+              <option value="Jul">July</option><option value="Aug">August</option>
+              <option value="Sep">September</option><option value="Oct">October</option>
+              <option value="Nov">November</option><option value="Dec">December</option>
+            </select>
+            <label>Year</label>
+            <select id="pr-sel-year"><option value="">— Select —</option></select>
+            <button class="pr-load-btn" onclick="loadMonthlyPayroll()">&#9654; Load</button>
+            <span id="pr-monthly-count" class="pr-count"></span>
+            <input type="text" id="monthly-filter" placeholder="&#128269; Filter by name / emp…" oninput="filterPrTable('pr-monthly-result',this.value)" style="padding:6px 10px;font-size:12px;border:1px solid #c8d8e8;border-radius:5px;width:180px;font-family:'Calibri',sans-serif;">
+          </div>
+          <div style="display:flex;gap:6px;align-items:center;">
+            <button class="pr-export-btn pr-export-excel" onclick="exportMonthlyExcel()">&#128202; Excel</button>
+            <button class="pr-export-btn pr-export-print" onclick="printMonthlyTable()">&#128438; Print</button>
+            <button class="pr-export-btn pr-export-pdf"   onclick="exportMonthlyPDF()">&#128196; PDF</button>
+            <button class="pr-export-btn" style="background:#78909c;color:#fff;" onclick="clearMonthlyTable()">&#10005; Clear</button>
+          </div>
         </div>
-        <div id="pr-monthly-result" class="pr-tbl-wrap"><p class="pr-msg">Select month and year then click Load.</p></div>
+        <div id="pr-monthly-result"><p class="pr-msg">Select month and year then click Load.</p></div>
       </div>
       <!-- Summary -->
       <div class="pr-pane" id="pr-pane-summary">
@@ -4169,11 +4180,12 @@ function printHistTable() {
     '<div class="ctrl"><span>Orientation:<\/span>' +
     '<button id="bp" class="' + (orient==='portrait'?'on':'') + '" onclick="setOr(\'portrait\')">Portrait<\/button>' +
     '<button id="bl" class="' + (orient==='landscape'?'on':'') + '" onclick="setOr(\'landscape\')">Landscape<\/button>' +
+    '<button onclick="window.print()" style="padding:4px 18px;background:#1a3a52;color:#fff;border:none;border-radius:4px;cursor:pointer;font-size:11px;font-family:Calibri,sans-serif;">&#128438; Print Now<\/button>' +
     '<\/div>' + result.innerHTML +
     '<div class="pf"><span>Nour Energy HR System<\/span><span>Qasim<\/span><span>' + today + '<\/span><\/div>' +
     '<scr' + 'ipt>function setOr(o){document.getElementById("os").innerHTML="@page{margin:0;size:A4 "+o+";}";' +
     'document.getElementById("bp").className=o==="portrait"?"on":"";document.getElementById("bl").className=o==="landscape"?"on":"";}' +
-    'window.onload=function(){window.print();};window.addEventListener("afterprint",function(){window.close();});<\/scr' + 'ipt>' +
+    'window.addEventListener("afterprint",function(){window.close();});<\/scr' + 'ipt>' +
     '<\/body><\/html>');
   w.document.close();
 }
@@ -4422,6 +4434,7 @@ function printCompTable() {
     '<div class="ctrl"><span>Orientation:</span>' +
     '<button id="bp" class="' + (orient==='portrait'?'on':'') + '" onclick="setOr(\'portrait\')">Portrait<\/button>' +
     '<button id="bl" class="' + (orient==='landscape'?'on':'') + '" onclick="setOr(\'landscape\')">Landscape<\/button>' +
+    '<button onclick="window.print()" style="padding:4px 18px;background:#1a3a52;color:#fff;border:none;border-radius:4px;cursor:pointer;font-size:11px;font-family:Calibri,sans-serif;">&#128438; Print Now<\/button>' +
     '<\/div>' +
     '<div class="ph"><div class="ph-title">Monthly Payroll Comparison<\/div>' +
     '<div class="ph-meta">Period: ' + period + '  |  ' + today + '  |  Nour Energy HR System<\/div><\/div>' +
@@ -4433,7 +4446,6 @@ function printCompTable() {
       'document.getElementById("bp").className=o==="portrait"?"on":"";' +
       'document.getElementById("bl").className=o==="landscape"?"on":"";' +
     '}' +
-    'window.onload=function(){window.print();};' +
     'window.addEventListener("afterprint",function(){window.close();});' +
     '<\/scr' + 'ipt>' +
     '<\/body><\/html>'
@@ -4442,6 +4454,97 @@ function printCompTable() {
 }
 
 function exportCompPDF() { printCompTable(); }
+
+function filterPrTable(resultId, query) {
+  const res = document.getElementById(resultId);
+  if (!res) return;
+  const q = (query || '').trim().toLowerCase();
+  res.querySelectorAll('tbody tr').forEach(tr => {
+    if (!q) { tr.style.display = ''; return; }
+    const text = tr.innerText.toLowerCase();
+    tr.style.display = text.includes(q) ? '' : 'none';
+  });
+}
+
+function clearMonthlyTable() {
+  const res = document.getElementById('pr-monthly-result');
+  const cnt = document.getElementById('pr-monthly-count');
+  const fi  = document.getElementById('monthly-filter');
+  if (res) res.innerHTML = '<p class="pr-msg">Select month and year then click Load.</p>';
+  if (cnt) cnt.textContent = '';
+  if (fi)  fi.value = '';
+}
+
+function exportMonthlyExcel() {
+  const result = document.getElementById('pr-monthly-result');
+  const tbl = result ? result.querySelector('table') : null;
+  if (!tbl) return;
+  const sel = document.getElementById('pr-sel-month');
+  const yr  = document.getElementById('pr-sel-year');
+  const label = (sel && yr) ? (sel.options[sel.selectedIndex]||{text:''}).text + ' ' + yr.value : 'Monthly Payroll';
+  const clone = tbl.cloneNode(true);
+  clone.querySelectorAll('th').forEach(th => {
+    const m = (th.style.background||'').match(/\d+/g);
+    if (m && m.length >= 3) {
+      const [r,g,b] = m.map(Number);
+      th.style.background = 'rgb('+Math.round(r+(255-r)*.72)+','+Math.round(g+(255-g)*.72)+','+Math.round(b+(255-b)*.72)+')';
+    } else { th.style.background = '#e8f0f8'; }
+    th.style.color = '#1a1a1a'; th.style.borderColor = '#bbb';
+  });
+  const xStyle = '<style>body{font-family:Calibri,sans-serif;font-size:11pt;}table{border-collapse:collapse;}' +
+    'th{font-weight:bold;padding:5px 8px;border:1px solid #bbb;-webkit-print-color-adjust:exact;}td{padding:5px 8px;border:1px solid #ddd;}<\/style>';
+  const html = '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">' +
+    '<head><meta charset="UTF-8"><!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet><x:Name>Monthly Payroll<\/x:Name>' +
+    '<x:WorksheetOptions><x:DisplayGridlines\/><\/x:WorksheetOptions><\/x:ExcelWorksheet><\/x:ExcelWorksheets><\/x:ExcelWorkbook><\/xml><![endif]-->' +
+    xStyle + '<\/head><body>' + clone.outerHTML + '<\/body><\/html>';
+  const blob = new Blob(['﻿' + html], {type:'application/vnd.ms-excel;charset=utf-8'});
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+  a.download = label + '.xls'; a.click();
+}
+
+function printMonthlyTable() {
+  const result = document.getElementById('pr-monthly-result');
+  if (!result) return;
+  const sel = document.getElementById('pr-sel-month');
+  const yr  = document.getElementById('pr-sel-year');
+  const label = (sel && yr) ? (sel.options[sel.selectedIndex]||{text:''}).text + ' ' + yr.value : '';
+  const today = new Date().toLocaleDateString('en-GB');
+  const cols = (result.querySelector('thead tr')||{querySelectorAll:()=>[]}).querySelectorAll('th').length;
+  const orient = cols > 7 ? 'landscape' : 'portrait';
+  const w = window.open('', '_blank', 'width=1200,height=800');
+  w.document.write(
+    '<!doctype html><html><head><title>Monthly Payroll<\/title>' +
+    '<style id="os">@page{margin:0;size:A4 ' + orient + ';}<\/style>' +
+    '<style>*{box-sizing:border-box;margin:0;padding:0;}' +
+    'body{font-family:Calibri,Arial,sans-serif;font-size:11px;padding:10mm 12mm 20mm;color:#222;}' +
+    '.ctrl{display:flex;gap:8px;margin-bottom:8px;align-items:center;font-size:11px;color:#555;}' +
+    '.ctrl button{padding:4px 14px;font-size:11px;border:1px solid #bbb;border-radius:4px;cursor:pointer;background:#f5f5f5;font-family:Calibri,sans-serif;}' +
+    '.ctrl button.on{background:#1a3a52;color:#fff;border-color:#1a3a52;}' +
+    '.ph{margin-bottom:5px;}' +
+    '.ph-title{font-size:14px;font-weight:700;color:#1a3a52;}' +
+    '.ph-meta{font-size:10px;color:#666;margin-top:2px;}' +
+    '.pf{position:fixed;bottom:5mm;left:12mm;right:12mm;font-size:9px;color:#888;border-top:1px solid #ddd;padding-top:3px;display:flex;justify-content:space-between;-webkit-print-color-adjust:exact;print-color-adjust:exact;}' +
+    'table{width:100%;border-collapse:collapse;margin-top:6px;}' +
+    'th{padding:5px 8px;color:#fff;font-weight:700;text-align:left;white-space:nowrap;font-size:10px;-webkit-print-color-adjust:exact;print-color-adjust:exact;}' +
+    'td{padding:5px 8px 5px 11px;border-bottom:1px solid #e0e8f0;text-align:left;font-size:11px;}' +
+    '@media print{.ctrl{display:none!important;}}<\/style><\/head><body>' +
+    '<div class="ctrl"><span>Orientation:<\/span>' +
+    '<button id="bp" class="' + (orient==='portrait'?'on':'') + '" onclick="setOr(\'portrait\')">Portrait<\/button>' +
+    '<button id="bl" class="' + (orient==='landscape'?'on':'') + '" onclick="setOr(\'landscape\')">Landscape<\/button>' +
+    '<button onclick="window.print()" style="padding:4px 18px;background:#1a3a52;color:#fff;border:none;border-radius:4px;cursor:pointer;font-size:11px;font-family:Calibri,sans-serif;">&#128438; Print Now<\/button>' +
+    '<\/div>' +
+    '<div class="ph"><div class="ph-title">Monthly Payroll — ' + label + '<\/div>' +
+    '<div class="ph-meta">' + today + '  |  Nour Energy HR System<\/div><\/div>' +
+    result.innerHTML +
+    '<div class="pf"><span>Nour Energy HR System<\/span><span>Qasim<\/span><span>' + today + '<\/span><\/div>' +
+    '<scr' + 'ipt>function setOr(o){document.getElementById("os").innerHTML="@page{margin:0;size:A4 "+o+";}";' +
+    'document.getElementById("bp").className=o==="portrait"?"on":"";document.getElementById("bl").className=o==="landscape"?"on":"";}' +
+    'window.addEventListener("afterprint",function(){window.close();});<\/scr' + 'ipt>' +
+    '<\/body><\/html>');
+  w.document.close();
+}
+
+function exportMonthlyPDF() { printMonthlyTable(); }
 
 function switchPrTab(tab) {
   document.querySelectorAll('.pr-subtab').forEach(b => b.classList.remove('active'));
@@ -4453,7 +4556,8 @@ function switchPrTab(tab) {
   document.querySelectorAll('#grp-payroll .sb-item').forEach(b => b.classList.remove('active'));
   const sb = document.getElementById('snav-pr-' + tab);
   if (sb) sb.classList.add('active');
-  if (tab === 'summary') loadPrSummary();
+  if (tab === 'summary')    loadPrSummary();
+  if (tab === 'comparison') loadPrComparison();
 }
 
 function navPayroll(tab) {
