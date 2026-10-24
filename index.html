@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- NourData v2.39 Dashboard Build - 24-Oct-2026 -->
+<!-- NourData v2.40 Dashboard Build - 24-Oct-2026 -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -1248,7 +1248,7 @@ body.dark-mode .home-subtitle { color:#8a9aaa; }
   <aside id="sidebar">
     <div id="sb-header">
       <img src="https://nour292.github.io/Nourdata/nour_energy_logo.png" alt="Logo" id="sb-logo">
-      <div id="sb-title" onclick="sidebarNav('home')" style="cursor:pointer;" title="Go to Home">Nour Energy<small>HR System</small><small style="font-size:10px;opacity:0.55;">v2.39</small></div>
+      <div id="sb-title" onclick="sidebarNav('home')" style="cursor:pointer;" title="Go to Home">Nour Energy<small>HR System</small><small style="font-size:10px;opacity:0.55;">v2.40</small></div>
       <button id="sb-toggle" onclick="toggleSidebar()" title="Toggle Sidebar">&#9776;</button>
     </div>
 
@@ -4943,8 +4943,8 @@ function doLogin() {
     sessionStorage.setItem('ne_role', 'viewer');
     document.getElementById('login-overlay').style.display = 'none';
     unlockApp();
-  } else if (pass === 'Nour-pr' || pass === 'Nour-pprr') {
-    _pendingRole = (pass === 'Nour-pprr') ? 'superadmin' : 'admin';
+  } else if (pass === 'Nour-pprr') {
+    _pendingRole = 'superadmin';
     err.textContent = '';
     document.getElementById('phase-password').style.display = 'none';
     document.getElementById('phase-otp').style.display = 'block';

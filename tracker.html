@@ -295,7 +295,7 @@ body.dark-mode .max-emp-name{color:#e0e0e0!important;}
 <aside id="sidebar">
   <div id="sb-header">
     <img src="https://nour292.github.io/Nourdata/nour_energy_logo.png" alt="Logo" id="sb-logo">
-    <div id="sb-title">Nour Energy<small>HR System &nbsp;·&nbsp; v3.1</small></div>
+    <div id="sb-title">Nour Energy<small>HR System &nbsp;·&nbsp; v3.2</small></div>
     <button id="sb-toggle" onclick="toggleSidebar()" aria-label="Toggle sidebar">&#9776;</button>
   </div>
   <nav id="sb-nav">
@@ -1704,8 +1704,8 @@ function doLogin() {
     document.getElementById('login-overlay').style.display = 'none';
     document.body.classList.add('viewer-mode');
     loadJobs().then(() => { setView('active'); renderJobs(); });
-  } else if (pass === 'Nour-pr' || pass === 'Nour-pprr') {
-    _pendingRole = (pass === 'Nour-pprr') ? 'superadmin' : 'admin';
+  } else if (pass === 'Nour-pprr') {
+    _pendingRole = 'superadmin';
     err.textContent = '';
     document.getElementById('phase-password').style.display = 'none';
     document.getElementById('phase-otp').style.display = 'block';
