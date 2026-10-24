@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- NourData v2.41 Dashboard Build - 24-Oct-2026 -->
+<!-- NourData v2.42 Dashboard Build - 24-Oct-2026 -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -574,6 +574,9 @@ body.user-mode .admin-only { display: none !important; }
 body.user-mode #home-card-payroll,
 body.user-mode #home-card-invoices,
 body.user-mode #home-card-eev { display: none !important; }
+body.viewer-mode #home-card-invoices,
+body.viewer-mode #home-card-eev,
+body.viewer-mode #home-card-update { display: none !important; }
 body.admin-mode .admin-only { display: none !important; }
 body.viewer-mode #snav-add,
 body.viewer-mode #dataFormButton { display: none !important; }
@@ -1251,7 +1254,7 @@ body.dark-mode .home-subtitle { color:#8a9aaa; }
   <aside id="sidebar">
     <div id="sb-header">
       <img src="https://nour292.github.io/Nourdata/nour_energy_logo.png" alt="Logo" id="sb-logo">
-      <div id="sb-title" onclick="sidebarNav('home')" style="cursor:pointer;" title="Go to Home">Nour Energy<small>HR System</small><small style="font-size:10px;opacity:0.55;">v2.41</small></div>
+      <div id="sb-title" onclick="sidebarNav('home')" style="cursor:pointer;" title="Go to Home">Nour Energy<small>HR System</small><small style="font-size:10px;opacity:0.55;">v2.42</small></div>
       <button id="sb-toggle" onclick="toggleSidebar()" title="Toggle Sidebar">&#9776;</button>
     </div>
 
@@ -1652,7 +1655,7 @@ body.dark-mode .home-subtitle { color:#8a9aaa; }
         <div class="home-card-title">Expenses Vouchers</div>
         <div class="home-card-desc">Review and manage expense vouchers</div>
       </div>
-      <div class="home-card" style="background:linear-gradient(135deg,#b71c1c 0%,#c62828 100%);" onclick="window.open('https://nour292.github.io/Nourdata/update','_blank')">
+      <div id="home-card-update" class="home-card" style="background:linear-gradient(135deg,#b71c1c 0%,#c62828 100%);" onclick="window.open('https://nour292.github.io/Nourdata/update','_blank')">
         <div class="home-card-icon">&#128221;</div>
         <div class="home-card-title">Data Update Form</div>
         <div class="home-card-desc">Update employee records and information</div>
