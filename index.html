@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- NourData v2.47 Dashboard Build - 25-Oct-2026 -->
+<!-- NourData v2.48 Dashboard Build - 25-Oct-2026 -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -1243,6 +1243,56 @@ body.dark-mode .home-subtitle { color:#8a9aaa; }
 @media (max-width:768px) { .home-cards { grid-template-columns:repeat(2,1fr); } }
 @media (max-width:480px) { .home-cards { grid-template-columns:1fr; } }
 
+/* ── Mobile Sidebar Overlay ── */
+#sb-overlay {
+  display: none;
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.45);
+  z-index: 299;
+  cursor: pointer;
+}
+
+/* ── Home Stats Strip ── */
+#home-stats-strip {
+  display: none;
+  gap: 16px;
+  margin-bottom: 22px;
+  flex-wrap: wrap;
+}
+.hstat {
+  background: #fff;
+  border-radius: 10px;
+  padding: 14px 22px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+  min-width: 110px;
+}
+.hstat-num {
+  font-size: 26px;
+  font-weight: 700;
+  color: #1a5276;
+  line-height: 1;
+}
+.hstat-lbl {
+  font-size: 11px;
+  color: #888;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+body.dark-mode .hstat { background: #22223b; box-shadow: 0 2px 8px rgba(0,0,0,0.25); }
+body.dark-mode .hstat-num { color: #7fb3d3; }
+body.dark-mode .hstat-lbl { color: #8a9aaa; }
+
+/* ── Mobile table scroll ── */
+@media (max-width: 768px) {
+  #card-area { overflow-x: auto; }
+  .card { padding: 10px 14px 18px; }
+}
+
 </style>
 </head>
 <body>
@@ -1254,7 +1304,7 @@ body.dark-mode .home-subtitle { color:#8a9aaa; }
   <aside id="sidebar">
     <div id="sb-header">
       <img src="https://nour292.github.io/Nourdata/nour_energy_logo.png" alt="Logo" id="sb-logo">
-      <div id="sb-title" onclick="sidebarNav('home')" style="cursor:pointer;" title="Go to Home">Nour Energy<small>HR System</small><small style="font-size:10px;opacity:0.55;">v2.47</small></div>
+      <div id="sb-title" onclick="sidebarNav('home')" style="cursor:pointer;" title="Go to Home">Nour Energy<small>HR System</small><small style="font-size:10px;opacity:0.55;">v2.48</small></div>
       <button id="sb-toggle" onclick="toggleSidebar()" title="Toggle Sidebar">&#9776;</button>
     </div>
 
@@ -1372,12 +1422,15 @@ body.dark-mode .home-subtitle { color:#8a9aaa; }
     </div>
   </aside>
 
+  <!-- Mobile sidebar overlay -->
+  <div id="sb-overlay" onclick="closeMobileSidebar()"></div>
+
   <!-- MAIN CONTENT -->
   <div id="main-content">
 
     <!-- Top Header -->
     <div id="top-header">
-      <button id="mobile-menu-btn" aria-label="Open menu" onclick="document.getElementById('sidebar').classList.toggle('mobile-open')">&#9776;</button>
+      <button id="mobile-menu-btn" aria-label="Open menu" onclick="openMobileSidebar()">&#9776;</button>
       <h1 id="page-title">Employee Search</h1>
       <div id="search-wrapper">
         <input type="text" id="employeeNumber" placeholder="Employee Number or ID No" oninput="onLiveDeepSearch()">
@@ -1629,6 +1682,11 @@ body.dark-mode .home-subtitle { color:#8a9aaa; }
   <div id="home-landing">
     <div class="home-greeting">Welcome to Nour Energy HR System</div>
     <div class="home-subtitle">Select a module below to get started.</div>
+    <div id="home-stats-strip">
+      <div class="hstat"><span class="hstat-num" id="hs-total">—</span><span class="hstat-lbl">Total Employees</span></div>
+      <div class="hstat"><span class="hstat-num" id="hs-active" style="color:#27ae60;">—</span><span class="hstat-lbl">Active</span></div>
+      <div class="hstat"><span class="hstat-num" id="hs-ended" style="color:#c0392b;">—</span><span class="hstat-lbl">Job Ended</span></div>
+    </div>
     <div class="home-cards">
       <div class="home-card" style="background:linear-gradient(135deg,#1a3a52 0%,#2471a3 100%);" onclick="sidebarNav('search')">
         <div class="home-card-icon">&#128100;</div>
@@ -3962,6 +4020,15 @@ function toggleSidebar() {
   btn.innerHTML = sb.classList.contains('collapsed') ? '&#9776;' : '&#10005;';
 }
 
+function openMobileSidebar() {
+  document.getElementById('sidebar').classList.add('mobile-open');
+  document.getElementById('sb-overlay').style.display = 'block';
+}
+function closeMobileSidebar() {
+  document.getElementById('sidebar').classList.remove('mobile-open');
+  document.getElementById('sb-overlay').style.display = 'none';
+}
+
 function toggleFilterPanel() {
   const currentSection = document.body.className.match(/view-(\w+)/)?.[1];
   const btn = document.getElementById('filterButton');
@@ -4024,6 +4091,7 @@ function resetDsFilter() {
 }
 
 function sidebarNav(section) {
+  if (window.innerWidth <= 768) closeMobileSidebar();
   // Always hide home landing unless going home
   document.getElementById('home-landing').style.display = 'none';
 
@@ -4107,6 +4175,16 @@ function sidebarNav(section) {
     headerActions.style.display  = 'none';
     document.querySelectorAll('.sb-item,.sb-group-hdr').forEach(b => b.classList.remove('active'));
     document.getElementById('snav-home').classList.add('active');
+    // Show stats if data already loaded
+    if (csvRows && csvRows.length > 1) {
+      const emp    = csvRows.slice(1).filter(r => (r[COL.empNum]||'').trim());
+      const ended  = emp.filter(r => (r[COL.jobEnded]||'').toString().trim() === '1');
+      const active = emp.length - ended.length;
+      document.getElementById('hs-total').textContent  = emp.length;
+      document.getElementById('hs-active').textContent = active;
+      document.getElementById('hs-ended').textContent  = ended.length;
+      document.getElementById('home-stats-strip').style.display = 'flex';
+    }
     return;
   } else if (section === 'search') {
     expandEmpGroup();
