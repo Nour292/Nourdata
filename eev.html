@@ -1,5 +1,5 @@
 ﻿<!DOCTYPE html>
-<!-- NourData EEV Module v3.21 - Sep-2026 -->
+<!-- NourData EEV Module v3.23 - 27-Oct-2026 -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -290,7 +290,7 @@ if (sessionStorage.getItem('ne_sb_collapsed') === '1') {
 <aside id="sidebar">
   <div id="sb-header">
     <img id="sb-logo" src="nour_energy_logo.png" alt="Nour Energy" onerror="this.style.display='none'">
-    <div id="sb-title">Nour Energy<small>Expense Voucher &nbsp;·&nbsp; v3.22</small></div>
+    <div id="sb-title">Nour Energy<small>Expense Voucher &nbsp;·&nbsp; v3.23</small></div>
     <button id="sb-toggle" onclick="toggleSidebar()" title="Toggle sidebar">&#9776;</button>
   </div>
   <nav id="sb-nav">
@@ -513,7 +513,7 @@ if (sessionStorage.getItem('ne_sb_collapsed') === '1') {
         <div class="tbl-toolbar">
           <span class="tbl-count" id="st-count">Select an employee above</span>
           <div class="tbl-actions">
-            <button class="hdr-btn btn-excel" onclick="exportTable('st-table','Employee_Statement')">&#128196; Excel</button>
+            <button class="hdr-btn btn-excel" onclick="exportTable('st-table', stLastEmpNum ? stLastEmpNum+' - Statement' : 'Employee_Statement')">&#128196; Excel</button>
             <button class="hdr-btn btn-pdf" onclick="printStatement()">&#128438; PDF</button>
             <button class="hdr-btn btn-copy" onclick="copyTable('st-table')">&#128203; Copy</button>
           </div>
@@ -1204,7 +1204,8 @@ function printStatement() {
   const fmtD = d => d ? d.toLocaleDateString('en-GB', {day:'2-digit', month:'short', year:'numeric'}) : '—';
   const periodStr = (minDate || maxDate) ? `${fmtD(minDate)} - ${fmtD(maxDate)}` : '—';
 
-  const html = `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>EEV Statement</title>
+  const pageTitle = (empNum ? empNum + ' - Statement' : 'EEV Statement');
+  const html = `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>${pageTitle}</title>
 <style>
 @page{size:A4 portrait;margin:12mm 14mm 18mm;}
 @page{@top-right{content:counter(page);font-size:7pt;color:#888;}}
@@ -1244,6 +1245,7 @@ ${tblHTML}
   pw.document.open();
   pw.document.write(html);
   pw.document.close();
+  pw.addEventListener('afterprint', function() { pw.close(); });
   setTimeout(function() { pw.print(); }, 600);
 }
 
