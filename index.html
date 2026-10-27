@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- NourData v2.63 Dashboard Build - 27-Oct-2026 -->
+<!-- NourData v2.64 Dashboard Build - 27-Oct-2026 -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -1306,7 +1306,7 @@ body.dark-mode .hstat-lbl { color: #8a9aaa; }
   <aside id="sidebar">
     <div id="sb-header">
       <img src="https://nour292.github.io/Nourdata/nour_energy_logo.png" alt="Logo" id="sb-logo">
-      <div id="sb-title" onclick="sidebarNav('home')" style="cursor:pointer;" title="Go to Home">Nour Energy<small>HR System</small><small style="font-size:10px;opacity:0.55;">v2.63</small></div>
+      <div id="sb-title" onclick="sidebarNav('home')" style="cursor:pointer;" title="Go to Home">Nour Energy<small>HR System</small><small style="font-size:10px;opacity:0.55;">v2.64</small></div>
       <button id="sb-toggle" onclick="toggleSidebar()" title="Toggle Sidebar">&#9776;</button>
     </div>
 
@@ -4295,11 +4295,14 @@ function _prFmt(val) {
   return n.toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2});
 }
 
+const _PR_TOT_COLS = new Set([14,15,16,17,18]);
 function _buildPrTable(rows) {
   if (!rows.length) return '<p class="pr-msg">No records found.</p>';
   let h = '<div class="pr-tbl-wrap"><table class="pr-tbl"><thead><tr>';
   PR_COLS.forEach(c => { h += `<th style="background:${c.hdr};">${c.label}</th>`; });
   h += '</tr></thead><tbody>';
+  const totals = {};
+  _PR_TOT_COLS.forEach(col => { totals[col] = 0; });
   rows.forEach(row => {
     h += '<tr>';
     PR_COLS.forEach(c => {
@@ -4307,11 +4310,21 @@ function _buildPrTable(rows) {
       const bg   = c.cell ? `background:${c.cell};` : '';
       const bold = c.bold ? 'font-weight:700;' : '';
       const txt  = (c.col >= 4) ? _prFmt(v) : escHtml(String(v));
+      if (_PR_TOT_COLS.has(c.col)) totals[c.col] += parseFloat(String(v).replace(/,/g,'')) || 0;
       h += `<td style="${bg}${bold}">${txt}</td>`;
     });
     h += '</tr>';
   });
-  h += '</tbody></table></div>';
+  h += '</tbody><tfoot><tr>';
+  PR_COLS.forEach(c => {
+    if (c.col === 0) { h += `<td colspan="1" style="background:#1a3a52;color:#fff;font-weight:700;font-size:12px;">Total</td>`; return; }
+    if (_PR_TOT_COLS.has(c.col)) {
+      h += `<td style="background:#1a3a52;color:#fff;font-weight:700;text-align:right;">${_prFmt(totals[c.col])}</td>`;
+    } else {
+      h += `<td style="background:#1a3a52;"></td>`;
+    }
+  });
+  h += '</tr></tfoot></table></div>';
   return h;
 }
 
