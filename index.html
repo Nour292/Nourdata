@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- NourData v2.60 Dashboard Build - 25-Oct-2026 -->
+<!-- NourData v2.61 Dashboard Build - 27-Oct-2026 -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -1305,7 +1305,7 @@ body.dark-mode .hstat-lbl { color: #8a9aaa; }
   <aside id="sidebar">
     <div id="sb-header">
       <img src="https://nour292.github.io/Nourdata/nour_energy_logo.png" alt="Logo" id="sb-logo">
-      <div id="sb-title" onclick="sidebarNav('home')" style="cursor:pointer;" title="Go to Home">Nour Energy<small>HR System</small><small style="font-size:10px;opacity:0.55;">v2.60</small></div>
+      <div id="sb-title" onclick="sidebarNav('home')" style="cursor:pointer;" title="Go to Home">Nour Energy<small>HR System</small><small style="font-size:10px;opacity:0.55;">v2.61</small></div>
       <button id="sb-toggle" onclick="toggleSidebar()" title="Toggle Sidebar">&#9776;</button>
     </div>
 
@@ -4254,7 +4254,7 @@ async function getPrData(statusEl) {
   _prLoading = true;
   if (statusEl) statusEl.innerHTML = '<p class="pr-msg">⏳ Loading payroll data… please wait.</p>';
   try {
-    const resp = await fetch(PR_SHEET_URL);
+    const resp = await fetch(PR_SHEET_URL + '&t=' + Date.now(), { cache: 'no-store' });
     if (!resp.ok) throw new Error('HTTP ' + resp.status);
     const text = await resp.text();
     const lines = text.split('\n');
