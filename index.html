@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- NourData v2.65 Dashboard Build - 27-Oct-2026 -->
+<!-- NourData v2.66 Dashboard Build - 27-Oct-2026 -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -176,6 +176,7 @@ html, body { margin: 0; padding: 0; font-family: 'Calibri', sans-serif; backgrou
   display: flex;
   flex-direction: column;
   min-height: 100vh;
+  overflow-x: hidden;
   transition: margin-left 0.25s cubic-bezier(.4,0,.2,1);
   background: #f0f4f8;
 }
@@ -1306,7 +1307,7 @@ body.dark-mode .hstat-lbl { color: #8a9aaa; }
   <aside id="sidebar">
     <div id="sb-header">
       <img src="https://nour292.github.io/Nourdata/nour_energy_logo.png" alt="Logo" id="sb-logo">
-      <div id="sb-title" onclick="sidebarNav('home')" style="cursor:pointer;" title="Go to Home">Nour Energy<small>HR System</small><small style="font-size:10px;opacity:0.55;">v2.65</small></div>
+      <div id="sb-title" onclick="sidebarNav('home')" style="cursor:pointer;" title="Go to Home">Nour Energy<small>HR System</small><small style="font-size:10px;opacity:0.55;">v2.66</small></div>
       <button id="sb-toggle" onclick="toggleSidebar()" title="Toggle Sidebar">&#9776;</button>
     </div>
 
@@ -1853,7 +1854,7 @@ body.dark-mode .hstat-lbl { color: #8a9aaa; }
             <label><input type="checkbox" data-col="6"  checked onchange="applyMonthlyColVis()"> Other</label>
             <label><input type="checkbox" data-col="7"  checked onchange="applyMonthlyColVis()"> Transport</label>
             <label><input type="checkbox" data-col="8"  checked onchange="applyMonthlyColVis()"> Housing</label>
-            <label><input type="checkbox" data-col="9"         onchange="applyMonthlyColVis()"> Misc</label>
+            <label><input type="checkbox" data-col="9"  checked onchange="applyMonthlyColVis()"> Misc</label>
             <label><input type="checkbox" data-col="10"        onchange="applyMonthlyColVis()"> Normal Hrs</label>
             <label><input type="checkbox" data-col="11" checked onchange="applyMonthlyColVis()"> OT Hours</label>
             <label><input type="checkbox" data-col="12"        onchange="applyMonthlyColVis()"> Total Salary</label>
