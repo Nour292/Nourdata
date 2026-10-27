@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- NourData v2.62 Dashboard Build - 27-Oct-2026 -->
+<!-- NourData v2.63 Dashboard Build - 27-Oct-2026 -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -966,6 +966,7 @@ body.user-mode .payroll-tab { display: none !important; }
 .pr-tbl tr:hover td { background: #e8f4ff !important; }
 .pr-msg { text-align: center; color: #888; padding: 40px 0; font-size: 14px; }
 .pr-hist-hdr { margin-bottom: 10px; padding: 8px 14px; background: #f0f5fa; border-left: 4px solid #1a3a52; border-radius: 0 4px 4px 0; }
+.pr-monthly-period-hdr { margin-bottom: 8px; padding: 7px 14px; background: #e8f0fb; border-left: 4px solid #0d47a1; border-radius: 0 4px 4px 0; font-size: 15px; font-weight: 700; color: #0d47a1; }
 .pr-hist-emp { font-size: 15px; font-weight: 700; color: #1a3a52; }
 .pr-hist-period { font-size: 12px; color: #555; margin-top: 3px; }
 .pr-count { font-size: 13px; color: #555; font-weight: 600; }
@@ -1305,7 +1306,7 @@ body.dark-mode .hstat-lbl { color: #8a9aaa; }
   <aside id="sidebar">
     <div id="sb-header">
       <img src="https://nour292.github.io/Nourdata/nour_energy_logo.png" alt="Logo" id="sb-logo">
-      <div id="sb-title" onclick="sidebarNav('home')" style="cursor:pointer;" title="Go to Home">Nour Energy<small>HR System</small><small style="font-size:10px;opacity:0.55;">v2.62</small></div>
+      <div id="sb-title" onclick="sidebarNav('home')" style="cursor:pointer;" title="Go to Home">Nour Energy<small>HR System</small><small style="font-size:10px;opacity:0.55;">v2.63</small></div>
       <button id="sb-toggle" onclick="toggleSidebar()" title="Toggle Sidebar">&#9776;</button>
     </div>
 
@@ -1784,16 +1785,16 @@ body.dark-mode .hstat-lbl { color: #8a9aaa; }
           <div id="hist-col-picks">
             <label><input type="checkbox" data-col="2"  checked onchange="applyHistColVis()"> Month</label>
             <label><input type="checkbox" data-col="3"  checked onchange="applyHistColVis()"> Year</label>
-            <label><input type="checkbox" data-col="4"         onchange="applyHistColVis()"> Basic</label>
-            <label><input type="checkbox" data-col="5"         onchange="applyHistColVis()"> Food</label>
-            <label><input type="checkbox" data-col="6"         onchange="applyHistColVis()"> Other</label>
-            <label><input type="checkbox" data-col="7"         onchange="applyHistColVis()"> Transport</label>
-            <label><input type="checkbox" data-col="8"         onchange="applyHistColVis()"> Housing</label>
+            <label><input type="checkbox" data-col="4"  checked onchange="applyHistColVis()"> Basic</label>
+            <label><input type="checkbox" data-col="5"  checked onchange="applyHistColVis()"> Food</label>
+            <label><input type="checkbox" data-col="6"  checked onchange="applyHistColVis()"> Other</label>
+            <label><input type="checkbox" data-col="7"  checked onchange="applyHistColVis()"> Transport</label>
+            <label><input type="checkbox" data-col="8"  checked onchange="applyHistColVis()"> Housing</label>
             <label><input type="checkbox" data-col="9"         onchange="applyHistColVis()"> Misc</label>
-            <label><input type="checkbox" data-col="10" checked onchange="applyHistColVis()"> Normal Hrs</label>
+            <label><input type="checkbox" data-col="10"        onchange="applyHistColVis()"> Normal Hrs</label>
             <label><input type="checkbox" data-col="11" checked onchange="applyHistColVis()"> OT Hours</label>
-            <label><input type="checkbox" data-col="12" checked onchange="applyHistColVis()"> Total Salary</label>
-            <label><input type="checkbox" data-col="13" checked onchange="applyHistColVis()"> OT Amount</label>
+            <label><input type="checkbox" data-col="12"        onchange="applyHistColVis()"> Total Salary</label>
+            <label><input type="checkbox" data-col="13"        onchange="applyHistColVis()"> OT Amount</label>
             <label><input type="checkbox" data-col="14" checked onchange="applyHistColVis()"> Mobile</label>
             <label><input type="checkbox" data-col="15" checked onchange="applyHistColVis()"> Total Pay</label>
             <label><input type="checkbox" data-col="16" checked onchange="applyHistColVis()"> Loans</label>
@@ -1845,18 +1846,18 @@ body.dark-mode .hstat-lbl { color: #8a9aaa; }
           <div id="monthly-col-picks">
             <label><input type="checkbox" data-col="0"  checked onchange="applyMonthlyColVis()"> Emp</label>
             <label><input type="checkbox" data-col="1"  checked onchange="applyMonthlyColVis()"> Name</label>
-            <label><input type="checkbox" data-col="2"  checked onchange="applyMonthlyColVis()"> Month</label>
-            <label><input type="checkbox" data-col="3"  checked onchange="applyMonthlyColVis()"> Year</label>
-            <label><input type="checkbox" data-col="4"         onchange="applyMonthlyColVis()"> Basic</label>
-            <label><input type="checkbox" data-col="5"         onchange="applyMonthlyColVis()"> Food</label>
-            <label><input type="checkbox" data-col="6"         onchange="applyMonthlyColVis()"> Other</label>
-            <label><input type="checkbox" data-col="7"         onchange="applyMonthlyColVis()"> Transport</label>
-            <label><input type="checkbox" data-col="8"         onchange="applyMonthlyColVis()"> Housing</label>
+            <label><input type="checkbox" data-col="2"         onchange="applyMonthlyColVis()"> Month</label>
+            <label><input type="checkbox" data-col="3"         onchange="applyMonthlyColVis()"> Year</label>
+            <label><input type="checkbox" data-col="4"  checked onchange="applyMonthlyColVis()"> Basic</label>
+            <label><input type="checkbox" data-col="5"  checked onchange="applyMonthlyColVis()"> Food</label>
+            <label><input type="checkbox" data-col="6"  checked onchange="applyMonthlyColVis()"> Other</label>
+            <label><input type="checkbox" data-col="7"  checked onchange="applyMonthlyColVis()"> Transport</label>
+            <label><input type="checkbox" data-col="8"  checked onchange="applyMonthlyColVis()"> Housing</label>
             <label><input type="checkbox" data-col="9"         onchange="applyMonthlyColVis()"> Misc</label>
-            <label><input type="checkbox" data-col="10" checked onchange="applyMonthlyColVis()"> Normal Hrs</label>
+            <label><input type="checkbox" data-col="10"        onchange="applyMonthlyColVis()"> Normal Hrs</label>
             <label><input type="checkbox" data-col="11" checked onchange="applyMonthlyColVis()"> OT Hours</label>
-            <label><input type="checkbox" data-col="12" checked onchange="applyMonthlyColVis()"> Total Salary</label>
-            <label><input type="checkbox" data-col="13" checked onchange="applyMonthlyColVis()"> OT Amount</label>
+            <label><input type="checkbox" data-col="12"        onchange="applyMonthlyColVis()"> Total Salary</label>
+            <label><input type="checkbox" data-col="13"        onchange="applyMonthlyColVis()"> OT Amount</label>
             <label><input type="checkbox" data-col="14" checked onchange="applyMonthlyColVis()"> Mobile</label>
             <label><input type="checkbox" data-col="15" checked onchange="applyMonthlyColVis()"> Total Pay</label>
             <label><input type="checkbox" data-col="16" checked onchange="applyMonthlyColVis()"> Loans</label>
@@ -4216,7 +4217,7 @@ const PR_COLS = [
   { label:'Housing',      hdr:'#1a5276', cell:'#EBF5FB', col:8  },
   { label:'Misc',         hdr:'#546e7a', cell:null,      col:9  },
   { label:'Normal Hrs',   hdr:'#7b6000', cell:'#FFF9C4', col:10 },
-  { label:'OT Hours',     hdr:'#7b6000', cell:'#FFF9C4', col:11 },
+  { label:'OT Hours',     hdr:'#e65100', cell:'#FFE0B2', bold:true, col:11 },
   { label:'Total Salary', hdr:'#1b5e20', cell:null,      col:12 },
   { label:'OT Amount',    hdr:'#1a237e', cell:null,      col:13 },
   { label:'Mobile',       hdr:'#7b6000', cell:'#FFF9C4', col:14 },
@@ -4302,10 +4303,11 @@ function _buildPrTable(rows) {
   rows.forEach(row => {
     h += '<tr>';
     PR_COLS.forEach(c => {
-      const v   = row[c.col] != null ? row[c.col] : '';
-      const bg  = c.cell ? `background:${c.cell};` : '';
-      const txt = (c.col >= 4) ? _prFmt(v) : escHtml(String(v));
-      h += `<td style="${bg}">${txt}</td>`;
+      const v    = row[c.col] != null ? row[c.col] : '';
+      const bg   = c.cell ? `background:${c.cell};` : '';
+      const bold = c.bold ? 'font-weight:700;' : '';
+      const txt  = (c.col >= 4) ? _prFmt(v) : escHtml(String(v));
+      h += `<td style="${bg}${bold}">${txt}</td>`;
     });
     h += '</tr>';
   });
@@ -4323,7 +4325,9 @@ async function loadMonthlyPayroll() {
   if (!data) return;
   const filtered = data.filter(r => String(r[2]).trim().toLowerCase().slice(0,3) === month.toLowerCase().slice(0,3) && String(r[3]).trim() === String(year));
   cnt.textContent = filtered.length ? `${filtered.length} employees` : 'No records';
-  res.innerHTML   = _buildPrTable(filtered);
+  const monthName = PR_MONTHS[_prMonNum(month)] || month;
+  const periodHdr = `<div class="pr-monthly-period-hdr">${monthName} ${year}</div>`;
+  res.innerHTML   = periodHdr + _buildPrTable(filtered);
   applyMonthlyColVis();
 }
 
@@ -4355,10 +4359,11 @@ async function loadEmpHistory() {
   filtered.forEach(row => {
     h += '<tr>';
     histCols.forEach(c => {
-      const v   = row[c.col] != null ? row[c.col] : '';
-      const bg  = c.cell ? 'background:' + c.cell + ';' : '';
-      const txt = (c.col >= 4) ? _prFmt(v) : escHtml(String(v));
-      h += '<td style="' + bg + '">' + txt + '<\/td>';
+      const v    = row[c.col] != null ? row[c.col] : '';
+      const bg   = c.cell ? 'background:' + c.cell + ';' : '';
+      const bold = c.bold ? 'font-weight:700;' : '';
+      const txt  = (c.col >= 4) ? _prFmt(v) : escHtml(String(v));
+      h += '<td style="' + bg + bold + '">' + txt + '<\/td>';
     });
     h += '<\/tr>';
   });
