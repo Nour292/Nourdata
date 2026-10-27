@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- NourData v2.67 Dashboard Build - 27-Oct-2026 -->
+<!-- NourData v2.68 Dashboard Build - 27-Oct-2026 -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -1307,7 +1307,7 @@ body.dark-mode .hstat-lbl { color: #8a9aaa; }
   <aside id="sidebar">
     <div id="sb-header">
       <img src="https://nour292.github.io/Nourdata/nour_energy_logo.png" alt="Logo" id="sb-logo">
-      <div id="sb-title" onclick="sidebarNav('home')" style="cursor:pointer;" title="Go to Home">Nour Energy<small>HR System</small><small style="font-size:10px;opacity:0.55;">v2.67</small></div>
+      <div id="sb-title" onclick="sidebarNav('home')" style="cursor:pointer;" title="Go to Home">Nour Energy<small>HR System</small><small style="font-size:10px;opacity:0.55;">v2.68</small></div>
       <button id="sb-toggle" onclick="toggleSidebar()" title="Toggle Sidebar">&#9776;</button>
     </div>
 
@@ -4832,7 +4832,7 @@ function applyMonthlyColVis() {
     const nth = i + 1;
     const th = tbl.querySelector('thead tr th:nth-child(' + nth + ')');
     if (th) th.style.display = show ? '' : 'none';
-    tbl.querySelectorAll('tbody tr').forEach(tr => {
+    tbl.querySelectorAll('tbody tr, tfoot tr').forEach(tr => {
       const td = tr.querySelector('td:nth-child(' + nth + ')');
       if (td) td.style.display = show ? '' : 'none';
     });
