@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- NourData v2.66 Dashboard Build - 27-Oct-2026 -->
+<!-- NourData v2.67 Dashboard Build - 27-Oct-2026 -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -173,10 +173,10 @@ html, body { margin: 0; padding: 0; font-family: 'Calibri', sans-serif; backgrou
 #main-content {
   margin-left: 240px;
   flex: 1;
+  min-width: 0;
   display: flex;
   flex-direction: column;
   min-height: 100vh;
-  overflow-x: hidden;
   transition: margin-left 0.25s cubic-bezier(.4,0,.2,1);
   background: #f0f4f8;
 }
@@ -1307,7 +1307,7 @@ body.dark-mode .hstat-lbl { color: #8a9aaa; }
   <aside id="sidebar">
     <div id="sb-header">
       <img src="https://nour292.github.io/Nourdata/nour_energy_logo.png" alt="Logo" id="sb-logo">
-      <div id="sb-title" onclick="sidebarNav('home')" style="cursor:pointer;" title="Go to Home">Nour Energy<small>HR System</small><small style="font-size:10px;opacity:0.55;">v2.66</small></div>
+      <div id="sb-title" onclick="sidebarNav('home')" style="cursor:pointer;" title="Go to Home">Nour Energy<small>HR System</small><small style="font-size:10px;opacity:0.55;">v2.67</small></div>
       <button id="sb-toggle" onclick="toggleSidebar()" title="Toggle Sidebar">&#9776;</button>
     </div>
 
