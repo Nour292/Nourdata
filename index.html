@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- NourData v2.68 Dashboard Build - 27-Oct-2026 -->
+<!-- NourData v2.69 Dashboard Build - 28-Oct-2026 -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -1307,7 +1307,7 @@ body.dark-mode .hstat-lbl { color: #8a9aaa; }
   <aside id="sidebar">
     <div id="sb-header">
       <img src="https://nour292.github.io/Nourdata/nour_energy_logo.png" alt="Logo" id="sb-logo">
-      <div id="sb-title" onclick="sidebarNav('home')" style="cursor:pointer;" title="Go to Home">Nour Energy<small>HR System</small><small style="font-size:10px;opacity:0.55;">v2.68</small></div>
+      <div id="sb-title" onclick="sidebarNav('home')" style="cursor:pointer;" title="Go to Home">Nour Energy<small>HR System</small><small style="font-size:10px;opacity:0.55;">v2.69</small></div>
       <button id="sb-toggle" onclick="toggleSidebar()" title="Toggle Sidebar">&#9776;</button>
     </div>
 
@@ -4399,25 +4399,37 @@ function clearHistTable() {
 function prCopyTable(resultId, btnId) {
   const tbl = document.querySelector('#'+resultId+' table');
   if (!tbl) return;
+  const clone = tbl.cloneNode(true);
+  clone.querySelectorAll('th,td').forEach(function(el){ if(el.style.display==='none') el.remove(); });
   const rows = [];
-  tbl.querySelectorAll('tr').forEach(tr => {
+  clone.querySelectorAll('tr').forEach(function(tr){
     const cells = [];
-    tr.querySelectorAll('th,td').forEach(cell => {
+    tr.querySelectorAll('th,td').forEach(function(cell){
       const span = parseInt(cell.getAttribute('colspan')||'1');
-      const text = (cell.innerText||'').replace(/[\r\n]+/g,' ').trim();
+      const text = (cell.innerText||cell.textContent||'').replace(/[\r\n]+/g,' ').trim();
       cells.push(text);
-      for (let i=1;i<span;i++) cells.push('');
+      for(let i=1;i<span;i++) cells.push('');
     });
-    rows.push(cells.join('\t'));
+    if(cells.length) rows.push(cells.join('\t'));
   });
-  navigator.clipboard.writeText(rows.join('\n')).then(function() {
+  const plain = rows.join('\n');
+  const html  = '<!DOCTYPE html><html><body>'+clone.outerHTML+'</body></html>';
+  const doBtn = function(){
     const btn = document.getElementById(btnId);
-    if (!btn) return;
+    if(!btn) return;
     const orig = btn.innerHTML;
     btn.innerHTML = '&#10003; Copied!';
     btn.style.background = '#2e7d32';
-    setTimeout(function(){ btn.innerHTML = orig; btn.style.background = '#00897b'; }, 2000);
-  }).catch(function(){ alert('Copy failed — please allow clipboard access.'); });
+    setTimeout(function(){ btn.innerHTML=orig; btn.style.background='#00897b'; }, 2000);
+  };
+  try {
+    navigator.clipboard.write([new ClipboardItem({
+      'text/plain': new Blob([plain],{type:'text/plain'}),
+      'text/html':  new Blob([html], {type:'text/html'})
+    })]).then(doBtn).catch(function(){ alert('Copy failed — please allow clipboard access.'); });
+  } catch(e) {
+    navigator.clipboard.writeText(plain).then(doBtn).catch(function(){ alert('Copy failed.'); });
+  }
 }
 function _prHex(str) {
   if (!str) return '';
