@@ -1,5 +1,5 @@
 ﻿<!DOCTYPE html>
-<!-- NourData EEV Module v3.23 - 27-Oct-2026 -->
+<!-- NourData EEV Module v3.24 - 02-Nov-2026 -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -290,7 +290,7 @@ if (sessionStorage.getItem('ne_sb_collapsed') === '1') {
 <aside id="sidebar">
   <div id="sb-header">
     <img id="sb-logo" src="nour_energy_logo.png" alt="Nour Energy" onerror="this.style.display='none'">
-    <div id="sb-title">Nour Energy<small>Expense Voucher &nbsp;·&nbsp; v3.23</small></div>
+    <div id="sb-title">Nour Energy<small>Expense Voucher &nbsp;·&nbsp; v3.24</small></div>
     <button id="sb-toggle" onclick="toggleSidebar()" title="Toggle sidebar">&#9776;</button>
   </div>
   <nav id="sb-nav">
@@ -1812,12 +1812,12 @@ function printSentTable() {
       <thead>${thead.innerHTML}</thead>
       <tbody>${tbody.innerHTML}</tbody>
     </table>`;
-  const pw = window.open('', '_blank');
+  const pw = window.open('', '_blank', 'width=900,height=700');
   pw.document.write(`<!DOCTYPE html><html><head><title>${title}</title>
   <style>
-  body{font-family:Calibri,sans-serif;font-size:11pt;margin:12mm;}
+  body{font-family:Calibri,sans-serif;font-size:13pt;margin:12mm;}
   table{width:100%;border-collapse:collapse;}
-  th,td{border:1px solid #999;padding:4px 8px;}
+  th,td{border:1px solid #999;padding:6px 10px;}
   th{background:#1a2b3c;color:#fff;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
   .num{text-align:right;}
   td[style*="color:#888"]{color:#888!important;}
@@ -1834,6 +1834,7 @@ function printSentTable() {
   ${printTbl}
   </body></html>`);
   pw.document.close();
+  pw.addEventListener('afterprint', function() { pw.close(); });
   setTimeout(() => pw.print(), 600);
 }
 
