@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- NourData v2.69 Dashboard Build - 28-Oct-2026 -->
+<!-- NourData v2.70 Dashboard Build - 03-Nov-2026 -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -1307,7 +1307,7 @@ body.dark-mode .hstat-lbl { color: #8a9aaa; }
   <aside id="sidebar">
     <div id="sb-header">
       <img src="https://nour292.github.io/Nourdata/nour_energy_logo.png" alt="Logo" id="sb-logo">
-      <div id="sb-title" onclick="sidebarNav('home')" style="cursor:pointer;" title="Go to Home">Nour Energy<small>HR System</small><small style="font-size:10px;opacity:0.55;">v2.69</small></div>
+      <div id="sb-title" onclick="sidebarNav('home')" style="cursor:pointer;" title="Go to Home">Nour Energy<small>HR System</small><small style="font-size:10px;opacity:0.55;">v2.70</small></div>
       <button id="sb-toggle" onclick="toggleSidebar()" title="Toggle Sidebar">&#9776;</button>
     </div>
 
@@ -1546,6 +1546,9 @@ body.dark-mode .hstat-lbl { color: #8a9aaa; }
         <label><input type="checkbox" value="basic"> Basic</label>
         <label><input type="checkbox" value="food"> Food</label>
         <label><input type="checkbox" value="other"> Other</label>
+        <label><input type="checkbox" value="trPct"> Tr-10 %</label>
+        <label><input type="checkbox" value="otherTrasp"> Other Trasp</label>
+        <label><input type="checkbox" value="housing25"> Housing 25%</label>
         <label><input type="checkbox" value="total"> Total</label>
         <label><input type="checkbox" value="transpStatus"> Trasp Status</label>
         <label><input type="checkbox" value="medical"> Medical</label>
@@ -3104,6 +3107,9 @@ const SL_COL_MAP = {
   food:         { idx: COL.food,         label: 'Food'            },
   other:        { idx: COL.other,        label: 'Other'           },
   total:        { idx: COL.total,        label: 'Total'           },
+  trPct:        { idx: COL.trPct,        label: 'Tr-10 %'         },
+  otherTrasp:   { idx: COL.otherTrasp,  label: 'Other Trasp'     },
+  housing25:    { idx: COL.housing25,   label: 'Housing 25%'     },
   transpStatus: { idx: COL.transpStatus, label: 'Trasp Status'    },
   medical:      { idx: COL.medical,      label: 'Medical'         },
   housing:      { idx: COL.housing,      label: 'Housing'         },
