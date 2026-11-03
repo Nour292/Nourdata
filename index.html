@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- NourData v2.70 Dashboard Build - 03-Nov-2026 -->
+<!-- NourData v2.71 Dashboard Build - 03-Nov-2026 -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -1307,7 +1307,7 @@ body.dark-mode .hstat-lbl { color: #8a9aaa; }
   <aside id="sidebar">
     <div id="sb-header">
       <img src="https://nour292.github.io/Nourdata/nour_energy_logo.png" alt="Logo" id="sb-logo">
-      <div id="sb-title" onclick="sidebarNav('home')" style="cursor:pointer;" title="Go to Home">Nour Energy<small>HR System</small><small style="font-size:10px;opacity:0.55;">v2.70</small></div>
+      <div id="sb-title" onclick="sidebarNav('home')" style="cursor:pointer;" title="Go to Home">Nour Energy<small>HR System</small><small style="font-size:10px;opacity:0.55;">v2.71</small></div>
       <button id="sb-toggle" onclick="toggleSidebar()" title="Toggle Sidebar">&#9776;</button>
     </div>
 
@@ -3032,6 +3032,7 @@ function printPaneResult(pane) {
   </body></html>`);
   win.document.close();
   win.focus();
+  win.addEventListener('afterprint', function() { win.close(); });
   setTimeout(() => { win.print(); }, 400);
 }
 
@@ -3584,6 +3585,7 @@ function printDashboard() {
     -webkit-print-color-adjust:exact;print-color-adjust:exact;
   </style></head><body>${el.innerHTML}</body></html>`);
   win.document.close(); win.focus();
+  win.addEventListener('afterprint', function() { win.close(); });
   setTimeout(() => win.print(), 400);
 }
 
@@ -3993,6 +3995,7 @@ function printInlineResult(pane) {
   </style>
   </head><body>${clone.outerHTML}</body></html>`);
   win.document.close();
+  win.addEventListener('afterprint', function() { win.close(); });
   // Wait for logo image to load before printing
   const img = win.document.querySelector('img');
   if (img && !img.complete) {
