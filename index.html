@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- NourData v2.71 Dashboard Build - 03-Nov-2026 -->
+<!-- NourData v2.72 Dashboard Build - 03-Nov-2026 -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -1307,7 +1307,7 @@ body.dark-mode .hstat-lbl { color: #8a9aaa; }
   <aside id="sidebar">
     <div id="sb-header">
       <img src="https://nour292.github.io/Nourdata/nour_energy_logo.png" alt="Logo" id="sb-logo">
-      <div id="sb-title" onclick="sidebarNav('home')" style="cursor:pointer;" title="Go to Home">Nour Energy<small>HR System</small><small style="font-size:10px;opacity:0.55;">v2.71</small></div>
+      <div id="sb-title" onclick="sidebarNav('home')" style="cursor:pointer;" title="Go to Home">Nour Energy<small>HR System</small><small style="font-size:10px;opacity:0.55;">v2.72</small></div>
       <button id="sb-toggle" onclick="toggleSidebar()" title="Toggle Sidebar">&#9776;</button>
     </div>
 
@@ -1972,6 +1972,8 @@ function showGlobalLoader(show) {
 /* ─── Access Level ─── */
 let currentAccessLevel = 'admin';
 let csvRows = null;
+let slListGenerated  = false;
+let islListGenerated = false;
 
 function unlockApp() {
   document.getElementById('layout').style.display = 'flex';
@@ -3290,6 +3292,7 @@ function runQuickList(type) {
 
 /* ── Combined Filter ── */
 function runCombinedFilter() {
+  slListGenerated = true;
   const flJobTitle    = document.getElementById('fl-jobTitle').value.trim().toLowerCase();
   const flLocation    = document.getElementById('fl-location').value.trim().toLowerCase();
   const flNationality = document.getElementById('fl-nationality').value.trim().toLowerCase();
@@ -3689,6 +3692,14 @@ document.addEventListener('DOMContentLoaded', function() {
       document.querySelectorAll('.ifl-ms-panel').forEach(p => p.classList.remove('ifl-open'));
     }
   });
+
+  // Auto-refresh list on column checkbox change (after first Generate List)
+  document.getElementById('sl-col-picks').addEventListener('change', function(e) {
+    if (e.target.type === 'checkbox' && slListGenerated) runCombinedFilter();
+  });
+  document.getElementById('isl-col-picks').addEventListener('change', function(e) {
+    if (e.target.type === 'checkbox' && islListGenerated) runInlineCombinedFilter();
+  });
 });
 
 function runInlineDeepSearch() {
@@ -3877,6 +3888,7 @@ function runInlineQuickList(type) {
 }
 
 function runInlineCombinedFilter() {
+  islListGenerated = true;
   document.querySelectorAll('.ifl-ms-panel').forEach(p => p.classList.remove('ifl-open'));
   const flEmpNum      = islSel.empNum;
   const flJobTitle    = islSel.jobTitle;

@@ -1,5 +1,5 @@
 ﻿<!DOCTYPE html>
-<!-- NourData EEV Module v3.25 - 03-Nov-2026 -->
+<!-- NourData EEV Module v3.26 - 12-Nov-2026 -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -290,7 +290,7 @@ if (sessionStorage.getItem('ne_sb_collapsed') === '1') {
 <aside id="sidebar">
   <div id="sb-header">
     <img id="sb-logo" src="nour_energy_logo.png" alt="Nour Energy" onerror="this.style.display='none'">
-    <div id="sb-title">Nour Energy<small>Expense Voucher &nbsp;·&nbsp; v3.25</small></div>
+    <div id="sb-title">Nour Energy<small>Expense Voucher &nbsp;·&nbsp; v3.26</small></div>
     <button id="sb-toggle" onclick="toggleSidebar()" title="Toggle sidebar">&#9776;</button>
   </div>
   <nav id="sb-nav">
@@ -624,6 +624,14 @@ if (sessionStorage.getItem('ne_sb_collapsed') === '1') {
             <div class="filter-field" style="max-width:160px">
               <label>Ref Number</label>
               <input type="text" id="snt-ref" placeholder="Partial match...">
+            </div>
+            <div class="filter-field" style="max-width:150px">
+              <label>Suspend</label>
+              <select id="snt-suspend" style="padding:7px 10px;font-size:13px;border:1.5px solid #d0dce8;border-radius:7px;background:#f7fafd;font-family:'Calibri',sans-serif;width:100%;">
+                <option value="all">All</option>
+                <option value="exclude">Exclude Suspend</option>
+                <option value="only">Only Suspend</option>
+              </select>
             </div>
             <div class="filter-field" style="max-width:200px;">
               <label>Batch Number</label>
@@ -1520,7 +1528,8 @@ async function sntGenerate() {
   const from = document.getElementById('snt-from').value;
   const to   = document.getElementById('snt-to').value;
   const empF = document.getElementById('snt-emp').value.trim().toLowerCase();
-  const refF = document.getElementById('snt-ref').value.trim().toLowerCase();
+  const refF    = document.getElementById('snt-ref').value.trim().toLowerCase();
+  const suspF   = document.getElementById('snt-suspend').value;
 
   sntDisplayRows = sentRawData.filter(r => {
     if (from || to) {
@@ -1533,6 +1542,9 @@ async function sntGenerate() {
     if (empF && !String(r[1]||'').toLowerCase().includes(empF)) return false;
     if (refF && !String(r[2]||'').toLowerCase().includes(refF)) return false;
     if (sntSelectedBatches.length && !sntSelectedBatches.includes(String(r[4]||'').trim())) return false;
+    const isSuspend = String(r[2]||'').toLowerCase().includes('-suspend');
+    if (suspF === 'exclude' && isSuspend)  return false;
+    if (suspF === 'only'    && !isSuspend) return false;
     return true;
   });
 
@@ -1615,6 +1627,8 @@ function resetSntFilters() {
   ['snt-from','snt-to','snt-emp','snt-ref','snt-batch-inp'].forEach(id => {
     const el = document.getElementById(id); if (el) el.value = '';
   });
+  const suspEl = document.getElementById('snt-suspend');
+  if (suspEl) suspEl.value = 'all';
   sntSelectedBatches = [];
   const allChk = document.getElementById('snt-batch-all');
   if (allChk) allChk.checked = false;
