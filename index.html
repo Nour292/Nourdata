@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- NourData v2.85 Dashboard Build - 24-Nov-2026 -->
+<!-- NourData v2.86 Dashboard Build - 24-Nov-2026 -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -1316,7 +1316,7 @@ body.dark-mode .hstat-lbl { color: #8a9aaa; }
   <aside id="sidebar">
     <div id="sb-header">
       <img src="https://nour292.github.io/Nourdata/nour_energy_logo.png" alt="Logo" id="sb-logo">
-      <div id="sb-title" onclick="sidebarNav('home')" style="cursor:pointer;" title="Go to Home">Nour Energy<small>HR System</small><small style="font-size:10px;opacity:0.55;">v2.85</small></div>
+      <div id="sb-title" onclick="sidebarNav('home')" style="cursor:pointer;" title="Go to Home">Nour Energy<small>HR System</small><small style="font-size:10px;opacity:0.55;">v2.86</small></div>
       <button id="sb-toggle" onclick="toggleSidebar()" title="Toggle Sidebar">&#9776;</button>
     </div>
 
@@ -4659,30 +4659,26 @@ async function loadPrSummary() {
   data.forEach(r => {
     const monNum = _prMonNum(r[2]);
     const key = `${r[3]}-${String(monNum).padStart(2,'0')}`;
-    if (!map[key]) map[key] = { year:r[3], month:r[2], count:0, totalSal:0, totalPay:0, gosi:0, netPay:0 };
+    if (!map[key]) map[key] = { year:r[3], month:r[2], count:0, mobile:0, totalPay:0, gosi:0, loans:0, netPay:0 };
     map[key].count++;
-    map[key].totalSal += parseFloat(String(r[12]).replace(/,/g,'')) || 0;
+    map[key].mobile   += parseFloat(String(r[14]).replace(/,/g,'')) || 0;
     map[key].totalPay += parseFloat(String(r[15]).replace(/,/g,'')) || 0;
+    map[key].loans    += parseFloat(String(r[16]).replace(/,/g,'')) || 0;
     map[key].gosi     += parseFloat(String(r[17]).replace(/,/g,'')) || 0;
     map[key].netPay   += parseFloat(String(r[18]).replace(/,/g,'')) || 0;
   });
   const keys = Object.keys(map).sort((a,b) => b.localeCompare(a));
-  let tot = { count:0, totalSal:0, totalPay:0, gosi:0, netPay:0 };
   let rows = '';
   keys.forEach(k => {
     const m = map[k];
     const mName = _prMonName(m.month);
-    tot.count    += m.count;
-    tot.totalSal += m.totalSal;
-    tot.totalPay += m.totalPay;
-    tot.gosi     += m.gosi;
-    tot.netPay   += m.netPay;
     rows += `<tr>
       <td>${mName} ${m.year}</td>
       <td style="text-align:center;">${m.count}</td>
-      <td>${_prFmt(m.totalSal)}</td>
+      <td style="background:#FFF9C4;">${_prFmt(m.mobile)}</td>
       <td>${_prFmt(m.totalPay)}</td>
       <td style="background:#FFF9C4;">${_prFmt(m.gosi)}</td>
+      <td>${_prFmt(m.loans)}</td>
       <td style="background:#E2EFDA;font-weight:700;">${_prFmt(m.netPay)}</td>
     </tr>`;
   });
@@ -4690,20 +4686,13 @@ async function loadPrSummary() {
     <thead><tr>
       <th style="background:#1a3a52;text-align:left;">Period</th>
       <th style="background:#1a3a52;">Employees</th>
-      <th style="background:#1b5e20;">Total Salary</th>
+      <th style="background:#7b6000;">Mobile</th>
       <th style="background:#0d47a1;">Total Pay</th>
-      <th style="background:#7b6000;">GOSI</th>
+      <th style="background:#b71c1c;">GOSI</th>
+      <th style="background:#b71c1c;">Loans</th>
       <th style="background:#1b5e20;">Net Pay</th>
     </tr></thead>
     <tbody>${rows}</tbody>
-    <tfoot><tr class="pr-totals-row">
-      <td>TOTAL — ${keys.length} month${keys.length!==1?'s':''}</td>
-      <td style="text-align:center;">${tot.count}</td>
-      <td>${_prFmt(tot.totalSal)}</td>
-      <td>${_prFmt(tot.totalPay)}</td>
-      <td>${_prFmt(tot.gosi)}</td>
-      <td>${_prFmt(tot.netPay)}</td>
-    </tr></tfoot>
   </table></div>`;
 }
 
