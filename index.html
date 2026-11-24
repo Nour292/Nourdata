@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- NourData v2.75 Dashboard Build - 24-Nov-2026 -->
+<!-- NourData v2.76 Dashboard Build - 24-Nov-2026 -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -1316,7 +1316,7 @@ body.dark-mode .hstat-lbl { color: #8a9aaa; }
   <aside id="sidebar">
     <div id="sb-header">
       <img src="https://nour292.github.io/Nourdata/nour_energy_logo.png" alt="Logo" id="sb-logo">
-      <div id="sb-title" onclick="sidebarNav('home')" style="cursor:pointer;" title="Go to Home">Nour Energy<small>HR System</small><small style="font-size:10px;opacity:0.55;">v2.75</small></div>
+      <div id="sb-title" onclick="sidebarNav('home')" style="cursor:pointer;" title="Go to Home">Nour Energy<small>HR System</small><small style="font-size:10px;opacity:0.55;">v2.76</small></div>
       <button id="sb-toggle" onclick="toggleSidebar()" title="Toggle Sidebar">&#9776;</button>
     </div>
 
@@ -4862,7 +4862,8 @@ function prUpdateSelCount() {
 
 function prToggleSelected() {
   prShowingSelected = !prShowingSelected;
-  const btn = document.getElementById('pr-show-sel-btn');
+  const btn   = document.getElementById('pr-show-sel-btn');
+  const tfoot = document.querySelector('#pr-monthly-result tfoot');
   document.querySelectorAll('#pr-monthly-result tbody tr').forEach(tr => {
     if (prShowingSelected) {
       const cb = tr.querySelector('.pr-row-cb');
@@ -4871,6 +4872,7 @@ function prToggleSelected() {
       tr.style.display = '';
     }
   });
+  if (tfoot) tfoot.style.display = prShowingSelected ? 'none' : '';
   if (btn) {
     btn.textContent = prShowingSelected ? '👁 Show All' : '👁 Show Selected Only';
     prShowingSelected ? btn.classList.add('active') : btn.classList.remove('active');
