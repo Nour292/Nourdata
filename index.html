@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- NourData v2.72 Dashboard Build - 03-Nov-2026 -->
+<!-- NourData v2.73 Dashboard Build - 24-Nov-2026 -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -958,6 +958,15 @@ body.user-mode .payroll-tab { display: none !important; }
 .pr-export-print { background: #37474f; color: #fff; }
 .pr-export-pdf   { background: #c0392b; color: #fff; }
 .pr-tbl-wrap { overflow-x: auto; }
+.pr-cb-col { text-align: center !important; width: 32px; min-width: 32px; padding: 4px !important; }
+@media print { .pr-cb-col { display: none !important; } }
+#pr-sel-bar { display:none; align-items:center; gap:8px; flex-wrap:wrap; padding:7px 10px; background:#edf4fb; border-radius:7px; margin-bottom:8px; border:1px solid #c8dff0; }
+#pr-sel-bar button { padding:5px 11px; font-size:12px; border-radius:5px; border:none; cursor:pointer; font-family:'Calibri',sans-serif; font-weight:600; }
+#pr-sel-bar .btn-selall  { background:#2196f3; color:#fff; }
+#pr-sel-bar .btn-clrall  { background:#78909c; color:#fff; }
+#pr-sel-bar .btn-showsel { background:#1a3a52; color:#fff; }
+#pr-sel-bar .btn-showsel.active { background:#e74c3c; }
+#pr-sel-bar .sel-count   { font-size:12px; color:#555; margin-left:4px; }
 .pr-tbl { width: 100%; border-collapse: collapse; font-size: 12px; font-family: 'Calibri', sans-serif; }
 .pr-tbl th { padding: 7px 10px; text-align: center; color: #fff; font-weight: 700; white-space: nowrap; border: 1px solid rgba(0,0,0,0.15); print-color-adjust: exact; -webkit-print-color-adjust: exact; }
 .pr-tbl td { padding: 5px 8px; text-align: right; border: 1px solid #dde6f0; white-space: nowrap; font-variant-numeric: tabular-nums; }
@@ -1307,7 +1316,7 @@ body.dark-mode .hstat-lbl { color: #8a9aaa; }
   <aside id="sidebar">
     <div id="sb-header">
       <img src="https://nour292.github.io/Nourdata/nour_energy_logo.png" alt="Logo" id="sb-logo">
-      <div id="sb-title" onclick="sidebarNav('home')" style="cursor:pointer;" title="Go to Home">Nour Energy<small>HR System</small><small style="font-size:10px;opacity:0.55;">v2.72</small></div>
+      <div id="sb-title" onclick="sidebarNav('home')" style="cursor:pointer;" title="Go to Home">Nour Energy<small>HR System</small><small style="font-size:10px;opacity:0.55;">v2.73</small></div>
       <button id="sb-toggle" onclick="toggleSidebar()" title="Toggle Sidebar">&#9776;</button>
     </div>
 
@@ -1868,6 +1877,12 @@ body.dark-mode .hstat-lbl { color: #8a9aaa; }
             <label><input type="checkbox" data-col="17" checked onchange="applyMonthlyColVis()"> GOSI</label>
             <label><input type="checkbox" data-col="18" checked onchange="applyMonthlyColVis()"> Net Pay</label>
           </div>
+        </div>
+        <div id="pr-sel-bar">
+          <button class="btn-selall"  onclick="prSelectAll(true)">&#9989; Select All</button>
+          <button class="btn-clrall"  onclick="prSelectAll(false)">&#9634; Clear All</button>
+          <button class="btn-showsel" id="pr-show-sel-btn" onclick="prToggleSelected()">&#128065; Show Selected Only</button>
+          <span class="sel-count" id="pr-sel-count"></span>
         </div>
         <div id="pr-monthly-result"><p class="pr-msg">Select month and year then click Load.</p></div>
       </div>
@@ -4321,12 +4336,14 @@ const _PR_TOT_COLS = new Set([14,15,16,17,18]);
 function _buildPrTable(rows) {
   if (!rows.length) return '<p class="pr-msg">No records found.</p>';
   let h = '<div class="pr-tbl-wrap"><table class="pr-tbl"><thead><tr>';
+  h += '<th class="pr-cb-col no-print" style="background:#1a3a52;"><input type="checkbox" id="pr-cb-all" title="Select / Deselect All" onchange="prSelectAll(this.checked)"></th>';
   PR_COLS.forEach(c => { h += `<th style="background:${c.hdr};">${c.label}</th>`; });
   h += '</tr></thead><tbody>';
   const totals = {};
   _PR_TOT_COLS.forEach(col => { totals[col] = 0; });
   rows.forEach(row => {
-    h += '<tr>';
+    const empVal = escHtml(String(row[0] != null ? row[0] : ''));
+    h += `<tr><td class="pr-cb-col no-print"><input type="checkbox" class="pr-row-cb" value="${empVal}" onchange="prUpdateSelCount()"></td>`;
     PR_COLS.forEach(c => {
       const v    = row[c.col] != null ? row[c.col] : '';
       const bg   = c.cell ? `background:${c.cell};` : '';
@@ -4338,6 +4355,7 @@ function _buildPrTable(rows) {
     h += '</tr>';
   });
   h += '</tbody><tfoot><tr>';
+  h += '<td class="pr-cb-col no-print" style="background:#1a3a52;"></td>';
   PR_COLS.forEach(c => {
     if (c.col === 0) { h += `<td colspan="1" style="background:#1a3a52;color:#fff;font-weight:700;font-size:12px;">Total</td>`; return; }
     if (_PR_TOT_COLS.has(c.col)) {
@@ -4364,6 +4382,12 @@ async function loadMonthlyPayroll() {
   const periodHdr = `<div class="pr-monthly-period-hdr">${monthName} ${year}</div>`;
   res.innerHTML   = periodHdr + _buildPrTable(filtered);
   applyMonthlyColVis();
+  prShowingSelected = false;
+  const selBar = document.getElementById('pr-sel-bar');
+  const selBtn = document.getElementById('pr-show-sel-btn');
+  if (selBar) selBar.style.display = filtered.length ? 'flex' : 'none';
+  if (selBtn) { selBtn.textContent = '👁 Show Selected Only'; selBtn.classList.remove('active'); }
+  prUpdateSelCount();
 }
 
 async function loadEmpHistory() {
@@ -4808,6 +4832,48 @@ function clearMonthlyTable() {
   if (cnt) cnt.textContent = '';
   if (fi)  fi.value = '';
   setAllMonthlyCols(true);
+  prShowingSelected = false;
+  const selBar = document.getElementById('pr-sel-bar');
+  const selBtn = document.getElementById('pr-show-sel-btn');
+  const selCnt = document.getElementById('pr-sel-count');
+  if (selBar) selBar.style.display = 'none';
+  if (selBtn) { selBtn.textContent = '👁 Show Selected Only'; selBtn.classList.remove('active'); }
+  if (selCnt) selCnt.textContent = '';
+}
+
+let prShowingSelected = false;
+
+function prSelectAll(checked) {
+  document.querySelectorAll('.pr-row-cb').forEach(cb => cb.checked = checked);
+  const all = document.getElementById('pr-cb-all');
+  if (all) all.checked = checked;
+  prUpdateSelCount();
+}
+
+function prUpdateSelCount() {
+  const all = document.querySelectorAll('.pr-row-cb');
+  const sel = document.querySelectorAll('.pr-row-cb:checked');
+  const sp  = document.getElementById('pr-sel-count');
+  if (sp) sp.textContent = sel.length + ' of ' + all.length + ' selected';
+  const allCb = document.getElementById('pr-cb-all');
+  if (allCb) allCb.checked = all.length > 0 && sel.length === all.length;
+}
+
+function prToggleSelected() {
+  prShowingSelected = !prShowingSelected;
+  const btn = document.getElementById('pr-show-sel-btn');
+  document.querySelectorAll('#pr-monthly-result tbody tr').forEach(tr => {
+    if (prShowingSelected) {
+      const cb = tr.querySelector('.pr-row-cb');
+      tr.style.display = (cb && cb.checked) ? '' : 'none';
+    } else {
+      tr.style.display = '';
+    }
+  });
+  if (btn) {
+    btn.textContent = prShowingSelected ? '👁 Show All' : '👁 Show Selected Only';
+    prShowingSelected ? btn.classList.add('active') : btn.classList.remove('active');
+  }
 }
 
 function exportMonthlyExcel() {
