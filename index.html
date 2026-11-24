@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- NourData v2.84 Dashboard Build - 24-Nov-2026 -->
+<!-- NourData v2.85 Dashboard Build - 24-Nov-2026 -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -1316,7 +1316,7 @@ body.dark-mode .hstat-lbl { color: #8a9aaa; }
   <aside id="sidebar">
     <div id="sb-header">
       <img src="https://nour292.github.io/Nourdata/nour_energy_logo.png" alt="Logo" id="sb-logo">
-      <div id="sb-title" onclick="sidebarNav('home')" style="cursor:pointer;" title="Go to Home">Nour Energy<small>HR System</small><small style="font-size:10px;opacity:0.55;">v2.84</small></div>
+      <div id="sb-title" onclick="sidebarNav('home')" style="cursor:pointer;" title="Go to Home">Nour Energy<small>HR System</small><small style="font-size:10px;opacity:0.55;">v2.85</small></div>
       <button id="sb-toggle" onclick="toggleSidebar()" title="Toggle Sidebar">&#9776;</button>
     </div>
 
@@ -4414,14 +4414,15 @@ async function loadEmpHistory() {
   const histCols = PR_COLS.filter(c => c.col !== 0 && c.col !== 1);
   let h = '<div class="pr-hist-hdr">';
   h += '<div class="pr-hist-emp">' + escHtml(emp) + ' – ' + empName + '<\/div>';
-  h += '<div class="pr-hist-period">Period: ' + escHtml(dateFrom) + ' – ' + escHtml(dateTo) + ' &nbsp;|&nbsp; ' + filtered.length + ' months<\/div>';
+  h += '<div class="pr-hist-period" id="pr-hist-period">Period: ' + escHtml(dateFrom) + ' – ' + escHtml(dateTo) + ' &nbsp;|&nbsp; ' + filtered.length + ' months<\/div>';
   h += '<\/div>';
   h += '<div class="pr-tbl-wrap"><table class="pr-tbl"><thead><tr>';
   histCols.forEach(c => { h += '<th style="background:' + c.hdr + ';">' + c.label + '<\/th>'; });
   h += '<\/tr><\/thead><tbody>';
   filtered.forEach(row => {
     const yr = String(row[3] || '');
-    h += '<tr data-year="' + yr + '">';
+    const mo = String(row[2] || '');
+    h += '<tr data-year="' + yr + '" data-month="' + mo + '">';
     histCols.forEach(c => {
       const v    = row[c.col] != null ? row[c.col] : '';
       const bg   = c.cell ? 'background:' + c.cell + ';' : '';
@@ -4481,6 +4482,15 @@ function filterHistByYear() {
   res.querySelectorAll('tfoot td[data-tot]').forEach(td => {
     td.textContent = _prFmt(totals[parseInt(td.dataset.tot)] || 0);
   });
+  const periodEl = document.getElementById('pr-hist-period');
+  if (periodEl) {
+    const visRows = [...rows].filter(tr => tr.style.display !== 'none');
+    if (visRows.length) {
+      const newest = visRows[0].dataset.month + ' ' + visRows[0].dataset.year;
+      const oldest = visRows[visRows.length-1].dataset.month + ' ' + visRows[visRows.length-1].dataset.year;
+      periodEl.textContent = 'Period: ' + oldest + ' – ' + newest + '  |  ' + visRows.length + ' months';
+    }
+  }
 }
 
 function prCopyTable(resultId, btnId) {
