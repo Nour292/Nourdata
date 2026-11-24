@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- NourData v2.76 Dashboard Build - 24-Nov-2026 -->
+<!-- NourData v2.77 Dashboard Build - 24-Nov-2026 -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -1316,7 +1316,7 @@ body.dark-mode .hstat-lbl { color: #8a9aaa; }
   <aside id="sidebar">
     <div id="sb-header">
       <img src="https://nour292.github.io/Nourdata/nour_energy_logo.png" alt="Logo" id="sb-logo">
-      <div id="sb-title" onclick="sidebarNav('home')" style="cursor:pointer;" title="Go to Home">Nour Energy<small>HR System</small><small style="font-size:10px;opacity:0.55;">v2.76</small></div>
+      <div id="sb-title" onclick="sidebarNav('home')" style="cursor:pointer;" title="Go to Home">Nour Energy<small>HR System</small><small style="font-size:10px;opacity:0.55;">v2.77</small></div>
       <button id="sb-toggle" onclick="toggleSidebar()" title="Toggle Sidebar">&#9776;</button>
     </div>
 
@@ -1775,6 +1775,9 @@ body.dark-mode .hstat-lbl { color: #8a9aaa; }
             <button class="pr-load-btn" onclick="loadEmpHistory()">&#9654; Load</button>
             <span id="pr-history-count" class="pr-count"></span>
             <input type="text" id="hist-filter" placeholder="&#128269; Filter rows…" oninput="filterPrTable('pr-history-result',this.value)" style="padding:6px 10px;font-size:12px;border:1px solid #c8d8e8;border-radius:5px;width:160px;font-family:'Calibri',sans-serif;">
+            <select id="hist-year-filter" onchange="filterHistByYear()" style="padding:6px 10px;font-size:12px;border:1px solid #c8d8e8;border-radius:5px;font-family:'Calibri',sans-serif;min-width:90px;">
+              <option value="">All Years</option>
+            </select>
           </div>
           <div style="display:flex;gap:6px;align-items:center;">
             <button class="pr-export-btn pr-export-excel" onclick="exportHistExcel()">&#128202; Excel</button>
@@ -4417,18 +4420,37 @@ async function loadEmpHistory() {
   histCols.forEach(c => { h += '<th style="background:' + c.hdr + ';">' + c.label + '<\/th>'; });
   h += '<\/tr><\/thead><tbody>';
   filtered.forEach(row => {
-    h += '<tr>';
+    const yr = String(row[3] || '');
+    h += '<tr data-year="' + yr + '">';
     histCols.forEach(c => {
       const v    = row[c.col] != null ? row[c.col] : '';
       const bg   = c.cell ? 'background:' + c.cell + ';' : '';
       const bold = c.bold ? 'font-weight:700;' : '';
       const txt  = (c.col >= 4) ? _prFmt(v) : escHtml(String(v));
-      h += '<td style="' + bg + bold + '">' + txt + '<\/td>';
+      const dv   = _PR_TOT_COLS.has(c.col) ? ' data-col="' + c.col + '" data-val="' + (parseFloat(String(v).replace(/,/g,''))||0) + '"' : '';
+      h += '<td style="' + bg + bold + '"' + dv + '>' + txt + '<\/td>';
     });
     h += '<\/tr>';
   });
-  h += '<\/tbody><\/table><\/div>';
+  // tfoot totals
+  const htotals = {};
+  _PR_TOT_COLS.forEach(col => { htotals[col] = 0; });
+  filtered.forEach(row => { _PR_TOT_COLS.forEach(col => { htotals[col] += parseFloat(String(row[col]||'').replace(/,/g,''))||0; }); });
+  h += '<\/tbody><tfoot><tr>';
+  histCols.forEach(c => {
+    if (c.col === 2) { h += '<td colspan="1" style="background:#1a3a52;color:#fff;font-weight:700;font-size:12px;">Total<\/td>'; return; }
+    if (_PR_TOT_COLS.has(c.col)) {
+      h += '<td data-tot="' + c.col + '" style="background:#1a3a52;color:#fff;font-weight:700;text-align:right;">' + _prFmt(htotals[c.col]) + '<\/td>';
+    } else {
+      h += '<td style="background:#1a3a52;"><\/td>';
+    }
+  });
+  h += '<\/tr><\/tfoot><\/table><\/div>';
   res.innerHTML = h;
+  // populate year dropdown
+  const years = [...new Set(filtered.map(r => String(r[3]||'')))].sort((a,b)=>b-a);
+  const ysEl = document.getElementById('hist-year-filter');
+  if (ysEl) ysEl.innerHTML = '<option value="">All Years<\/option>' + years.map(y=>'<option value="'+y+'">'+y+'<\/option>').join('');
   applyHistColVis();
 }
 
@@ -4436,10 +4458,32 @@ function clearHistTable() {
   const res = document.getElementById('pr-history-result');
   const cnt = document.getElementById('pr-history-count');
   const fi  = document.getElementById('hist-filter');
+  const ys  = document.getElementById('hist-year-filter');
   if (res) res.innerHTML = '<p class="pr-msg">Enter employee number then click Load.</p>';
   if (cnt) cnt.textContent = '';
   if (fi)  fi.value = '';
+  if (ys)  ys.innerHTML = '<option value="">All Years</option>';
   setAllHistCols(true);
+}
+
+function filterHistByYear() {
+  const yr  = (document.getElementById('hist-year-filter')||{}).value || '';
+  const res = document.getElementById('pr-history-result');
+  if (!res) return;
+  const rows = res.querySelectorAll('tbody tr');
+  rows.forEach(tr => { tr.style.display = (!yr || tr.dataset.year === yr) ? '' : 'none'; });
+  const totals = {};
+  _PR_TOT_COLS.forEach(col => { totals[col] = 0; });
+  rows.forEach(tr => {
+    if (tr.style.display !== 'none') {
+      tr.querySelectorAll('td[data-col]').forEach(td => {
+        totals[parseInt(td.dataset.col)] += parseFloat(td.dataset.val) || 0;
+      });
+    }
+  });
+  res.querySelectorAll('tfoot td[data-tot]').forEach(td => {
+    td.textContent = _prFmt(totals[parseInt(td.dataset.tot)] || 0);
+  });
 }
 
 function prCopyTable(resultId, btnId) {
