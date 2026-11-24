@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- NourData v2.81 Dashboard Build - 24-Nov-2026 -->
+<!-- NourData v2.82 Dashboard Build - 24-Nov-2026 -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -958,8 +958,6 @@ body.user-mode .payroll-tab { display: none !important; }
 .pr-export-print { background: #37474f; color: #fff; }
 .pr-export-pdf   { background: #c0392b; color: #fff; }
 .pr-tbl-wrap { overflow-x: auto; }
-.pr-hist-tbl-wrap { overflow-x: auto; }
-.pr-hist-tbl-wrap .pr-tbl th { white-space: normal; word-break: break-word; }
 .pr-cb-col { text-align: center !important; width: 32px; min-width: 32px; padding: 4px !important; }
 @media print { .pr-cb-col { display: none !important; } }
 #pr-sel-bar { display:none; align-items:center; gap:8px; flex-wrap:wrap; padding:7px 10px; background:#edf4fb; border-radius:7px; margin-bottom:8px; border:1px solid #c8dff0; }
@@ -1318,7 +1316,7 @@ body.dark-mode .hstat-lbl { color: #8a9aaa; }
   <aside id="sidebar">
     <div id="sb-header">
       <img src="https://nour292.github.io/Nourdata/nour_energy_logo.png" alt="Logo" id="sb-logo">
-      <div id="sb-title" onclick="sidebarNav('home')" style="cursor:pointer;" title="Go to Home">Nour Energy<small>HR System</small><small style="font-size:10px;opacity:0.55;">v2.81</small></div>
+      <div id="sb-title" onclick="sidebarNav('home')" style="cursor:pointer;" title="Go to Home">Nour Energy<small>HR System</small><small style="font-size:10px;opacity:0.55;">v2.82</small></div>
       <button id="sb-toggle" onclick="toggleSidebar()" title="Toggle Sidebar">&#9776;</button>
     </div>
 
@@ -4418,7 +4416,7 @@ async function loadEmpHistory() {
   h += '<div class="pr-hist-emp">' + escHtml(emp) + ' – ' + empName + '<\/div>';
   h += '<div class="pr-hist-period">Period: ' + escHtml(dateFrom) + ' – ' + escHtml(dateTo) + ' &nbsp;|&nbsp; ' + filtered.length + ' months<\/div>';
   h += '<\/div>';
-  h += '<div class="pr-tbl-wrap pr-hist-tbl-wrap"><table class="pr-tbl"><thead><tr>';
+  h += '<div class="pr-tbl-wrap"><table class="pr-tbl"><thead><tr>';
   histCols.forEach(c => { h += '<th style="background:' + c.hdr + ';">' + c.label + '<\/th>'; });
   h += '<\/tr><\/thead><tbody>';
   filtered.forEach(row => {
