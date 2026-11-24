@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- NourData v2.74 Dashboard Build - 24-Nov-2026 -->
+<!-- NourData v2.75 Dashboard Build - 24-Nov-2026 -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -1316,7 +1316,7 @@ body.dark-mode .hstat-lbl { color: #8a9aaa; }
   <aside id="sidebar">
     <div id="sb-header">
       <img src="https://nour292.github.io/Nourdata/nour_energy_logo.png" alt="Logo" id="sb-logo">
-      <div id="sb-title" onclick="sidebarNav('home')" style="cursor:pointer;" title="Go to Home">Nour Energy<small>HR System</small><small style="font-size:10px;opacity:0.55;">v2.74</small></div>
+      <div id="sb-title" onclick="sidebarNav('home')" style="cursor:pointer;" title="Go to Home">Nour Energy<small>HR System</small><small style="font-size:10px;opacity:0.55;">v2.75</small></div>
       <button id="sb-toggle" onclick="toggleSidebar()" title="Toggle Sidebar">&#9776;</button>
     </div>
 
@@ -4337,7 +4337,7 @@ function _buildPrTable(rows) {
   if (!rows.length) return '<p class="pr-msg">No records found.</p>';
   let h = '<div class="pr-tbl-wrap"><table class="pr-tbl"><thead><tr>';
   h += '<th class="pr-cb-col no-print" style="background:#1a3a52;"><input type="checkbox" id="pr-cb-all" title="Select / Deselect All" onchange="prSelectAll(this.checked)"></th>';
-  PR_COLS.forEach(c => { h += `<th style="background:${c.hdr};">${c.label}</th>`; });
+  PR_COLS.forEach(c => { const thAlign = c.col === 1 ? 'text-align:left;padding-left:8px;' : ''; h += `<th style="background:${c.hdr};${thAlign}">${c.label}</th>`; });
   h += '</tr></thead><tbody>';
   const totals = {};
   _PR_TOT_COLS.forEach(col => { totals[col] = 0; });
@@ -4346,11 +4346,12 @@ function _buildPrTable(rows) {
     h += `<tr><td class="pr-cb-col no-print"><input type="checkbox" class="pr-row-cb" value="${empVal}" onchange="prUpdateSelCount()"></td>`;
     PR_COLS.forEach(c => {
       const v    = row[c.col] != null ? row[c.col] : '';
-      const bg   = c.cell ? `background:${c.cell};` : '';
-      const bold = c.bold ? 'font-weight:700;' : '';
-      const txt  = (c.col >= 4) ? _prFmt(v) : escHtml(String(v));
+      const bg    = c.cell ? `background:${c.cell};` : '';
+      const bold  = c.bold ? 'font-weight:700;' : '';
+      const align = c.col === 1 ? 'text-align:left;padding-left:8px;' : '';
+      const txt   = (c.col >= 4) ? _prFmt(v) : escHtml(String(v));
       if (_PR_TOT_COLS.has(c.col)) totals[c.col] += parseFloat(String(v).replace(/,/g,'')) || 0;
-      h += `<td style="${bg}${bold}">${txt}</td>`;
+      h += `<td style="${bg}${bold}${align}">${txt}</td>`;
     });
     h += '</tr>';
   });
