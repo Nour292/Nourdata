@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- NourData v2.83 Dashboard Build - 24-Nov-2026 -->
+<!-- NourData v2.84 Dashboard Build - 24-Nov-2026 -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -1316,7 +1316,7 @@ body.dark-mode .hstat-lbl { color: #8a9aaa; }
   <aside id="sidebar">
     <div id="sb-header">
       <img src="https://nour292.github.io/Nourdata/nour_energy_logo.png" alt="Logo" id="sb-logo">
-      <div id="sb-title" onclick="sidebarNav('home')" style="cursor:pointer;" title="Go to Home">Nour Energy<small>HR System</small><small style="font-size:10px;opacity:0.55;">v2.83</small></div>
+      <div id="sb-title" onclick="sidebarNav('home')" style="cursor:pointer;" title="Go to Home">Nour Energy<small>HR System</small><small style="font-size:10px;opacity:0.55;">v2.84</small></div>
       <button id="sb-toggle" onclick="toggleSidebar()" title="Toggle Sidebar">&#9776;</button>
     </div>
 
@@ -4432,14 +4432,14 @@ async function loadEmpHistory() {
     });
     h += '<\/tr>';
   });
-  // tfoot totals — all numeric cols (col >= 4)
+  // tfoot totals — only _PR_TOT_COLS (Mobile, Total Pay, Loans, GOSI, Net Pay)
   const htotals = {};
-  histCols.filter(c=>c.col>=4).forEach(c=>{htotals[c.col]=0;});
-  filtered.forEach(row => { histCols.filter(c=>c.col>=4).forEach(c => { htotals[c.col] += parseFloat(String(row[c.col]||'').replace(/,/g,''))||0; }); });
+  histCols.filter(c=>_PR_TOT_COLS.has(c.col)).forEach(c=>{htotals[c.col]=0;});
+  filtered.forEach(row => { histCols.filter(c=>_PR_TOT_COLS.has(c.col)).forEach(c => { htotals[c.col] += parseFloat(String(row[c.col]||'').replace(/,/g,''))||0; }); });
   h += '<\/tbody><tfoot><tr>';
   histCols.forEach(c => {
     if (c.col === 2) { h += '<td style="background:#1a3a52;color:#fff;font-weight:700;font-size:12px;">Total<\/td>'; return; }
-    if (c.col === 3) { h += '<td style="background:#1a3a52;"><\/td>'; return; }
+    if (!_PR_TOT_COLS.has(c.col)) { h += '<td style="background:#1a3a52;"><\/td>'; return; }
     h += '<td data-tot="' + c.col + '" style="background:#1a3a52;color:#fff;font-weight:700;text-align:right;">' + _prFmt(htotals[c.col]) + '<\/td>';
   });
   h += '<\/tr><\/tfoot><\/table><\/div>';
